@@ -1,0 +1,11 @@
+object_class,architecture_options,lifetime_driver,allowed_tiers,safe_compression,durable_policy_required
+weights,A/B/C,model_version,HBM/GPU memory; CPU DRAM; NVMe,lossless,no
+KV cache,A/B/C,request_or_branch_interval,HBM/GPU memory; CPU DRAM; pooled memory,lossless,no
+prompt prefix,A/B/C,prefix_identity_window,HBM/GPU memory; CPU DRAM; shared cache service,lossless,no
+retrieved context,B/C,source_version_window,CPU DRAM; NVMe; remote object store,summary_pointer,no
+tool output,B/C,tool_freshness_window,CPU DRAM; NVMe; durable workspace store; remote object store,summary_pointer,maybe
+branch state,C,branch_survival_interval,HBM/GPU memory; CPU DRAM; NVMe,lossless,no
+verifier state,C,verification_validity_window,CPU DRAM; NVMe; durable workspace store,lossless,maybe
+trajectory log,C,run_retention_window,NVMe; durable workspace store; remote object store,lossless,yes
+durable workspace artifact,C,retention_policy_window,durable workspace store; remote object store; NVMe,summary_pointer,yes
+semantic cache entry,B/C,invalidation_policy_window,CPU DRAM; shared cache service; NVMe,summary_pointer,no

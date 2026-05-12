@@ -1,0 +1,4 @@
+failure_mode,count
+collector_capability_missing,5
+not_running_in_production_root,1
+operator_material_missing,4

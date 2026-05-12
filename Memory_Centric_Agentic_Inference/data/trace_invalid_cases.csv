@@ -1,0 +1,9 @@
+trace_id,run_id,workload_class,time_step,event_type,object_id,object_class,size_units,tier,parent_object_id,trajectory_node_id,branch_id,provenance_id,reuse_distance,reuse_probability_hint,correctness_sensitive,recompute_cost_hint,loss_cost_hint,durability_horizon,verifier_id,merge_state,source_version,invalidation_signal,evidence_label
+trace-invalid,invalid-run,invalid fixture,5,object_access,missing-object,KV cache,1,,,,,,,,false,,,,,,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,6,object_evict,late-birth,KV cache,1,,,,,,,,false,,,,,,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,8,object_create,late-birth,KV cache,1,,,,,,,,false,,,,,,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,9,object_access,late-birth,KV cache,1,,,,,,,,false,,,,,,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,10,branch_merge,,,,,,,branch-without-fork,,,,,,,,,merged,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,11,verifier_result,,,,,,,,,,,,,,,verifier-without-start,accepted,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,12,workspace_write,workspace-no-horizon,durable workspace,5,,,,,prov:bad,,,true,,,0,,,fixture,,synthetic
+trace-invalid,invalid-run,invalid fixture,13,semantic_cache_lookup,semantic-no-prov,semantic cache entry,5,,,,,,,,true,,,,,,fixture,,synthetic

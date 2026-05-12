@@ -1,0 +1,5 @@
+key_id,key_label,key_state,operator_id,collector_id,valid_from,expires_at,attestation_source_trusted,key_material_label
+test-key-active-a,fixture active operator signing key,active,operator-fixture-a,intake-fixture-collector-v1,2026-05-12T00:00:00Z,2026-05-13T00:00:00Z,false,test-only shared secret in fixture builder
+test-key-expired-a,fixture expired operator signing key,expired,operator-fixture-a,intake-fixture-collector-v1,2026-05-10T00:00:00Z,2026-05-11T00:00:00Z,false,test-only shared secret in fixture builder
+test-key-revoked-a,fixture revoked operator signing key,revoked,operator-fixture-a,intake-fixture-collector-v1,2026-05-12T00:00:00Z,2026-05-13T00:00:00Z,false,test-only shared secret in fixture builder
+test-key-unknown-a,"fixture unknown key marker, intentionally absent from signing secrets",unknown,,,,,false,no key material registered

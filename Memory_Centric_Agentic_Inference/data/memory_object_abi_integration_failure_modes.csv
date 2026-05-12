@@ -1,0 +1,7 @@
+failure_mode,blocked_case_count,downstream_memory_action_count
+dangling_branch_parent,1,0
+durable_retention_without_policy,1,0
+lossy_compression_for_correctness_critical_object,1,0
+missing_object_class,1,0
+production_evidence_label_not_runtime_abi,1,0
+tenant_reuse_scope_mismatch,1,0

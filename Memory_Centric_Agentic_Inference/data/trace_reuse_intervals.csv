@@ -1,0 +1,185 @@
+object_id,run_id,workload_class,object_class,access_time,previous_access_time,reuse_distance,evidence_label
+single-turn_chat_control:weights:1,single-turn_chat_control,single-turn chat control,weights,13,8,5,synthetic
+single-turn_chat_control:weights:1,single-turn_chat_control,single-turn chat control,weights,18,13,5,synthetic
+single-turn_chat_control:weights:1,single-turn_chat_control,single-turn chat control,weights,23,18,5,synthetic
+single-turn_chat_control:KV_cache:1,single-turn_chat_control,single-turn chat control,KV cache,18,8,10,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,13,8,5,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,18,13,5,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,23,18,5,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,28,23,5,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,33,28,5,synthetic
+batch_summarization_offline_inference_control:weights:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,weights,38,33,5,synthetic
+batch_summarization_offline_inference_control:KV_cache:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,KV cache,18,8,10,synthetic
+batch_summarization_offline_inference_control:KV_cache:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,KV cache,28,18,10,synthetic
+batch_summarization_offline_inference_control:KV_cache:1,batch_summarization_offline_inference_control,batch summarization/offline inference control,KV cache,38,28,10,synthetic
+rag:weights:1,rag,RAG,weights,13,8,5,synthetic
+rag:weights:1,rag,RAG,weights,18,13,5,synthetic
+rag:weights:1,rag,RAG,weights,23,18,5,synthetic
+rag:weights:1,rag,RAG,weights,28,23,5,synthetic
+rag:weights:1,rag,RAG,weights,33,28,5,synthetic
+rag:weights:1,rag,RAG,weights,38,33,5,synthetic
+rag:weights:1,rag,RAG,weights,43,38,5,synthetic
+rag:weights:1,rag,RAG,weights,48,43,5,synthetic
+rag:weights:1,rag,RAG,weights,53,48,5,synthetic
+rag:weights:1,rag,RAG,weights,58,53,5,synthetic
+rag:KV_cache:1,rag,RAG,KV cache,18,8,10,synthetic
+rag:KV_cache:1,rag,RAG,KV cache,28,18,10,synthetic
+rag:KV_cache:1,rag,RAG,KV cache,38,28,10,synthetic
+rag:KV_cache:1,rag,RAG,KV cache,48,38,10,synthetic
+rag:KV_cache:1,rag,RAG,KV cache,58,48,10,synthetic
+rag:prefix_cache:1,rag,RAG,prefix cache,33,18,15,synthetic
+rag:prefix_cache:1,rag,RAG,prefix cache,48,33,15,synthetic
+rag:semantic_cache_entry:1,rag,RAG,semantic cache entry,33,18,15,synthetic
+rag:semantic_cache_entry:1,rag,RAG,semantic cache entry,48,33,15,synthetic
+rag:retrieved_context:1,rag,RAG,retrieved context,33,18,15,synthetic
+rag:retrieved_context:1,rag,RAG,retrieved context,48,33,15,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,13,8,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,18,13,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,23,18,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,28,23,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,33,28,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,38,33,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,43,38,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,48,43,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,53,48,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,58,53,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,63,58,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,68,63,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,73,68,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,78,73,5,synthetic
+code-agent_loop:weights:1,code-agent_loop,code-agent loop,weights,83,78,5,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,18,8,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,28,18,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,38,28,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,48,38,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,58,48,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,68,58,10,synthetic
+code-agent_loop:KV_cache:1,code-agent_loop,code-agent loop,KV cache,78,68,10,synthetic
+code-agent_loop:prefix_cache:1,code-agent_loop,code-agent loop,prefix cache,33,18,15,synthetic
+code-agent_loop:prefix_cache:1,code-agent_loop,code-agent loop,prefix cache,48,33,15,synthetic
+code-agent_loop:prefix_cache:1,code-agent_loop,code-agent loop,prefix cache,63,48,15,synthetic
+code-agent_loop:prefix_cache:1,code-agent_loop,code-agent loop,prefix cache,78,63,15,synthetic
+code-agent_loop:branch_state:1,code-agent_loop,code-agent loop,branch state,48,28,20,synthetic
+code-agent_loop:branch_state:1,code-agent_loop,code-agent loop,branch state,68,48,20,synthetic
+code-agent_loop:trajectory_log:1,code-agent_loop,code-agent loop,trajectory log,48,28,20,synthetic
+code-agent_loop:trajectory_log:1,code-agent_loop,code-agent loop,trajectory log,68,48,20,synthetic
+code-agent_loop:branch_state:2,code-agent_loop,code-agent loop,branch state,48,28,20,synthetic
+code-agent_loop:branch_state:2,code-agent_loop,code-agent loop,branch state,68,48,20,synthetic
+code-agent_loop:trajectory_log:2,code-agent_loop,code-agent loop,trajectory log,48,28,20,synthetic
+code-agent_loop:trajectory_log:2,code-agent_loop,code-agent loop,trajectory log,68,48,20,synthetic
+code-agent_loop:tool_output:1,code-agent_loop,code-agent loop,tool output,48,28,20,synthetic
+code-agent_loop:tool_output:1,code-agent_loop,code-agent loop,tool output,68,48,20,synthetic
+code-agent_loop:verifier_state:1,code-agent_loop,code-agent loop,verifier state,48,28,20,synthetic
+code-agent_loop:verifier_state:1,code-agent_loop,code-agent loop,verifier state,68,48,20,synthetic
+code-agent_loop:tool_output:2,code-agent_loop,code-agent loop,tool output,68,48,20,synthetic
+code-agent_loop:tool_output:3,code-agent_loop,code-agent loop,tool output,68,48,20,synthetic
+code-agent_loop:verifier_state:2,code-agent_loop,code-agent loop,verifier state,68,48,20,synthetic
+code-agent_loop:durable_workspace:1,code-agent_loop,code-agent loop,durable workspace,68,48,20,synthetic
+code-agent_loop:durable_workspace:2,code-agent_loop,code-agent loop,durable workspace,68,48,20,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,13,8,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,18,13,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,23,18,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,28,23,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,33,28,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,38,33,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,43,38,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,48,43,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,53,48,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,58,53,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,63,58,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,68,63,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,73,68,5,synthetic
+verification-heavy:weights:1,verification-heavy,verification-heavy,weights,78,73,5,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,18,8,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,28,18,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,38,28,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,48,38,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,58,48,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,68,58,10,synthetic
+verification-heavy:KV_cache:1,verification-heavy,verification-heavy,KV cache,78,68,10,synthetic
+verification-heavy:branch_state:1,verification-heavy,verification-heavy,branch state,48,28,20,synthetic
+verification-heavy:branch_state:1,verification-heavy,verification-heavy,branch state,68,48,20,synthetic
+verification-heavy:trajectory_log:1,verification-heavy,verification-heavy,trajectory log,48,28,20,synthetic
+verification-heavy:trajectory_log:1,verification-heavy,verification-heavy,trajectory log,68,48,20,synthetic
+verification-heavy:branch_state:2,verification-heavy,verification-heavy,branch state,48,28,20,synthetic
+verification-heavy:branch_state:2,verification-heavy,verification-heavy,branch state,68,48,20,synthetic
+verification-heavy:trajectory_log:2,verification-heavy,verification-heavy,trajectory log,48,28,20,synthetic
+verification-heavy:trajectory_log:2,verification-heavy,verification-heavy,trajectory log,68,48,20,synthetic
+verification-heavy:tool_output:1,verification-heavy,verification-heavy,tool output,48,28,20,synthetic
+verification-heavy:tool_output:1,verification-heavy,verification-heavy,tool output,68,48,20,synthetic
+verification-heavy:verifier_state:1,verification-heavy,verification-heavy,verifier state,48,28,20,synthetic
+verification-heavy:verifier_state:1,verification-heavy,verification-heavy,verifier state,68,48,20,synthetic
+verification-heavy:branch_state:3,verification-heavy,verification-heavy,branch state,68,48,20,synthetic
+verification-heavy:trajectory_log:3,verification-heavy,verification-heavy,trajectory log,68,48,20,synthetic
+verification-heavy:tool_output:2,verification-heavy,verification-heavy,tool output,68,48,20,synthetic
+verification-heavy:verifier_state:2,verification-heavy,verification-heavy,verifier state,68,48,20,synthetic
+verification-heavy:tool_output:3,verification-heavy,verification-heavy,tool output,68,48,20,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,13,8,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,18,13,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,23,18,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,28,23,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,33,28,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,38,33,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,43,38,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,48,43,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,53,48,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,58,53,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,63,58,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,68,63,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,73,68,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,78,73,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,83,78,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,88,83,5,synthetic
+multi-agent_branch_merge:weights:1,multi-agent_branch_merge,multi-agent branch/merge,weights,93,88,5,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,18,8,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,28,18,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,38,28,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,48,38,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,58,48,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,68,58,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,78,68,10,synthetic
+multi-agent_branch_merge:KV_cache:1,multi-agent_branch_merge,multi-agent branch/merge,KV cache,88,78,10,synthetic
+multi-agent_branch_merge:prefix_cache:1,multi-agent_branch_merge,multi-agent branch/merge,prefix cache,33,18,15,synthetic
+multi-agent_branch_merge:prefix_cache:1,multi-agent_branch_merge,multi-agent branch/merge,prefix cache,48,33,15,synthetic
+multi-agent_branch_merge:prefix_cache:1,multi-agent_branch_merge,multi-agent branch/merge,prefix cache,63,48,15,synthetic
+multi-agent_branch_merge:prefix_cache:1,multi-agent_branch_merge,multi-agent branch/merge,prefix cache,78,63,15,synthetic
+multi-agent_branch_merge:prefix_cache:1,multi-agent_branch_merge,multi-agent branch/merge,prefix cache,93,78,15,synthetic
+multi-agent_branch_merge:branch_state:1,multi-agent_branch_merge,multi-agent branch/merge,branch state,48,28,20,synthetic
+multi-agent_branch_merge:branch_state:1,multi-agent_branch_merge,multi-agent branch/merge,branch state,68,48,20,synthetic
+multi-agent_branch_merge:branch_state:1,multi-agent_branch_merge,multi-agent branch/merge,branch state,88,68,20,synthetic
+multi-agent_branch_merge:trajectory_log:1,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,48,28,20,synthetic
+multi-agent_branch_merge:trajectory_log:1,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,68,48,20,synthetic
+multi-agent_branch_merge:trajectory_log:1,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,88,68,20,synthetic
+multi-agent_branch_merge:branch_state:2,multi-agent_branch_merge,multi-agent branch/merge,branch state,48,28,20,synthetic
+multi-agent_branch_merge:branch_state:2,multi-agent_branch_merge,multi-agent branch/merge,branch state,68,48,20,synthetic
+multi-agent_branch_merge:branch_state:2,multi-agent_branch_merge,multi-agent branch/merge,branch state,88,68,20,synthetic
+multi-agent_branch_merge:trajectory_log:2,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,48,28,20,synthetic
+multi-agent_branch_merge:trajectory_log:2,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,68,48,20,synthetic
+multi-agent_branch_merge:trajectory_log:2,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,88,68,20,synthetic
+multi-agent_branch_merge:tool_output:1,multi-agent_branch_merge,multi-agent branch/merge,tool output,48,28,20,synthetic
+multi-agent_branch_merge:tool_output:1,multi-agent_branch_merge,multi-agent branch/merge,tool output,68,48,20,synthetic
+multi-agent_branch_merge:tool_output:1,multi-agent_branch_merge,multi-agent branch/merge,tool output,88,68,20,synthetic
+multi-agent_branch_merge:verifier_state:1,multi-agent_branch_merge,multi-agent branch/merge,verifier state,48,28,20,synthetic
+multi-agent_branch_merge:verifier_state:1,multi-agent_branch_merge,multi-agent branch/merge,verifier state,68,48,20,synthetic
+multi-agent_branch_merge:verifier_state:1,multi-agent_branch_merge,multi-agent branch/merge,verifier state,88,68,20,synthetic
+multi-agent_branch_merge:branch_state:3,multi-agent_branch_merge,multi-agent branch/merge,branch state,68,48,20,synthetic
+multi-agent_branch_merge:branch_state:3,multi-agent_branch_merge,multi-agent branch/merge,branch state,88,68,20,synthetic
+multi-agent_branch_merge:trajectory_log:3,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,68,48,20,synthetic
+multi-agent_branch_merge:trajectory_log:3,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,88,68,20,synthetic
+multi-agent_branch_merge:branch_state:4,multi-agent_branch_merge,multi-agent branch/merge,branch state,68,48,20,synthetic
+multi-agent_branch_merge:branch_state:4,multi-agent_branch_merge,multi-agent branch/merge,branch state,88,68,20,synthetic
+multi-agent_branch_merge:trajectory_log:4,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,68,48,20,synthetic
+multi-agent_branch_merge:trajectory_log:4,multi-agent_branch_merge,multi-agent branch/merge,trajectory log,88,68,20,synthetic
+multi-agent_branch_merge:tool_output:2,multi-agent_branch_merge,multi-agent branch/merge,tool output,68,48,20,synthetic
+multi-agent_branch_merge:tool_output:2,multi-agent_branch_merge,multi-agent branch/merge,tool output,88,68,20,synthetic
+multi-agent_branch_merge:tool_output:3,multi-agent_branch_merge,multi-agent branch/merge,tool output,68,48,20,synthetic
+multi-agent_branch_merge:tool_output:3,multi-agent_branch_merge,multi-agent branch/merge,tool output,88,68,20,synthetic
+multi-agent_branch_merge:verifier_state:2,multi-agent_branch_merge,multi-agent branch/merge,verifier state,68,48,20,synthetic
+multi-agent_branch_merge:verifier_state:2,multi-agent_branch_merge,multi-agent branch/merge,verifier state,88,68,20,synthetic
+multi-agent_branch_merge:durable_workspace:1,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,68,48,20,synthetic
+multi-agent_branch_merge:durable_workspace:1,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,88,68,20,synthetic
+multi-agent_branch_merge:durable_workspace:2,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,68,48,20,synthetic
+multi-agent_branch_merge:durable_workspace:2,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,88,68,20,synthetic
+multi-agent_branch_merge:verifier_state:3,multi-agent_branch_merge,multi-agent branch/merge,verifier state,88,68,20,synthetic
+multi-agent_branch_merge:durable_workspace:3,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,88,68,20,synthetic
+multi-agent_branch_merge:durable_workspace:4,multi-agent_branch_merge,multi-agent branch/merge,durable workspace,88,68,20,synthetic

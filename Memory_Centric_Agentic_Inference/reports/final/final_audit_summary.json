@@ -1,0 +1,123 @@
+{
+  "run_id": "run-2026-05-11T121649Z",
+  "milestone_status_distribution": {
+    "validated": 89,
+    "superseded": 2,
+    "in-progress": 1
+  },
+  "plan_milestone_state": {
+    "M-ABI-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 206},
+    "M-ABIINT-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 211},
+    "M-ADAPTER-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 132},
+    "M-ARCH-1": {"status": "validated", "confidence": "high", "evidence_count": 10, "ledger_line": 20},
+    "M-ARCHPKG-1": {"status": "validated", "confidence": "high", "evidence_count": 14, "ledger_line": 215},
+    "M-ATTEST-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 146},
+    "M-CALIB-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 50},
+    "M-CAUSAL-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 180},
+    "M-CLAIMEXP-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 200},
+    "M-COMP-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 42},
+    "M-COST-1": {"status": "validated", "confidence": "high", "evidence_count": 9, "ledger_line": 8},
+    "M-DC12-1": {"status": "validated", "confidence": "high", "evidence_count": 14, "ledger_line": 104},
+    "M-ENERGY-1": {"status": "validated", "confidence": "high", "evidence_count": 11, "ledger_line": 87},
+    "M-EVIDART-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 190},
+    "M-EXP-1": {"status": "validated", "confidence": "high", "evidence_count": 9, "ledger_line": 82},
+    "M-FINALPKG-1": {"status": "validated", "confidence": "high", "evidence_count": 11, "ledger_line": 112},
+    "M-GATECHAIN-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 155},
+    "M-HANDOFF-1": {"status": "validated", "confidence": "high", "evidence_count": 11, "ledger_line": 119},
+    "M-INTAKE-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 141},
+    "M-LIFE-1": {"status": "validated", "confidence": "high", "evidence_count": 7, "ledger_line": 6},
+    "M-LIVECOLLECT-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 195},
+    "M-PLAN-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 99},
+    "M-PORT-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 136},
+    "M-PRODDEPLOY-1": {"status": "validated", "confidence": "high", "evidence_count": 11, "ledger_line": 124},
+    "M-PRODREPLAY-1": {"status": "validated", "confidence": "high", "evidence_count": 10, "ledger_line": 185},
+    "M-PRODTELEM-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 108},
+    "M-PROTO-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 46},
+    "M-QUEUE-1": {"status": "validated", "confidence": "high", "evidence_count": 13, "ledger_line": 34},
+    "M-REDACT-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 170},
+    "M-ROOTINT-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 161},
+    "M-SCHED-1": {"status": "validated", "confidence": "high", "evidence_count": 9, "ledger_line": 16},
+    "M-SEC-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 54},
+    "M-SECOPS-1": {"status": "validated", "confidence": "high", "evidence_count": 12, "ledger_line": 92},
+    "M-SIM-1": {"status": "validated", "confidence": "high", "evidence_count": 9, "ledger_line": 13},
+    "M-SYNTH-1": {"status": "validated", "confidence": "high", "evidence_count": 10, "ledger_line": 59},
+    "M-TAX-1": {"status": "validated", "confidence": "high", "evidence_count": 7, "ledger_line": 5},
+    "M-TIMEBASE-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 165},
+    "M-TRACE-1": {"status": "validated", "confidence": "high", "evidence_count": 15, "ledger_line": 30},
+    "M-TRENDS-1": {"status": "validated", "confidence": "high", "evidence_count": 11, "ledger_line": 128},
+    "M-TRUSTPOL-1": {"status": "validated", "confidence": "high", "evidence_count": 17, "ledger_line": 151},
+    "M-UNCERT-1": {"status": "validated", "confidence": "high", "evidence_count": 16, "ledger_line": 175}
+  },
+  "residual_debt": [
+    {
+      "milestone": "_manager/validator-warnings",
+      "kind": "validator-red",
+      "narrative": "promise_ledger.jsonl line 220 has a non-UUID event_id and a superseded event missing supersedes; promise_check exits red."
+    },
+    {
+      "milestone": "_run/report_cycles_*",
+      "kind": "stale-public-record",
+      "narrative": "Multiple periodic reports preserve historical no-artifact, no-ledger, action-required, or integration-gap statements contradicted by later validated ledger events."
+    },
+    {
+      "milestone": "M-HANDOFF-1",
+      "kind": "stale-artifact-index",
+      "narrative": "The handoff artifact index is internally valid but incomplete relative to the current 41 validated plan milestones and current ledger artifact paths."
+    },
+    {
+      "milestone": "_run/final-package-artifacts",
+      "kind": "incomplete-registered-package",
+      "narrative": "Registered package archives contain only four files and point readers to final report files not present in the archive."
+    },
+    {
+      "milestone": "_run/start",
+      "kind": "in-progress-at-end",
+      "narrative": "The run-start sentinel remains in-progress/high; this is not a plan-milestone completion gap."
+    }
+  ],
+  "future_work": [
+    {
+      "anchored_to": "_manager/validator-warnings",
+      "proposal": "Repair ledger line 220 with a valid UUID, a correct supersedes pointer, and evidence-consistent narrative; rerun promise_check before closure."
+    },
+    {
+      "anchored_to": "_run/report_cycles_*",
+      "proposal": "Publish a consolidated errata or supersession index for stale periodic-report statements contradicted by later validated ledger events."
+    },
+    {
+      "anchored_to": "M-HANDOFF-1",
+      "proposal": "Regenerate the handoff artifact index against the latest plan and ledger, and extend its verifier to check milestone and artifact-path completeness."
+    },
+    {
+      "anchored_to": "_run/final-package-artifacts",
+      "proposal": "Rebuild package archives as closed-world handoff artifacts with all referenced final report and verification files included."
+    },
+    {
+      "anchored_to": "_run/start",
+      "proposal": "Close or explicitly classify the run-start sentinel to avoid implying active research work remains open."
+    }
+  ],
+  "findings": {
+    "CRITICAL": 1,
+    "MODERATE": 14,
+    "MINOR": 2
+  },
+  "reconciliation_events_emitted": 0,
+  "lessons_emitted": [
+    "validated-ledger-events-must-remain-schema-valid",
+    "periodic-reports-are-snapshots-not-terminal-record",
+    "handoff-index-verifier-must-check-current-ledger",
+    "package-archives-need-closed-world-verification"
+  ],
+  "promise_check_status": "red",
+  "wall_cap_exceeded": false,
+  "figure_coverage": {
+    "figures_present": 107,
+    "figures_in_ledger": 107,
+    "milestones_with_figures": 40,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": []
+  }
+}
+

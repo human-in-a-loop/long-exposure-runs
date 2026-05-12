@@ -1,0 +1,31 @@
+deferred_constant,field,required_for,notes,production_extension,scope_boundary
+DC-005,"trace_id; run_id; workload_class; time_step; event_type",all metrics,"time_step may be monotonic logical time or timestamp",false,trajectory_reuse_identity_and_ordering
+DC-005,"object_id; object_class; size_units",all retained objects,"required for branch state, verifier state, tool output, trajectory log, and durable workspace",false,trajectory_scoped_object_accounting
+DC-005,trajectory_node_id,DAG attribution,"required for tool, branch, verifier, workspace, replay, and merge events",false,separates_trajectory_reuse_from_object_only_reuse
+DC-005,parent_object_id,replay/source dependency edge,"required to distinguish reuse from unrelated access",false,separates_replay_from_ordinary_access
+DC-005,"branch_id; merge_state",branch survival and merge/discard rates,"required for branch_fork, branch_merge, branch_discard, and branch-local objects",false,trajectory_branch_survival_only
+DC-005,verifier_id,verifier reuse and verifier delay,"required for verifier_start, verifier_result, and verifier-state objects",false,trajectory_verifier_reuse_only
+DC-005,durability_horizon,durable workspace retained value,"required for workspace and trajectory objects",false,durable_dependency_reuse_only
+DC-005,reuse_distance,reuse interval distribution,"required on repeated object access",false,trajectory_reuse_distance_distribution
+DC-005,"correctness_sensitive; recompute_cost_hint; loss_cost_hint",retained-value proxy,"may be measured, estimated from rerun cost, or omitted from benefit until calibrated",false,value_proxy_not_production_calibration
+DC-005,"provenance_id; source_version; invalidation_signal",authorized replay preconditions,"needed to avoid counting stale trajectory reuse; overhead magnitude remains DC-006 scope",false,authorization_gate_not_overhead_measurement
+DC-005,"actor_id; replay_authorization_scope",production security extension,"required for trajectory replay authorization; absent in trace v2 and owned jointly with DC-006 for overhead magnitude",true,authorization_gate_not_overhead_measurement
+DC-005,verifier_evidence_hash,production security extension,"required to trust verifier-state replay; absent in trace v2",true,verifier_replay_validity_gate
+DC-005,retention_hold_state,production retention extension,"required for durable workspace retention/deletion conflicts; absent in trace v2",true,durable_reuse_validity_gate
+DC-004,"cache_key_hash; semantic_match_score; correctness_label",semantic valid-hit measurement,"required to separate raw semantic hits from safe valid hits",true,semantic_cache_correctness_gate
+DC-004,"tenant_scope; cache_salt",semantic isolation measurement,"required to prevent cross-tenant or cross-trust-domain cache reuse",true,semantic_cache_isolation_gate
+DC-004,"provenance_id; source_version; invalidation_signal",semantic freshness and provenance measurement,"required to reject stale or untrusted semantic-cache entries",true,semantic_cache_freshness_gate
+DC-004,"recovery_action; recovery_latency_ms; wrong_reuse_severity",semantic recovery and wrong-reuse cost measurement,"required to account for fail-closed recovery and incorrect reuse loss",true,semantic_cache_recovery_gate
+DC-003,"durable_object_id; object_class; size_bytes; storage_tier",durable object identity and sizing,"required to bucket durable replay latency by object class size and tier",true,durable_object_accounting
+DC-003,"consistency_mode; write_latency_ms; read_latency_ms; consistency_wait_ms",durable latency-tail measurement,"required to compute p50 p95 p99 replay tails under consistency modes",true,durable_latency_tail_gate
+DC-003,"dependency_path_id; dependency_width",durable fan-in measurement,"required to measure dependency-path max latency and fan-in tail amplification",true,durable_dependency_tail_gate
+DC-003,"pointer_valid; reconstruction_latency_ms; verifier_evidence_hash",durable summary-pointer recovery measurement,"required to decide whether pointer-based replay is valid and faster than recompute",true,durable_pointer_recovery_gate
+DC-003,"retention_hold_state; durability_horizon; replay_authorization_scope; actor_id",durable retention and authorization measurement,"required to forbid replay after expired retention or unauthorized access",true,durable_retention_gate
+DC-006,"provenance_id; source_version; invalidation_signal",PV-01/PV-02 provenance and freshness validation,"required to block missing provenance pointers and stale source versions before object reuse is credited",true,provenance_freshness_overhead
+DC-006,"tenant_scope; cache_salt; cache_key_hash",PV-03 tenant/cache-salt isolation,"required to measure safe hit rate and validation overhead after cache trust-domain partitioning",true,provenance_isolation_overhead
+DC-006,"trajectory_node_id; branch_id; parent_object_id; merge_state",PV-04 trajectory lineage validation,"required to validate replay edges, branch merges, and contaminated lineage before Option C value is credited",true,provenance_lineage_overhead
+DC-006,"actor_id; replay_authorization_scope",PV-05 replay authorization,"required to bind object or trajectory replay to an authorized actor/scope",true,provenance_authorization_overhead
+DC-006,"verifier_id; verifier_evidence_hash",PV-06 verifier evidence binding,"required to make verifier-state reuse tamper-evident",true,provenance_verifier_overhead
+DC-006,"durability_horizon; retention_hold_state",PV-07 retention compliance,"required to reject expired durable replay unless an active hold permits retention",true,provenance_retention_overhead
+DC-006,"compression_strategy; pointer_valid; reconstruction_latency_ms",PV-08 summary-pointer recoverability,"required to validate pointer-preserving compression/offload before compressed state contributes value",true,provenance_pointer_overhead
+DC-006,"validation_start_time; validation_end_time; validation_decision; validation_gate_ids; validation_lookup_count; validation_queue_wait",validation timing and attribution,"required to report p50/p90/p95/p99 validation overhead, lookup count, queue wait, and allow/reject/downgrade decisions",true,provenance_overhead_measurement

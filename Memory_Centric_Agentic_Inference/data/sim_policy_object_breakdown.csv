@@ -1,0 +1,113 @@
+policy,workload_class,object_class,total_score_contribution
+hbm_first_baseline,single-turn chat control,KV cache,-9.245286
+hbm_first_baseline,single-turn chat control,prefix cache,-1.199502
+hbm_first_baseline,single-turn chat control,weights,-27.140137
+reuse_aware_tiering,single-turn chat control,KV cache,-24.433943
+reuse_aware_tiering,single-turn chat control,prefix cache,-4.79568
+reuse_aware_tiering,single-turn chat control,weights,-67.187947
+branch_verifier_durable_aware,single-turn chat control,KV cache,-24.959476
+branch_verifier_durable_aware,single-turn chat control,prefix cache,-5.027
+branch_verifier_durable_aware,single-turn chat control,weights,-70.005537
+cost_proxy_balanced,single-turn chat control,KV cache,-21.263682
+cost_proxy_balanced,single-turn chat control,prefix cache,-4.801655
+cost_proxy_balanced,single-turn chat control,weights,-59.666851
+hbm_first_baseline,batch summarization/offline inference control,KV cache,-34.306745
+hbm_first_baseline,batch summarization/offline inference control,intermediate scratch,-18.398414
+hbm_first_baseline,batch summarization/offline inference control,weights,-78.94972
+reuse_aware_tiering,batch summarization/offline inference control,KV cache,-41.668476
+reuse_aware_tiering,batch summarization/offline inference control,intermediate scratch,-17.853274
+reuse_aware_tiering,batch summarization/offline inference control,weights,-88.339146
+branch_verifier_durable_aware,batch summarization/offline inference control,KV cache,-42.225531
+branch_verifier_durable_aware,batch summarization/offline inference control,intermediate scratch,-18.028497
+branch_verifier_durable_aware,batch summarization/offline inference control,weights,-91.968451
+cost_proxy_balanced,batch summarization/offline inference control,KV cache,-36.024639
+cost_proxy_balanced,batch summarization/offline inference control,intermediate scratch,-17.187525
+cost_proxy_balanced,batch summarization/offline inference control,weights,-78.464004
+hbm_first_baseline,RAG with retrieved-context reuse,KV cache,-13.860022
+hbm_first_baseline,RAG with retrieved-context reuse,retrieved context,-27.029017
+hbm_first_baseline,RAG with retrieved-context reuse,semantic cache entry,-44.804813
+hbm_first_baseline,RAG with retrieved-context reuse,weights,-55.360282
+reuse_aware_tiering,RAG with retrieved-context reuse,KV cache,-24.058458
+reuse_aware_tiering,RAG with retrieved-context reuse,retrieved context,20.443429
+reuse_aware_tiering,RAG with retrieved-context reuse,semantic cache entry,34.235555
+reuse_aware_tiering,RAG with retrieved-context reuse,weights,-88.851496
+branch_verifier_durable_aware,RAG with retrieved-context reuse,KV cache,-26.527354
+branch_verifier_durable_aware,RAG with retrieved-context reuse,retrieved context,-19.939738
+branch_verifier_durable_aware,RAG with retrieved-context reuse,semantic cache entry,-2.937184
+branch_verifier_durable_aware,RAG with retrieved-context reuse,weights,-97.583477
+cost_proxy_balanced,RAG with retrieved-context reuse,KV cache,-21.713333
+cost_proxy_balanced,RAG with retrieved-context reuse,retrieved context,9.243364
+cost_proxy_balanced,RAG with retrieved-context reuse,semantic cache entry,20.533122
+cost_proxy_balanced,RAG with retrieved-context reuse,weights,-80.553897
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,KV cache,-43.295789
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,branch state,-169.711744
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,durable workspace,-294.941238
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,tool output,-316.825542
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,trajectory log,-181.224685
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,weights,-129.162734
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,KV cache,-35.079017
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,branch state,27.031808
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,durable workspace,294.671911
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,tool output,272.304834
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,trajectory log,119.069375
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,weights,-97.134737
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,KV cache,-45.587237
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,branch state,120.100871
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,durable workspace,353.283686
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,tool output,353.088156
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,trajectory log,226.056411
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,weights,-119.632387
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,KV cache,-34.200497
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,branch state,23.483205
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,durable workspace,279.651691
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,tool output,235.713122
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,trajectory log,118.955305
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,weights,-91.936884
+hbm_first_baseline,verification-heavy agent,KV cache,-22.839358
+hbm_first_baseline,verification-heavy agent,branch state,-212.583404
+hbm_first_baseline,verification-heavy agent,tool output,-201.920484
+hbm_first_baseline,verification-heavy agent,trajectory log,-164.933758
+hbm_first_baseline,verification-heavy agent,verifier state,-430.497262
+hbm_first_baseline,verification-heavy agent,weights,-81.407354
+reuse_aware_tiering,verification-heavy agent,KV cache,-32.192974
+reuse_aware_tiering,verification-heavy agent,branch state,71.337572
+reuse_aware_tiering,verification-heavy agent,tool output,102.122466
+reuse_aware_tiering,verification-heavy agent,trajectory log,91.832274
+reuse_aware_tiering,verification-heavy agent,verifier state,410.871157
+reuse_aware_tiering,verification-heavy agent,weights,-91.287657
+branch_verifier_durable_aware,verification-heavy agent,KV cache,-39.515836
+branch_verifier_durable_aware,verification-heavy agent,branch state,226.917007
+branch_verifier_durable_aware,verification-heavy agent,tool output,244.134396
+branch_verifier_durable_aware,verification-heavy agent,trajectory log,205.040335
+branch_verifier_durable_aware,verification-heavy agent,verifier state,559.389432
+branch_verifier_durable_aware,verification-heavy agent,weights,-106.880579
+cost_proxy_balanced,verification-heavy agent,KV cache,-30.796197
+cost_proxy_balanced,verification-heavy agent,branch state,52.401502
+cost_proxy_balanced,verification-heavy agent,tool output,62.404175
+cost_proxy_balanced,verification-heavy agent,trajectory log,97.424426
+cost_proxy_balanced,verification-heavy agent,verifier state,307.965861
+cost_proxy_balanced,verification-heavy agent,weights,-85.127335
+hbm_first_baseline,multi-agent branch/merge run,KV cache,-65.809114
+hbm_first_baseline,multi-agent branch/merge run,branch state,-329.471527
+hbm_first_baseline,multi-agent branch/merge run,tool output,-165.851517
+hbm_first_baseline,multi-agent branch/merge run,trajectory log,-203.402487
+hbm_first_baseline,multi-agent branch/merge run,verifier state,-310.90782
+hbm_first_baseline,multi-agent branch/merge run,weights,-160.668273
+reuse_aware_tiering,multi-agent branch/merge run,KV cache,-80.304814
+reuse_aware_tiering,multi-agent branch/merge run,branch state,127.390376
+reuse_aware_tiering,multi-agent branch/merge run,tool output,63.212866
+reuse_aware_tiering,multi-agent branch/merge run,trajectory log,148.875274
+reuse_aware_tiering,multi-agent branch/merge run,verifier state,159.552318
+reuse_aware_tiering,multi-agent branch/merge run,weights,-103.022973
+branch_verifier_durable_aware,multi-agent branch/merge run,KV cache,-67.28713
+branch_verifier_durable_aware,multi-agent branch/merge run,branch state,272.254452
+branch_verifier_durable_aware,multi-agent branch/merge run,tool output,162.580194
+branch_verifier_durable_aware,multi-agent branch/merge run,trajectory log,240.647984
+branch_verifier_durable_aware,multi-agent branch/merge run,verifier state,377.80959
+branch_verifier_durable_aware,multi-agent branch/merge run,weights,-133.821679
+cost_proxy_balanced,multi-agent branch/merge run,KV cache,-82.085965
+cost_proxy_balanced,multi-agent branch/merge run,branch state,99.630669
+cost_proxy_balanced,multi-agent branch/merge run,tool output,55.24642
+cost_proxy_balanced,multi-agent branch/merge run,trajectory log,139.537747
+cost_proxy_balanced,multi-agent branch/merge run,verifier state,138.442808
+cost_proxy_balanced,multi-agent branch/merge run,weights,-99.102077

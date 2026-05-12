@@ -1,0 +1,4 @@
+boundary_id,input_evidence_label,allowed_ingestion_use,production_target_allowed,production_calibrated,production_ready,reason
+adapter-fixture-evidence,synthetic_adapter_fixture,schema_normalization_test_only,false,false,false,offline fixtures do not establish trusted real deployment provenance
+valid-normalized-candidate,synthetic_adapter_fixture,may be translated only to synthetic_production_fixture for existing ingestion-harness dry runs,false,false,false,M-PRODTELEM-1 production_target requires trusted real collector source and joined deployment provenance
+invalid-adapter-streams,synthetic_adapter_fixture,rejected_before_ingestion,false,false,false,"missing streams, clocks, join keys, stale security, or untrusted provenance fail closed"

@@ -1,0 +1,2 @@
+search_root,manifest_count,production_target_manifest_count,absence_state,blocked_reason,production_calibrated,production_ready,claim_credit_allowed
+data/production_target_bundle,0,0,no_real_telemetry_available,no_production_target_bundle_found,false,false,false

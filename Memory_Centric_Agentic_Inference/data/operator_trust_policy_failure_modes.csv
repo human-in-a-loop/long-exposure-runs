@@ -1,0 +1,9 @@
+failure_category,invalid_profile_count,fail_closed
+trust_root,3,true
+key_custody,2,true
+collector_identity,2,true
+replay,1,true
+audit,1,true
+tenant_security,1,true
+boundary,1,true
+policy_completeness,0,true

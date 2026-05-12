@@ -1,0 +1,9 @@
+fixture_case_id,streams_seen,required_streams_seen,join_keys_present,clock_aligned,evidence_label,join_valid,expected_blocked_reason,blocked_reason
+valid-adapter-candidate,9,9,true,true,synthetic_adapter_fixture,true,,
+invalid-missing-stream,8,8,true,true,synthetic_adapter_fixture,false,missing_stream_class,missing_stream_class:source/destination tier byte counters
+invalid-missing-interval,9,9,false,true,synthetic_adapter_fixture,false,missing_join_key_interval_id,missing_join_key:interval_id
+invalid-clock-mismatch,9,9,true,false,synthetic_adapter_fixture,false,clock_alignment_failed,clock_alignment_failed
+invalid-missing-security-context,9,9,false,true,synthetic_adapter_fixture,false,missing_join_key_security_context_id,missing_join_key:security_context_id
+invalid-stale-security,9,9,true,true,synthetic_adapter_fixture,false,stale_security_context,stale_security_context
+invalid-untrusted-provenance,9,9,true,true,synthetic_adapter_fixture,false,untrusted_collector_provenance,untrusted_collector_provenance
+invalid-evidence-target,9,9,true,true,synthetic_adapter_fixture,false,fixture_attempted_production_target,fixture_attempted_production_target

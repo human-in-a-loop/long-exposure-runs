@@ -1,0 +1,8 @@
+claim_id,claim_before,claim_after,dc001_effect,dc002_effect,decision,evidence_label
+CL-001,validated_artifact,validated_artifact,control rows remain Option A unless positive non-KV retained value is present,control workload shows safe non-KV retained value with positive net energy and dollar,calibration_ready,derived
+CL-002,simulated,simulated,energy/contention sweeps add downgrade conditions to existing synthetic retained-value claim,measured DC-001/DC-002 values keep net value positive under security gates,calibration_ready,synthetic_sensitivity
+CL-003,simulated,simulated,energy/contention sweeps add downgrade conditions to existing synthetic retained-value claim,measured DC-001/DC-002 values keep net value positive under security gates,calibration_ready,synthetic_sensitivity
+CL-004,simulated,simulated,contention threshold rows expose where queue/tail latency reverses architecture choice,"measured metadata, DAG, pooled-memory p50/p95/p99 below reversal thresholds",calibration_ready,synthetic_sensitivity
+CL-005,simulated,simulated,contention threshold rows expose where queue/tail latency reverses architecture choice,"measured metadata, DAG, pooled-memory p50/p95/p99 below reversal thresholds",calibration_ready,synthetic_sensitivity
+CL-009,validated_artifact,validated_artifact,unsafe reuse still forces zero positive value before economics are counted,unsafe-pass rate is zero and validation overhead is measured,calibration_ready,validated_artifact
+CL-012,speculative,speculative,DC-001/DC-002 sensitivity narrows thresholds but does not calibrate economic value,"replace with measured per-tier byte energy, price, and CXL contention telemetry",remain_speculative_until_measured,speculative

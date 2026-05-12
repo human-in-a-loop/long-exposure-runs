@@ -1,0 +1,23 @@
+field_name,required,stable_across_gatechain,description
+enrollment_id,true,false,Stable enrollment record identifier; replayed IDs are rejected.
+deployment_root_id,true,false,"Operator-approved deployment root that anchors collector, key, topology, and schema facts."
+root_type,true,false,Root class such as KMS/HSM/hardware-attestation/fixture-hmac.
+root_status,true,false,Root lifecycle state; active required.
+root_valid_from,true,false,UTC start of admissible root window.
+root_valid_until,true,false,UTC end of admissible root window.
+key_id,true,false,Signing key bound to the deployment root.
+key_rotation_epoch,true,false,Monotonic key rotation epoch with no uncovered collection interval.
+operator_id,true,true,"Operator identity bound to policy, enrollment, and gatechain identity."
+collector_id,true,true,Collector identity; unique under one operator/root binding.
+collector_firmware_identity,true,false,Firmware or measurement identity for the collector binary/device.
+firmware_attested_at,true,false,Time at which firmware identity was attested.
+topology_id,true,false,Topology identity used by downstream telemetry joins.
+topology_version,true,false,Version or digest of topology map accepted for the measurement window.
+schema_version,true,true,Production telemetry schema version expected by ingestion.
+measurement_run_id,true,true,Measurement run provenance ID propagated into downstream gatechain identifiers.
+bundle_id,true,true,"Bundle identity propagated into attestation, intake, and gatechain stages."
+counter_source_id,true,false,"Stable source for power, byte, latency, or security counters."
+counter_source_binding,true,false,"Counter binding covers collector, topology, tenant, security context, and measurement run."
+tenant_id,true,false,Tenant identity required for isolation and claim-boundary checks.
+security_context_id,true,false,Security context required for downstream security/provenance gates.
+evidence_label,true,false,Evidence label; fixture labels cannot mimic production_target.

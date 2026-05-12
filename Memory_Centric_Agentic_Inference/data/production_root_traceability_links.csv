@@ -1,0 +1,6 @@
+trace_link_id,root_artifact,downstream_artifact,required_identifier
+root-to-trust-policy,data/production_root_enrollment_results.csv,data/operator_trust_policy_results.csv,operator_id;collector_id;key_id
+root-to-attestation,data/production_root_enrollment_results.csv,data/production_attestation_results.csv,bundle_id;collector_id;key_id
+root-to-intake,data/production_root_enrollment_results.csv,data/production_intake_admission_results.csv,bundle_id;schema_version
+root-to-adapter-conformance,data/production_root_enrollment_results.csv,data/adapter_conformance_results.csv,collector_id;measurement_run_id;schema_version
+root-to-gatechain,data/production_root_enrollment_results.csv,data/evidence_gatechain_replay_results.csv,bundle_id;measurement_run_id;operator_id;collector_id;schema_version

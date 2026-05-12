@@ -1,0 +1,13 @@
+fixture_id,fixture_class,constant_id,evidence_label,schema_valid,join_valid,noise_floor_passed,security_credit_allowed,threshold_crossed,calibration_candidate,production_calibrated,reuse_credit_granted,energy_credit_granted_j,blocked_reason
+valid-dc001-rag-b,valid,DC-001,synthetic_production_fixture,true,true,true,true,true,true,false,10.0,60.0,
+valid-dc002-rag-c,valid,DC-002,synthetic_production_fixture,true,true,true,true,true,true,false,10.0,60.0,
+valid-dc002-code-b,valid,DC-002,synthetic_production_fixture,true,true,true,true,false,true,false,10.0,60.0,
+valid-control-a,valid,DC-002,synthetic_production_fixture,true,true,true,true,false,false,false,0.0,0.0,
+invalid-missing-power-interval,invalid,DC-001,synthetic_production_fixture,true,false,true,true,true,false,false,0.0,0.0,power_byte_interval_mismatch
+invalid-missing-tier-bytes,invalid,DC-001,synthetic_production_fixture,false,true,true,true,true,false,false,0.0,0.0,missing_required_field
+invalid-missing-label,invalid,DC-001,synthetic_production_fixture,false,false,true,true,true,false,false,0.0,0.0,missing_required_field
+invalid-missing-topology-tenant,invalid,DC-001,synthetic_production_fixture,false,true,true,true,true,false,false,0.0,0.0,missing_required_field
+invalid-unaligned-interval,invalid,DC-001,synthetic_production_fixture,true,false,true,true,true,false,false,0.0,0.0,power_byte_interval_mismatch
+invalid-below-noise,invalid,DC-001,synthetic_production_fixture,true,true,false,true,false,false,false,0.0,0.0,below_noise_floor
+invalid-security-positive-credit,invalid,DC-001,synthetic_production_fixture,true,true,true,false,true,false,false,0.0,0.0,security_denied_positive_credit
+invalid-host-proxy-mislabeled,invalid,DC-001,host_local_proxy,true,true,true,true,true,false,false,0.0,0.0,not_production_evidence_label

@@ -1,0 +1,14 @@
+failure_mode,count
+causal_controls_no_longer_comparable,1
+collector_identity_rotated_without_reenrollment,1
+evidence_age_exceeds_or_equals_ttl,2
+memory_tier_latency_or_energy_regime_shifted,1
+model_version_changed,1
+redaction_policy_changed,1
+scheduler_policy_changed,2
+security_deny_rate_drifted,1
+topology_changed,1
+trust_policy_rotated,1
+uncertainty_interval_widened,1
+upstream_or_label_not_production_supported,3
+workload_mix_outside_causal_overlap,1

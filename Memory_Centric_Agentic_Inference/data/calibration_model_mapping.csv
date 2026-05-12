@@ -1,0 +1,9 @@
+model_variable,existing_model_location,calibration_source,reversal_risk,sensitivity_note,calibration_status
+hbm_capacity_per_gpu_gb,M-COST-1 capacity_pressure; M-PROTO-1 HBM placement,HBM/GPU memory capacity rows,medium,Large capacity increases delay before spilling but does not remove object-lifetime logic.,public_range_ready
+hbm_bandwidth_tbps,M-COST-1 bandwidth_delay,HBM/GPU memory bandwidth rows,medium,Higher HBM bandwidth weakens movement-delay pressure but not capacity/provenance pressure.,public_range_ready
+gpu_fabric_bandwidth_gbps,M-COST-1 transfer; M-QUEUE-1 migration,GPU-to-GPU fabric rows,medium,Low fabric bandwidth makes branch/state movement more expensive; high bandwidth makes placement more flexible.,public_range_ready
+cpu_dram_bandwidth_gbps,M-COST-1 CPU DRAM tier,host CPU DRAM rows,medium,Higher CPU DRAM bandwidth strengthens warm-state spill tiers.,derived_range_ready
+pcie_x16_capability_gbps,host-device transfer ceiling,PCIe host link row,medium,Low host link capability penalizes CPU/NVMe spill and migration.,capability_only
+cxl_latency_under_contention,M-QUEUE-1 queueing overhead,deferred CXL latency constant,high,Can reverse pooled-memory conclusions.,deferred
+semantic_cache_false_positive_cost,M-COMP-1 correctness loss; M-PROTO-1 invalidation,semantic cache evidence and deferred constants,high,Can reverse semantic-cache retention/offload choices.,deferred
+trajectory_reuse_distribution,M-LIFE-1; M-QUEUE-1; M-PROTO-1 Option C value,deferred agent trajectory evidence,high,Most direct falsifier for Option C.,deferred

@@ -1,0 +1,5 @@
+requirement_id,counter_family,required_binding,blocks_if_missing,downstream_stage
+CB-001,accelerator_energy_power,"counter_source_id binds collector_id, topology_id, measurement_run_id, tenant_id, and security_context_id",true,production_ingestion_accepted
+CB-002,tier_byte_movement,"byte counters share topology_id, schema_version, object_id, and measurement_run_id with bundle lineage",true,threshold_replay_passed
+CB-003,cxl_pooled_memory_latency,latency counters bind to topology_version and collector_firmware_identity,true,noise_floor_passed
+CB-004,security_decision_stream,security stream binds tenant_id and security_context_id to the same measurement_run_id,true,security_provenance_passed

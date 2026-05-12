@@ -1,0 +1,13 @@
+case_id,observed_state,candidate_artifacts_emitted,evidence_label,ready_for_gate_evidence_validation,production_calibrated,production_ready,threshold_success,causal_validity_granted,claim_credit_allowed
+no_production_root_marker,not_running_in_production_root,false,,false,false,false,false,false,false
+missing_deployment_root_identity,operator_material_missing,false,,false,false,false,false,false,false
+missing_collector_identity,collector_capability_missing,false,,false,false,false,false,false,false
+missing_operator_trust_policy_file,operator_material_missing,false,,false,false,false,false,false,false
+missing_external_attestation_file,operator_material_missing,false,,false,false,false,false,false,false
+missing_telemetry_counter_source,collector_capability_missing,false,,false,false,false,false,false,false
+missing_gate_source_material,collector_capability_missing,false,,false,false,false,false,false,false
+stale_time_source,collector_capability_missing,false,,false,false,false,false,false,false
+unwritable_artifact_output_root,collector_capability_missing,false,,false,false,false,false,false,false
+dry_run_fixture_attempting_production_target,candidate_artifacts_emitted,true,collector_dry_run_fixture,true,false,false,false,false,false
+internally_generated_self_attestation,operator_material_missing,false,,false,false,false,false,false,false
+complete_nonproduction_fixture_inputs,candidate_artifacts_emitted,true,collector_dry_run_fixture,true,false,false,false,false,false

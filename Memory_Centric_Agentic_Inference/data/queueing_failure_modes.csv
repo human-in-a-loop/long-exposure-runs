@@ -1,0 +1,8 @@
+failure_mode,overhead_term,symptom,trace_signal,mitigation_or_test,evidence_label
+registry_saturation,metadata registry,object-aware scheduling reverses to Option A as metadata utilization approaches one,metadata_ops_per_step high relative to service-rate knob,batch registry updates or coarsen scheduling unit,derived
+policy_loop_hot_path,object policy,per-object decisions dominate small control workloads,many object events but zero non-KV retained-value share,disable Option B/C on controls,derived
+migration_queue_saturation,migration bandwidth contention,tier moves erase reuse benefit,migration_events_per_object_lifetime rises,pin hot objects or raise migration threshold,derived
+dag_coordinator_bottleneck,DAG coordination,Option C loses when branch width multiplies coordination events,max_dag_width and dag_event_rate high,shard trajectory graph by branch subtree,derived
+verifier_barrier_delay,verifier synchronization,retaining verifier state is not enough when barriers serialize progress,mean_verifier_delay and verifier_event_rate high,asynchronous verifier results with explicit stale-state bounds,derived
+durable_consistency_amplification,durable consistency,workspace correctness writes dominate trajectory benefit,workspace_write or workspace_compact rate high,append-only logs plus delayed compaction,derived
+preemption_checkpoint_tax,preemption/checkpoint,fine-grained coordination increases checkpoint state,migration plus DAG event rates rise together,checkpoint only stable trajectory cuts,derived

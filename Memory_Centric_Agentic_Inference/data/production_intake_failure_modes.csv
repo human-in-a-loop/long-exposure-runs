@@ -1,0 +1,9 @@
+failure_category,invalid_bundle_count,fail_closed
+custody,3,true
+schema,1,true
+join,2,true
+noise,1,true
+security,1,true
+provenance,1,true
+redaction,1,true
+unit,1,true

@@ -1,0 +1,17 @@
+case_id,statistical_threshold_status,causal_status,existing_gatechain_allowed,existing_readiness_ready,causal_precondition_only,readiness_update_allowed,production_calibrated,production_ready,claim_credit_allowed,boundary_reason
+valid-causally-admissible-fixture,robust_pass,causally_admissible,false,false,true,false,false,false,false,causally_admissible_but_nonproduction_fixture
+valid-causally-admissible-robust-fail-fixture,robust_fail,causally_admissible,false,false,true,false,false,false,false,causally_admissible_but_nonproduction_fixture
+invalid-missing-option-a-control,robust_pass,causally_unidentified,false,false,true,false,false,false,false,missing_option_a_control
+invalid-workload-mix-mismatch,robust_pass,causally_confounded,false,false,true,false,false,false,false,workload_mix_mismatch
+invalid-model-version-mismatch,robust_pass,causally_confounded,false,false,true,false,false,false,false,model_version_mismatch
+invalid-topology-mismatch,robust_pass,causally_confounded,false,false,true,false,false,false,false,topology_mismatch
+invalid-tenant-concurrency-imbalance,robust_pass,causally_confounded,false,false,true,false,false,false,false,tenant_concurrency_imbalance
+invalid-object-size-distribution-shift,robust_pass,causally_confounded,false,false,true,false,false,false,false,object_size_distribution_shift
+invalid-cache-warmness-imbalance,robust_pass,causally_confounded,false,false,true,false,false,false,false,cache_warmness_imbalance
+invalid-security-deny-rate-shift,robust_pass,causally_confounded,false,false,true,false,false,false,false,security_deny_rate_shift
+invalid-time-window-drift,robust_pass,causally_confounded,false,false,true,false,false,false,false,time_window_drift
+invalid-post-treatment-covariate-leakage,robust_pass,causally_unidentified,false,false,true,false,false,false,false,post_treatment_covariate_leakage
+invalid-insufficient-overlap-positivity,robust_pass,causally_unidentified,false,false,true,false,false,false,false,insufficient_overlap_positivity
+invalid-missing-covariate-contract,robust_pass,causally_unidentified,false,false,true,false,false,false,false,missing_pre_treatment_covariate_contract
+invalid-scheduler-load-imbalance,robust_pass,causally_confounded,false,false,true,false,false,false,false,scheduler_load_imbalance
+invalid-fixture-attempted-production-calibration,robust_pass,causally_unidentified,false,false,true,false,false,false,false,fixture_attempted_production_calibration

@@ -1,0 +1,2 @@
+bundle_id,candidate_source,gate_order,gate_name,gate_passed,blocked_here,blocked_reason,replay_state
+no-real-production-target-bundle,data/production_target_bundle,0,input_discovery,false,true,no_production_target_bundle_found,no_real_telemetry_available

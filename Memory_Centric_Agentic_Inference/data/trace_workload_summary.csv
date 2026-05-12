@@ -1,0 +1,7 @@
+workload_class,event_count,object_count,object_classes,architecture_option,non_kv_object_size_share,max_dag_width,verifier_results,provenance_coverage,evidence_label
+RAG,55,8,KV cache; prefix cache; retrieved context; semantic cache entry; tool output; weights,B_memory_object_aware_runtime,0.2485,0,0,1.0,synthetic
+batch summarization/offline inference control,23,3,KV cache; intermediate scratch; weights,A_conventional_request_model_kv_serving,0.0,0,0,1.0,synthetic
+code-agent loop,117,15,KV cache; branch state; durable workspace; prefix cache; tool output; trajectory log; verifier state; weights,C_trajectory_dag_memory_fabric,0.4603,2,2,1.0,synthetic
+multi-agent branch/merge,171,21,KV cache; branch state; durable workspace; prefix cache; tool output; trajectory log; verifier state; weights,C_trajectory_dag_memory_fabric,0.5465,4,3,1.0,synthetic
+single-turn chat control,22,4,KV cache; intermediate scratch; prefix cache; weights,A_conventional_request_model_kv_serving,0.0,0,0,1.0,synthetic
+verification-heavy,115,15,KV cache; branch state; tool output; trajectory log; verifier state; weights,C_trajectory_dag_memory_fabric,0.4567,3,4,1.0,synthetic

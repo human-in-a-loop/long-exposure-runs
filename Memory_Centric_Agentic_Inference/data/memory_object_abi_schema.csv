@@ -1,0 +1,22 @@
+field,type,requirement,applies_to,description
+object_id,string,mandatory,all,stable object identifier inside the agent run
+object_class,enum,mandatory,all,validated memory-object class
+producer_id,string,mandatory,all,runtime/compiler/tool/verifier component that produced the object
+lineage_ids,list,mandatory,B/C,"parent object, source, request, or artifact ids needed for provenance"
+tenant_id,string,mandatory,B/C,tenant or isolation domain for reuse authorization
+reuse_scope,enum,mandatory,B/C,"private_run, tenant, deployment, or public_immutable"
+security_label,enum,mandatory,B/C,isolation and sensitivity label bound to policy
+created_at_step,integer,mandatory,B/C,logical creation step
+expires_at_step,integer_or_inf,mandatory,B/C,logical expiry bound; inf only for durable policy
+min_valid_step,integer,mandatory,B/C,earliest step where the object may be reused
+max_valid_step,integer_or_inf,mandatory,B/C,latest step where the object may be reused
+correctness_critical,boolean,mandatory,B/C,whether lossy transformation can change correctness
+compression_policy,enum,mandatory,B/C,"none, lossless, lossy, summary_pointer, or recompute"
+residency_hint,enum,advisory,B/C,preferred tier; must not exceed class-allowed tier
+allowed_tiers,list,mandatory,B/C,"tiers permitted by class, policy, and security"
+retention_policy_id,string,mandatory_if_durable,durable,required for durable or infinite-retention objects
+branch_id,string,mandatory_if_branch,C,branch membership for branch/verifier/trajectory objects
+parent_object_ids,list,mandatory_if_branch,C,parent memory objects in the trajectory DAG
+checked_target_id,string,mandatory_if_verifier,C,object or branch checked by verifier state
+freshness_source_id,string,mandatory_if_tool_or_retrieval,B/C,"source version, tool run, retrieval index, or invalidation source"
+evidence_label,enum,mandatory,all,synthetic_contract or internal_runtime_contract only; not production_target

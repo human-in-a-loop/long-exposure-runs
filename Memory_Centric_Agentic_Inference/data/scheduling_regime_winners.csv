@@ -1,0 +1,7 @@
+workload_class,preferred_unit,runner_up,margin,mechanism_label,memory_centric_thesis,dominant_object_class
+RAG with retrieved-context reuse,memory_object,agent_trajectory_dag,0.100000,context_reuse_boundary,ambiguous,semantic cache entry
+batch summarization/offline inference control,model,cache_page,0.040912,coarse_serving_boundary,weakened,intermediate scratch
+code-agent loop with tool outputs and durable workspace,agent_trajectory_dag,memory_object,0.087541,trajectory_branch_verifier_boundary,strengthened,durable workspace
+multi-agent branch/merge run,agent_trajectory_dag,memory_object,0.150000,trajectory_branch_verifier_boundary,strengthened,verifier state
+single-turn chat control,model,cache_page,0.038989,coarse_serving_boundary,weakened,prefix cache
+verification-heavy agent,agent_trajectory_dag,memory_object,0.138836,trajectory_branch_verifier_boundary,strengthened,verifier state

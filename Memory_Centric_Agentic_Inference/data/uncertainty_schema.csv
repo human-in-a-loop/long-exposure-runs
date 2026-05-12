@@ -1,0 +1,21 @@
+field_name,required,purpose
+metric_name,true,"metric under confidence qualification; bytes, joules_per_byte, p99 latency, queueing delay, safe reuse, or planner value"
+metric_direction,true,higher_is_better or lower_is_better threshold decision direction
+point_estimate,true,finite numeric point estimate; not sufficient for readiness
+threshold_value,true,finite numeric decision threshold from DC-001/DC-002 replay
+variance,true,non-negative per-window variance estimate; zero allowed only with valid samples
+sample_count,true,independent sample count used for confidence interval
+confidence_level,true,interval confidence level; fixture uses 0.95
+ci_lower,true,finite lower confidence bound
+ci_upper,true,finite upper confidence bound
+noise_model_id,true,declared measurement-noise model tied to telemetry source
+baseline_window_id,true,baseline window used for drift check
+control_window_id,true,control arm/window required to avoid workload drift promotion
+treatment_window_id,true,treatment arm/window for memory-centric policy
+drift_fraction,true,observed baseline/control/treatment drift fraction
+drift_budget_fraction,true,maximum allowed drift fraction
+independent_samples,true,true only when repeated intervals are independent enough for CI semantics
+p99_ci_bounded,true,true only when p99/tail latency interval is finite and bounded
+gatechain_eligible,true,fixture-level gatechain precondition; kept false for non-production fixtures
+measurement_valid,true,timing/redaction/source validity precondition
+threshold_direction_known,true,blocks ambiguous threshold comparisons

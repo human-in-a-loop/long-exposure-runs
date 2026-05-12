@@ -1,0 +1,30 @@
+package_name: "memory_centric_agentic_inference"
+description: |
+  This package contains the final report, manifest, references, and report-cited figures for a memory-centric agentic LLM inference research workspace. The report presents a validated mechanism stack for memory-aware placement, scheduling, compression, reuse, and security gating, while marking production endorsement as blocked until joined target telemetry passes the required gates.
+curation_complete: false
+include:
+  - src: final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: REFERENCES.md
+    dest: report/REFERENCES.md
+    role: report
+  - src: data/architecture_control_plane_progression.png
+    dest: architecture_control_plane_progression.png
+    role: figure
+    caption: "Control-plane progression from memory-object contract validation to runtime/planner action gating, with production-credit boundary shown as a blocked downstream path."
+  - src: data/handoff_artifact_dependency_graph.png
+    dest: handoff_artifact_dependency_graph.png
+    role: figure
+    caption: "Milestone and artifact dependency structure for the memory-centric agentic inference handoff."
+  - src: data/handoff_claim_traceability_coverage.png
+    dest: handoff_claim_traceability_coverage.png
+    role: figure
+    caption: "Claim traceability coverage across data, narrative, tests, and figures in the final handoff package."
+  - src: data/handoff_experiment_upgrade_path.png
+    dest: handoff_experiment_upgrade_path.png
+    role: figure
+    caption: "Production experiments mapped to claim upgrade and falsification paths."

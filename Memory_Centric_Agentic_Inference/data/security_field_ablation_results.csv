@@ -1,0 +1,55 @@
+ablated_field,workload_class,baseline_option_after_security,ablated_option_after_security,option_changed,baseline_safe_reuse_credit,ablated_safe_reuse_credit,safe_credit_delta,baseline_denied_or_downgraded,ablated_denied_or_downgraded,causal,evidence_label
+provenance_id,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,50.424267,-2.254378,6,7,true,synthetic_field_ablation
+provenance_id,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+provenance_id,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,80.696311,-11.5126,29,32,true,synthetic_field_ablation
+provenance_id,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,93.277,-11.954622,58,61,true,synthetic_field_ablation
+provenance_id,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+provenance_id,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,55.22898,-2.274378,30,31,true,synthetic_field_ablation
+source_version,RAG,B_memory_object_aware_runtime,A_conventional_request_model_kv_serving,true,52.678645,36.769713,-15.908932,6,9,true,synthetic_field_ablation
+source_version,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+source_version,code-agent loop,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,92.208911,65.770691,-26.43822,29,34,true,synthetic_field_ablation
+source_version,multi-agent branch/merge,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,105.231622,75.097091,-30.134531,58,64,true,synthetic_field_ablation
+source_version,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+source_version,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,57.503358,0.0,30,30,false,synthetic_field_ablation
+tenant_scope,RAG,B_memory_object_aware_runtime,A_conventional_request_model_kv_serving,true,52.678645,2.254378,-50.424267,6,26,true,synthetic_field_ablation
+tenant_scope,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+tenant_scope,code-agent loop,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,92.208911,15.924822,-76.284089,29,58,true,synthetic_field_ablation
+tenant_scope,multi-agent branch/merge,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,105.231622,18.722955,-86.508667,58,91,true,synthetic_field_ablation
+tenant_scope,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+tenant_scope,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,10.341489,-47.161869,30,53,true,synthetic_field_ablation
+cache_salt,RAG,B_memory_object_aware_runtime,A_conventional_request_model_kv_serving,true,52.678645,35.578378,-17.100267,6,15,true,synthetic_field_ablation
+cache_salt,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+cache_salt,code-agent loop,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,92.208911,64.198822,-28.010089,29,42,true,synthetic_field_ablation
+cache_salt,multi-agent branch/merge,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,105.231622,73.134955,-32.096667,58,73,true,synthetic_field_ablation
+cache_salt,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+cache_salt,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,55.731489,-1.771869,30,38,true,synthetic_field_ablation
+trajectory_node_id,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,50.424267,-2.254378,6,7,true,synthetic_field_ablation
+trajectory_node_id,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+trajectory_node_id,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,87.956689,-4.252222,29,31,true,synthetic_field_ablation
+trajectory_node_id,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,98.813289,-6.418333,58,61,true,synthetic_field_ablation
+trajectory_node_id,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+trajectory_node_id,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,47.501869,-10.001489,30,35,true,synthetic_field_ablation
+actor_id,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,50.424267,-2.254378,6,7,true,synthetic_field_ablation
+actor_id,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+actor_id,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,87.956689,-4.252222,29,31,true,synthetic_field_ablation
+actor_id,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,98.813289,-6.418333,58,61,true,synthetic_field_ablation
+actor_id,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+actor_id,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,47.501869,-10.001489,30,35,true,synthetic_field_ablation
+verifier_evidence_hash,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,52.678645,0.0,6,6,false,synthetic_field_ablation
+verifier_evidence_hash,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+verifier_evidence_hash,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,87.956689,-4.252222,29,31,true,synthetic_field_ablation
+verifier_evidence_hash,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,98.813289,-6.418333,58,61,true,synthetic_field_ablation
+verifier_evidence_hash,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+verifier_evidence_hash,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,49.776247,-7.727111,30,34,true,synthetic_field_ablation
+retention_hold_state,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,52.678645,0.0,6,6,false,synthetic_field_ablation
+retention_hold_state,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+retention_hold_state,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,80.696311,-11.5126,29,32,true,synthetic_field_ablation
+retention_hold_state,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,93.277,-11.954622,58,61,true,synthetic_field_ablation
+retention_hold_state,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+retention_hold_state,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,57.503358,0.0,30,30,false,synthetic_field_ablation
+pointer_valid,RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,52.678645,50.424267,-2.254378,6,7,true,synthetic_field_ablation
+pointer_valid,batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+pointer_valid,code-agent loop,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,92.208911,80.696311,-11.5126,29,32,true,synthetic_field_ablation
+pointer_valid,multi-agent branch/merge,C_trajectory_dag_memory_fabric,B_memory_object_aware_runtime,true,105.231622,93.277,-11.954622,58,61,true,synthetic_field_ablation
+pointer_valid,single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0,0.0,0,0,false,synthetic_field_ablation
+pointer_valid,verification-heavy,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,57.503358,55.22898,-2.274378,30,31,true,synthetic_field_ablation

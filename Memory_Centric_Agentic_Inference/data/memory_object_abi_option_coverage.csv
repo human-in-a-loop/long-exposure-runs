@@ -1,0 +1,11 @@
+object_class,option_a_supported_without_object_abi,option_b_requires_planner_admissible_object,option_c_requires_resolvable_dag_or_object,valid_example_present,production_calibrated,production_ready,threshold_success,causal_validity_granted,claim_credit_allowed
+weights,true,false,true,true,false,false,false,false,false
+KV cache,true,false,true,true,false,false,false,false,false
+prompt prefix,true,false,true,true,false,false,false,false,false
+retrieved context,false,true,true,true,false,false,false,false,false
+tool output,false,true,true,true,false,false,false,false,false
+branch state,false,false,true,true,false,false,false,false,false
+verifier state,false,false,true,true,false,false,false,false,false
+trajectory log,false,false,true,true,false,false,false,false,false
+durable workspace artifact,false,false,true,true,false,false,false,false,false
+semantic cache entry,false,true,true,true,false,false,false,false,false

@@ -1,0 +1,33 @@
+manifest_section,field_name,required,expectation,fail_closed_blocked_reason
+bundle identity,bundle_id,true,stable operator bundle identifier,missing_chain_of_custody
+bundle identity,operator_id,true,operator-controlled source identifier,missing_chain_of_custody
+bundle identity,collection_environment,true,target environment description,missing_chain_of_custody
+bundle identity,schema_version,true,must equal production_dc12_v1,schema_version_mismatch
+bundle identity,created_at,true,bundle creation timestamp,missing_chain_of_custody
+telemetry payload inventory,file_path,true,relative payload path for each stream,missing_payload_inventory
+telemetry payload inventory,stream_class,true,required collector or adapter stream class,missing_payload_inventory
+telemetry payload inventory,row_count,true,positive payload row count,missing_payload_inventory
+telemetry payload inventory,checksum_sha256,true,sha256 over exact payload file,missing_checksum
+telemetry payload inventory,canonical_schema_target,true,production schema or adapter conformance target,schema_version_mismatch
+join window,measurement_run_id,true,canonical production run id,missing_join_window
+join window,interval_start_ms,true,first included interval start,clock_window_mismatch
+join window,interval_end_ms,true,last included interval end,clock_window_mismatch
+join window,clock_domain,true,declared monotonic clock domain,clock_window_mismatch
+join window,timezone,true,timestamp interpretation,clock_window_mismatch
+join window,sampling_cadence_ms,true,collector cadence,clock_window_mismatch
+provenance,collector_identity,true,collector name and version,missing_chain_of_custody
+provenance,trusted_source_declaration,true,declares whether source is real trusted production telemetry,missing_chain_of_custody
+provenance,signing_attestation_placeholder,true,operator signature or attestation pointer,missing_chain_of_custody
+provenance,adapter_conformance_report_path,true,validated adapter conformance report pointer,missing_adapter_conformance_pointer
+measurement quality,noise_floor_j,true,energy-counter noise floor,missing_noise_floor
+measurement quality,latency_bucket_width_us,true,latency histogram resolution,missing_noise_floor
+measurement quality,calibration_method,true,counter calibration method,missing_noise_floor
+measurement quality,counter_resolution,true,counter resolution declaration,missing_noise_floor
+measurement quality,missingness_declaration,true,explicit missing data declaration,missing_payload_inventory
+security/privacy,tenant_label_handling,true,"tenant labels retained, hashed, or redacted",incomplete_security_provenance_stream
+security/privacy,redaction_policy,true,unambiguous redaction policy,ambiguous_redaction_policy
+security/privacy,retention_authorization,true,retention policy authorization,incomplete_security_provenance_stream
+security/privacy,security_context_source,true,source of security/provenance decisions,incomplete_security_provenance_stream
+boundary labels,evidence_label,true,intake fixture or production target label,fixture_attempted_production_target
+boundary labels,production_target_requested,true,operator request flag only,fixture_attempted_production_target
+boundary labels,admission_status,true,"pending, structurally_admissible, or blocked",missing_chain_of_custody

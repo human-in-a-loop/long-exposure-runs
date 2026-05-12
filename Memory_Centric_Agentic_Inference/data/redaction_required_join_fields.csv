@@ -1,0 +1,12 @@
+field_name,allowed_transform,why_required,raw_identifier_allowed
+measurement_run_pseudonym,stable_pseudonym,run identity across redacted streams,false
+bundle_pseudonym,stable_pseudonym,bundle continuity with intake/attestation/gatechain,false
+collector_pseudonym,stable_pseudonym,collector continuity without raw collector identity,false
+tenant_pseudonym,stable_pseudonym,tenant concurrency and isolation replay,false
+object_pseudonym,stable_pseudonym,object-level reuse and byte movement replay,false
+workload_label,coarsenable_to_threshold_class,threshold selection and controls,false
+topology_bucket,coarsenable_to_threshold_topology,target topology and CXL contention replay,false
+security_context_pseudonym,stable_pseudonym,security/provenance zero-credit enforcement,false
+noise_floor_class,bucketed,above-noise measurement interpretation,false
+clock_domain_pseudonym,stable_pseudonym,timebase join and skew interpretation,false
+interval_id,preserve,counter interval joins,false

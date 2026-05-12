@@ -1,0 +1,9 @@
+annotation_class,fields_completed,constraint_rule,trusted_assertion,applies_to
+reuse_scope_annotation,reuse_scope,reuse_scope must be tenant-local or narrower than trace tenant/security evidence,false,KV cache;semantic cache entry;prompt prefix
+tenant_security_annotation,tenant_id;security_label;reuse_scope,tenant and reuse scope cannot widen beyond trace tenant_id and security_label,false,all
+tool_provenance_annotation,lineage_ids;freshness_source_id,lineage and freshness source must match observed tool/run provenance context,false,tool output
+branch_dependency_annotation,parent_object_ids;branch_id,parents must resolve to known ABI parent ids before Option C actions,false,branch state;verifier state;trajectory log
+verifier_integrity_annotation,checked_target_id;lineage_ids,checked target must be present in observed lineage or known ABI parent ids,false,verifier state
+compression_safety_annotation,compression_policy;correctness_critical,lossy compression is rejected for correctness-critical objects,false,all
+retention_policy_annotation,retention_policy_id;expires_at_step;max_valid_step,durable or infinite lifetime objects require a named retention policy,false,durable workspace artifact;trajectory log
+evidence_label_annotation,evidence_label,synthetic/internal inputs cannot be upgraded to production_target,false,all

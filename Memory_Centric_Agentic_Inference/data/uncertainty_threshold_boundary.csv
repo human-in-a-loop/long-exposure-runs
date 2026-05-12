@@ -1,0 +1,17 @@
+case_id,point_estimate_passed,threshold_status,blocked_reason,robust_threshold_replay_allowed,point_estimate_pass_is_sufficient,indeterminate_can_update_readiness
+valid-confidence-qualified-fixture,true,robust_pass,,true,false,false
+valid-confidence-qualified-fail-fixture,false,robust_fail,,false,false,false
+invalid-missing-variance-noise-model,true,statistical_invalid,missing_variance,false,false,false
+invalid-insufficient-sample-count,true,statistically_indeterminate,insufficient_sample_count,false,false,false
+invalid-ci-crosses-threshold,true,statistically_indeterminate,confidence_interval_crosses_threshold,false,false,false
+invalid-ci-touches-threshold,true,statistically_indeterminate,confidence_interval_touches_threshold,false,false,false
+invalid-unbounded-p99-latency-ci,true,statistical_invalid,unbounded_p99_latency_ci,false,false,false
+invalid-drift-between-windows,true,statistically_indeterminate,control_treatment_drift_exceeds_budget,false,false,false
+invalid-missing-control-arm,true,statistical_invalid,missing_control_arm,false,false,false
+invalid-non-independent-repeated-samples,true,statistically_indeterminate,non_independent_repeated_samples,false,false,false
+invalid-negative-variance,true,statistical_invalid,negative_variance,false,false,false
+invalid-nan-metric,false,statistical_invalid,nan_metric,false,false,false
+invalid-missing-noise-model,true,statistical_invalid,missing_noise_model,false,false,false
+invalid-zero-samples,true,statistical_invalid,nonpositive_sample_count,false,false,false
+invalid-unknown-source-fixture,true,statistical_invalid,unknown_source_fixture_id,false,false,false
+invalid-fixture-attempted-production-calibration,true,statistical_invalid,fixture_attempted_production_calibration,false,false,false

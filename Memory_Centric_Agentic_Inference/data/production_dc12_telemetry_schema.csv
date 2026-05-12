@@ -1,0 +1,40 @@
+field_name,required,type,gate
+fixture_id,false,string,diagnostic/provenance
+fixture_class,false,string,diagnostic/provenance
+constant_id,false,string,diagnostic/provenance
+threshold_id,false,string,diagnostic/provenance
+measurement_run_id,true,string,joins all rows from one target measurement run
+evidence_label,true,string,"separates host_local_proxy, synthetic fixtures, and real production targets"
+production_target_id,true,string,prevents unjoined counter rows from different deployments
+hardware_topology_id,true,string,binds power/byte/latency data to a target topology
+accelerator_type,true,string,records accelerator generation and memory hierarchy
+source_tier,true,string,supports tier-specific byte movement
+destination_tier,true,string,supports tier-specific byte movement
+object_class,true,string,joins telemetry to memory-object policy thresholds
+workload_class,true,string,joins telemetry to workload thresholds and controls
+architecture_option,true,string,joins measurements to Option A/B/C decisions
+reuse_decision,true,string,binds energy credit to reuse or recompute outcome
+bytes_moved,true,number,required for DC-001 joules/byte
+resident_bytes,true,number,required for residency and retained-value context
+interval_ms,true,number,normalizes joined counters over a common interval
+joules_measured,true,number,direct target energy counter value for DC-001
+power_counter_source,true,string,documents accelerator/host power source
+energy_noise_floor_j,true,number,blocks below-noise energy claims
+latency_p50_us,true,number,required for DC-002 contention distribution
+latency_p95_us,true,number,required for DC-002 contention distribution
+latency_p99_us,true,number,required for DC-002 contention distribution
+tenant_count,true,number,required contention join key
+queue_depth,true,number,required contention join key
+security_allowed,true,boolean,hard gate for reuse credit
+provenance_valid,true,boolean,hard gate for reuse credit
+retention_valid,true,boolean,hard gate for reuse credit
+verifier_valid,true,boolean,hard gate for reuse credit
+calibration_candidate,true,boolean,declares whether fixture is intended to probe promotion gates
+byte_interval_start_ms,false,number,diagnostic/provenance
+byte_interval_end_ms,false,number,diagnostic/provenance
+power_interval_start_ms,false,number,diagnostic/provenance
+power_interval_end_ms,false,number,diagnostic/provenance
+topology_scope,false,string,diagnostic/provenance
+claimed_reuse_credit,false,number,diagnostic/provenance
+claimed_energy_credit_j,false,number,diagnostic/provenance
+notes,false,string,diagnostic/provenance
