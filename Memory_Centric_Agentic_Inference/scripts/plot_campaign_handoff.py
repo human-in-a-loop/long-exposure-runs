@@ -7,6 +7,8 @@
 from __future__ import annotations
 
 import csv
+import re
+import textwrap
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -71,22 +73,34 @@ def plot_claim_traceability_coverage(rows: list[dict[str, str]]) -> None:
 
 def plot_experiment_upgrade_path(rows: list[dict[str, str]]) -> None:
     rows = rows[:8]
-    claims = sorted({claim.strip() for r in rows for claim in r.get("claim_upgrade_path", "").replace("Can update", "").split("only after")[0].split(";") if claim.strip().startswith("CL-")})
+    claims = sorted({
+        claim
+        for r in rows
+        for claim in re.findall(r"CL-\d{3}", r.get("claim_upgrade_path", ""))
+    })
     if not claims:
         claims = ["CL-002", "CL-003", "CL-004", "CL-005", "CL-012"]
     matrix = []
     for row in rows:
-        linked = set(row.get("claim_upgrade_path", "").replace("Can update", "").split("only after")[0].replace(",", ";").split(";"))
-        matrix.append([1 if claim in {x.strip() for x in linked} else 0 for claim in claims])
-    fig, ax = plt.subplots(figsize=(10, 5.2))
+        linked = set(re.findall(r"CL-\d{3}", row.get("claim_upgrade_path", "")))
+        matrix.append([1 if claim in linked else 0 for claim in claims])
+    fig, ax = plt.subplots(figsize=(11.5, 6.0))
     im = ax.imshow(matrix, cmap="YlGnBu", aspect="auto", vmin=0, vmax=1)
     ax.set_xticks(range(len(claims)), claims)
-    ax.set_yticks(range(len(rows)), [f"{r['rank']}. {r['open_question'][:42]}" for r in rows])
+    ylabels = [
+        f"{r['rank']}. " + "\n".join(textwrap.wrap(r["open_question"], width=34, max_lines=2, placeholder="..."))
+        for r in rows
+    ]
+    ax.set_yticks(range(len(rows)), ylabels)
     ax.set_title("Production experiments mapped to claim upgrade and falsification paths")
+    ax.set_xlabel("Claims that the experiment could update")
+    ax.set_ylabel("Production experiment")
     for y, row in enumerate(matrix):
         for x, value in enumerate(row):
-            ax.text(x, y, "x" if value else "", ha="center", va="center", color="black")
-    fig.colorbar(im, ax=ax, label="claim can be updated")
+            ax.text(x, y, "✓" if value else "", ha="center", va="center", color="black", fontsize=11)
+    cbar = fig.colorbar(im, ax=ax, label="claim can be updated", fraction=0.04, pad=0.03)
+    cbar.set_ticks([0, 1])
+    cbar.set_ticklabels(["no", "yes"])
     save(DATA / "handoff_experiment_upgrade_path.png")
 
 

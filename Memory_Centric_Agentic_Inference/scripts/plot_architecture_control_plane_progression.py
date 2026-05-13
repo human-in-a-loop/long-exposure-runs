@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import csv
+import textwrap
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -38,11 +39,23 @@ def short_label(stage_id: str) -> str:
     return labels.get(stage_id, stage_id)
 
 
+def evidence_label(value: str) -> str:
+    labels = {
+        "validated_artifact": "validated",
+        "synthetic_trace_contract": "synthetic trace",
+        "synthetic_contract": "synthetic contract",
+        "synthetic_integration_replay": "integration replay",
+        "derived_synthesis": "derived synthesis",
+        "future_production_target_prerequisite": "future production gate",
+    }
+    return labels.get(value, value.replace("_", " "))
+
+
 def main() -> None:
     rows = read_rows()
-    fig, ax = plt.subplots(figsize=(13, 5.8))
+    fig, ax = plt.subplots(figsize=(14.5, 6.2))
     ax.set_xlim(-0.6, len(rows) - 0.4)
-    ax.set_ylim(-1.2, 1.6)
+    ax.set_ylim(-1.25, 1.65)
     ax.axis("off")
 
     for idx, row in enumerate(rows):
@@ -58,8 +71,15 @@ def main() -> None:
             fontsize=10,
             bbox={"boxstyle": "round,pad=0.35", "fc": face, "ec": color, "lw": 1.6},
         )
-        ax.text(idx, -0.2, row["evidence_label"], ha="center", va="center", fontsize=8, rotation=25)
-        ax.text(idx, -0.72, f"production_credit={row['production_credit_allowed']}", ha="center", va="center", fontsize=8)
+        ax.text(
+            idx,
+            -0.2,
+            "\n".join(textwrap.wrap(evidence_label(row["evidence_label"]), width=16)),
+            ha="center",
+            va="center",
+            fontsize=8,
+            color="#333333",
+        )
         if idx < len(rows) - 1:
             ax.add_patch(FancyArrowPatch((idx + 0.35, 0.45), (idx + 0.65, 0.45), arrowstyle="->", mutation_scale=12, color="#555555", lw=1.2))
 
@@ -68,20 +88,29 @@ def main() -> None:
     ax.text(
         gate_idx,
         1.22,
-        "blocked downstream path unless real trusted production_target evidence passes every gate",
+        "blocked until trusted production-target evidence passes all gates",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=9,
         color="#9D2B2B",
     )
     ax.text(
         3.5,
         1.22,
-        "memory-object contract validation -> runtime/planner compatibility -> fail-closed action gating",
+        "contract validation -> runtime/planner compatibility -> fail-closed action gating",
         ha="center",
         va="center",
-        fontsize=11,
+        fontsize=10,
         color="#1F4E79",
+    )
+    ax.text(
+        4.0,
+        -0.85,
+        "Production credit remains false across all stages; the final gate is a future prerequisite, not evidence from this run.",
+        ha="center",
+        va="center",
+        fontsize=9,
+        color="#333333",
     )
     ax.set_title(
         "Control-plane progression from memory-object contract validation to runtime/planner action gating",
