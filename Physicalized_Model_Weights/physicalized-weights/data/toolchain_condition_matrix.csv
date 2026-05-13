@@ -1,0 +1,11 @@
+check_id,tool,available,version,required_for,status,blocker,evidence_artifact
+tool_verilator,verilator,true,Verilator 5.020 2024-01-01 rev (Debian 5.020-1),lint and compiled simulation,available,,/usr/bin/verilator
+tool_yosys,yosys,true,Yosys 0.33 (git sha1 2584903a060),HDL eval and synthesis refresh,available,,/usr/bin/yosys
+tool_dot,dot,true,dot - graphviz version 2.43.0 (0),Graphviz netlist freshness,available,,/usr/bin/dot
+tool_make,make,false,,compiled Verilator build,missing,not found on PATH,
+tool_cxx_compiler,c++|g++|clang++,false,,compiled Verilator build,missing,not found on PATH,
+check_verilator_lint,verilator,true,Verilator 5.020 2024-01-01 rev (Debian 5.020-1),prototype lint,passed,,physicalized-weights/data/toolchain_verilator_lint.log
+check_yosys_eval,yosys,true,Yosys 0.33 (git sha1 2584903a060),golden-vector HDL eval,passed,,physicalized-weights/data/hdl_sim_results.csv
+check_yosys_synthesis,yosys,true,Yosys 0.33 (git sha1 2584903a060),structural synthesis,passed,,physicalized-weights/data/toolchain_yosys_synthesis.log
+check_graphviz_netlist,dot,true,dot - graphviz version 2.43.0 (0),netlist artifact freshness,checked,,physicalized-weights/data/safety_filter_core_netlist.png
+check_compiled_verilator,verilator+make+cxx,false,conditional,compiled HDL equivalence,blocked_environment,"make,cxx_compiler","missing: make,cxx_compiler"

@@ -1,0 +1,31 @@
+{
+  "interpretation": "local host/Python proxy, not hardware truth",
+  "iterations": {
+    "audit": 2000,
+    "dot_dispatch": 20000
+  },
+  "metrics": {
+    "csv_json_audit_logging": {
+      "median_value": 8.830143,
+      "source_type": "local_measured",
+      "unit": "us/request"
+    },
+    "dot_plus_dispatch": {
+      "median_value": 1.240755,
+      "source_type": "local_measured",
+      "unit": "us/request"
+    },
+    "fallback_dispatch_branch": {
+      "median_value": 0.10254895,
+      "source_type": "local_measured",
+      "unit": "us/request"
+    },
+    "python_int8_dot_product": {
+      "median_value": 1.1912983,
+      "source_type": "local_measured",
+      "unit": "us/request"
+    }
+  },
+  "milestone_id": "M-CAL-1",
+  "schema_version": 1
+}

@@ -1,0 +1,55 @@
+{
+  "component_count": 6,
+  "component_median_ns_per_request": {
+    "append_only_audit_write_proxy": 19510.303,
+    "audit_serialization_proxy": 15904.326,
+    "feature_extraction_proxy": 9892.281,
+    "fixed_classifier_proxy": 4482.969,
+    "optimized_software_classifier_proxy": 7879.212,
+    "route_fallback_decision_proxy": 5083.938
+  },
+  "control_overhead_dominates_fixed_classifier": true,
+  "figure_caption": "local proxy latency distributions by overhead component and workload scenario, separating measured timing proxies from production-only energy and accelerator quantities",
+  "interpretation": "local timing decomposes overheads but does not reverse the Phase 2 downgrade or measure production accelerator energy",
+  "measurement_status": {
+    "durable_hybrid_margin": "not_measured",
+    "local_latency": "locally_measured_proxy",
+    "local_latency_weighted_values": "latency_weighted_proxy",
+    "production_utilization": "production_required",
+    "programmable_accelerator_energy": "production_required",
+    "programmable_accelerator_latency": "production_required"
+  },
+  "milestone_id": "M-MEASURE-1",
+  "scenario_count": 10,
+  "scenario_ids": [
+    "high_volume_stable_moderation",
+    "bursty_consumer_traffic",
+    "low_volume_enterprise_deployment",
+    "high_near_threshold_adversarial",
+    "frequent_policy_update_regime",
+    "audit_heavy_regulated_deployment",
+    "fallback_degraded_outage_regime",
+    "multi_tenant_underutilized_deployment",
+    "zero_invocation_control",
+    "fallback_all_control"
+  ],
+  "schema_version": 1,
+  "seed": 20260513,
+  "special_cases": {
+    "fallback_all_control": {
+      "accepted_fast_path_credit_per_day": "0.000",
+      "fallback_frequency": "1.000000",
+      "median_ns_per_request": "4171.000"
+    },
+    "zero_invocation_control": {
+      "append_only_audit_write_proxy": "not_measured_zero_volume",
+      "audit_serialization_proxy": "not_measured_zero_volume",
+      "feature_extraction_proxy": "not_measured_zero_volume",
+      "fixed_classifier_proxy": "not_measured_zero_volume",
+      "optimized_software_classifier_proxy": "not_measured_zero_volume",
+      "route_fallback_decision_proxy": "not_measured_zero_volume"
+    }
+  },
+  "status": "validated",
+  "trials": 7
+}

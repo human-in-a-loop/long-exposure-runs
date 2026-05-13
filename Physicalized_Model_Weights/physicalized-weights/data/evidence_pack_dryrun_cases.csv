@@ -1,0 +1,13 @@
+case_id,description,source,measurement_status,ingestion_path_id,threshold_scenario_id,manifest_missing_field,extra_trace_column,attestation_replaced,hash_mode,drop_trace_columns,drop_energy_columns,expected_status
+complete_shadow_template,Complete shadow-production dry-run with safe dummy values.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,,true,match,,false,ready_for_collection_not_evidence
+complete_canary_template,Complete canary dry-run with safe dummy values.,canary_production,measured,canary_ab_dual_instrumented,high_volume_stable_moderation,,,true,match,,false,ready_for_collection_not_evidence
+missing_required_manifest_field,Manifest omits trace_sha256.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,trace_sha256,,true,match,,false,template_incomplete
+raw_content_column_present,Trace header adds raw content.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,content,true,match,,false,privacy_blocked
+placeholder_attestation_unreplaced,Attestation remains placeholder text.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,,false,match,,false,provenance_blocked
+unknown_threshold_scenario,Scenario mapping is not in reopen thresholds.,shadow_production,measured,shadow_production_dual_run,unknown_operator_case,,,true,match,,false,threshold_mapping_blocked
+hash_mismatch,Manifest hash does not match trace template.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,,true,mismatch,,false,integrity_blocked
+proxy_status_with_production_source,Production source declares proxy measurement.,production,proxy,shadow_production_dual_run,high_volume_stable_moderation,,,true,match,,false,schema_blocked
+invalid_manifest_source_value,Manifest source is outside the evidence-pack schema allow-list.,not_a_real_source,measured,shadow_production_dual_run,high_volume_stable_moderation,,,true,match,,false,schema_blocked
+unknown_ingestion_path,Manifest ingestion path is not a reopen-candidate path.,shadow_production,measured,unknown_ingestion_path,high_volume_stable_moderation,,,true,match,,false,schema_blocked
+missing_counterfactual_baseline_columns,Trace header omits baseline latency columns.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,,true,match,software_baseline_latency_ns|accelerator_baseline_latency_ns,false,schema_blocked
+measured_status_without_energy_columns,Measured package lacks energy columns.,shadow_production,measured,shadow_production_dual_run,high_volume_stable_moderation,,,true,match,,true,schema_blocked

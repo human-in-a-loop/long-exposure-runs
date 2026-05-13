@@ -1,0 +1,47 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "criteria_count": 20,
+  "current_artifacts_reopen": false,
+  "design_count": 10,
+  "fatal_criteria": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10",
+    "C14",
+    "C15",
+    "C16",
+    "C17",
+    "C18",
+    "C19",
+    "C20"
+  ],
+  "figure_caption": "Readiness classification for proposed evidence-acquisition designs, separating admissible future collection plans from inadmissible, repair-required, and diagnostic-only designs before any data can affect the Phase 2 downgrade.",
+  "future_reopen_condition": "valid_package \u2227 hash_match \u2227 schema_compatible \u2227 known_threshold_scenario \u2227 valid_trace \u2227 admissible_ingestion_path \u2227 measured_terms \u2227 production_or_shadow_or_canary_source \u2227 provenance_attestation \u2227 privacy_attestation \u2227 threshold_crossed",
+  "interpretation": "Readiness is a pre-collection screen only. A ready design can produce a future admissible package, but without measured trace data it cannot satisfy measured_terms or threshold_crossed and cannot reopen the Phase 2 downgrade.",
+  "milestone_id": "M-ACQUIRE-1",
+  "readiness_class_counts": {
+    "diagnostic_only": 2,
+    "inadmissible_design": 5,
+    "ready_to_collect_candidate": 2,
+    "repair_required_before_collection": 1
+  },
+  "readiness_is_evidence": false,
+  "ready_to_collect_candidate_count": 2,
+  "schema_version": 1,
+  "status": "validated",
+  "validated_gate_dependencies": [
+    "M-EVIDENCEPACK-1",
+    "M-INGEST-1",
+    "M-MEASURE-1",
+    "M-PIPELINE-1",
+    "M-REOPEN-1",
+    "M-TRACE-1"
+  ]
+}

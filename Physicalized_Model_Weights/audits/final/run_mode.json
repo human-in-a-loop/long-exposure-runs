@@ -1,0 +1,11 @@
+{
+  "agent": "final_auditor",
+  "mode": "fresh",
+  "detection_source": "none",
+  "canonical_path": "<workspace>/final_audit_report.md",
+  "commit_marker": "<workspace>/final_audit_report.committed",
+  "baseline_boundary_ts": null,
+  "total_input_tokens": 103044,
+  "budget_tokens": 103044,
+  "stages": 12
+}

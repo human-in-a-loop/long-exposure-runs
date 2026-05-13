@@ -1,0 +1,27 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "alpha": 0.05,
+  "case_count": 11,
+  "classification_counts": {
+    "baseline_favored": 1,
+    "blocked_all_fallback": 1,
+    "blocked_missing_uncertainty_terms": 3,
+    "blocked_non_actual_source": 1,
+    "blocked_zero_volume": 1,
+    "inconclusive_overlap": 1,
+    "point_crossing_not_statistically_durable": 1,
+    "statistically_durable_nonactual_control": 2
+  },
+  "confidence_level": 0.95,
+  "current_artifacts_reopen": false,
+  "figure_caption": "Uncertainty intervals for synthetic-safe measured-package scenarios, showing which point crossings fail or pass the statistical margin rule and why none are current actual reopen evidence.",
+  "future_reopen_condition": "valid_package && hash_match && schema_compatible && known_threshold_scenario && valid_trace && admissible_ingestion_path && measured_terms && production_or_shadow_or_canary_source && provenance_attestation && privacy_attestation && threshold_crossed && UCB_alpha_delta_below_zero",
+  "interpretation": "The uncertainty layer blocks noisy point crossings, distinguishes statistically durable nonactual controls, treats missing variance as unevaluable, and preserves zero-volume, all-fallback, and non-actual-source blockers. No current committed artifact is actual reopen evidence.",
+  "milestone_id": "M-UNCERTAINTY-1",
+  "schema_version": 1,
+  "sigma_delta_formula": "sqrt(sigma_hybrid^2 + sigma_baseline^2 - 2*rho*sigma_hybrid*sigma_baseline + sigma_workload_mix^2 + sigma_meter^2)",
+  "status": "validated",
+  "status_mismatches": [],
+  "uncertainty_rule": "UCB_alpha(hybrid_total - best_programmable_total) < 0",
+  "z_alpha": 1.645
+}

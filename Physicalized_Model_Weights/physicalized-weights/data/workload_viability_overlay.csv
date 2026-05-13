@@ -1,0 +1,11 @@
+scenario_id,raw_requests_per_day,effective_fast_path_requests_per_day,fast_path_utilization,fallback_frequency,near_threshold_frequency,update_interval_days,audit_control_scale,utilization,calibrated_winner,viability_classification,classification_reason
+high_volume_stable_moderation,920801.857,319870.85,0.347383,0.007477,0.002999,90,low,0.35,hybrid_safety_filter,preserved,"high effective reuse, slow updates, and bounded fallback preserve the claim"
+bursty_consumer_traffic,753879.571,323152.264,0.428652,0.220632,0.120007,30,mid,0.55,programmable_accelerator,weakened,workload keeps some fast-path reuse but leaves baseline or overhead pressure
+low_volume_enterprise_deployment,114.5,28.393,0.247973,0.00811,0.004991,90,mid,0.25,hybrid_safety_filter,weakened,workload keeps some fast-path reuse but leaves baseline or overhead pressure
+high_near_threshold_adversarial,102174.0,19303.6,0.188929,0.730102,0.700072,30,mid,0.7,programmable_accelerator,speculative,calibrated baseline usually wins under this workload shape
+frequent_policy_update_regime,97671.071,50646.004,0.518536,0.202252,0.080002,7,mid,0.65,programmable_accelerator,falsified,weekly-or-faster policy updates strand fixed-path amortization
+audit_heavy_regulated_deployment,99581.429,53263.6,0.534875,0.177116,0.080019,90,high,0.65,programmable_accelerator,weakened,workload keeps some fast-path reuse but leaves baseline or overhead pressure
+fallback_degraded_outage_regime,228014.0,74352.7,0.326088,0.53416,0.249992,30,mid,0.7,programmable_accelerator,speculative,fallback degradation creates material fail-safe traffic
+multi_tenant_underutilized_deployment,81792.857,7823.64,0.095652,0.202901,0.100005,90,mid,0.12,programmable_accelerator,falsified,multi-tenant underutilization strands the fixed substrate
+zero_invocation_control,0.0,0.0,0.0,0.0,0.0,90,low,0.0,software_optimized,falsified,zero invocation volume gives no amortization
+fallback_all_control,94458.571,0.0,0.0,1.0,0.0,90,mid,0.7,programmable_accelerator,falsified,effective fast-path volume is near zero

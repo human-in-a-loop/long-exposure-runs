@@ -1,0 +1,301 @@
+package_name: "physicalized_model_weights"
+description: |
+  This package contains the final synthesis and verification artifacts for the physicalized model weights investigation. It lets a reviewer inspect the final report, manifest, references, key executable artifacts, HDL boundary files, and the complete figure set supporting the conclusion that broad fixed frontier-model physicalization is rejected while the safety/filter architecture remains a bounded, non-superiority study.
+curation_complete: true
+include:
+  - src: final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: final_report.pdf
+    dest: report/final_report.pdf
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: REFERENCES.md
+    dest: report/REFERENCES.md
+    role: report
+  - src: physicalized-weights/scripts/breakeven_model.py
+    dest: code/physicalized-weights/scripts/breakeven_model.py
+    role: code
+    justification: "Section 1 cites the normalized break-even sweep and default winner counts."
+  - src: physicalized-weights/scripts/symbolic_breakeven.wls
+    dest: code/physicalized-weights/scripts/symbolic_breakeven.wls
+    role: code
+    justification: "Section 1 cites the Wolfram break-even special-case derivation."
+  - src: physicalized-weights/scripts/target_scoring.py
+    dest: code/physicalized-weights/scripts/target_scoring.py
+    role: code
+    justification: "Section 2 cites target and anti-target ranking for the selected safety/filter target."
+  - src: physicalized-weights/scripts/fallback_policy_sim.py
+    dest: code/physicalized-weights/scripts/fallback_policy_sim.py
+    role: code
+    justification: "Section 2 cites hybrid safety/filter routing and fallback simulation."
+  - src: physicalized-weights/scripts/prototype_safety_filter.py
+    dest: code/physicalized-weights/scripts/prototype_safety_filter.py
+    role: code
+    justification: "Section 3 cites prototype classifier vectors, route distribution, and baseline comparison."
+  - src: physicalized-weights/scripts/verify_prototype_closure.py
+    dest: code/physicalized-weights/scripts/verify_prototype_closure.py
+    role: code
+    justification: "Section 3 cites prototype closure evidence across Python, HDL, Yosys, Verilator lint, Graphviz, and hashes."
+  - src: physicalized-weights/scripts/build_final_synthesis.py
+    dest: code/physicalized-weights/scripts/build_final_synthesis.py
+    role: code
+    justification: "Section 3 cites the initial evidence-labeled synthesis and evidence map."
+  - src: physicalized-weights/hdl/safety_filter_core.sv
+    dest: code/physicalized-weights/hdl/safety_filter_core.sv
+    role: code
+    justification: "Section 3 describes the combinational safety/filter HDL core."
+  - src: physicalized-weights/hdl/run_yosys_eval.py
+    dest: code/physicalized-weights/hdl/run_yosys_eval.py
+    role: code
+    justification: "Sections 3 and 9 cite Yosys evaluation of the HDL core against Python golden vectors."
+  - src: physicalized-weights/hdl/safety_filter_core.ys
+    dest: code/physicalized-weights/hdl/safety_filter_core.ys
+    role: code
+    justification: "Sections 3 and 9 cite the Yosys synthesis and DOT-export flow."
+  - src: physicalized-weights/hdl/safety_filter_core_tb.cpp
+    dest: code/physicalized-weights/hdl/safety_filter_core_tb.cpp
+    role: code
+    justification: "Sections 3 and 10 discuss the retained compiled-simulation testbench and environment blocker."
+  - src: physicalized-weights/scripts/calibrated_breakeven.py
+    dest: code/physicalized-weights/scripts/calibrated_breakeven.py
+    role: code
+    justification: "Section 4 cites the explicit-unit calibrated model and scenario counts."
+  - src: physicalized-weights/scripts/workload_trace_generator.py
+    dest: code/physicalized-weights/scripts/workload_trace_generator.py
+    role: code
+    justification: "Section 4 cites synthetic workload regimes and fast-path viability overlay."
+  - src: physicalized-weights/scripts/stronger_baseline_model.py
+    dest: code/physicalized-weights/scripts/stronger_baseline_model.py
+    role: code
+    justification: "Section 4 cites the stronger-baseline replay and Phase 2 falsification result."
+  - src: physicalized-weights/scripts/build_phase2_synthesis.py
+    dest: code/physicalized-weights/scripts/build_phase2_synthesis.py
+    role: code
+    justification: "Section 4 cites the Phase 2 claim matrix and downgrade synthesis."
+  - src: physicalized-weights/scripts/local_overhead_benchmark.py
+    dest: code/physicalized-weights/scripts/local_overhead_benchmark.py
+    role: code
+    justification: "Section 5 cites local proxy timing medians and the production-measurement gap."
+  - src: physicalized-weights/scripts/production_trace_validator.py
+    dest: code/physicalized-weights/scripts/production_trace_validator.py
+    role: code
+    justification: "Section 5 cites production trace schema and validator rules."
+  - src: physicalized-weights/scripts/reopen_thresholds.py
+    dest: code/physicalized-weights/scripts/reopen_thresholds.py
+    role: code
+    justification: "Section 6 cites quantitative reopen thresholds and zero hybrid-win accounting."
+  - src: physicalized-weights/scripts/symbolic_reopen_thresholds.wls
+    dest: code/physicalized-weights/scripts/symbolic_reopen_thresholds.wls
+    role: code
+    justification: "Section 6 cites Wolfram reopen-threshold special cases."
+  - src: physicalized-weights/scripts/trace_ingestion_path_evaluator.py
+    dest: code/physicalized-weights/scripts/trace_ingestion_path_evaluator.py
+    role: code
+    justification: "Section 6 cites admissible ingestion-path classification."
+  - src: physicalized-weights/scripts/reopen_pipeline_demo.py
+    dest: code/physicalized-weights/scripts/reopen_pipeline_demo.py
+    role: code
+    justification: "Section 6 cites the end-to-end validation, ingestion, provenance, and threshold pipeline."
+  - src: physicalized-weights/scripts/evidence_pack_replay.py
+    dest: code/physicalized-weights/scripts/evidence_pack_replay.py
+    role: code
+    justification: "Section 6 cites the replayable evidence-pack manifest harness."
+  - src: physicalized-weights/scripts/build_phase3_reopen_synthesis.py
+    dest: code/physicalized-weights/scripts/build_phase3_reopen_synthesis.py
+    role: code
+    justification: "Section 6 cites the Phase 3 reopen-pathway synthesis."
+  - src: physicalized-weights/scripts/evidence_acquisition_readiness.py
+    dest: code/physicalized-weights/scripts/evidence_acquisition_readiness.py
+    role: code
+    justification: "Section 6 cites pre-collection readiness classification."
+  - src: physicalized-weights/scripts/evidence_pack_template_dryrun.py
+    dest: code/physicalized-weights/scripts/evidence_pack_template_dryrun.py
+    role: code
+    justification: "Section 6 cites operator evidence-pack dry-run templates and blocking checks."
+  - src: physicalized-weights/scripts/evidence_pack_intake_rehearsal.py
+    dest: code/physicalized-weights/scripts/evidence_pack_intake_rehearsal.py
+    role: code
+    justification: "Section 6 cites synthetic-safe intake handoff rehearsal."
+  - src: physicalized-weights/scripts/reopen_uncertainty_protocol.py
+    dest: code/physicalized-weights/scripts/reopen_uncertainty_protocol.py
+    role: code
+    justification: "Section 6 cites the uncertainty-aware UCB reopen rule."
+  - src: physicalized-weights/scripts/evidence_package_lifecycle.py
+    dest: code/physicalized-weights/scripts/evidence_package_lifecycle.py
+    role: code
+    justification: "Section 7 cites lifecycle state machine and terminal-state accounting."
+  - src: physicalized-weights/scripts/build_phase4_reopen_synthesis.py
+    dest: code/physicalized-weights/scripts/build_phase4_reopen_synthesis.py
+    role: code
+    justification: "Section 7 cites canonical Phase 4 reopen conjunction and claim matrix."
+  - src: physicalized-weights/scripts/target_robustness_stress.py
+    dest: code/physicalized-weights/scripts/target_robustness_stress.py
+    role: code
+    justification: "Section 8 cites target-class robustness stress testing."
+  - src: physicalized-weights/scripts/build_campaign_deferral_watchlist.py
+    dest: code/physicalized-weights/scripts/build_campaign_deferral_watchlist.py
+    role: code
+    justification: "Sections 8 and 10 cite deferral watchlist and trigger governance."
+  - src: physicalized-weights/scripts/build_campaign_closure_report.py
+    dest: code/physicalized-weights/scripts/build_campaign_closure_report.py
+    role: code
+    justification: "Section 8 cites closure claim dispositions and endpoint counters."
+  - src: physicalized-weights/scripts/build_closure_archive_index.py
+    dest: code/physicalized-weights/scripts/build_closure_archive_index.py
+    role: code
+    justification: "Section 8 cites canonical archive index and artifact coverage evidence."
+  - src: physicalized-weights/scripts/toolchain_condition_probe.py
+    dest: code/physicalized-weights/scripts/toolchain_condition_probe.py
+    role: code
+    justification: "Section 9 cites the post-closure toolchain condition probe."
+  - src: physicalized-weights/scripts/campaign_invariant_checker.py
+    dest: code/physicalized-weights/scripts/campaign_invariant_checker.py
+    role: code
+    justification: "Section 9 cites the cross-artifact invariant checker."
+  - src: physicalized-weights/scripts/public_baseline_recency_probe.py
+    dest: code/physicalized-weights/scripts/public_baseline_recency_probe.py
+    role: code
+    justification: "Section 9 cites MLPerf recency and source materiality screening."
+  - src: physicalized-weights/scripts/public_baseline_prior_refresh.py
+    dest: code/physicalized-weights/scripts/public_baseline_prior_refresh.py
+    role: code
+    justification: "Section 9 cites the MLCommons v6.0 public-baseline prior refresh."
+  - src: physicalized-weights/scripts/build_public_baseline_synthesis.py
+    dest: code/physicalized-weights/scripts/build_public_baseline_synthesis.py
+    role: code
+    justification: "Section 9 cites public-baseline synthesis addendum and endpoint preservation."
+  - src: physicalized-weights/data/breakeven_update_volume.png
+    dest: breakeven_update_volume.png
+    role: figure
+    caption: "Break-even update-volume figure showing modeled winning regions across request volume and update assumptions in normalized units."
+  - src: physicalized-weights/data/calibrated_breakeven_vs_phase1.png
+    dest: calibrated_breakeven_vs_phase1.png
+    role: figure
+    caption: "Calibrated break-even comparison showing Phase 1 versus explicit-unit Phase 2 winner distributions in modeled cost units."
+  - src: physicalized-weights/data/campaign_closure_evidence_flow.png
+    dest: campaign_closure_evidence_flow.png
+    role: figure
+    caption: "Campaign closure evidence-flow diagram showing how closure claims connect to supporting artifacts and endpoint counters."
+  - src: physicalized-weights/data/campaign_deferral_watchlist.png
+    dest: campaign_deferral_watchlist.png
+    role: figure
+    caption: "Campaign deferral watchlist chart showing future trigger categories and current non-reopen dispositions."
+  - src: physicalized-weights/data/campaign_invariant_matrix.png
+    dest: campaign_invariant_matrix.png
+    role: figure
+    caption: "Campaign invariant matrix showing cross-artifact consistency checks and contradiction counts."
+  - src: physicalized-weights/data/closure_archive_coverage.png
+    dest: closure_archive_coverage.png
+    role: figure
+    caption: "Closure archive coverage figure showing canonical artifact coverage, hashes, and missing or zero-size artifact counts."
+  - src: physicalized-weights/data/evidence_acquisition_readiness_matrix.png
+    dest: evidence_acquisition_readiness_matrix.png
+    role: figure
+    caption: "Evidence acquisition readiness matrix showing proposed acquisition designs against readiness criteria."
+  - src: physicalized-weights/data/evidence_pack_dryrun_status_matrix.png
+    dest: evidence_pack_dryrun_status_matrix.png
+    role: figure
+    caption: "Evidence-pack dry-run status matrix showing operator template cases and blocking acceptance checks."
+  - src: physicalized-weights/data/evidence_pack_intake_rehearsal_flow.png
+    dest: evidence_pack_intake_rehearsal_flow.png
+    role: figure
+    caption: "Evidence-pack intake rehearsal flow showing dry-run handoff states through replay eligibility."
+  - src: physicalized-weights/data/evidence_pack_replay_flow.png
+    dest: evidence_pack_replay_flow.png
+    role: figure
+    caption: "Evidence-pack replay flow showing manifest validation, provenance, threshold mapping, and pipeline outcomes."
+  - src: physicalized-weights/data/evidence_package_lifecycle_flow.png
+    dest: evidence_package_lifecycle_flow.png
+    role: figure
+    caption: "Evidence-package lifecycle flow showing terminal states and owning reopen gates."
+  - src: physicalized-weights/data/final_evidence_map.png
+    dest: final_evidence_map.png
+    role: figure
+    caption: "Final evidence map showing artifact classes and evidence labels used in the initial synthesis."
+  - src: physicalized-weights/data/local_overhead_latency_distribution.png
+    dest: local_overhead_latency_distribution.png
+    role: figure
+    caption: "Local overhead latency distribution showing proxy nanoseconds per request for classifier, routing, audit, and feature extraction components."
+  - src: physicalized-weights/data/phase2_evidence_map.png
+    dest: phase2_evidence_map.png
+    role: figure
+    caption: "Phase 2 evidence map showing calibration, workload replay, stronger-baseline comparison, and downgrade artifacts."
+  - src: physicalized-weights/data/phase3_reopen_evidence_flow.png
+    dest: phase3_reopen_evidence_flow.png
+    role: figure
+    caption: "Phase 3 reopen evidence flow showing measurement, ingestion, threshold, and replay gate composition."
+  - src: physicalized-weights/data/phase4_reopen_lifecycle_flow.png
+    dest: phase4_reopen_lifecycle_flow.png
+    role: figure
+    caption: "Phase 4 reopen lifecycle flow showing the canonical future reopen conjunction and lifecycle terminal states."
+  - src: physicalized-weights/data/production_trace_evidence_coverage.png
+    dest: production_trace_evidence_coverage.png
+    role: figure
+    caption: "Production trace evidence coverage figure showing measured, proxy, and missing telemetry fields for reopen eligibility."
+  - src: physicalized-weights/data/prototype_equivalence_matrix.png
+    dest: prototype_equivalence_matrix.png
+    role: figure
+    caption: "Prototype equivalence matrix showing agreement among Python, HDL/Yosys, lint, synthesis, Graphviz, and freshness evidence."
+  - src: physicalized-weights/data/prototype_route_distribution.png
+    dest: prototype_route_distribution.png
+    role: figure
+    caption: "Prototype route distribution showing physicalized fast path, programmable fallback, and fail-safe counts."
+  - src: physicalized-weights/data/public_baseline_delta_matrix.png
+    dest: public_baseline_delta_matrix.png
+    role: figure
+    caption: "Public baseline delta matrix showing MLPerf recency and source-materiality screening for programmable baselines."
+  - src: physicalized-weights/data/public_baseline_prior_refresh.png
+    dest: public_baseline_prior_refresh.png
+    role: figure
+    caption: "Public baseline prior refresh figure showing MLCommons v6.0 subset mapping into conservative programmable-baseline prior context."
+  - src: physicalized-weights/data/public_baseline_synthesis_flow.png
+    dest: public_baseline_synthesis_flow.png
+    role: figure
+    caption: "Public baseline synthesis flow showing recency and prior-refresh inputs integrated into endpoint preservation."
+  - src: physicalized-weights/data/reopen_pipeline_decision_flow.png
+    dest: reopen_pipeline_decision_flow.png
+    role: figure
+    caption: "Reopen pipeline decision flow showing validation, ingestion, provenance, threshold, and final status branches."
+  - src: physicalized-weights/data/reopen_thresholds_by_scenario.png
+    dest: reopen_thresholds_by_scenario.png
+    role: figure
+    caption: "Reopen thresholds by scenario showing required hybrid improvement or baseline degradation in pJ-equivalent per day."
+  - src: physicalized-weights/data/reopen_uncertainty_margin_plot.png
+    dest: reopen_uncertainty_margin_plot.png
+    role: figure
+    caption: "Reopen uncertainty margin plot showing uncertainty-aware upper-confidence-bound decisions for measured H minus B margins."
+  - src: physicalized-weights/data/safety_filter_core_netlist.png
+    dest: safety_filter_core_netlist.png
+    role: figure
+    caption: "Safety filter core netlist figure showing the synthesized combinational HDL structure."
+  - src: physicalized-weights/data/stronger_baseline_workload_comparison.png
+    dest: stronger_baseline_workload_comparison.png
+    role: figure
+    caption: "Stronger baseline workload comparison showing modeled hybrid, optimized software, and programmable accelerator costs across workloads."
+  - src: physicalized-weights/data/target_robustness_frontier.png
+    dest: target_robustness_frontier.png
+    role: figure
+    caption: "Target robustness frontier showing target-class outcomes under calibrated, favorable, counterfactual, and control regimes."
+  - src: physicalized-weights/data/target_score_heatmap.png
+    dest: target_score_heatmap.png
+    role: figure
+    caption: "Target score heatmap showing candidate and anti-target rankings across stability, reuse, integration, and evidence criteria."
+  - src: physicalized-weights/data/toolchain_condition_matrix.png
+    dest: toolchain_condition_matrix.png
+    role: figure
+    caption: "Toolchain condition matrix showing local Verilator, Yosys, Graphviz, and compiled-simulation environment status."
+  - src: physicalized-weights/data/trace_ingestion_path_admissibility.png
+    dest: trace_ingestion_path_admissibility.png
+    role: figure
+    caption: "Trace ingestion path admissibility figure showing which source paths can become reopen candidates or only diagnostic evidence."
+  - src: physicalized-weights/data/workload_fast_path_utilization.png
+    dest: workload_fast_path_utilization.png
+    role: figure
+    caption: "Workload fast-path utilization figure showing effective physicalized fast-path share after fallback and guardrail penalties."
+  - src: physicalized-weights/docs/hybrid_safety_filter_arch.png
+    dest: hybrid_safety_filter_arch.png
+    role: figure
+    caption: "Hybrid safety/filter architecture diagram showing the fixed classifier boundary inside programmable fallback, audit, and policy controls."

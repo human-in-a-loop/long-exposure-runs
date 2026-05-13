@@ -1,0 +1,7 @@
+variable,hybrid_win_rate_swing,bucket_count,note
+fallback_frequency,0.35873,5,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300
+utilization,0.165714,3,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300
+requests_per_day,0.088889,7,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300
+audit_control_scale,0.049524,3,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300
+update_interval_days,0.019048,5,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300
+software_memory_savings,0.0,4,share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300

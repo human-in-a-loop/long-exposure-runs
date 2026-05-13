@@ -1,0 +1,18 @@
+{
+  "run_id": "run-2026-05-13T165941Z",
+  "milestone_status_distribution": {},
+  "plan_milestone_state": {},
+  "residual_debt": [],
+  "future_work": [],
+  "findings": {},
+  "reconciliation_events_emitted": 0,
+  "lessons_emitted": [],
+  "promise_check_status": "unknown",
+  "wall_cap_exceeded": false,
+  "figure_coverage": {
+    "figures_present": 33,
+    "figures_in_ledger": 33,
+    "missing_figures": [],
+    "orphan_figures": []
+  }
+}

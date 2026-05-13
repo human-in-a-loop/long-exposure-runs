@@ -1,0 +1,55 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "allowed_ingestion_paths": [
+    "shadow_production_dual_run",
+    "canary_ab_dual_instrumented"
+  ],
+  "allowed_threshold_scenarios": [
+    "high_volume_stable_moderation",
+    "bursty_consumer_traffic",
+    "low_volume_enterprise_deployment",
+    "high_near_threshold_adversarial",
+    "frequent_policy_update_regime",
+    "audit_heavy_regulated_deployment",
+    "fallback_degraded_outage_regime",
+    "multi_tenant_underutilized_deployment",
+    "zero_invocation_control",
+    "fallback_all_control"
+  ],
+  "case_count": 12,
+  "current_artifacts_reopen": false,
+  "dryrun_is_evidence": false,
+  "dryrun_status_counts": {
+    "integrity_blocked": 1,
+    "privacy_blocked": 1,
+    "provenance_blocked": 1,
+    "ready_for_collection_not_evidence": 2,
+    "schema_blocked": 5,
+    "template_incomplete": 1,
+    "threshold_mapping_blocked": 1
+  },
+  "figure_caption": "Dry-run acceptance outcomes for operator evidence-pack templates, showing which package-preparation errors block collection readiness while all placeholder packages remain non-evidence.",
+  "future_reopen_condition": "valid_package \u2227 hash_match \u2227 schema_compatible \u2227 known_threshold_scenario \u2227 valid_trace \u2227 admissible_ingestion_path \u2227 measured_terms \u2227 production_or_shadow_or_canary_source \u2227 provenance_attestation \u2227 privacy_attestation \u2227 threshold_crossed",
+  "interpretation": "The dry-run package layer proves structural readiness only. Complete shadow/canary templates can be ready for measured collection, but all template artifacts remain non-evidence because they lack measured trace rows, measured terms, and threshold crossing.",
+  "milestone_id": "M-DRYRUN-1",
+  "ready_for_collection_not_evidence_count": 2,
+  "required_manifest_fields": [
+    "pack_id",
+    "schema_version",
+    "created_at_utc",
+    "trace_schema_version",
+    "trace_file",
+    "trace_sha256",
+    "ingestion_path_id",
+    "evidence_source_type",
+    "measurement_status",
+    "provenance_attestation",
+    "threshold_scenario_id",
+    "pipeline_expected_status",
+    "privacy_attestation"
+  ],
+  "required_trace_column_count": 26,
+  "schema_version": 1,
+  "status": "validated",
+  "status_mismatches": []
+}

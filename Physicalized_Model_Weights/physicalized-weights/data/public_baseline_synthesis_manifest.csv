@@ -1,0 +1,12 @@
+artifact_path,artifact_class,owning_milestone,derivation
+physicalized-weights/data/public_baseline_recency_summary.json,source_summary,M-PUBLICBASE-1,source-derived
+physicalized-weights/data/public_baseline_sources.csv,source_table,M-PUBLICBASE-1,source-derived
+physicalized-weights/data/public_baseline_prior_refresh_summary.json,source_summary,M-PUBLICBASE-2,source-derived
+physicalized-weights/data/public_baseline_campaign_mapping.csv,mapping_table,M-PUBLICBASE-2,generated
+physicalized-weights/data/public_baseline_prior_refresh.csv,prior_refresh_table,M-PUBLICBASE-2,generated
+physicalized-weights/docs/public_baseline_refresh_synthesis.md,synthesis_report,M-PUBLICBASE-SYNTH-1,generated
+physicalized-weights/data/public_baseline_synthesis_claim_matrix.csv,claim_matrix,M-PUBLICBASE-SYNTH-1,generated
+physicalized-weights/data/public_baseline_synthesis_summary.json,summary_json,M-PUBLICBASE-SYNTH-1,generated
+physicalized-weights/data/public_baseline_synthesis_flow.png,figure,M-PUBLICBASE-SYNTH-1,generated
+physicalized-weights/docs/final_synthesis.md,canonical_synthesis,M-PUBLICBASE-SYNTH-1,generated_update
+physicalized-weights/docs/reproducibility.md,reproduction_record,M-PUBLICBASE-SYNTH-1,generated_update

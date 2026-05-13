@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-PROTO-1",
+  "closure_status": "validated",
+  "evidence_contract": "amended_lint_yosys_eval_synthesis",
+  "compiled_verilator": {
+    "lint_passed": true,
+    "make_available": false,
+    "compiler_available": false,
+    "make_constraint_recorded": true,
+    "compiled_simulation_present": false,
+    "compiled_simulation_passed": false,
+    "compiled_simulation_status": "blocked_make_unavailable"
+  },
+  "hashes": {
+    "hdl_source_sha256": "0e8c8bf40b62aa9a97a203a7bdc879aa788c91b6a2ecd34522cf2ae1f03d1017",
+    "python_source_sha256": "d4b132ee4d7a5faf0f5f2fac7288320b408198d5ffbdd6f2b26a3a9c35361562",
+    "prototype_vectors_sha256": "4dfdf7d87956107e87534dea89bdd885ac83b55e476a0ec48666b1aec8768745",
+    "prototype_route_results_sha256": "c3cca6fcb9e821ea19dc730803dc08981b2cf89278be5dc292055db4a78f7049",
+    "hdl_sim_results_sha256": "0246f1f8e588f5da280310464c6cc4f75704a940e1ca609f1c99628f1ff2a3c3",
+    "prototype_summary_sha256": "b212f1cf275e4c6c7bb42de4c71e0b0a108e8d684a033f9dd38e2c4c68386621",
+    "verilator_log_sha256": "13512cc0b578622358cd1a486d8a0139466bf4ec19a02c3318c7e6019331ca66",
+    "yosys_log_sha256": "cbf07508d283d6aa8991de718a479d10289eceab2699225a921efe51dcd63f14",
+    "netlist_dot_sha256": "d7dd8cceb269769a7b8690cf9dce6a9aa2596d4521850c360252fbae1b078586",
+    "netlist_png_sha256": "979ad443f5bed269061c54aef14dbfab3e7db5ad45b429b78877b007a2b8f9dc"
+  },
+  "freshness": {
+    "structural_artifacts_fresh": true,
+    "source_files": [
+      "physicalized-weights/hdl/safety_filter_core.sv",
+      "physicalized-weights/hdl/safety_filter_core.ys",
+      "physicalized-weights/hdl/run_yosys_eval.py"
+    ],
+    "generated_artifacts": [
+      "physicalized-weights/data/hdl_sim_results.csv",
+      "physicalized-weights/data/yosys_safety_filter.log",
+      "physicalized-weights/data/safety_filter_core_netlist.dot",
+      "physicalized-weights/data/safety_filter_core_netlist.png"
+    ]
+  },
+  "parameters": {
+    "python": {
+      "weights": [
+        12,
+        -7,
+        5,
+        9,
+        -11,
+        4,
+        6,
+        -3
+      ],
+      "bias": -10,
+      "threshold": 64,
+      "feature_count": 8,
+      "confidence_threshold": 16
+    },
+    "hdl": {
+      "weights": [
+        12,
+        -7,
+        5,
+        9,
+        -11,
+        4,
+        6,
+        -3
+      ],
+      "bias": -10,
+      "threshold": 64
+    },
+    "summary": {
+      "weights": [
+        12,
+        -7,
+        5,
+        9,
+        -11,
+        4,
+        6,
+        -3
+      ],
+      "bias": -10,
+      "threshold": 64,
+      "feature_count": 8,
+      "confidence_threshold": 16
+    },
+    "hdl_params_match_python": true,
+    "summary_params_match_python": true
+  },
+  "vector_counts": {
+    "python_vectors": 16,
+    "route_rows": 16,
+    "yosys_eval_rows": 8,
+    "equivalence_rows": 8
+  },
+  "checks": {
+    "yosys_eval_matches_python": true,
+    "verilator_lint_passed": true,
+    "yosys_synthesis_passed": true,
+    "yosys_reports_no_memories_or_processes": true,
+    "graphviz_artifacts_present": true,
+    "structural_artifacts_fresh": true,
+    "closure_tests_required": true
+  },
+  "reopen_criteria": [
+    "compiled Verilator simulation later runs and disagrees with Python or Yosys rows",
+    "Yosys eval and Python golden outputs diverge for any vector",
+    "HDL source hash changes without regenerated closure artifacts",
+    "the HDL core gains sequential state, memories, handshake timing, or mutable policy logic",
+    "Verilator lint, Yosys synthesis, or Graphviz netlist evidence becomes missing or stale"
+  ],
+  "figure_caption": "equivalence matrix showing which prototype evidence paths agree for each fixed classifier vector: Python golden model, Yosys HDL eval, lint/synthesis structural checks, and generated artifacts."
+}

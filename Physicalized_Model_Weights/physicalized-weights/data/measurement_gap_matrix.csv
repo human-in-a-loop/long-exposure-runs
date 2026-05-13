@@ -1,0 +1,14 @@
+quantity,measurement_status,local_artifact,production_requirement,overclaim_guardrail
+feature_extraction_latency_per_request,locally_measured_proxy,physicalized-weights/data/local_overhead_benchmark.csv,measure in serving stack on identical request features,local Python timing is not production latency
+feature_extraction_energy_per_request,production_required,,instrument platform power or accelerator counters for feature extraction,no local energy measurement exists
+audit_serialization_logging_latency,locally_measured_proxy,physicalized-weights/data/local_overhead_benchmark.csv,"measure production audit serialization, storage, sync, and retention path",append-only local file is only a lower-bound proxy
+audit_storage_cost,production_required,,"measure bytes retained, storage tier, replication, and compliance retention",not inferred from local timing
+fallback_dispatch_latency_and_queueing,locally_measured_proxy,physicalized-weights/data/local_overhead_benchmark.csv,measure fallback queue depth and dispatch latency under load,local branch timing excludes queueing
+optimized_software_classifier_latency,locally_measured_proxy,physicalized-weights/data/local_overhead_benchmark.csv,measure optimized implementation on target serving hardware,Python proxy is not optimized production software
+optimized_software_classifier_energy,production_required,,measure energy per accepted request for optimized software baseline,never label as locally measured
+programmable_accelerator_latency,production_required,,measure accelerator latency including batching and host transfer,not produced by this harness
+programmable_accelerator_energy,production_required,,"measure accelerator energy with identical features, audit, fallback accounting",never label accelerator energy as locally measured
+programmable_accelerator_utilization_batching,production_required,,"measure utilization, batch size, occupancy, and queueing behavior",modeled utilization is not measurement
+hybrid_control_plane_latency,modeled_from_prior_artifact,physicalized-weights/data/stronger_baseline_summary.json,measure register/control path and failure-mode routing in a real integration,prior pJ-equivalent proxy is not production measurement
+update_cadence_rollback_policy_churn,modeled_from_prior_artifact,physicalized-weights/data/workload_scenarios.csv,"collect production policy update, rollback, drift, health alarm rates",synthetic workload assumptions are not traces
+durable_hybrid_margin_vs_best_baseline,not_measured,,"compute after all production software, accelerator, feature, audit, fallback, update, and utilization measurements exist",local proxy timing cannot reopen the Phase 2 downgrade

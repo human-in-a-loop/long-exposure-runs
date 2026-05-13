@@ -1,0 +1,15 @@
+{
+  "created_at_utc": "2026-05-13T11:02:00Z",
+  "evidence_source_type": "synthetic",
+  "ingestion_path_id": "offline_replay_redacted_features",
+  "measurement_status": "measured",
+  "pack_id": "synthetic_counterfactual_crossing_non_actual",
+  "pipeline_expected_status": "synthetic_counterfactual_crossed",
+  "privacy_attestation": true,
+  "provenance_attestation": true,
+  "schema_version": 1,
+  "threshold_scenario_id": "high_volume_stable_moderation",
+  "trace_file": "physicalized-weights/data/intake_rehearsal_packages/synthetic_counterfactual_crossing_non_actual/trace.csv",
+  "trace_schema_version": 1,
+  "trace_sha256": "11c8e3f422880e839306337dbf8e1c6743a696e8190a79e4e86953d45147ee0a"
+}

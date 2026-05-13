@@ -1,0 +1,61 @@
+{
+  "calibrated_context": {
+    "calibrated_hybrid_winner_share": 0.07174603174603175,
+    "previous_safety_filter_decision": "preserved_but_weakened"
+  },
+  "decision_class_counts": {
+    "accelerator_dominates": 6,
+    "hybrid_falsified": 4
+  },
+  "figure_caption": "per-scenario winner and normalized daily cost/energy comparison for optimized software, programmable accelerator, and hybrid physicalized safety filter under identical workload assumptions.",
+  "milestone_id": "M-SWBASE-2",
+  "preserved_case_decision_class": "accelerator_dominates",
+  "preserved_case_thresholds": [
+    {
+      "baseline_value": 0.0,
+      "interpretation": "positive means hybrid is cheaper; negative means the best programmable baseline already wins",
+      "scenario_id": "high_volume_stable_moderation",
+      "threshold_name": "current_hybrid_margin_vs_best_baseline",
+      "threshold_value": "-1471448845.624272",
+      "unit": "pJ_equivalent/day"
+    },
+    {
+      "baseline_value": 0.0,
+      "interpretation": "lowest tested software memory-savings fraction where optimized software matches or beats current hybrid",
+      "scenario_id": "high_volume_stable_moderation",
+      "threshold_name": "software_memory_savings_that_erases_hybrid",
+      "threshold_value": "not_erased_by_sweep",
+      "unit": "fraction"
+    },
+    {
+      "baseline_value": 1.0,
+      "interpretation": "multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength",
+      "scenario_id": "high_volume_stable_moderation",
+      "threshold_name": "accelerator_compute_multiplier_that_erases_hybrid",
+      "threshold_value": "already_erased",
+      "unit": "multiplier"
+    }
+  ],
+  "preserved_case_total_daily_cost_proxy_pj": 8178811874.414918,
+  "preserved_case_winner": "programmable_accelerator",
+  "scenario_count": 10,
+  "schema_version": 1,
+  "special_case_results": {
+    "audit_heavy_regulated_deployment": "accelerator_dominates",
+    "fallback_all_control": "hybrid_falsified",
+    "frequent_policy_update_regime": "hybrid_falsified",
+    "multi_tenant_underutilized_deployment": "hybrid_falsified",
+    "zero_invocation_control": "hybrid_falsified"
+  },
+  "status": "validated",
+  "unit_metadata": {
+    "cost_energy": "pJ_equivalent proxy",
+    "latency": "microseconds per accepted request",
+    "note": "feature extraction and audit logging are charged to every path under the same workload row",
+    "volume": "requests per day"
+  },
+  "winner_counts": {
+    "optimized_software_runtime": 1,
+    "programmable_accelerator": 9
+  }
+}

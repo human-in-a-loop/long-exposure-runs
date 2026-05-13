@@ -1,0 +1,9 @@
+case_id,python_golden,route_output,yosys_eval,verilator_lint,yosys_synthesis,graphviz_artifacts,compiled_verilator,overall
+all_zero_bias_allow,pass,pass,pass,pass,pass,pass,n/a,pass
+nominal_block_high_margin,pass,pass,pass,pass,pass,pass,n/a,pass
+nominal_allow_high_margin,pass,pass,pass,pass,pass,pass,n/a,pass
+max_signed_features,pass,pass,pass,pass,pass,pass,n/a,pass
+min_signed_features,pass,pass,pass,pass,pass,pass,n/a,pass
+threshold_equal,pass,pass,pass,pass,pass,pass,n/a,pass
+near_threshold_allow,pass,pass,pass,pass,pass,pass,n/a,pass
+near_threshold_block,pass,pass,pass,pass,pass,pass,n/a,pass

@@ -1,0 +1,30 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "claim_count": 7,
+  "current_artifacts_reopen": false,
+  "current_superiority_claim_count": 0,
+  "direct_energy_calibration_rows": 0,
+  "figure_caption": "public programmable-baseline refresh flow from official MLPerf recency through conservative prior mapping to strengthened programmable null and unchanged hybrid reopen boundary.",
+  "future_reopen_condition": "valid_package && hash_match && schema_compatible && known_threshold_scenario && valid_trace && admissible_ingestion_path && measured_terms && production_or_shadow_or_canary_source && provenance_attestation && privacy_attestation && nonzero_request_volume && nonzero_accepted_fast_path_volume && measured_best_programmable_baseline && threshold_crossed && UCB_alpha(H - B) < 0 && lifecycle_terminal_state=actual_reopen_candidate",
+  "generated_manifest_sha256": "960b1d10cbffb8ba97dfa44b0752ef2446bbcfef221a13fa734f36afbae0b7a0",
+  "integrated_milestones": [
+    "M-PUBLICBASE-1",
+    "M-PUBLICBASE-2",
+    "M-CLOSURE-1"
+  ],
+  "latest_mlperf_inference_publication_date": "2026-04-01",
+  "latest_mlperf_inference_release": "MLPerf Inference v6.0",
+  "milestone_id": "M-PUBLICBASE-SYNTH-1",
+  "new_reopen_gate_count": 0,
+  "phase2_downgrade_preserved": true,
+  "phase4_reopen_condition_unchanged": true,
+  "primary_mlcommons_rows_ingested": 12,
+  "programmable_null_effect": "strengthened_or_preserved",
+  "public_baseline_refresh_integrated": true,
+  "public_sources_reopen_physicalized_claim": false,
+  "raw_primary_rows_available": 520,
+  "safety_filter_direct_workload_rows": 0,
+  "schema_version": 1,
+  "status": "validated",
+  "throughput_prior_rows": 12
+}

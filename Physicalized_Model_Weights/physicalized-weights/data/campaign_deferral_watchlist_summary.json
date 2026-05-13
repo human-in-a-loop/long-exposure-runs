@@ -1,0 +1,81 @@
+{
+  "action_scope_counts": {
+    "model_refresh_only": 1,
+    "no_reopen": 4,
+    "performance_economic_reopen_existing_phase4_only": 3,
+    "prototype_verification_only": 2
+  },
+  "all_triggers_have_owner_and_action": true,
+  "claim_disposition_counts": {
+    "complete_but_inactive_absent_actual_measured_evidence": 1,
+    "falsified_under_stronger_programmable_baseline": 1,
+    "no_calibrated_current_superiority_claim": 1,
+    "rejected_under_current_evidence": 1,
+    "retained_as_architecture_failure_mode_evidence_scaffold": 1
+  },
+  "claim_dispositions": [
+    {
+      "claim_id": "broad_fixed_frontier_model_physicalization",
+      "disposition": "rejected_under_current_evidence",
+      "owning_milestones": "M-TAX-1;M-SYNTH-2;M-PHASE4-SYNTH-1",
+      "rationale": "Update cadence, yield, integration, and programmable-baseline burdens remain unclosed."
+    },
+    {
+      "claim_id": "safety_filter_performance_or_economic_winner",
+      "disposition": "falsified_under_stronger_programmable_baseline",
+      "owning_milestones": "M-SWBASE-2;M-SYNTH-2",
+      "rationale": "Equal-workload stronger-baseline replay gives the hybrid zero workload wins."
+    },
+    {
+      "claim_id": "hybrid_architecture_and_prototype",
+      "disposition": "retained_as_architecture_failure_mode_evidence_scaffold",
+      "owning_milestones": "M-ARCH-1;M-PROTO-1",
+      "rationale": "The architecture remains useful for interfaces, fallback, audit, and HDL closure studies."
+    },
+    {
+      "claim_id": "phase4_reopen_pathway",
+      "disposition": "complete_but_inactive_absent_actual_measured_evidence",
+      "owning_milestones": "M-PHASE4-SYNTH-1",
+      "rationale": "The validated lifecycle and uncertainty conjunction exists, but no current artifact satisfies it."
+    },
+    {
+      "claim_id": "non_safety_target_classes_current_superiority",
+      "disposition": "no_calibrated_current_superiority_claim",
+      "owning_milestones": "M-ROBUST-1",
+      "rationale": "M-ROBUST-1 found zero calibrated physicalized wins across the broader target classes."
+    }
+  ],
+  "classification_counts": {
+    "inactive_reopen_trigger": 3,
+    "insufficient_substitute": 4,
+    "prototype_verification_trigger": 2,
+    "watch_baseline_refresh": 1
+  },
+  "current_artifacts_reopen": false,
+  "current_superiority_claim_count": 0,
+  "figure_caption": "Deferral map separating closed claims, inactive reopen triggers, insufficient substitutes, and prototype-only verification triggers.",
+  "insufficient_trigger_ids": [
+    "vendor_benchmark_only",
+    "synthetic_counterfactual_only",
+    "local_proxy_only",
+    "template_or_dryrun_only"
+  ],
+  "interpretation": "The campaign is closed under current evidence: rejected or falsified claims remain closed, architecture/prototype evidence is retained, and future substantive performance evaluation is deferred until existing Phase 4 measured-package conditions are satisfied.",
+  "measured_reopen_trigger_ids": [
+    "measured_shadow_or_canary_package",
+    "measured_production_package",
+    "new_stable_high-volume_target_evidence"
+  ],
+  "measured_triggers_require_lifecycle_and_uncertainty": true,
+  "milestone_id": "M-DEFER-1",
+  "new_reopen_gate_count": 0,
+  "phase4_future_reopen_condition_unchanged": true,
+  "prototype_only_trigger_ids": [
+    "compiled_verilator_available",
+    "hdl_design_scope_change"
+  ],
+  "prototype_triggers_reopen_performance_claim": false,
+  "schema_version": 1,
+  "status": "validated",
+  "trigger_count": 10
+}

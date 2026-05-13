@@ -1,0 +1,64 @@
+{
+  "antitarget_wins": 0,
+  "assumption_source_type_counts": {
+    "inferred": 2,
+    "local_measured": 3,
+    "modeled": 7,
+    "sourced": 5
+  },
+  "calibrated_hybrid_winner_share": 0.07174603174603175,
+  "calibrated_winner_counts": {
+    "hybrid_safety_filter": 452,
+    "programmable_accelerator": 4948,
+    "software_optimized": 900
+  },
+  "figure_caption": "calibrated break-even comparison showing how sourced/measured parameter bounds shift the Phase 1 physicalization regions and whether the safety/filter target remains viable.",
+  "milestone_id": "M-CAL-1",
+  "missing_data_that_would_reduce_uncertainty": [
+    "production safety/filter invocation volume and near-threshold rate",
+    "feature extraction cost under the real serving stack",
+    "audit logging latency and energy in the production path",
+    "fallback frequency after policy/version/health/drift gates",
+    "measured optimized software and programmable accelerator baselines on identical features"
+  ],
+  "non_optimistic_hybrid_winner_share": 0.16666666666666666,
+  "pessimistic_hybrid_winner_share": 0.06658923732094464,
+  "phase1_physicalized_winner_share": 0.37142857142857144,
+  "safety_filter_decision": "preserved_but_weakened",
+  "schema_version": 1,
+  "status": "validated",
+  "top_uncertainty_drivers": [
+    {
+      "bucket_count": 5,
+      "hybrid_win_rate_swing": 0.35873,
+      "note": "share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300",
+      "variable": "fallback_frequency"
+    },
+    {
+      "bucket_count": 3,
+      "hybrid_win_rate_swing": 0.165714,
+      "note": "share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300",
+      "variable": "utilization"
+    },
+    {
+      "bucket_count": 7,
+      "hybrid_win_rate_swing": 0.088889,
+      "note": "share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300",
+      "variable": "requests_per_day"
+    },
+    {
+      "bucket_count": 3,
+      "hybrid_win_rate_swing": 0.049524,
+      "note": "share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300",
+      "variable": "audit_control_scale"
+    },
+    {
+      "bucket_count": 5,
+      "hybrid_win_rate_swing": 0.019048,
+      "note": "share of winner scenarios where hybrid_safety_filter wins; total_scenarios=6300",
+      "variable": "update_interval_days"
+    }
+  ],
+  "unit": "pJ_equivalent proxy",
+  "zero_volume_physicalized_wins": []
+}

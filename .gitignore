@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 node_modules/
+
+# Run-local scratch and heavyweight/generated folders
+**/stale/
+**/.long-exposure*/
+**/wolfram-bridge/
+**/obj_dir/

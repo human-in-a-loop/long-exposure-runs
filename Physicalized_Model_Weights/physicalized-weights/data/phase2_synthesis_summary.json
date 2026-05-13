@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-SYNTH-2",
+  "status": "validated",
+  "central_conclusion": "Hybrid physicalized safety/filter remains useful as an architecture and failure-mode study, but current calibrated equal-workload evidence falsifies its performance/economic superiority over a strong programmable accelerator.",
+  "phase2_status_counts": {
+    "preserved": 6,
+    "weakened": 1,
+    "falsified": 1,
+    "superseded": 1,
+    "open": 0
+  },
+  "claim_count": 9,
+  "calibrated_hybrid_winner_share": 0.07174603174603175,
+  "calibrated_safety_filter_decision": "preserved_but_weakened",
+  "workload_classification_counts": {
+    "falsified": 4,
+    "preserved": 1,
+    "speculative": 2,
+    "weakened": 3
+  },
+  "stronger_baseline_winner_counts": {
+    "optimized_software_runtime": 1,
+    "programmable_accelerator": 9
+  },
+  "stronger_baseline_decision_class_counts": {
+    "accelerator_dominates": 6,
+    "hybrid_falsified": 4
+  },
+  "hybrid_workload_wins": 0,
+  "preserved_case_winner": "programmable_accelerator",
+  "preserved_case_decision_class": "accelerator_dominates",
+  "reopening_standard": "Measured production traces must show durable positive hybrid margin against optimized software and programmable accelerator under identical feature, audit, fallback, update, utilization, energy, and latency accounting.",
+  "evidence_map_caption": "Phase 1 and Phase 2 claim statuses, showing which claims were preserved, weakened, falsified, or superseded after calibrated workload and stronger-baseline replay."
+}

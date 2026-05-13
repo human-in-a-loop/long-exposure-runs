@@ -1,0 +1,773 @@
+{
+  "default_inputs": {
+    "accuracy_fallback_penalty": 0.04,
+    "analog_conversion_overhead": 0.35,
+    "compute_energy_per_request": 0.45,
+    "fixed_substrate_cost": 350000.0,
+    "integration_cost": 30000.0,
+    "local_energy_per_gb": 0.18,
+    "offchip_energy_per_gb": 1.0,
+    "parameter_count_b": 7.0,
+    "requests_per_day": 100000.0,
+    "software_memory_savings": 0.0,
+    "tokens_per_request": 512,
+    "update_interval_days": 90.0,
+    "utilization": 0.6,
+    "weight_bits": 8,
+    "yield_repair_factor": 1.15
+  },
+  "dominant_variables": [
+    "requests_per_update",
+    "software_memory_savings",
+    "fixed_substrate_cost",
+    "update_interval_days",
+    "analog_conversion_overhead",
+    "yield_repair_factor",
+    "accuracy_fallback_penalty",
+    "utilization"
+  ],
+  "placeholder_assumptions": [
+    "normalized cost/energy units, not process-specific joules or dollars",
+    "fixed_substrate_cost is an amortization proxy for fabrication, packaging, integration, and opportunity cost",
+    "software_memory_savings reduces programmable memory movement before physicalized strategies are compared"
+  ],
+  "sample_boundaries": [
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 62618.559273754305,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 104134.88729847284,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 117711.03292861962,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 497906.5190741403,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 86258.97437155871,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 156089.45593630295,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 242796.78211054354,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 120330.2188480816,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 249418.7063574209,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 1195974.1239618117,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 198888.92053011176,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 620323.4972875718,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 1.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 62618.559273754305,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 104134.88729847284,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 117711.03292861962,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 497906.5190741403,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 86258.97437155871,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 156089.45593630295,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 242796.78211054354,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 120330.2188480816,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 249418.7063574209,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 1195974.1239618117,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 50699.97091422721,
+      "software_memory_savings": 0.35,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.35,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 31108.664076615147,
+      "software_memory_savings": 0.35,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 198888.92053011176,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 620323.4972875718,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 66143.62915007757,
+      "software_memory_savings": 0.5,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.5,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 40206.881815614965,
+      "software_memory_savings": 0.5,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 7.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 62618.559273754305,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 104134.88729847284,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 117711.03292861962,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 32819.714399390585,
+      "software_memory_savings": 0.0,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 497906.5190741403,
+      "software_memory_savings": 0.0,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 20359.092858716103,
+      "software_memory_savings": 0.0,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 86258.97437155871,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 156089.45593630295,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 242796.78211054354,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 41102.97304293962,
+      "software_memory_savings": 0.2,
+      "strategy": "fixed_digital_weights",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": null,
+      "software_memory_savings": 0.2,
+      "strategy": "analog_in_memory",
+      "update_interval_days": 30.0
+    },
+    {
+      "breakeven_requests_vs_software_optimized": 25368.215281355475,
+      "software_memory_savings": 0.2,
+      "strategy": "hybrid_physicalized_submodel",
+      "update_interval_days": 30.0
+    }
+  ],
+  "schema_version": 1,
+  "strategies": [
+    "programmable_unoptimized",
+    "software_optimized",
+    "programmable_accelerator",
+    "fixed_digital_weights",
+    "analog_in_memory",
+    "hybrid_physicalized_submodel"
+  ],
+  "winner_counts": {
+    "analog_in_memory": 0,
+    "fixed_digital_weights": 208,
+    "hybrid_physicalized_submodel": 0,
+    "programmable_accelerator": 192,
+    "programmable_unoptimized": 0,
+    "software_optimized": 160
+  }
+}
