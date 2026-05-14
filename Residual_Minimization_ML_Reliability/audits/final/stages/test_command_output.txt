@@ -1,0 +1,68 @@
+=== promise_check ===
+  events: 48, plan milestones: 12
+! WARNING: ledger:line 3: artifact path 'residual-certificates/' not canonicalized
+! WARNING: plan milestone 'M-2' has no ledger events yet
+! WARNING: plan milestone 'M-4' has no ledger events yet
+! WARNING: orphan artifact in managed path: data/sessions.db (no ledger event references it)
+! WARNING: orphan artifact in managed path: data/sessions.db-shm (no ledger event references it)
+! WARNING: orphan artifact in managed path: data/sessions.db-wal (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_10-12.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_10-12.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_13-15.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_13-15.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_16-17.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_16-17.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_4-6.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_7-9.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_7-9.pdf (no ledger event references it)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T040813Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T050813Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T060813Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T070814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T080814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T090814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T100814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T110814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T120814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T130814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T151814Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T161815Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T171815Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure-instance/manager_assessments/manager_assessment_20260514T181815Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/final/final_report.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+
+PROMISE_EXIT=0
+=== org_check ===
+  root files: 9, root dirs: 10; standard folders present: ['audits', 'data', 'docs', 'reports', 'scripts', 'stale', 'tests', 'tools']
+! WARNING: script at workspace root: launch_residual_minimization.py (should live in scripts/, tools/, or a domain folder)
+! WARNING: file at workspace root not in allowed-set: residual_minimization_run_config.yaml
+! WARNING: script at workspace root: run_final_pipeline_once.py (should live in scripts/, tools/, or a domain folder)
+! WARNING: script at workspace root: run_residual_minimization_detached.sh (should live in scripts/, tools/, or a domain folder)
+
+ORG_EXIT=0
+=== adversarial_scan ===
+FILES True True
+PLAN_MILESTONES M-1,M-2,M-3,M-4,M-5,M-6,M-7,M-8,M-9,M-10,M-11,M-12
+LEDGER_DISTINCT 16
+PLAN_LATEST M-1 validated high 1 2026-05-14T03:31:00Z
+PLAN_LATEST M-2 NO_LEDGER_EVENT
+PLAN_LATEST M-3 validated high 2 2026-05-14T03:58:00Z
+PLAN_LATEST M-4 NO_LEDGER_EVENT
+PLAN_LATEST M-5 validated high 3 2026-05-14T04:34:00Z
+PLAN_LATEST M-6 validated high 3 2026-05-14T04:35:00Z
+PLAN_LATEST M-7 validated high 49 2026-05-14T14:31:00Z
+PLAN_LATEST M-8 validated high 53 2026-05-14T16:31:00Z
+PLAN_LATEST M-9 validated high 52 2026-05-14T16:11:00Z
+PLAN_LATEST M-10 validated high 54 2026-05-14T16:56:00Z
+PLAN_LATEST M-11 validated high 51 2026-05-14T15:36:00Z
+PLAN_LATEST M-12 validated high 55 2026-05-14T17:11:00Z
+ORPHAN_MILESTONES []
+CLOSURE_SUPERSEDES_FILES 0
+FINAL_EVENT_TS 2026-05-14T17:31:00Z FINAL_REPORT_MTIME 1778777353
+MISSING_VALIDATED_ARTIFACTS 1
+MISSING_ARTIFACT M-6 reports/final/final_report.md
+FIGURES_PRESENT 18
+FIGURES_IN_LEDGER_TEXT 13
+POST_FINAL_REPORT_DRIFT ['reports/cycles/report_cycles_13-15.md', 'reports/cycles/report_cycles_10-12.md', 'reports/cycles/report_cycles_16-17.md', 'reports/cycles/report_cycles_7-9.md']

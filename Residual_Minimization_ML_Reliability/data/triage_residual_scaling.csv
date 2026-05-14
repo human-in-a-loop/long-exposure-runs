@@ -1,0 +1,15 @@
+candidate,n,residual_loss,error_norm,certificate_norm
+C1_collocation_blind_spot,1,0.0,0.6123724356957945,315.82734083485946
+C2_underweighted_trace,1,1.0,1.0,1.0
+C1_collocation_blind_spot,2,0.0,0.6123724356957945,1263.3093633394378
+C2_underweighted_trace,2,0.25,1.0,1.0
+C1_collocation_blind_spot,4,0.0,0.6123724356957945,5053.237453357751
+C2_underweighted_trace,4,0.0625,1.0,1.0
+C1_collocation_blind_spot,8,0.0,0.6123724356957945,20212.949813431005
+C2_underweighted_trace,8,0.015625,1.0,1.0
+C1_collocation_blind_spot,16,0.0,0.6123724356957945,80851.79925372402
+C2_underweighted_trace,16,0.00390625,1.0,1.0
+C1_collocation_blind_spot,32,0.0,0.6123724356957945,323407.1970148961
+C2_underweighted_trace,32,0.0009765625,1.0,1.0
+C1_collocation_blind_spot,64,0.0,0.6123724356957945,1293628.7880595843
+C2_underweighted_trace,64,0.000244140625,1.0,1.0
