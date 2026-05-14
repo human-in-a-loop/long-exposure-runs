@@ -1,0 +1,615 @@
+{
+  "$defs": {
+    "AllowedResource": {
+      "additionalProperties": false,
+      "properties": {
+        "access": {
+          "enum": [
+            "read",
+            "write",
+            "read_write",
+            "none"
+          ],
+          "title": "Access",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ResourceKind"
+        },
+        "resource_id": {
+          "minLength": 1,
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "trust_tier": {
+          "default": "synthetic",
+          "enum": [
+            "authoritative",
+            "trusted",
+            "untrusted",
+            "synthetic"
+          ],
+          "title": "Trust Tier",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource_id",
+        "kind",
+        "access",
+        "scope"
+      ],
+      "title": "AllowedResource",
+      "type": "object"
+    },
+    "ApprovalRule": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "approver": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approver"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "token_placeholder": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Token Placeholder"
+        }
+      },
+      "required": [
+        "action",
+        "required",
+        "scope"
+      ],
+      "title": "ApprovalRule",
+      "type": "object"
+    },
+    "BenignFixture": {
+      "additionalProperties": false,
+      "properties": {
+        "contains_operational_harm": {
+          "default": false,
+          "title": "Contains Operational Harm",
+          "type": "boolean"
+        },
+        "content_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Content Refs",
+          "type": "array"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "fixture_id": {
+          "minLength": 1,
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "fixture_type": {
+          "enum": [
+            "synthetic_record",
+            "policy_note",
+            "public_note",
+            "internal_note",
+            "audit_log",
+            "token"
+          ],
+          "title": "Fixture Type",
+          "type": "string"
+        },
+        "uses_real_sensitive_data": {
+          "default": false,
+          "title": "Uses Real Sensitive Data",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "fixture_id",
+        "fixture_type",
+        "description"
+      ],
+      "title": "BenignFixture",
+      "type": "object"
+    },
+    "DeterministicPredicateSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_event_types": {
+          "items": {
+            "$ref": "#/$defs/TraceEventType"
+          },
+          "title": "Evidence Event Types",
+          "type": "array"
+        },
+        "inputs": {
+          "items": {
+            "enum": [
+              "trace",
+              "state",
+              "policy",
+              "final_answer",
+              "fixtures"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "predicate_id": {
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "title": "Predicate Id",
+          "type": "string"
+        },
+        "verdicts": {
+          "items": {
+            "enum": [
+              "pass",
+              "fail",
+              "inconclusive"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Verdicts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "predicate_id",
+        "description",
+        "inputs",
+        "verdicts"
+      ],
+      "title": "DeterministicPredicateSpec",
+      "type": "object"
+    },
+    "FailureLabel": {
+      "enum": [
+        "tool_overreach",
+        "permission_bypass",
+        "delegation_drift",
+        "hidden_objective_substitution",
+        "provenance_omission",
+        "weak_uncertainty_escalation",
+        "brittle_recovery_after_misleading_context",
+        "evaluator_gaming",
+        "trace_final_answer_mismatch"
+      ],
+      "title": "FailureLabel",
+      "type": "string"
+    },
+    "FailureLabelSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/FailureLabel"
+        },
+        "primary_failure_label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FailureLabel"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "role": {
+          "default": "primary",
+          "enum": [
+            "primary",
+            "secondary"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "rationale"
+      ],
+      "title": "FailureLabelSpec",
+      "type": "object"
+    },
+    "PolicySpec": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_delegate_context": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Delegate Context",
+          "type": "array"
+        },
+        "allowed_escalation_actions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Escalation Actions",
+          "type": "array"
+        },
+        "allowed_resources": {
+          "items": {
+            "$ref": "#/$defs/AllowedResource"
+          },
+          "title": "Allowed Resources",
+          "type": "array"
+        },
+        "allowed_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "approval_rules": {
+          "items": {
+            "$ref": "#/$defs/ApprovalRule"
+          },
+          "title": "Approval Rules",
+          "type": "array"
+        },
+        "required_policy_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Policy Ids",
+          "type": "array"
+        },
+        "restricted_state_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Restricted State Keys",
+          "type": "array"
+        }
+      },
+      "title": "PolicySpec",
+      "type": "object"
+    },
+    "ResourceKind": {
+      "enum": [
+        "file",
+        "note",
+        "state",
+        "tool",
+        "log"
+      ],
+      "title": "ResourceKind",
+      "type": "string"
+    },
+    "RubricScoreSet": {
+      "additionalProperties": false,
+      "properties": {
+        "developer_actionability": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Developer Actionability",
+          "type": "integer"
+        },
+        "false_negative_risk": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "False Negative Risk",
+          "type": "integer"
+        },
+        "false_positive_risk": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "False Positive Risk",
+          "type": "integer"
+        },
+        "gaming_resistance": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Gaming Resistance",
+          "type": "integer"
+        },
+        "provider_agnosticism": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Provider Agnosticism",
+          "type": "integer"
+        },
+        "realism": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Realism",
+          "type": "integer"
+        },
+        "reproducibility": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Reproducibility",
+          "type": "integer"
+        },
+        "safety": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Safety",
+          "type": "integer"
+        },
+        "scoring_clarity": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Scoring Clarity",
+          "type": "integer"
+        },
+        "trace_completeness": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Trace Completeness",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "realism",
+        "reproducibility",
+        "safety",
+        "scoring_clarity",
+        "false_positive_risk",
+        "false_negative_risk",
+        "gaming_resistance",
+        "trace_completeness",
+        "provider_agnosticism",
+        "developer_actionability"
+      ],
+      "title": "RubricScoreSet",
+      "type": "object"
+    },
+    "StructuredFinalAnswerSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_schema": {
+          "additionalProperties": true,
+          "title": "Claim Schema",
+          "type": "object"
+        },
+        "required_fields": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Required Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "required_fields"
+      ],
+      "title": "StructuredFinalAnswerSpec",
+      "type": "object"
+    },
+    "TaskMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_metadata": {
+          "additionalProperties": true,
+          "title": "Adapter Metadata",
+          "type": "object"
+        },
+        "agentic": {
+          "default": true,
+          "title": "Agentic",
+          "type": "boolean"
+        },
+        "benign_analogue": {
+          "minLength": 1,
+          "title": "Benign Analogue",
+          "type": "string"
+        },
+        "executable": {
+          "default": true,
+          "title": "Executable",
+          "type": "boolean"
+        },
+        "safety_property": {
+          "minLength": 1,
+          "title": "Safety Property",
+          "type": "string"
+        },
+        "task_family": {
+          "minLength": 1,
+          "title": "Task Family",
+          "type": "string"
+        },
+        "task_id": {
+          "minLength": 3,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "version",
+        "task_family",
+        "safety_property",
+        "benign_analogue"
+      ],
+      "title": "TaskMetadata",
+      "type": "object"
+    },
+    "TraceEventRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "event_type": {
+          "$ref": "#/$defs/TraceEventType"
+        },
+        "min_count": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Min Count",
+          "type": "integer"
+        },
+        "required_fields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "event_type",
+        "description"
+      ],
+      "title": "TraceEventRequirement",
+      "type": "object"
+    },
+    "TraceEventType": {
+      "enum": [
+        "observation",
+        "tool_call",
+        "state_update",
+        "permission_decision",
+        "delegation_message",
+        "final_answer",
+        "scorer_event"
+      ],
+      "title": "TraceEventType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_trace": {
+      "items": {
+        "$ref": "#/$defs/TraceEventRequirement"
+      },
+      "minItems": 1,
+      "title": "Expected Trace",
+      "type": "array"
+    },
+    "failure_labels": {
+      "items": {
+        "$ref": "#/$defs/FailureLabelSpec"
+      },
+      "minItems": 1,
+      "title": "Failure Labels",
+      "type": "array"
+    },
+    "fixtures": {
+      "items": {
+        "$ref": "#/$defs/BenignFixture"
+      },
+      "minItems": 1,
+      "title": "Fixtures",
+      "type": "array"
+    },
+    "known_false_positive_traps": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Known False Positive Traps",
+      "type": "array"
+    },
+    "metadata": {
+      "$ref": "#/$defs/TaskMetadata"
+    },
+    "model_assisted_judging": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Assisted Judging"
+    },
+    "policy": {
+      "$ref": "#/$defs/PolicySpec"
+    },
+    "rubric": {
+      "$ref": "#/$defs/RubricScoreSet"
+    },
+    "scoring_predicates": {
+      "items": {
+        "$ref": "#/$defs/DeterministicPredicateSpec"
+      },
+      "minItems": 1,
+      "title": "Scoring Predicates",
+      "type": "array"
+    },
+    "structured_final_answer": {
+      "$ref": "#/$defs/StructuredFinalAnswerSpec"
+    }
+  },
+  "required": [
+    "metadata",
+    "fixtures",
+    "policy",
+    "expected_trace",
+    "structured_final_answer",
+    "failure_labels",
+    "scoring_predicates",
+    "rubric",
+    "known_false_positive_traps"
+  ],
+  "title": "TaskSpec",
+  "type": "object"
+}

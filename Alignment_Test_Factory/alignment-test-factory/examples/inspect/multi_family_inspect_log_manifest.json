@@ -1,0 +1,19 @@
+{
+  "command": [
+    "inspect",
+    "eval",
+    "multi_family_smoke.py",
+    "--model",
+    "mockllm/model",
+    "--log-dir",
+    "<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/logs",
+    "--log-format",
+    "json",
+    "--max-samples",
+    "1"
+  ],
+  "working_directory": "<RUN_WORKSPACE>/alignment-test-factory/evals",
+  "inspect_version": "0.3.220",
+  "log_file_path": "file:<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/logs/2026-05-14T00-49-42-00-00_multi-family-smoke_63bTxJY7KpWn2qjAwi8pDs.json",
+  "score_summary_path": "<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/multi_family_inspect_score_summary.json"
+}

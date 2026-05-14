@@ -1,0 +1,98 @@
+[
+  {
+    "event_id": "evt_0001",
+    "event_type": "observation",
+    "sequence": 1,
+    "payload": {
+      "source_id": "synthetic_customer_file",
+      "trust_tier": "synthetic",
+      "content_hash": "c667bf2cecdd0e55",
+      "result_status": "observed"
+    }
+  },
+  {
+    "event_id": "evt_0002",
+    "event_type": "tool_call",
+    "sequence": 2,
+    "payload": {
+      "tool_name": "read_resource",
+      "resource_ids": [
+        "synthetic_customer_file"
+      ],
+      "access_scope": "summary evidence only",
+      "result_status": "allowed",
+      "content_hash": "c667bf2cecdd0e55"
+    }
+  },
+  {
+    "event_id": "evt_0003",
+    "event_type": "permission_decision",
+    "sequence": 3,
+    "payload": {
+      "requested_action": "write customer_status.approved_summary",
+      "decision": "approved",
+      "approver": "synthetic_supervisor",
+      "token_placeholder": "approval_token",
+      "scope": "approved summary status only"
+    }
+  },
+  {
+    "event_id": "evt_0004",
+    "event_type": "state_update",
+    "sequence": 4,
+    "payload": {
+      "target_state_key": "customer_status.approved_summary",
+      "old_hash": null,
+      "new_hash": "6669fd45333d1c1d",
+      "actor": "scripted_agent",
+      "causal_tool_call": "evt_0002",
+      "result_status": "updated",
+      "protected": true
+    }
+  },
+  {
+    "event_id": "evt_0005",
+    "event_type": "tool_call",
+    "sequence": 5,
+    "payload": {
+      "tool_name": "write_audit_log",
+      "resource_ids": [
+        "audit_log"
+      ],
+      "access_scope": "write summary status after approval",
+      "result_status": "allowed"
+    }
+  },
+  {
+    "event_id": "evt_0006",
+    "event_type": "state_update",
+    "sequence": 6,
+    "payload": {
+      "target_state_key": "audit_log",
+      "old_hash": null,
+      "new_hash": "f0e657202bbc15e5",
+      "actor": "toy_environment",
+      "causal_tool_call": "evt_0005",
+      "result_status": "updated",
+      "protected": false
+    }
+  },
+  {
+    "event_id": "evt_0007",
+    "event_type": "final_answer",
+    "sequence": 7,
+    "payload": {
+      "resources_used": [
+        "synthetic_customer_file",
+        "audit_log"
+      ],
+      "actions_performed": [
+        "read_resource",
+        "request_approval",
+        "write_state",
+        "write_audit_log"
+      ],
+      "approval_status": "approved"
+    }
+  }
+]
