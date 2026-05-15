@@ -1,0 +1,5 @@
+"tie_breaker","alpha","N","objects","paired_up","paired_down","fixed_predicted","no_admissible_move","involution_failure","weight_failure","sign_failure","tail_condition_failure"
+"lex_largest",0,12,4059,1250,1250,70,423,1066,0,0,0
+"lex_smallest",0,12,4059,1241,1241,70,423,1084,0,0,0
+"lex_largest",1,12,3865,714,714,131,738,1568,0,0,0
+"lex_smallest",1,12,3865,701,701,131,738,1594,0,0,0

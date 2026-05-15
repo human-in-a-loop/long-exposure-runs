@@ -1,0 +1,15 @@
+"check","alpha_case","r","partial_s_max","first_nonzero_k","max_abs_coeff"
+"inner_limit_qbinomial_residual",0,0,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,1,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,2,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,3,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,4,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,5,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",0,6,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,0,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,1,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,2,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,3,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,4,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,5,52,"none_through_KMax",0
+"inner_limit_qbinomial_residual",1,6,52,"none_through_KMax",0

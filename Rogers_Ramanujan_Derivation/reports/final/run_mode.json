@@ -1,0 +1,11 @@
+{
+  "agent": "final_reporter",
+  "mode": "fresh",
+  "detection_source": "none",
+  "canonical_path": "<run-workspace>/reports/final/final_report.md",
+  "commit_marker": "<run-workspace>/reports/final/final_report.committed",
+  "baseline_boundary_ts": null,
+  "total_report_tokens": 44196,
+  "budget_tokens": 44196,
+  "stages": 4
+}

@@ -1,0 +1,7 @@
+"check","alpha_case","first_nonzero_k","max_abs_coefficient"
+"euler_times_series_minus_bilateral",0,"none_through_KMax",0
+"bilateral_minus_jacobi_product",0,"none_through_KMax",0
+"series_minus_reciprocal_residue_product",0,"none_through_KMax",0
+"euler_times_series_minus_bilateral",1,"none_through_KMax",0
+"bilateral_minus_jacobi_product",1,"none_through_KMax",0
+"series_minus_reciprocal_residue_product",1,"none_through_KMax",0

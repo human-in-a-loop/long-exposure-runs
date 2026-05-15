@@ -1,0 +1,81 @@
+{
+  "figure_coverage": {
+    "figures_in_ledger": 9,
+    "figures_present": 9,
+    "milestones_with_figures": 3,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": []
+  },
+  "findings": {
+    "CRITICAL": 0,
+    "MINOR": 0,
+    "MODERATE": 0
+  },
+  "future_work": [
+    {
+      "anchored_to": "_run/start",
+      "proposal": "Close or supersede the run-start bookkeeping entry when the final audit artifacts are committed, so terminal reports do not retain an in-progress run marker."
+    }
+  ],
+  "lessons_emitted": [
+    "structured-ledger-confidence-parsing",
+    "data-artifacts-not-prose-evidence"
+  ],
+  "milestone_status_distribution": {
+    "validated": 5
+  },
+  "plan_milestone_state": {
+    "M0": {
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_agent": "auditor",
+      "latest_cycle": "1",
+      "latest_event_id": "3a29313d-0190-4c7e-a0c7-5db7ae0e5b7d",
+      "status": "validated"
+    },
+    "M1": {
+      "confidence": "high",
+      "evidence_count": 6,
+      "latest_agent": "auditor",
+      "latest_cycle": "1",
+      "latest_event_id": "898c7838-6f43-4fe7-a6cc-f4b0624e90ce",
+      "status": "validated"
+    },
+    "M2": {
+      "confidence": "high",
+      "evidence_count": 12,
+      "latest_agent": "auditor",
+      "latest_cycle": "8",
+      "latest_event_id": "dbdb73ac-d37b-476a-b93a-3d5ceb5f6a22",
+      "status": "validated"
+    },
+    "M3": {
+      "confidence": "high",
+      "evidence_count": 6,
+      "latest_agent": "auditor",
+      "latest_cycle": "9",
+      "latest_event_id": "1de672f2-0324-4979-b79b-e83eb371ec39",
+      "status": "validated"
+    },
+    "M4": {
+      "confidence": "high",
+      "evidence_count": 8,
+      "latest_agent": "auditor",
+      "latest_cycle": "10",
+      "latest_event_id": "031480b5-4644-4668-b467-9dfcb1f3d0fd",
+      "status": "validated"
+    }
+  },
+  "promise_check_status": "green",
+  "reconciliation_events_emitted": 0,
+  "residual_debt": [
+    {
+      "kind": "nonterminal-ledger-state",
+      "milestone": "_run/start",
+      "narrative": "Latest ledger state is in-progress/high. This is bookkeeping debt rather than a proof defect for plan milestones M0-M4."
+    }
+  ],
+  "run_id": "run-2026-05-14T232311Z",
+  "wall_cap_exceeded": false
+}

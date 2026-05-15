@@ -1,0 +1,114 @@
+package_name: "rogers_ramanujan_derivation"
+description: |
+  This package contains the final formal-power-series derivation of the two Rogers-Ramanujan identities and the reproducible artifacts used to verify the report's claims. It includes the final report, manifest, proof-support scripts named as Key Files, and the cited diagnostic figures with regeneration scripts where available.
+curation_complete: true
+include:
+  - src: reports/final/final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: reports/final/final_report.pdf
+    dest: report/final_report.pdf
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: scripts/rr/finite_rr_experiments.wls
+    dest: code/scripts/rr/finite_rr_experiments.wls
+    role: code
+    justification: "Key File cited in Foundational Results and Diagnostics and Validation and Artifact Trail for finite coefficient agreement and negative controls."
+  - src: scripts/rr/q_difference_probe.wls
+    dest: code/scripts/rr/q_difference_probe.wls
+    role: code
+    justification: "Key File cited in Foundational Results and Diagnostics and Validation and Artifact Trail for q-difference ladder and backsolve diagnostics."
+  - src: scripts/rr/product_transform_probe.wls
+    dest: code/scripts/rr/product_transform_probe.wls
+    role: code
+    justification: "Key File cited in Foundational Results and Diagnostics and Validation and Artifact Trail for transformed recurrence, Jacobi residuals, and Gaussian-window failures."
+  - src: scripts/rr/transformed_cancellation_probe.wls
+    dest: code/scripts/rr/transformed_cancellation_probe.wls
+    role: code
+    justification: "Key File cited in Routes Explored Before the Transfer Mechanism and Validation and Artifact Trail for signed-object expansion and rejected local cancellation."
+  - src: scripts/rr/nonlocal_involution_probe.wls
+    dest: code/scripts/rr/nonlocal_involution_probe.wls
+    role: code
+    justification: "Key File cited in Routes Explored Before the Transfer Mechanism and Validation and Artifact Trail for nonlocal transfer obstruction diagnostics."
+  - src: scripts/rr/mod5_state_recurrence_probe.py
+    dest: code/scripts/rr/mod5_state_recurrence_probe.py
+    role: code
+    justification: "Key File cited in Routes Explored Before the Transfer Mechanism and Validation and Artifact Trail for shifted-state and modulo-5 non-closure diagnostics."
+  - src: scripts/rr/euler_tail_telescoping_probe.wls
+    dest: code/scripts/rr/euler_tail_telescoping_probe.wls
+    role: code
+    justification: "Key File cited in Routes Explored Before the Transfer Mechanism and Validation and Artifact Trail for Euler-tail expansion and low-order certificate diagnostics."
+  - src: scripts/rr/direct_bijection_probe.py
+    dest: code/scripts/rr/direct_bijection_probe.py
+    role: code
+    justification: "Key File cited in Routes Explored Before the Transfer Mechanism and Validation and Artifact Trail for finite gap/residue enumeration and beta/abacus diagnostics."
+  - src: scripts/rr/bailey_matrix_probe.wls
+    dest: code/scripts/rr/bailey_matrix_probe.wls
+    role: code
+    justification: "Key File cited in The Bailey-Style Triangular Transfer and Validation and Artifact Trail for triangular transform and limiting inner-sum checks."
+  - src: scripts/rr/product_side_formal_check.wls
+    dest: code/scripts/rr/product_side_formal_check.wls
+    role: code
+    justification: "Key File cited in Product-Side Closure and Validation and Artifact Trail for transformed, Jacobi, and reciprocal-product residual checks."
+  - src: data/finite_experiments/rr_difference_heatmap.png
+    dest: rr_difference_heatmap.png
+    role: figure
+    caption: "Heatmap of coefficient differences by degree for the Rogers-Ramanujan target products and negative-control products; axes are product/series case and q-degree."
+  - src: scripts/rr/plot_rr_difference_heatmap.py
+    dest: code/scripts/rr/plot_rr_difference_heatmap.py
+    role: code
+    justification: "Regenerates rr_difference_heatmap.png, cited by MANIFEST cross-references for finite coefficient agreement and negative controls."
+  - src: data/finite_experiments/product_transform_residuals.png
+    dest: product_transform_residuals.png
+    role: figure
+    caption: "Residual plot for product-transform candidate identities, showing first failure degree in q-degree units."
+  - src: scripts/rr/plot_product_transform_residuals.py
+    dest: code/scripts/rr/plot_product_transform_residuals.py
+    role: code
+    justification: "Regenerates product_transform_residuals.png, cited by MANIFEST cross-references for finite product-transform diagnostics."
+  - src: data/finite_experiments/transformed_cancellation_survivors.png
+    dest: transformed_cancellation_survivors.png
+    role: figure
+    caption: "Signed-survivor pattern for the transformed-series cancellation attempt, with q-degree support and boundary corrections."
+  - src: scripts/rr/plot_transformed_cancellation_survivors.py
+    dest: code/scripts/rr/plot_transformed_cancellation_survivors.py
+    role: code
+    justification: "Regenerates transformed_cancellation_survivors.png, cited by MANIFEST cross-references for transformed cancellation diagnostics."
+  - src: data/finite_experiments/nonlocal_involution_fixed_points.png
+    dest: nonlocal_involution_fixed_points.png
+    role: figure
+    caption: "Fixed and unpaired object patterns from the nonlocal involution probe, plotted against predicted pentagonal q-exponents."
+  - src: scripts/rr/plot_nonlocal_involution_fixed_points.py
+    dest: code/scripts/rr/plot_nonlocal_involution_fixed_points.py
+    role: code
+    justification: "Regenerates nonlocal_involution_fixed_points.png, cited by MANIFEST cross-references for nonlocal transfer obstruction diagnostics."
+  - src: data/finite_experiments/mod5_state_support.png
+    dest: mod5_state_support.png
+    role: figure
+    caption: "Stable coefficient support by residue class for the modulo-5 shifted-state recurrence probe; axes are q-degree and residue/state class."
+  - src: scripts/rr/plot_mod5_state_support.py
+    dest: code/scripts/rr/plot_mod5_state_support.py
+    role: code
+    justification: "Regenerates mod5_state_support.png, cited by MANIFEST cross-references for modulo-5 state recurrence diagnostics."
+  - src: data/finite_experiments/euler_tail_lattice_residuals.png
+    dest: euler_tail_lattice_residuals.png
+    role: figure
+    caption: "Euler-tail lattice support and finite residual diagnostics, with axes representing lattice coordinates and q-degree residual support."
+  - src: scripts/rr/plot_euler_tail_lattice_residuals.py
+    dest: code/scripts/rr/plot_euler_tail_lattice_residuals.py
+    role: code
+    justification: "Regenerates euler_tail_lattice_residuals.png, cited by MANIFEST cross-references for Euler-tail telescoping diagnostics."
+  - src: data/finite_experiments/direct_bijection_abacus_examples.png
+    dest: direct_bijection_abacus_examples.png
+    role: figure
+    caption: "Abacus examples from the direct bijection probe, displaying beta/runner configurations for finite gap and residue partitions."
+  - src: data/finite_experiments/bailey_transform_residuals.png
+    dest: bailey_transform_residuals.png
+    role: figure
+    caption: "Residual checks for the Bailey-style triangular transform, showing residual magnitude against checked q-degree."
+  - src: scripts/rr/plot_bailey_transform_residuals.py
+    dest: code/scripts/rr/plot_bailey_transform_residuals.py
+    role: code
+    justification: "Regenerates bailey_transform_residuals.png, cited by MANIFEST cross-references for Bailey transform residual diagnostics."
