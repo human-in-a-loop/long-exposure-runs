@@ -1,0 +1,7 @@
+regime,lambda,density_F_prime,edge_linearization_valid,weyl_delta_power_slope_vs_n,rigidity_delta_power_slope_vs_n,expected_bulk_weyl_slope,expected_rigidity_slope,interpretation
+edge,0.25,0,no,-0.0134192505276,-0.00400000000011,-0.004,-0.004,Use F(1/4+Delta)-F(1/4) ~ (pi/3) Delta^(3/2); linear density is zero.
+near_edge,0.250001,0.00157079115908,no,-0.0134192532965,-0.004,-0.004,-0.004,Bulk density is positive but tiny; edge curvature still dominates unless Delta is much smaller than Lambda-1/4.
+moderate_bulk,1,0.495685276999,yes,-0.0121797176739,-0.00399999999998,-0.006,-0.004,Bulk linearization is valid; Weyl-subtraction threshold scales as n^(-alpha_W).
+bulk,4,0.499994802544,yes,-0.00997932333405,-0.00399999999994,-0.006,-0.004,Bulk linearization is valid; Weyl-subtraction threshold scales as n^(-alpha_W).
+high_energy,25,0.5,yes,-0.00790964778852,-0.00400000000003,-0.006,-0.004,High-energy density is near 1/2; lambda^(1/2+epsilon) endpoint error is the main energy dependence.
+very_high_energy,100,0.5,yes,-0.00707244602388,-0.00400000000003,-0.006,-0.004,High-energy density is near 1/2; lambda^(1/2+epsilon) endpoint error is the main energy dependence.

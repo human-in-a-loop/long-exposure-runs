@@ -1,0 +1,278 @@
+family,L,V,constraint_counts,constraint_total,coefficient_l1_norm_order_leq_8,max_abs_coefficient_order_leq_8,max_abs_derivative_order_leq_8,nearest_singularity_scale,normalized_expression_n,description
+single_label_cycle_profile,1,1,1,1,1,1,1,,n^(0)*(n)_1/((n)_1),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,1,2,1,1,2,1,1,1,n^(-1)*(n)_2/((n)_1),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,1,1,1;1,2,1,1,1,,n^(1)*(n)_1/((n)_1*(n)_1),two length-L labels sharing one vertex
+rank4_delocalization_toy_s3,1,1,1;1;1;1,4,1,1,1,,n^(3)*(n)_1/((n)_1*(n)_1*(n)_1*(n)_1),four-label fourth-moment toy profile with fixed deficit s=3
+single_label_cycle_profile,2,2,2,2,1,1,1,,n^(0)*(n)_2/((n)_2),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,2,3,2,2,3,2,2,1/2,n^(-1)*(n)_3/((n)_2),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,2,3,2;2,4,9,1,40320,1/2,n^(1)*(n)_3/((n)_2*(n)_2),two length-L labels sharing one vertex
+rank2_deficit_k2,2,2,2;2,4,9,1,40320,1,n^(2)*(n)_2/((n)_2*(n)_2),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,2,1,2;2,4,45,9,362880,1,n^(3)*(n)_1/((n)_2*(n)_2),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,2,5,2;2;2;2,8,129,55,2217600,1/4,n^(3)*(n)_5/((n)_2*(n)_2*(n)_2*(n)_2),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,2,4,2;2;2;2,8,83,33,1330560,1/3,n^(4)*(n)_4/((n)_2*(n)_2*(n)_2*(n)_2),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,3,3,3,3,1,1,1,,n^(0)*(n)_3/((n)_3),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,3,4,3,3,4,3,3,1/3,n^(-1)*(n)_4/((n)_3),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,3,5,3;3,6,475,250,10080000,1/4,n^(1)*(n)_5/((n)_3*(n)_3),two length-L labels sharing one vertex
+rank2_deficit_k2,3,4,3;3,6,495,254,10241280,1/3,n^(2)*(n)_4/((n)_3*(n)_3),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,3,3,3;3,6,1013,511,20603520,1/2,n^(3)*(n)_3/((n)_3*(n)_3),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,3,9,3;3;3;3,12,20737,9084,106767360,1/8,n^(3)*(n)_9/((n)_3*(n)_3*(n)_3*(n)_3),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,3,8,3;3;3;3,12,16793,12680,511257600,1/7,n^(4)*(n)_8/((n)_3*(n)_3*(n)_3*(n)_3),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,4,4,4,4,1,1,1,,n^(0)*(n)_4/((n)_4),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,4,5,4,4,5,4,4,1/4,n^(-1)*(n)_5/((n)_4),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,4,7,4;4,8,4459,3519,141886080,1/6,n^(1)*(n)_7/((n)_4*(n)_4),two length-L labels sharing one vertex
+rank2_deficit_k2,4,6,4;4,8,6901,5031,202849920,1/5,n^(2)*(n)_6/((n)_4*(n)_4),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,4,5,4;4,8,12739,8819,355582080,1/4,n^(3)*(n)_5/((n)_4*(n)_4),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,4,13,4;4;4;4,16,4981411,3840165,154835452800,1/12,n^(3)*(n)_13/((n)_4*(n)_4*(n)_4*(n)_4),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,4,12,4;4;4;4,16,2275927,1750563,70582700160,1/11,n^(4)*(n)_12/((n)_4*(n)_4*(n)_4*(n)_4),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,5,5,5,5,1,1,1,,n^(0)*(n)_5/((n)_5),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,5,6,5,5,6,5,5,1/5,n^(-1)*(n)_6/((n)_5),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,5,9,5;5,10,64961,42784,1725050880,1/8,n^(1)*(n)_9/((n)_5*(n)_5),two length-L labels sharing one vertex
+rank2_deficit_k2,5,8,5;5,10,15593,6040,223211520,1/7,n^(2)*(n)_8/((n)_5*(n)_5),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,5,7,5;5,10,36153,31401,1266088320,1/6,n^(3)*(n)_7/((n)_5*(n)_5),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,5,17,5;5;5;5,20,354356033,238700224,9624393031680,1/16,n^(3)*(n)_17/((n)_5*(n)_5*(n)_5*(n)_5),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,5,16,5;5;5;5,20,147060273,118733376,4787329720320,1/15,n^(4)*(n)_16/((n)_5*(n)_5*(n)_5*(n)_5),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,6,6,6,6,1,1,1,,n^(0)*(n)_6/((n)_6),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,6,7,6,6,7,6,6,1/6,n^(-1)*(n)_7/((n)_6),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,6,11,6;6,12,384171,340375,13723920000,1/10,n^(1)*(n)_11/((n)_6*(n)_6),two length-L labels sharing one vertex
+rank2_deficit_k2,6,10,6;6,12,446521,365375,14731920000,1/9,n^(2)*(n)_10/((n)_6*(n)_6),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,6,9,6;6,12,365403,275281,11099329920,1/8,n^(3)*(n)_9/((n)_6*(n)_6),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,6,21,6;6;6;6,24,17523777171,11047046375,445416909840000,1/20,n^(3)*(n)_21/((n)_6*(n)_6*(n)_6*(n)_6),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,6,20,6;6;6;6,24,7745970751,7238035375,291837586320000,1/19,n^(4)*(n)_20/((n)_6*(n)_6*(n)_6*(n)_6),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,7,7,7,7,1,1,1,,n^(0)*(n)_7/((n)_7),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,7,8,7,7,8,7,7,1/7,n^(-1)*(n)_8/((n)_7),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,7,13,7;7,14,3281731,2579634,104010842880,1/12,n^(1)*(n)_13/((n)_7*(n)_7),two length-L labels sharing one vertex
+rank2_deficit_k2,7,12,7;7,14,526927,232494,8479054080,1/11,n^(2)*(n)_12/((n)_7*(n)_7),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,7,11,7;7,14,1342621,1227761,49503323520,1/10,n^(3)*(n)_11/((n)_7*(n)_7),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,7,25,7;7;7;7,28,1707800436433,1447151287320,58349139904742400,1/24,n^(3)*(n)_25/((n)_7*(n)_7*(n)_7*(n)_7),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,7,24,7;7;7;7,28,151042674361,86177767608,3474687589954560,1/23,n^(4)*(n)_24/((n)_7*(n)_7*(n)_7*(n)_7),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,8,8,8,8,1,1,1,,n^(0)*(n)_8/((n)_8),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,8,9,8,8,9,8,8,1/8,n^(-1)*(n)_9/((n)_8),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,8,15,8;8,16,5364577,3301375,133111440000,1/14,n^(1)*(n)_15/((n)_8*(n)_8),two length-L labels sharing one vertex
+rank2_deficit_k2,8,14,8;8,16,10119229,9141391,368580885120,1/13,n^(2)*(n)_14/((n)_8*(n)_8),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,8,13,8;8,16,7265765,5936139,239345124480,1/12,n^(3)*(n)_13/((n)_8*(n)_8),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,8,29,8;8;8;8,32,56445377633541,52396435406357,2112624275584314240,1/28,n^(3)*(n)_29/((n)_8*(n)_8*(n)_8*(n)_8),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,8,28,8;8;8;8,32,14949770524389,13467784556205,543021073306185600,1/27,n^(4)*(n)_28/((n)_8*(n)_8*(n)_8*(n)_8),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,9,9,9,9,1,1,1,,n^(0)*(n)_9/((n)_9),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,9,10,9,9,10,9,9,1/9,n^(-1)*(n)_10/((n)_9),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,9,17,9;9,18,78776321,71915264,2899623444480,1/16,n^(1)*(n)_17/((n)_9*(n)_9),two length-L labels sharing one vertex
+rank2_deficit_k2,9,16,9;9,18,32884209,25997056,1048201297920,1/15,n^(2)*(n)_16/((n)_9*(n)_9),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,9,15,9;9,18,12891427,11356081,457877185920,1/14,n^(3)*(n)_15/((n)_9*(n)_9),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,9,33,9;9;9;9,36,859747418067329,821614918197760,33127513501733683200,1/32,n^(3)*(n)_33/((n)_9*(n)_9*(n)_9*(n)_9),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,9,32,9;9;9;9,36,314522620126561,297484345190912,11994568798097571840,1/31,n^(4)*(n)_32/((n)_9*(n)_9*(n)_9*(n)_9),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,10,10,10,10,1,1,1,,n^(0)*(n)_10/((n)_10),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,10,11,10,10,11,10,10,1/10,n^(-1)*(n)_11/((n)_10),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,10,19,10;10,20,270393283,221082129,8914031441280,1/18,n^(1)*(n)_19/((n)_10*(n)_10),two length-L labels sharing one vertex
+rank2_deficit_k2,10,18,10;10,20,82278433,70560639,2845004964480,1/17,n^(2)*(n)_18/((n)_10*(n)_10),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,10,17,10;10,20,113775123,103242601,4162741672320,1/16,n^(3)*(n)_17/((n)_10*(n)_10),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,10,37,10;10;10;10,40,8392513373949925,8134622943014601,327987997062348712320,1/36,n^(3)*(n)_37/((n)_10*(n)_10*(n)_10*(n)_10),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,10,36,10;10;10;10,40,3677853826172053,3546891060956001,143010647577745960320,1/35,n^(4)*(n)_36/((n)_10*(n)_10*(n)_10*(n)_10),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,11,11,11,11,1,1,1,,n^(0)*(n)_11/((n)_11),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,11,12,11,11,12,11,11,1/11,n^(-1)*(n)_12/((n)_11),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,11,21,11;11,22,362321371,211438250,8525190240000,1/20,n^(1)*(n)_21/((n)_11*(n)_11),two length-L labels sharing one vertex
+rank2_deficit_k2,11,20,11;11,22,644556151,598352750,24125582880000,1/19,n^(2)*(n)_20/((n)_11*(n)_11),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,11,19,11;11,22,176060405,133308351,5374992712320,1/18,n^(3)*(n)_19/((n)_11*(n)_11),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,11,41,11;11;11;11,44,60314652949611681,58943416578893000,2376598556460965760000,1/40,n^(3)*(n)_41/((n)_11*(n)_11*(n)_11*(n)_11),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,11,40,11;11;11;11,44,29814027122050041,29051511476361000,1171356942726875520000,1/39,n^(4)*(n)_40/((n)_11*(n)_11*(n)_11*(n)_11),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,12,12,12,12,1,1,1,,n^(0)*(n)_12/((n)_12),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,12,13,12,12,13,12,12,1/12,n^(-1)*(n)_13/((n)_12),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,12,23,12;12,24,4125216943,4003300609,161413080554880,1/22,n^(1)*(n)_23/((n)_12*(n)_12),two length-L labels sharing one vertex
+rank2_deficit_k2,12,22,12;12,24,1582423459,1327617929,53529554897280,1/21,n^(2)*(n)_22/((n)_12*(n)_12),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,12,21,12;12,24,741725425,697591091,28126872789120,1/20,n^(3)*(n)_21/((n)_12*(n)_12),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,12,45,12;12;12;12,48,344997803445502373,338934297920817445,13665830892167359382400,1/44,n^(3)*(n)_45/((n)_12*(n)_12*(n)_12*(n)_12),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,12,44,12;12;12;12,48,186144825540176581,182534530587782813,7359792273299403020160,1/43,n^(4)*(n)_44/((n)_12*(n)_12*(n)_12*(n)_12),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,13,13,13,13,1,1,1,,n^(0)*(n)_13/((n)_13),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,13,14,13,13,14,13,13,1/13,n^(-1)*(n)_14/((n)_13),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,13,25,13;13,26,16930354849,15563308320,627512591462400,1/24,n^(1)*(n)_25/((n)_13*(n)_13),two length-L labels sharing one vertex
+rank2_deficit_k2,13,24,13;13,26,2147481865,1482343776,59768101048320,1/23,n^(2)*(n)_24/((n)_13*(n)_13),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,13,23,13;13,26,3794555885,3555564839,143360374308480,1/22,n^(3)*(n)_23/((n)_13*(n)_13),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,13,49,13;13;13;13,52,1650972149345210401,1627813580101359552,65633443549686817136640,1/48,n^(3)*(n)_49/((n)_13*(n)_13*(n)_13*(n)_13),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,13,48,13;13;13;13,52,952675883600905969,938128044731232960,37825322763563312947200,1/47,n^(4)*(n)_48/((n)_13*(n)_13*(n)_13*(n)_13),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,14,14,14,14,1,1,1,,n^(0)*(n)_14/((n)_14),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,14,15,14,14,15,14,14,1/14,n^(-1)*(n)_15/((n)_14),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,14,27,14;14,28,33098764921,26890671431,1084231872097920,1/26,n^(1)*(n)_27/((n)_14*(n)_14),two length-L labels sharing one vertex
+rank2_deficit_k2,14,26,14;14,28,20078595239,19545770881,788085481921920,1/25,n^(2)*(n)_26/((n)_14*(n)_14),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,14,25,14;14,28,7089438801,6027739119,243038441278080,1/24,n^(3)*(n)_25/((n)_14*(n)_14),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,14,53,14;14;14;14,56,6841475510110383429,6762990723514822745,272683785972117653078400,1/52,n^(3)*(n)_53/((n)_14*(n)_14*(n)_14*(n)_14),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,14,52,14;14;14;14,56,4164405270486405621,4112923150493636817,165833061427903436461440,1/51,n^(4)*(n)_52/((n)_14*(n)_14*(n)_14*(n)_14),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,15,15,15,15,1,1,1,,n^(0)*(n)_15/((n)_15),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,15,16,15,15,16,15,15,1/15,n^(-1)*(n)_16/((n)_15),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,15,29,15;15,30,55215907475,36332871134,1464941364122880,1/28,n^(1)*(n)_29/((n)_15*(n)_15),two length-L labels sharing one vertex
+rank2_deficit_k2,15,28,15;15,30,71864157639,67594535386,2725411666763520,1/27,n^(2)*(n)_28/((n)_15*(n)_15),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,15,27,15;15,30,10670521293,8240470351,332255764552320,1/26,n^(3)*(n)_27/((n)_15*(n)_15),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,15,57,15;15;15;15,60,25171270367931190385,24930488893771569976,1005197312196869701432320,1/56,n^(3)*(n)_57/((n)_15*(n)_15*(n)_15*(n)_15),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,15,56,15;15;15;15,60,16004990536817933113,15841306968405196376,638721496966097517880320,1/55,n^(4)*(n)_56/((n)_15*(n)_15*(n)_15*(n)_15),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,16,16,16,16,1,1,1,,n^(0)*(n)_16/((n)_16),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,16,17,16,16,17,16,16,1/16,n^(-1)*(n)_17/((n)_16),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,16,31,16;16,32,477004419781,437871045375,17654960549520000,1/30,n^(1)*(n)_31/((n)_16*(n)_16),two length-L labels sharing one vertex
+rank2_deficit_k2,16,30,16;16,32,133771423801,114652569375,4622791597200000,1/29,n^(2)*(n)_30/((n)_16*(n)_16),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,16,29,16;16,32,81819088867,79933848661,3222932778011520,1/28,n^(3)*(n)_29/((n)_16*(n)_16),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,16,61,16;16;16;16,64,83788325562117963781,83109348158374711125,3350968917745668352560000,1/60,n^(3)*(n)_61/((n)_16*(n)_16*(n)_16*(n)_16),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,16,60,16;16;16;16,64,55249937590175650021,54774297790643278125,2208499686918736974000000,1/59,n^(4)*(n)_60/((n)_16*(n)_16*(n)_16*(n)_16),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,17,17,17,17,1,1,1,,n^(0)*(n)_17/((n)_17),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,17,18,17,17,18,17,17,1/17,n^(-1)*(n)_18/((n)_17),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,17,33,17;17,34,1814369986561,1779191781376,71737012625080320,1/32,n^(1)*(n)_33/((n)_17*(n)_17),two length-L labels sharing one vertex
+rank2_deficit_k2,17,32,17;17,34,128161836001,73181947904,2950696139489280,1/31,n^(2)*(n)_32/((n)_17*(n)_17),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,17,31,17;17,34,261483657157,249592345569,10063563373342080,1/30,n^(3)*(n)_31/((n)_17*(n)_17),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,17,65,17;17;17;17,68,256046718281400622593,254265678690744504320,10251992164810818414182400,1/64,n^(3)*(n)_65/((n)_17*(n)_17*(n)_17*(n)_17),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,17,64,17;17;17;17,68,174124246936090258881,172844208321319784448,6969078479515613708943360,1/63,n^(4)*(n)_64/((n)_17*(n)_17*(n)_17*(n)_17),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,18,18,18,18,1,1,1,,n^(0)*(n)_18/((n)_18),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,18,19,18,18,19,18,18,1/18,n^(-1)*(n)_19/((n)_18),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,18,35,18;18,36,5049129857731,4808822316065,193891715783740800,1/34,n^(1)*(n)_35/((n)_18*(n)_18),two length-L labels sharing one vertex
+rank2_deficit_k2,18,34,18;18,36,1370065851777,1255710835199,50630260875223680,1/33,n^(2)*(n)_34/((n)_18*(n)_18),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,18,33,18;18,36,463074612807,410605649161,16555619774171520,1/32,n^(3)*(n)_33/((n)_18*(n)_18),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,18,69,18;18;18;18,72,726658158940197901541,722270589002228984137,29121950148569872640403840,1/68,n^(3)*(n)_69/((n)_18*(n)_18*(n)_18*(n)_18),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,18,68,18;18;18;18,72,507431502010300254229,504207580584860582945,20329649649181578704342400,1/67,n^(4)*(n)_68/((n)_18*(n)_18*(n)_18*(n)_18),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,19,19,19,19,1,1,1,,n^(0)*(n)_19/((n)_19),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,19,20,19,19,20,19,19,1/19,n^(-1)*(n)_20/((n)_19),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,19,37,19;19,38,9774364980439,8587757620134,346258387243802880,1/36,n^(1)*(n)_37/((n)_19*(n)_19),two length-L labels sharing one vertex
+rank2_deficit_k2,19,36,19;19,38,5214821156119,5082758211294,204936811079374080,1/35,n^(2)*(n)_36/((n)_19*(n)_19),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,19,35,19;19,38,245824050389,142327858175,4083737622814080,1/34,n^(3)*(n)_35/((n)_19*(n)_19),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,19,73,19;19;19;19,76,1933149748534671676609,1922919784320439474920,77532125703800119628774400,1/72,n^(3)*(n)_73/((n)_19*(n)_19*(n)_19*(n)_19),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,19,72,19;19;19;19,76,1381382537970713677561,1373719104490658705352,55388354293063358999792640,1/71,n^(4)*(n)_72/((n)_19*(n)_19*(n)_19*(n)_19),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,20,20,20,20,1,1,1,,n^(0)*(n)_20/((n)_20),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,20,21,20,20,21,20,20,1/20,n^(-1)*(n)_21/((n)_20),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,20,39,20;20,40,7540656331647,3812822103241,137296240155607680,1/38,n^(1)*(n)_39/((n)_20*(n)_20),two length-L labels sharing one vertex
+rank2_deficit_k2,20,38,20;20,40,14066201534831,13696288322489,552234345162756480,1/37,n^(2)*(n)_38/((n)_20*(n)_20),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,20,37,20;20,40,3574549741143,3275768034099,132078967134871680,1/36,n^(3)*(n)_37/((n)_20*(n)_20),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,20,77,20;20;20;20,80,4857846215860999743525,4835126764535965540901,194952311146090130609128320,1/76,n^(3)*(n)_77/((n)_20*(n)_20*(n)_20*(n)_20),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,20,76,20;20;20;20,80,3542169498925131711813,3524857963175975553501,142122273075255334317160320,1/75,n^(4)*(n)_76/((n)_20*(n)_20*(n)_20*(n)_20),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,21,21,21,21,1,1,1,,n^(0)*(n)_21/((n)_21),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,21,22,21,21,22,21,21,1/21,n^(-1)*(n)_22/((n)_21),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,21,41,21;21,42,62291445251121,50167360060000,2022747957619200000,1/40,n^(1)*(n)_41/((n)_21*(n)_21),two length-L labels sharing one vertex
+rank2_deficit_k2,21,40,21;21,42,28083298111881,25931518508000,1045558826242560000,1/39,n^(2)*(n)_40/((n)_21*(n)_21),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,21,39,21;21,42,13620925096605,13233397950839,533570605377828480,1/38,n^(3)*(n)_39/((n)_21*(n)_21),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,21,81,21;21;21;21,84,11604353751204143650721,11556035755646176168000,465939361667653823093760000,1/80,n^(3)*(n)_81/((n)_21*(n)_21*(n)_21*(n)_21),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,21,80,21;21;21;21,84,8614187710416871375441,8576810634907030472000,345817004799451468631040000,1/79,n^(4)*(n)_80/((n)_21*(n)_21*(n)_21*(n)_21),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,22,22,22,22,1,1,1,,n^(0)*(n)_22/((n)_22),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,22,23,22,22,23,22,22,1/22,n^(-1)*(n)_23/((n)_22),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,22,43,22;22,44,306467620066441,274712945637879,11076425968119281280,1/42,n^(1)*(n)_43/((n)_22*(n)_22),two length-L labels sharing one vertex
+rank2_deficit_k2,22,42,22;22,44,30919198322839,23251316086719,937493064616510080,1/41,n^(2)*(n)_42/((n)_22*(n)_22),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,22,41,22;22,44,35865031318627,35393366261231,1427060527652833920,1/40,n^(3)*(n)_41/((n)_22*(n)_22),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,22,85,22;22;22;22,88,26491856162214501341893,26393010423431630769945,1064166180272763352644182400,1/84,n^(3)*(n)_85/((n)_22*(n)_22*(n)_22*(n)_22),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,22,84,22;22;22;22,88,19981630939936453961461,19904128258718858159313,802534451391544360983500160,1/83,n^(4)*(n)_84/((n)_22*(n)_22*(n)_22*(n)_22),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,23,23,23,23,1,1,1,,n^(0)*(n)_23/((n)_23),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,23,24,23,23,24,23,23,1/23,n^(-1)*(n)_24/((n)_23),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,23,45,23;23,46,1075861548898291,999326963303570,40292863160399942400,1/44,n^(1)*(n)_45/((n)_23*(n)_23),two length-L labels sharing one vertex
+rank2_deficit_k2,23,44,23;23,46,92568069115831,70220490029866,2831290158004197120,1/43,n^(2)*(n)_44/((n)_23*(n)_23),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,23,43,23;23,46,72589847897519,68919671963889,2778841173584004480,1/42,n^(3)*(n)_43/((n)_23*(n)_23),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,23,89,23;23;23;23,92,58060771060264657490961,57865514675766409748312,2333137551726901641051939840,1/88,n^(3)*(n)_89/((n)_23*(n)_23*(n)_23*(n)_23),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,23,88,23;23;23;23,92,44423769073019877962169,44268803141346641831160,1784918142659096598632371200,1/87,n^(4)*(n)_88/((n)_23*(n)_23*(n)_23*(n)_23),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,24,24,24,24,1,1,1,,n^(0)*(n)_24/((n)_24),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,24,25,24,24,25,24,24,1/24,n^(-1)*(n)_25/((n)_24),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,24,47,24;24,48,3196564133946921,3023819784387841,121920413706517749120,1/46,n^(1)*(n)_47/((n)_24*(n)_24),two length-L labels sharing one vertex
+rank2_deficit_k2,24,46,24;24,48,543739121084501,486069012109231,19598302568244193920,1/45,n^(2)*(n)_46/((n)_24*(n)_24),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,24,45,24;24,48,93477789299739,79919982695819,3222373702295422080,1/44,n^(3)*(n)_45/((n)_24*(n)_24),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,24,93,24;24;24;24,96,122634988412283086052869,122261328962596584120085,4929576783771894271721827200,1/92,n^(3)*(n)_93/((n)_24*(n)_24*(n)_24*(n)_24),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,24,92,24;24;24;24,96,95050667500509341022181,94750837925381365532717,3820353785151376658279149440,1/91,n^(4)*(n)_92/((n)_24*(n)_24*(n)_24*(n)_24),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,25,25,25,25,1,1,1,,n^(0)*(n)_25/((n)_25),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,25,26,25,25,26,25,25,1/25,n^(-1)*(n)_26/((n)_25),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,25,49,25;25,50,8521249859270209,8151865438046976,328683214462054072320,1/48,n^(1)*(n)_49/((n)_25*(n)_25),two length-L labels sharing one vertex
+rank2_deficit_k2,25,48,25;25,50,1967992456368913,1831466260475136,73844719622357483520,1/47,n^(2)*(n)_48/((n)_25*(n)_25),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,25,47,25;25,50,111428487623145,71927126586001,2900101743947560320,1/46,n^(3)*(n)_47/((n)_25*(n)_25),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,25,97,25;25;25;25,100,250471871967000004700545,249777163081678999205376,10071015215453297247960760320,1/96,n^(3)*(n)_97/((n)_25*(n)_25*(n)_25*(n)_25),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,25,96,25;25;25;25,100,196420713565198377483553,195857680665179610533376,7896981684420041896705720320,1/95,n^(4)*(n)_96/((n)_25*(n)_25*(n)_25*(n)_25),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,26,26,26,26,1,1,1,,n^(0)*(n)_26/((n)_26),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,26,27,26,26,27,26,26,1/26,n^(-1)*(n)_27/((n)_26),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,26,51,26;26,52,20969825124708001,20215308384359375,815081234057370000000,1/50,n^(1)*(n)_51/((n)_26*(n)_26),two length-L labels sharing one vertex
+rank2_deficit_k2,26,50,26;26,52,5849033605279201,5546617774890625,223639628683590000000,1/49,n^(2)*(n)_50/((n)_26*(n)_26),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,26,49,26;26,52,908940584762309,808122359853801,32583493549305256320,1/48,n^(3)*(n)_49/((n)_26*(n)_26),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,26,101,26;26;26;26,104,496110498594198344310501,494852559866303281015625,19952455213809348290550000000,1/100,n^(3)*(n)_101/((n)_26*(n)_26*(n)_26*(n)_26),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,26,100,26;26;26;26,104,393227163542875075082901,392198330192361842390625,15813436673356029485190000000,1/99,n^(4)*(n)_100/((n)_26*(n)_26*(n)_26*(n)_26),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,27,27,27,27,1,1,1,,n^(0)*(n)_27/((n)_27),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,27,28,27,27,28,27,27,1/27,n^(-1)*(n)_28/((n)_27),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,27,53,27;27,54,48443357147032251,46961972501336074,1893506731253870503680,1/52,n^(1)*(n)_53/((n)_27*(n)_27),two length-L labels sharing one vertex
+rank2_deficit_k2,27,52,27;27,54,15438642512653751,14803936461992626,596894718147542680320,1/51,n^(2)*(n)_52/((n)_27*(n)_27),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,27,51,27;27,54,3445810786830005,3210657223578559,129453699254687498880,1/50,n^(3)*(n)_51/((n)_27*(n)_27),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,27,105,27;27;27;27,108,955381327796427117775073,953158085892392160269320,38431334023181251902058982400,1/104,n^(3)*(n)_105/((n)_27*(n)_27*(n)_27*(n)_27),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,27,104,27;27;27;27,108,764690394266503829462521,762856827597946874767208,30758387288749217990613826560,1/103,n^(4)*(n)_104/((n)_27*(n)_27*(n)_27*(n)_27),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,28,28,28,28,1,1,1,,n^(0)*(n)_28/((n)_28),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,28,29,28,28,29,28,28,1/28,n^(-1)*(n)_29/((n)_28),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,28,55,28;28,56,106221512337145921,103412357035293825,4169586235663047024000,1/54,n^(1)*(n)_55/((n)_28*(n)_28),two length-L labels sharing one vertex
+rank2_deficit_k2,28,54,28;28,56,37468050164267581,36194837901806871,1459375864200853038720,1/53,n^(2)*(n)_54/((n)_28*(n)_28),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,28,53,28;28,56,10303161303160341,9790616230309261,394757646406069403520,1/52,n^(3)*(n)_53/((n)_28*(n)_28),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,28,109,28;28;28;28,112,1792773669617092779018661,1788931170675060281786277,72129704801618430561622688640,1/108,n^(3)*(n)_109/((n)_28*(n)_28*(n)_28*(n)_28),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,28,108,28;28;28;28,112,1447882842743668009966789,1444689409161506669512605,58249876977391948914748233600,1/107,n^(4)*(n)_108/((n)_28*(n)_28*(n)_28*(n)_28),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,29,29,29,29,1,1,1,,n^(0)*(n)_29/((n)_29),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,29,30,29,29,30,29,29,1/29,n^(-1)*(n)_30/((n)_29),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,29,57,29;29,58,222808816434219121,217643720137002656,8775394795923947089920,1/56,n^(1)*(n)_57/((n)_29*(n)_29),two length-L labels sharing one vertex
+rank2_deficit_k2,29,56,29;29,58,85228373809265401,82771580190962656,3337350113299614289920,1/55,n^(2)*(n)_56/((n)_29*(n)_29),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,29,55,29;29,58,27021656697638801,25963352750154681,1046842382886236737920,1/54,n^(3)*(n)_55/((n)_29*(n)_29),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,29,113,29;29;29;29,116,3284612120644055813554209,3278106702372967699855040,132173262239678057658155212800,1/112,n^(3)*(n)_113/((n)_29*(n)_29*(n)_29*(n)_29),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,29,112,29;29;29;29,116,2674773512414188164847281,2669328524840707203698112,107627326121577314453107875840,1/111,n^(4)*(n)_112/((n)_29*(n)_29*(n)_29*(n)_29),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,30,30,30,30,1,1,1,,n^(0)*(n)_30/((n)_30),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,30,31,30,30,31,30,30,1/30,n^(-1)*(n)_31/((n)_30),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,30,59,30;30,60,449721358187800329,440483747671380391,17760304706110057365120,1/58,n^(1)*(n)_59/((n)_30*(n)_30),two length-L labels sharing one vertex
+rank2_deficit_k2,30,58,30;30,60,183931736986473113,179349157310588161,7231358022762914651520,1/57,n^(2)*(n)_58/((n)_30*(n)_30),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,30,57,30;30,60,64845651786000965,62756422221080401,2530338943953961768320,1/56,n^(3)*(n)_57/((n)_30*(n)_30),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,30,117,30;30;30;30,120,5885953501212969440312645,5875148493637788713069401,236885987263475640910958248320,1/116,n^(3)*(n)_117/((n)_30*(n)_30*(n)_30*(n)_30),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,30,116,30;30;30;30,120,4829976871731485017983733,4820873624925610152274001,194377624557000601339687720320,1/115,n^(4)*(n)_116/((n)_30*(n)_30*(n)_30*(n)_30),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,31,31,31,31,1,1,1,,n^(0)*(n)_31/((n)_31),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,31,32,31,31,32,31,31,1/31,n^(-1)*(n)_32/((n)_31),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,31,61,31;31,62,877470853349956771,861357876003317250,34729949560453751520000,1/60,n^(1)*(n)_61/((n)_31*(n)_31),two length-L labels sharing one vertex
+rank2_deficit_k2,31,60,31;31,62,379770313778065111,371475304785200250,14977884288939274080000,1/59,n^(2)*(n)_60/((n)_31*(n)_31),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,31,59,31;31,62,145566518378735949,141596962524510031,5709189528988244449920,1/58,n^(3)*(n)_59/((n)_31*(n)_31),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,31,121,31;31;31;31,124,10332518767091917939059121,10314888941471813904123000,415896322120143536614239360000,1/120,n^(3)*(n)_121/((n)_31*(n)_31*(n)_31*(n)_31),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,31,120,31;31;31;31,124,8539244837077980179859001,8524300887661197365199000,343699811790499477764823680000,1/119,n^(4)*(n)_120/((n)_31*(n)_31*(n)_31*(n)_31),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,32,32,32,32,1,1,1,,n^(0)*(n)_32/((n)_32),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,32,33,32,32,33,32,32,1/32,n^(-1)*(n)_33/((n)_32),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,32,63,32;32,64,1661096686735205641,1633623603774289409,65867703704179348970880,1/62,n^(1)*(n)_63/((n)_32*(n)_32),two length-L labels sharing one vertex
+rank2_deficit_k2,32,62,32;32,64,754828682197446901,740211456317805631,29845325918733923041920,1/61,n^(2)*(n)_62/((n)_32*(n)_32),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,32,61,32;32,64,309801038384156165,302505503239675989,12197021890623735876480,1/60,n^(3)*(n)_61/((n)_32*(n)_32),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,32,125,32;32;32;32,128,17793622189278548654556933,17765329841724495277615445,716298099218331649593454742400,1/124,n^(3)*(n)_125/((n)_32*(n)_32*(n)_32*(n)_32),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,32,124,32;32;32;32,128,14802929142299189740428261,14778810649984840071765933,595881645407388751693602418560,1/123,n^(4)*(n)_124/((n)_32*(n)_32*(n)_32*(n)_32),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,33,33,33,33,1,1,1,,n^(0)*(n)_33/((n)_33),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,33,34,33,33,34,33,33,1/33,n^(-1)*(n)_34/((n)_33),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,33,65,33;33,66,3060135199498941441,3014258095232204800,121534886399762497536000,1/64,n^(1)*(n)_65/((n)_33*(n)_33),two length-L labels sharing one vertex
+rank2_deficit_k2,33,64,33;33,66,1451063381523743681,1425921634367881216,57493160297712970629120,1/63,n^(2)*(n)_64/((n)_33*(n)_33),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,33,63,33;33,66,630748913121343241,617728048543527361,24906794917275023195520,1/62,n^(3)*(n)_63/((n)_33*(n)_33),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,33,129,33;33;33;33,132,30098334751554702061680641,30053629242501880160223232,1211762331057675808060200714240,1/128,n^(3)*(n)_129/((n)_33*(n)_33*(n)_33*(n)_33),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,33,128,33;33;33;33,132,25194318145071310298249089,25156005515333158800097280,1014290142378232962819922329600,1/127,n^(4)*(n)_128/((n)_33*(n)_33*(n)_33*(n)_33),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,34,34,34,34,1,1,1,,n^(0)*(n)_34/((n)_34),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,34,35,34,34,35,34,34,1/34,n^(-1)*(n)_35/((n)_34),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,34,67,34;34,68,5500049257005304321,5424891938263986111,218731642950803919995520,1/66,n^(1)*(n)_67/((n)_34*(n)_34),two length-L labels sharing one vertex
+rank2_deficit_k2,34,66,34;34,68,2708057099404377601,2665754187925575681,107483208857159211457920,1/65,n^(2)*(n)_66/((n)_34*(n)_34),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,34,65,34;34,68,1236493021154903301,1213853573797219081,48942576095503873345920,1/64,n^(3)*(n)_65/((n)_34*(n)_34),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,34,133,34;34;34;34,136,50065498605052345050758629,49995875718699907298832585,2015833708977980262288929827200,1/132,n^(3)*(n)_133/((n)_34*(n)_34*(n)_34*(n)_34),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,34,132,34;34;34;34,136,42150360913483090050288661,42090397749153019936648737,1697084837245849763845677075840,1/131,n^(4)*(n)_132/((n)_34*(n)_34*(n)_34*(n)_34),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,35,35,35,35,1,1,1,,n^(0)*(n)_35/((n)_35),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,35,36,35,35,36,35,35,1/35,n^(-1)*(n)_36/((n)_35),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,35,69,35;35,70,9665061513151665259,9544093241138466746,384817839482702979198720,1/68,n^(1)*(n)_69/((n)_35*(n)_35),two length-L labels sharing one vertex
+rank2_deficit_k2,35,68,35;35,70,4921331414342002903,4851570677594801986,195615329720622416075520,1/67,n^(2)*(n)_68/((n)_35*(n)_35),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,35,67,35;35,70,2345349608255092565,2306902118612004351,93014293422436015432320,1/66,n^(3)*(n)_67/((n)_35*(n)_35),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,35,137,35;35;35;35,140,81979288895482130427041025,81872326747642360356391976,3301092214464939969569724472320,1/136,n^(3)*(n)_137/((n)_35*(n)_35*(n)_35*(n)_35),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,35,136,35;35;35;35,140,69392385261901696052757753,69299834499890075211770376,2794169327035567832538581560320,1/135,n^(4)*(n)_136/((n)_35*(n)_35*(n)_35*(n)_35),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,36,36,36,36,1,1,1,,n^(0)*(n)_36/((n)_36),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,36,37,36,36,37,36,36,1/36,n^(-1)*(n)_37/((n)_36),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,36,71,36;36,72,16636283635415151681,16444743809075682625,663052070381931523440000,1/70,n^(1)*(n)_71/((n)_36*(n)_36),two length-L labels sharing one vertex
+rank2_deficit_k2,36,70,36;36,72,8730850378241161661,8617915617424390375,347474357694551419920000,1/69,n^(2)*(n)_70/((n)_36*(n)_36),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,36,69,36;36,72,4320788574842644949,4256874635662956301,171637185309930398056320,1/68,n^(3)*(n)_69/((n)_36*(n)_36),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,36,141,36;36;36;36,144,132266531204404151869740581,132104294679228657814601125,5326445161466499483084717360000,1/140,n^(3)*(n)_141/((n)_36*(n)_36*(n)_36*(n)_36),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,36,140,36;36;36;36,144,112527678828213295056470341,112386687025526217507804125,4531431220869217089914662320000,1/139,n^(4)*(n)_140/((n)_36*(n)_36*(n)_36*(n)_36),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,37,37,37,37,1,1,1,,n^(0)*(n)_37/((n)_37),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,37,38,37,37,38,37,37,1/37,n^(-1)*(n)_38/((n)_37),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,37,73,37;37,74,28094313840804736561,27795615265361647584,1120719207499381630586880,1/72,n^(1)*(n)_73/((n)_37*(n)_37),two length-L labels sharing one vertex
+rank2_deficit_k2,37,72,37;37,74,15153206267753202601,14973468662571931296,603730256474900269854720,1/71,n^(2)*(n)_72/((n)_37*(n)_37),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,37,71,37;37,74,7755212416344243345,7651015319845525609,308488937696171592554880,1/70,n^(3)*(n)_71/((n)_37*(n)_37),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,37,145,37;37;37;37,148,210450824530993971730042273,210207699265242805415104320,8475574434374589914337006182400,1/144,n^(3)*(n)_145/((n)_37*(n)_37*(n)_37*(n)_37),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,37,144,37;37;37;37,148,179900072211676954232612881,179687914209459474944436288,7245016700925406029759671132160,1/143,n^(4)*(n)_144/((n)_37*(n)_37*(n)_37*(n)_37),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,38,38,38,38,1,1,1,,n^(0)*(n)_38/((n)_38),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,38,39,38,38,39,38,38,1/38,n^(-1)*(n)_39/((n)_38),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,38,75,38;38,76,46612462346370361801,46153223095981035095,1860897955229955335030400,1/74,n^(1)*(n)_75/((n)_38*(n)_38),two length-L labels sharing one vertex
+rank2_deficit_k2,38,74,38;38,76,25776147824679665881,25494576006818980801,1027941304594941305896320,1/73,n^(2)*(n)_74/((n)_38*(n)_38),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,38,73,38;38,76,13595641604299431941,13428785354705182161,541448625501712944731520,1/72,n^(3)*(n)_73/((n)_38*(n)_38),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,38,149,38;38;38;38,152,330482782632467708262728901,330122561097654945706500377,13310541663457447410886095200640,1/148,n^(3)*(n)_149/((n)_38*(n)_38*(n)_38*(n)_38),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,38,148,38;38;38;38,152,283779963261039984692334069,283464403670692500073615185,11429284756002321602968164259200,1/147,n^(4)*(n)_148/((n)_38*(n)_38*(n)_38*(n)_38),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,39,39,39,39,1,1,1,,n^(0)*(n)_39/((n)_39),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,39,40,39,39,40,39,39,1/39,n^(-1)*(n)_40/((n)_39),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,39,77,39;39,78,76075921986367631571,75379173349432379506,3039288269449113541681920,1/76,n^(1)*(n)_77/((n)_39*(n)_39),two length-L labels sharing one vertex
+rank2_deficit_k2,39,76,39;39,78,43040962136097407351,42606291611751746506,1717885677785830419121920,1/75,n^(2)*(n)_76/((n)_39*(n)_39),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,39,75,39;39,78,23329399605893097101,23066578772157039631,930044456093371837921920,1/74,n^(3)*(n)_75/((n)_39*(n)_39),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,39,153,39;39;39;39,156,512576710059110465908130129,512048704807427633400186520,20645803777835482178695520486400,1/152,n^(3)*(n)_153/((n)_39*(n)_39*(n)_39*(n)_39),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,39,152,39;39;39;39,156,442012790588641479288360121,441548554276335762271124792,17803237708421857934771751613440,1/151,n^(4)*(n)_152/((n)_39*(n)_39*(n)_39*(n)_39),four-label fourth-moment toy profile with fixed deficit s=4
+single_label_cycle_profile,40,40,40,40,1,1,1,,n^(0)*(n)_40/((n)_40),V=L and one label with L constraints; normalized expectation is exactly 1
+single_label_path_profile,40,41,40,40,41,40,40,1/40,n^(-1)*(n)_41/((n)_40),V=L+1 and one label with L constraints; normalized expectation is exactly 1-L x
+rank2_balanced_profile,40,79,40;40,80,122274096054475803049,121230086216210685441,4887997076237614836981120,1/78,n^(1)*(n)_79/((n)_40*(n)_40),two length-L labels sharing one vertex
+rank2_deficit_k2,40,78,40;40,80,70647212573421579733,69985329451869602511,2821808483499382373243520,1/77,n^(2)*(n)_78/((n)_40*(n)_40),two length-L labels with fixed vertex deficit k=2
+rank2_deficit_k3,40,77,40;40,80,39254589694304007045,38846893293276506101,1566306737584908725992320,1/76,n^(3)*(n)_77/((n)_40*(n)_40),two length-L labels with fixed vertex deficit k=3
+rank4_delocalization_toy_s3,40,157,40;40;40;40,160,785723359155182735094106885,784957260039940973321710101,31649476724810420044331351272320,1/156,n^(3)*(n)_157/((n)_40*(n)_40*(n)_40*(n)_40),four-label fourth-moment toy profile with fixed deficit s=3
+rank4_delocalization_toy_s4,40,156,40;40;40;40,160,680281294016174704734711013,679605383342206704540099501,27401689056357774327056811880320,1/155,n^(4)*(n)_156/((n)_40*(n)_40*(n)_40*(n)_40),four-label fourth-moment toy profile with fixed deficit s=4

@@ -1,0 +1,8 @@
+field,kind,meaning
+"gamma_i, k_i",exact Kim--Tao summation index,primitive geodesic gamma_i and primitive-power exponent k_i in Corollary 3.4
+ell_gamma/(2sinh(k ell_gamma/2)),paper weight,Selberg geometric weight from Lemma 2.1 and Corollary 3.4
+(h o f_Lambda0)^vee(k ell_gamma),paper weight with localized proxy,"transform value; M23 compares compact support, Paley-Wiener envelope, and optimistic decay"
+"Q_{gamma1^k1,gamma2^k2}",paper polynomial numerator,Lemma 3.3/Corollary 3.4 random-cover rational numerator
+quotient_control_tag,proxy annotation,"identity/diagonal, cyclic, rank-two noncyclic, or unknown surface-group-law bucket"
+d_C_minus_V,proxy annotation,template power analogue C-V preserved as a summary stratum
+coverage_by_M4_M12,internal coverage annotation,unknown_surface_group rows are explicitly not M4-certified

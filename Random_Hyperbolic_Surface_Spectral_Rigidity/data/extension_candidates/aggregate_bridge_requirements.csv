@@ -1,0 +1,7 @@
+requirement,what_it_controls,sufficient_for_polynomial_aggregate,present_in_m7,needed_for_kim_tao_bridge,notes
+per-template product-ratio envelope,fixed-order coefficient size for each isolated normalized template,no,yes,"yes, but not alone",M7 gives the summand bound C_k L^{2k}; aggregation introduces sum |w_T| or cancellation.
+polynomial family-count control,number of positive or absolute-weighted templates at support scale L,"yes, with bounded weights",no,yes,"Without it, 2^L tame templates give exponential aggregate coefficients."
+polynomial total variation of weights,sum_T |w_T| in the weighted quotient-family sum,yes,no,yes or replaced by cancellation/decay,The conditional lemma is exactly linear in this quantity.
+signed cancellation,coherent cancellation between large positive and negative weighted template contributions,"yes, if proved at coefficient level",no,possibly,The signed pair example cancels exactly despite nonzero total variation.
+rank-sensitive decay,extra probability decay attached to high-rank/noncyclic quotient families,"yes, if it offsets family growth",no,yes,This is the conceptual role of MP23-type rank-two common-fixed-point input.
+denominator and boundedness control,"Q_id normalization, negative-power cancellation, and analytic boundedness of full polynomial estimates",not by itself,no,yes,M8 identified this as part of the MPvH/Witten-zeta/Nau layer outside isolated product ratios.

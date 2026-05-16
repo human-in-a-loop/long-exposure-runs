@@ -1,0 +1,14 @@
+mechanism,classification,proof_status,paper_proved_input,requires_new_surface_group_input,uses_only_schreier_or_independent_permutation_evidence,claims_proved_exponent_improvement,claims_local_statistics,claims_variance_law,claims_shrinking_window_theorem,description
+existing_markov_interpolation,paper_proved_baseline,theorem_level_existing,True,False,False,False,False,False,False,Corollary 3.4 plus reciprocal-integer control and Markov on x^2 p(x).
+coefficient_variation_target,conditional_surface_theorem_target,conditional,False,True,False,False,False,False,False,Absolute coefficient/signed-variation control for the actual weighted p(x)/Q_id.
+direct_small_x_target,conditional_surface_theorem_target,conditional,False,True,False,False,False,False,False,"Direct evaluation bound at x=1/n, possibly using cancellation invisible to coefficient variation."
+signed_cancellation_target,conditional_surface_theorem_target,conditional,False,True,False,False,False,False,False,Signed aggregate cancellation in the paper-defined geodesic-weighted numerator.
+stronger_surface_lemma33_target,conditional_stronger_input,conditional,False,True,False,False,False,False,False,Strengthen Lemma 3.3 uniformly before Corollary 3.4 aggregates the quotient family.
+blocked_by_missing_surface_input,toy_only_insufficient,toy_only,False,True,True,False,False,False,False,Independent-permutation M4/M7/M33 evidence without MPvH/Nau/surface-group input.
+special_point:x=0,vacuous_without_coefficient_and_denominator_control,diagnostic,False,True,False,False,False,False,False,Expansion point alone does not bound p(1/n)/Q_id(1/n).
+special_point:x=1/n,target_evaluation_point,diagnostic,True,False,False,False,False,False,False,Must stay in Lemma 3.3 range n >= q^kappa and denominator-normalized.
+special_point:n=q^kappa,hard_easy_boundary,diagnostic,True,False,False,False,False,False,False,Reciprocal mesh starts here; Markov converts mesh control into small-x derivative control.
+special_point:q->infinity,degree_and_family_complexity_grow,diagnostic,False,True,False,False,False,False,False,deg p <= C Lambda0^(-1/2) q and quotient-family complexity grow.
+special_point:fixed_Lambda0,isolates_trace_q_loss,diagnostic,False,True,False,False,False,False,False,Keeps Lambda factors inert so the q^(2 kappa) mechanism is visible.
+special_point:high_Lambda0,not_uniform_energy_claim,diagnostic,False,True,False,False,False,False,False,Retains endpoint energy factors rather than proving a new energy-uniform theorem.
+special_point:Q_id(1/n),denominator_normalization_required,diagnostic,True,False,False,False,False,False,False,Need Q_id bounded away from zero before numerator savings are meaningful.

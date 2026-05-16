@@ -1,0 +1,8 @@
+boundary_item,classification,package_position,statement
+two_permutation_schreier_benchmark,proved,inside_scope,A_n=P_a+P_a^{-1}+P_b+P_b^{-1} with independent uniform permutations.
+fixed_k_expectation_and_variance,proved,inside_scope,Expectation is m_k+O_k(n^{-1}); normalized variance is O_k(n^{-2}).
+hyperbolic_random_covers,not_claimed,outside_scope,No theorem for Kim--Tao random hyperbolic covers is proved.
+selberg_trace_transfer,not_claimed,outside_scope,No Selberg trace variance or quotient-family estimate follows from this free-Schreier result.
+adjacency_to_laplacian_transfer,not_claimed,outside_scope,No adjacency-to-Laplacian transfer theorem is proved.
+shrinking_local_spectral_windows,not_claimed,outside_scope,No shrinking-window local spectral statistics result is proved.
+surface_group_quotient_family,open,outside_scope,Surface-group quotient-family coefficient variation remains a separate open target.

@@ -1,0 +1,7 @@
+input,paper_status,needed_for_saving,gap,schreier_transfer_sufficient
+Lemma 3.3 fixed-pair rational expansion,proved,base_object,"No aggregate coefficient saving; only Q_gamma1,gamma2/Q_id with error.",False
+Corollary 3.4 weighted numerator p(x),proved_definition,target_object,Weighted coefficient variation and signed small-x cancellation are not bounded beyond Markov.,False
+Q_id(1/n) denominator normalization,proved_bounded_for_n_ge_qkappa,normalization,Any numerator target must keep denominator bounded away from zero.,False
+Markov reciprocal-integer interpolation,proved,baseline_to_replace,This is where q^(2 kappa) appears; replacing it needs direct p/Q_id control.,False
+M4/M7/M33 independent-permutation template evidence,internal_toy_theorem,insufficient_analogy,"Does not include surface-group relation, Witten-zeta normalization, or Nau boundedness.",False
+new surface-group coefficient-variation theorem,open,possible_future_theorem,Must control the actual geodesic-weighted folded quotient-polynomial family.,False

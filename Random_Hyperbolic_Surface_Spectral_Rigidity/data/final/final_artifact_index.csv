@@ -1,0 +1,62 @@
+milestone_id,cycle,artifact,artifact_type,claim_supported,evidence_level,exists,notes
+M1-paper-map,1,docs/paper_map/cycle1_foundational_map.md,report,Paper theorem map and proof architecture,reconstructed,yes,Canonical M1 narrative.
+M1-paper-map,1,docs/paper_map/cycle1_dependency_graph.png,figure,Dependency graph for proof architecture,reconstructed,yes,Rendered from DOT source.
+M1-paper-map,1,docs/paper_map/cycle1_open_questions.md,report,Initial bottleneck and open-question ledger,reconstructed,yes,Feeds M2/M5.
+M2-proof-ledger,2,docs/proof_ledger/theorem1_exponent_flow.md,report,Theorem 1 exponent-flow reconstruction,reconstructed,yes,Tracks Proposition 3.1 to Weyl law.
+M2-proof-ledger,2,docs/proof_ledger/weyl_inversion_detail.md,report,Weyl inversion near the spectral edge,reconstructed,yes,Explains alpha_R weakening.
+M2-proof-ledger,3,docs/proof_ledger/proposition31_internal_reconstruction.md,report,Two-trace expansion and Markov loss,reconstructed,yes,Localizes q^{2kappa} loss.
+M2-proof-ledger,3,docs/proof_ledger/two_trace_expansion_ledger.md,report,Two-trace random-cover statistic ledger,reconstructed,yes,Separates imported inputs.
+M2-proof-ledger,3,docs/proof_ledger/markov_loss_reconstruction.md,report,Markov interpolation loss reconstruction,reconstructed,yes,Technical bottleneck.
+M2-proof-ledger,4,docs/proof_ledger/delocalization_proof_reconstruction.md,report,Theorem 2 delocalization reconstruction,reconstructed,yes,Pre-trace/fourth-moment pipeline.
+M2-proof-ledger,4,docs/proof_ledger/eigenfunction_fourth_moment_ledger.md,report,Fourth-moment and diagonal subtraction ledger,reconstructed,yes,Explains V_n and S.
+M2-proof-ledger,4,docs/proof_ledger/pretrace_diagonal_term.md,report,Pre-trace diagonal term analysis,reconstructed,yes,Structural S contribution.
+M2-proof-ledger,5,docs/proof_ledger/rigidity_proof_reconstruction.md,report,Unified rigidity proof reconstruction,reconstructed,yes,Canonical M2 Theorem 1 report.
+M2-proof-ledger,5,docs/proof_ledger/m2_loss_map.md,report,Cross-proof loss map,reconstructed,yes,Canonical structural/technical/imported split.
+M2-proof-ledger,5,docs/proof_ledger/m2_proof_ledger_closure.md,report,M2 closure note,reconstructed,yes,Records imported black boxes.
+M3-computational-probes,6,scripts/probe_common_fixed_points.py,script,Common fixed-point permutation probe,numerical_evidence,yes,Baseline random-permutation harness.
+M3-computational-probes,6,data/polynomial_method/common_fixed_point_summary.csv,data,Cyclic versus rank-two fixed-point scaling,numerical_evidence,yes,Summary table.
+M3-computational-probes,6,reports/computational_probes/m3_common_fixed_point_probe.md,report,Cycle 6 fixed-point probe interpretation,numerical_evidence,yes,Includes null composite-word collapse.
+M3-computational-probes,7,scripts/probe_folded_word_graphs.py,script,Folded quotient profile probe,numerical_evidence,yes,Quotient-profile diagnostic.
+M3-computational-probes,7,data/polynomial_method/folded_word_graph_summary.csv,data,Folded graph profile summary,numerical_evidence,yes,Rare-event limitation recorded.
+M3-computational-probes,7,reports/computational_probes/m3_folded_word_graph_probe.md,report,Folded quotient report,numerical_evidence,yes,Canonical Cycle 7 report.
+M3-computational-probes,8,scripts/probe_labelled_graph_embeddings.py,script,Direct labelled-embedding expectation probe,numerical_evidence,yes,Avoids rare-event sparsity.
+M3-computational-probes,8,data/polynomial_method/labelled_graph_embedding_summary.csv,data,Labelled embedding summary,numerical_evidence,yes,Contains cyclic/rank-two benchmark pair.
+M3-computational-probes,8,reports/computational_probes/m3_labelled_graph_embedding_probe.md,report,Labelled embedding report,numerical_evidence,yes,Documents normalization finding.
+M3-computational-probes,9,scripts/probe_polynomial_window_diagnostics.py,script,Polynomial-window fit diagnostics,numerical_evidence,yes,Degree/window conditioning probe.
+M3-computational-probes,9,data/polynomial_method/polynomial_window_fit_summary.csv,data,Polynomial-window fit summary,numerical_evidence,yes,Degree 3 stable; degree 6/8 stress.
+M3-computational-probes,9,reports/computational_probes/m3_polynomial_window_diagnostics.md,report,Polynomial-window diagnostic report,numerical_evidence,yes,Canonical Cycle 9 report.
+M3-computational-probes,10,scripts/probe_schreier_spectral_toy.py,script,Schreier spectral toy model,numerical_evidence,yes,Operator-level toy bridge.
+M3-computational-probes,10,data/polynomial_method/schreier_spectral_toy_summary.csv,data,Schreier spectral summary,numerical_evidence,yes,Window counts and trace moments.
+M3-computational-probes,10,reports/computational_probes/m3_schreier_spectral_toy.md,report,Schreier spectral toy report,numerical_evidence,yes,States non-hyperbolic scope.
+M3-computational-probes,11,reports/computational_probes/m3_computational_probe_synthesis.md,report,M3 synthesis,numerical_evidence,yes,Canonical M3 closure.
+M3-computational-probes,11,data/polynomial_method/m3_probe_artifact_index.csv,data,M3 artifact index,numerical_evidence,yes,Zero missing paths at creation.
+M3-computational-probes,11,reports/figures/m3_probe_ladder_summary.png,figure,M3 evidence ladder figure,numerical_evidence,yes,Generated by plot_m3_probe_ladder_summary.py.
+M4-formal-certification,12,scripts/certify_labelled_embedding_expectation.py,script,Exact labelled-template identity certification,certified,yes,Python exact arithmetic and enumeration.
+M4-formal-certification,12,scripts/certify_labelled_embedding_expectation.wls,script,Symbolic special-case identity checks,certified,yes,Historical WLS cross-check; Python remains canonical for final validation.
+M4-formal-certification,12,tests/test_labelled_embedding_expectation_identity.py,test,M4 regression tests,certified,yes,Direct python test fallback.
+M4-formal-certification,12,data/formal_certification/labelled_embedding_expectation_symbolic.csv,data,Symbolic identity outputs,certified,yes,Generated by Wolfram symbolic cross-check.
+M4-formal-certification,12,data/formal_certification/labelled_embedding_expectation_exhaustive.csv,data,Exhaustive enumeration outputs,certified,yes,n <= 4 enumeration.
+M4-formal-certification,12,reports/formal_certification/labelled_embedding_expectation_identity.md,report,Formal certification report,certified,yes,Canonical M4 report.
+M5-extension-candidates,13,scripts/score_m5_extension_candidates.py,script,Extension candidate scoring,conjectural,yes,Ranked candidate selection.
+M5-extension-candidates,13,data/extension_candidates/m5_candidate_scores.csv,data,Extension candidate matrix,conjectural,yes,C1 Markov/interpolation selected.
+M5-extension-candidates,13,reports/extension_candidates/m5_extension_candidate_ranking.md,report,Extension candidate ranking,conjectural,yes,Rejects direct WP/full trace routes.
+M5-extension-candidates,14,scripts/compare_expansions_to_cycle9.py,script,Fixed-template expansion comparison,proved_toy,yes,Compares exact expansions to Cycle 9 fits.
+M5-extension-candidates,14,data/extension_candidates/labelled_embedding_expansion_coefficients.csv,data,Fixed-template expansion coefficients,proved_toy,yes,Exact finite toy expansions.
+M5-extension-candidates,14,reports/extension_candidates/m5_falling_factorial_expansion_test.md,report,Fixed-template expansion test,proved_toy,yes,Canonical Cycle 14 report.
+M5-extension-candidates,15,scripts/plot_growing_template_expansions.py,script,Growing-template expansion generator,proved_toy,yes,Python generator used for canonical final validation.
+M5-extension-candidates,15,data/extension_candidates/growing_template_expansion_summary.csv,data,Growing-template expansion summary,proved_toy,yes,L <= 40 exact coefficients through order 8.
+M5-extension-candidates,15,reports/extension_candidates/m5_growing_template_expansion_growth.md,report,Growing-template expansion report,proved_toy,yes,Coefficient/radius mechanism.
+M5-extension-candidates,16,scripts/plot_m5_extension_synthesis.py,script,M5 synthesis figure/data builder,proved_toy,yes,Builds fixed-vs-growing summary.
+M5-extension-candidates,16,data/extension_candidates/m5_extension_synthesis_index.csv,data,M5 synthesis artifact index,proved_toy,yes,Zero missing dependencies.
+M5-extension-candidates,16,data/extension_candidates/m5_log_coefficient_summary.csv,data,M5 log coefficient summary,proved_toy,yes,Log coefficient identity data.
+M5-extension-candidates,16,reports/figures/m5_fixed_vs_growing_template_mechanism.png,figure,Fixed-vs-growing mechanism figure,proved_toy,yes,Strongest extension figure.
+M5-extension-candidates,16,reports/extension_candidates/m5_extension_synthesis_and_toy_principle.md,report,M5 synthesis and toy principle,proved_toy,yes,Canonical M5 closure.
+M6-final-synthesis,17,scripts/build_final_synthesis_index.py,script,Builds final artifact and claim ledgers,validated,yes,This script.
+M6-final-synthesis,17,scripts/plot_final_campaign_summary.py,script,Builds final evidence and bottleneck figures,validated,yes,Companion plotting script.
+M6-final-synthesis,17,data/final/final_artifact_index.csv,data,Final artifact coverage,validated,yes,Generated by this script.
+M6-final-synthesis,17,data/final/final_claim_ledger.csv,data,Final claim classification,validated,yes,Generated by this script.
+M6-final-synthesis,17,reports/figures/final_campaign_evidence_ladder.png,figure,Final evidence ladder,validated,yes,Generated by plot_final_campaign_summary.py.
+M6-final-synthesis,17,reports/figures/final_bottleneck_map.png,figure,Final bottleneck map,validated,yes,Generated by plot_final_campaign_summary.py.
+M6-final-synthesis,17,reports/final/final_report.md,report,Standalone final research record,validated,yes,Canonical final report.
+M6-final-synthesis,17,reports/final/final_file_map.md,report,Human-readable file map,validated,yes,Where to start and known warnings.
+M6-final-synthesis,17,audits/final/final_audit_packet.md,audit,Final validation checklist,validated,yes,Audit packet.

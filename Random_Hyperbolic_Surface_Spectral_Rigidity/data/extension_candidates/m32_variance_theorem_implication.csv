@@ -1,0 +1,5 @@
+item,claim,status,rationale
+fixed_pair_covariance,"For fixed nontrivial reduced u,v, Cov(Fix(u),Fix(v))=O_{u,v}(1).",proved,"M4 gives paired expectation terms of order n^(V-C_a-C_b); every admissible quotient component contains a closed nontrivial labelled walk, so C_a+C_b >= V."
+exceptional_relations,"Equal, inverse, cyclic-conjugate, and shared-power pairs can change constants but not the exponent.",bounded,They remain closed-walk quotient templates with exponent at most zero after deterministic identity words are removed.
+fixed_k_variance,"For fixed k, Var(n^{-1}Tr(A_n^k))=O_k(n^{-2}).",proved_for_schreier_benchmark,The length-k trace variance is n^-2 times finitely many deterministic-zero identity terms and O_k(1) nonidentity pair covariances.
+hyperbolic_transfer,No random hyperbolic cover or Selberg trace theorem follows from this finite free-Schreier lemma.,not_claimed,"The proof uses independent uniform permutations for free generators a,b only."

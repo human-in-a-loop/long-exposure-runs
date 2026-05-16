@@ -1,0 +1,27 @@
+cycle,artifact,artifact_type,claim_supported,scope_limit,exists
+13,scripts/score_m5_extension_candidates.py,script,candidate ranking rubric and matrix,"ranked evidence only, not a theorem",true
+13,data/extension_candidates/m5_candidate_scores.csv,data,seven extension candidates scored,scores are structured judgment calls,true
+13,reports/figures/m5_extension_candidate_matrix.png,figure,candidate ranking visualization,visual summary only,true
+13,reports/extension_candidates/m5_extension_candidate_ranking.md,report,Markov/interpolation-loss path selected,does not prove exponent improvement,true
+13,reports/extension_candidates/m5_primary_candidate_statement.md,report,primary template-expansion candidate stated,conjectural bridge to Kim--Tao,true
+14,scripts/derive_labelled_embedding_expansions.wls,script,fixed-template symbolic expansion generator,Wolfram currently blocked by license in later cycle,true
+14,scripts/compare_expansions_to_cycle9.py,script,fixed expansions compared to Cycle 9 fits,comparison limited to fitted templates,true
+14,tests/test_labelled_embedding_expansions.py,test,fixed-template controls and truncation tested,finite template scope,true
+14,data/extension_candidates/labelled_embedding_expansion_coefficients.csv,data,exact fixed-template coefficients through x^4,fixed profiles only,true
+14,data/extension_candidates/labelled_embedding_expansion_fit_comparison.csv,data,Cycle 9 comparison table,not a new empirical sample,true
+14,reports/figures/m5_expansion_vs_cycle9_fits.png,figure,fixed expansion versus polynomial-window fits,visualizes selected benchmark pair,true
+14,reports/extension_candidates/m5_falling_factorial_expansion_test.md,report,fixed-template analyticity/stability result,does not cover growing support,true
+15,scripts/probe_growing_template_expansions.wls,script,Wolfram growing-template generator source,not runnable here due expired license,true
+15,scripts/plot_growing_template_expansions.py,script,exact Python growing-profile generator,profile-level count model,true
+15,tests/test_growing_template_expansions.py,test,cycle/path exact identities and truncation tested,finite order through 8,true
+15,data/extension_candidates/growing_template_expansion_coefficients.csv,data,growing-profile coefficients through order 8,controlled profiles only,true
+15,data/extension_candidates/growing_template_expansion_summary.csv,data,growing-profile coefficient/radius summary,radius proxy from product factors,true
+15,reports/figures/m5_growing_template_coefficient_growth.png,figure,coefficient growth visualization,"descriptive, not asymptotic proof",true
+15,reports/figures/m5_growing_template_derivative_growth.png,figure,derivative growth visualization,finite L range,true
+15,reports/figures/m5_growing_template_radius_proxy.png,figure,shrinking singularity proxy,product-ratio proxy,true
+15,reports/extension_candidates/m5_growing_template_expansion_growth.md,report,growing-template amplification result,toy/profile level,true
+16,scripts/plot_m5_extension_synthesis.py,script,M5 closure index/log/figure generator,synthesis only,true
+16,data/extension_candidates/m5_extension_synthesis_index.csv,data,M5 artifact dependency index,path-existence audit only,true
+16,data/extension_candidates/m5_log_coefficient_summary.csv,data,log-coefficient mechanism summary,orders 1-4 only,true
+16,reports/figures/m5_fixed_vs_growing_template_mechanism.png,figure,fixed versus growing mechanism comparison,compact visualization,true
+16,reports/extension_candidates/m5_extension_synthesis_and_toy_principle.md,report,final M5 toy principle synthesis,not a Kim--Tao theorem,true

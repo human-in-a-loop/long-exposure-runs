@@ -1,0 +1,6 @@
+route,target_statement,strictly_weaker_than_coefficient_variation,reason,independent_route_status
+direct_small_x_ratio_bound,|p(1/n)/Q_id(1/n)| <= n Lambda0^20 ||htilde||^2 q^A n^(-sigma),potentially_true,It can use signed cancellation at the point x=1/n without bounding every coefficient.,plausible_conditional
+coefficient_variation_bound,weighted coefficient variation of p/Q_id is <= n Lambda0^20 q^A n^(-sigma),not_applicable,This is the structured stronger route; it implies pointwise small-x control in the needed interval.,stronger_structured_target
+direct_bound_from_fixed_pair_Q_estimates_only,sum fixed-pair bounds without aggregate signed control,false,"Without aggregate cancellation or total variation control, fixed-pair estimates reproduce only Markov-scale or worse bounds.",blocked
+direct_bound_with_uncontrolled_denominator,numerator-only estimate for p(1/n),false,"If Q_id(1/n) is zero or near-zero, numerator savings do not survive normalization.",blocked_outside_paper_denominator_range
+schreier_or_independent_permutation_transfer,reuse M30-M33 trace variance mechanisms,false,"The surface numerator also requires the surface relation, MPvH/Witten-zeta normalization, Nau boundedness, Q_id, and Selberg weights.",not_a_surface_proof

@@ -1,0 +1,901 @@
+n,sample,family,word_count,words,fixed_common,normalized_common,seed
+50,0,identity_control,1,1,50,50.0,20260515
+50,0,cancel_control,1,aA,50,50.0,20260515
+50,0,single_a,1,a,1,1.0,20260515
+50,0,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,0,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,0,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,0,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,0,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,0,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,0,commutator_single,1,abAB,2,2.0,20260515
+50,0,mixed_identity_a,2,1 a,1,1.0,20260515
+50,0,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,0,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,0,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,0,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,1,identity_control,1,1,50,50.0,20260515
+50,1,cancel_control,1,aA,50,50.0,20260515
+50,1,single_a,1,a,1,1.0,20260515
+50,1,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,1,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,1,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,1,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,1,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,1,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,1,commutator_single,1,abAB,2,2.0,20260515
+50,1,mixed_identity_a,2,1 a,1,1.0,20260515
+50,1,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,1,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,1,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,1,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,2,identity_control,1,1,50,50.0,20260515
+50,2,cancel_control,1,aA,50,50.0,20260515
+50,2,single_a,1,a,2,2.0,20260515
+50,2,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+50,2,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+50,2,duplicate_pair_a_a,2,a a,2,2.0,20260515
+50,2,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,2,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,2,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,2,commutator_single,1,abAB,0,0.0,20260515
+50,2,mixed_identity_a,2,1 a,2,2.0,20260515
+50,2,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,2,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+50,2,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,2,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+50,3,identity_control,1,1,50,50.0,20260515
+50,3,cancel_control,1,aA,50,50.0,20260515
+50,3,single_a,1,a,1,1.0,20260515
+50,3,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,3,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,3,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,3,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,3,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,3,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,3,commutator_single,1,abAB,1,1.0,20260515
+50,3,mixed_identity_a,2,1 a,1,1.0,20260515
+50,3,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,3,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,3,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,3,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,4,identity_control,1,1,50,50.0,20260515
+50,4,cancel_control,1,aA,50,50.0,20260515
+50,4,single_a,1,a,0,0.0,20260515
+50,4,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+50,4,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+50,4,duplicate_pair_a_a,2,a a,0,0.0,20260515
+50,4,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,4,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,4,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,4,commutator_single,1,abAB,1,1.0,20260515
+50,4,mixed_identity_a,2,1 a,0,0.0,20260515
+50,4,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,4,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+50,4,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,4,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+50,5,identity_control,1,1,50,50.0,20260515
+50,5,cancel_control,1,aA,50,50.0,20260515
+50,5,single_a,1,a,1,1.0,20260515
+50,5,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,5,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,5,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,5,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,5,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,5,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,5,commutator_single,1,abAB,0,0.0,20260515
+50,5,mixed_identity_a,2,1 a,1,1.0,20260515
+50,5,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,5,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,5,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,5,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,6,identity_control,1,1,50,50.0,20260515
+50,6,cancel_control,1,aA,50,50.0,20260515
+50,6,single_a,1,a,1,1.0,20260515
+50,6,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,6,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,6,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,6,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,6,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,6,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,6,commutator_single,1,abAB,0,0.0,20260515
+50,6,mixed_identity_a,2,1 a,1,1.0,20260515
+50,6,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,6,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,6,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,6,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,7,identity_control,1,1,50,50.0,20260515
+50,7,cancel_control,1,aA,50,50.0,20260515
+50,7,single_a,1,a,1,1.0,20260515
+50,7,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,7,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,7,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,7,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,7,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,7,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,7,commutator_single,1,abAB,0,0.0,20260515
+50,7,mixed_identity_a,2,1 a,1,1.0,20260515
+50,7,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,7,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,7,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,7,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,8,identity_control,1,1,50,50.0,20260515
+50,8,cancel_control,1,aA,50,50.0,20260515
+50,8,single_a,1,a,1,1.0,20260515
+50,8,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,8,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,8,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,8,rank_two_pair_a_b,2,a b,1,50.0,20260515
+50,8,rank_two_pair_ab_aB,2,ab aB,1,50.0,20260515
+50,8,rank_two_triple_a_b_ab,3,a b ab,1,2500.0,20260515
+50,8,commutator_single,1,abAB,2,2.0,20260515
+50,8,mixed_identity_a,2,1 a,1,1.0,20260515
+50,8,noncyclic_four,4,a b ab aB,1,125000.0,20260515
+50,8,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,8,noncyclic_eight,8,a b ab aB ba bA aba abA,1,781250000000.0,20260515
+50,8,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,9,identity_control,1,1,50,50.0,20260515
+50,9,cancel_control,1,aA,50,50.0,20260515
+50,9,single_a,1,a,2,2.0,20260515
+50,9,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+50,9,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+50,9,duplicate_pair_a_a,2,a a,2,2.0,20260515
+50,9,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,9,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,9,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,9,commutator_single,1,abAB,2,2.0,20260515
+50,9,mixed_identity_a,2,1 a,2,2.0,20260515
+50,9,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,9,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+50,9,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,9,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+50,10,identity_control,1,1,50,50.0,20260515
+50,10,cancel_control,1,aA,50,50.0,20260515
+50,10,single_a,1,a,1,1.0,20260515
+50,10,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,10,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,10,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,10,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,10,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,10,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,10,commutator_single,1,abAB,2,2.0,20260515
+50,10,mixed_identity_a,2,1 a,1,1.0,20260515
+50,10,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,10,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,10,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,10,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,11,identity_control,1,1,50,50.0,20260515
+50,11,cancel_control,1,aA,50,50.0,20260515
+50,11,single_a,1,a,1,1.0,20260515
+50,11,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,11,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,11,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,11,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,11,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,11,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,11,commutator_single,1,abAB,1,1.0,20260515
+50,11,mixed_identity_a,2,1 a,1,1.0,20260515
+50,11,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,11,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,11,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,11,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,12,identity_control,1,1,50,50.0,20260515
+50,12,cancel_control,1,aA,50,50.0,20260515
+50,12,single_a,1,a,1,1.0,20260515
+50,12,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,12,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,12,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,12,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,12,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,12,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,12,commutator_single,1,abAB,1,1.0,20260515
+50,12,mixed_identity_a,2,1 a,1,1.0,20260515
+50,12,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,12,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,12,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,12,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,13,identity_control,1,1,50,50.0,20260515
+50,13,cancel_control,1,aA,50,50.0,20260515
+50,13,single_a,1,a,0,0.0,20260515
+50,13,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+50,13,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+50,13,duplicate_pair_a_a,2,a a,0,0.0,20260515
+50,13,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,13,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,13,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,13,commutator_single,1,abAB,2,2.0,20260515
+50,13,mixed_identity_a,2,1 a,0,0.0,20260515
+50,13,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,13,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+50,13,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,13,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+50,14,identity_control,1,1,50,50.0,20260515
+50,14,cancel_control,1,aA,50,50.0,20260515
+50,14,single_a,1,a,0,0.0,20260515
+50,14,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+50,14,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+50,14,duplicate_pair_a_a,2,a a,0,0.0,20260515
+50,14,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,14,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,14,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,14,commutator_single,1,abAB,0,0.0,20260515
+50,14,mixed_identity_a,2,1 a,0,0.0,20260515
+50,14,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,14,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+50,14,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,14,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+50,15,identity_control,1,1,50,50.0,20260515
+50,15,cancel_control,1,aA,50,50.0,20260515
+50,15,single_a,1,a,1,1.0,20260515
+50,15,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+50,15,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+50,15,duplicate_pair_a_a,2,a a,1,1.0,20260515
+50,15,rank_two_pair_a_b,2,a b,1,50.0,20260515
+50,15,rank_two_pair_ab_aB,2,ab aB,1,50.0,20260515
+50,15,rank_two_triple_a_b_ab,3,a b ab,1,2500.0,20260515
+50,15,commutator_single,1,abAB,2,2.0,20260515
+50,15,mixed_identity_a,2,1 a,1,1.0,20260515
+50,15,noncyclic_four,4,a b ab aB,1,125000.0,20260515
+50,15,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+50,15,noncyclic_eight,8,a b ab aB ba bA aba abA,1,781250000000.0,20260515
+50,15,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+50,16,identity_control,1,1,50,50.0,20260515
+50,16,cancel_control,1,aA,50,50.0,20260515
+50,16,single_a,1,a,2,2.0,20260515
+50,16,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+50,16,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+50,16,duplicate_pair_a_a,2,a a,2,2.0,20260515
+50,16,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,16,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,16,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,16,commutator_single,1,abAB,1,1.0,20260515
+50,16,mixed_identity_a,2,1 a,2,2.0,20260515
+50,16,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,16,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+50,16,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,16,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+50,17,identity_control,1,1,50,50.0,20260515
+50,17,cancel_control,1,aA,50,50.0,20260515
+50,17,single_a,1,a,2,2.0,20260515
+50,17,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+50,17,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+50,17,duplicate_pair_a_a,2,a a,2,2.0,20260515
+50,17,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,17,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,17,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,17,commutator_single,1,abAB,1,1.0,20260515
+50,17,mixed_identity_a,2,1 a,2,2.0,20260515
+50,17,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,17,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+50,17,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,17,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+50,18,identity_control,1,1,50,50.0,20260515
+50,18,cancel_control,1,aA,50,50.0,20260515
+50,18,single_a,1,a,0,0.0,20260515
+50,18,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+50,18,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+50,18,duplicate_pair_a_a,2,a a,0,0.0,20260515
+50,18,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,18,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,18,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,18,commutator_single,1,abAB,1,1.0,20260515
+50,18,mixed_identity_a,2,1 a,0,0.0,20260515
+50,18,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,18,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+50,18,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,18,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+50,19,identity_control,1,1,50,50.0,20260515
+50,19,cancel_control,1,aA,50,50.0,20260515
+50,19,single_a,1,a,0,0.0,20260515
+50,19,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+50,19,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+50,19,duplicate_pair_a_a,2,a a,0,0.0,20260515
+50,19,rank_two_pair_a_b,2,a b,0,0.0,20260515
+50,19,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+50,19,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+50,19,commutator_single,1,abAB,0,0.0,20260515
+50,19,mixed_identity_a,2,1 a,0,0.0,20260515
+50,19,noncyclic_four,4,a b ab aB,0,0.0,20260515
+50,19,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+50,19,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+50,19,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,0,identity_control,1,1,100,100.0,20260515
+100,0,cancel_control,1,aA,100,100.0,20260515
+100,0,single_a,1,a,0,0.0,20260515
+100,0,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,0,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,0,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,0,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,0,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,0,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,0,commutator_single,1,abAB,1,1.0,20260515
+100,0,mixed_identity_a,2,1 a,0,0.0,20260515
+100,0,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,0,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,0,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,0,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,1,identity_control,1,1,100,100.0,20260515
+100,1,cancel_control,1,aA,100,100.0,20260515
+100,1,single_a,1,a,0,0.0,20260515
+100,1,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,1,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,1,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,1,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,1,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,1,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,1,commutator_single,1,abAB,1,1.0,20260515
+100,1,mixed_identity_a,2,1 a,0,0.0,20260515
+100,1,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,1,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,1,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,1,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,2,identity_control,1,1,100,100.0,20260515
+100,2,cancel_control,1,aA,100,100.0,20260515
+100,2,single_a,1,a,3,3.0,20260515
+100,2,cyclic_pair_a_a2,2,a aa,3,3.0,20260515
+100,2,cyclic_triple_a_a2_a3,3,a aa aaa,3,3.0,20260515
+100,2,duplicate_pair_a_a,2,a a,3,3.0,20260515
+100,2,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,2,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,2,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,2,commutator_single,1,abAB,0,0.0,20260515
+100,2,mixed_identity_a,2,1 a,3,3.0,20260515
+100,2,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,2,cyclic_four,4,a aa aaa aaaa,3,3.0,20260515
+100,2,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,2,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,3,3.0,20260515
+100,3,identity_control,1,1,100,100.0,20260515
+100,3,cancel_control,1,aA,100,100.0,20260515
+100,3,single_a,1,a,2,2.0,20260515
+100,3,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,3,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,3,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,3,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,3,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,3,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,3,commutator_single,1,abAB,1,1.0,20260515
+100,3,mixed_identity_a,2,1 a,2,2.0,20260515
+100,3,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,3,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,3,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,3,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,4,identity_control,1,1,100,100.0,20260515
+100,4,cancel_control,1,aA,100,100.0,20260515
+100,4,single_a,1,a,0,0.0,20260515
+100,4,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,4,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,4,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,4,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,4,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,4,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,4,commutator_single,1,abAB,0,0.0,20260515
+100,4,mixed_identity_a,2,1 a,0,0.0,20260515
+100,4,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,4,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,4,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,4,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,5,identity_control,1,1,100,100.0,20260515
+100,5,cancel_control,1,aA,100,100.0,20260515
+100,5,single_a,1,a,2,2.0,20260515
+100,5,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,5,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,5,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,5,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,5,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,5,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,5,commutator_single,1,abAB,2,2.0,20260515
+100,5,mixed_identity_a,2,1 a,2,2.0,20260515
+100,5,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,5,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,5,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,5,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,6,identity_control,1,1,100,100.0,20260515
+100,6,cancel_control,1,aA,100,100.0,20260515
+100,6,single_a,1,a,1,1.0,20260515
+100,6,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,6,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,6,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,6,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,6,rank_two_pair_ab_aB,2,ab aB,1,100.0,20260515
+100,6,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,6,commutator_single,1,abAB,2,2.0,20260515
+100,6,mixed_identity_a,2,1 a,1,1.0,20260515
+100,6,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,6,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,6,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,6,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,7,identity_control,1,1,100,100.0,20260515
+100,7,cancel_control,1,aA,100,100.0,20260515
+100,7,single_a,1,a,1,1.0,20260515
+100,7,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,7,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,7,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,7,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,7,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,7,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,7,commutator_single,1,abAB,3,3.0,20260515
+100,7,mixed_identity_a,2,1 a,1,1.0,20260515
+100,7,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,7,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,7,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,7,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,8,identity_control,1,1,100,100.0,20260515
+100,8,cancel_control,1,aA,100,100.0,20260515
+100,8,single_a,1,a,0,0.0,20260515
+100,8,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,8,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,8,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,8,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,8,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,8,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,8,commutator_single,1,abAB,2,2.0,20260515
+100,8,mixed_identity_a,2,1 a,0,0.0,20260515
+100,8,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,8,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,8,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,8,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,9,identity_control,1,1,100,100.0,20260515
+100,9,cancel_control,1,aA,100,100.0,20260515
+100,9,single_a,1,a,1,1.0,20260515
+100,9,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,9,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,9,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,9,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,9,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,9,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,9,commutator_single,1,abAB,3,3.0,20260515
+100,9,mixed_identity_a,2,1 a,1,1.0,20260515
+100,9,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,9,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,9,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,9,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,10,identity_control,1,1,100,100.0,20260515
+100,10,cancel_control,1,aA,100,100.0,20260515
+100,10,single_a,1,a,2,2.0,20260515
+100,10,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,10,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,10,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,10,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,10,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,10,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,10,commutator_single,1,abAB,1,1.0,20260515
+100,10,mixed_identity_a,2,1 a,2,2.0,20260515
+100,10,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,10,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,10,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,10,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,11,identity_control,1,1,100,100.0,20260515
+100,11,cancel_control,1,aA,100,100.0,20260515
+100,11,single_a,1,a,2,2.0,20260515
+100,11,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,11,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,11,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,11,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,11,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,11,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,11,commutator_single,1,abAB,1,1.0,20260515
+100,11,mixed_identity_a,2,1 a,2,2.0,20260515
+100,11,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,11,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,11,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,11,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,12,identity_control,1,1,100,100.0,20260515
+100,12,cancel_control,1,aA,100,100.0,20260515
+100,12,single_a,1,a,0,0.0,20260515
+100,12,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,12,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,12,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,12,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,12,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,12,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,12,commutator_single,1,abAB,0,0.0,20260515
+100,12,mixed_identity_a,2,1 a,0,0.0,20260515
+100,12,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,12,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,12,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,12,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,13,identity_control,1,1,100,100.0,20260515
+100,13,cancel_control,1,aA,100,100.0,20260515
+100,13,single_a,1,a,1,1.0,20260515
+100,13,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,13,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,13,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,13,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,13,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,13,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,13,commutator_single,1,abAB,0,0.0,20260515
+100,13,mixed_identity_a,2,1 a,1,1.0,20260515
+100,13,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,13,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,13,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,13,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,14,identity_control,1,1,100,100.0,20260515
+100,14,cancel_control,1,aA,100,100.0,20260515
+100,14,single_a,1,a,2,2.0,20260515
+100,14,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,14,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,14,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,14,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,14,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,14,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,14,commutator_single,1,abAB,2,2.0,20260515
+100,14,mixed_identity_a,2,1 a,2,2.0,20260515
+100,14,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,14,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,14,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,14,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,15,identity_control,1,1,100,100.0,20260515
+100,15,cancel_control,1,aA,100,100.0,20260515
+100,15,single_a,1,a,0,0.0,20260515
+100,15,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+100,15,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+100,15,duplicate_pair_a_a,2,a a,0,0.0,20260515
+100,15,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,15,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,15,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,15,commutator_single,1,abAB,1,1.0,20260515
+100,15,mixed_identity_a,2,1 a,0,0.0,20260515
+100,15,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,15,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+100,15,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,15,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+100,16,identity_control,1,1,100,100.0,20260515
+100,16,cancel_control,1,aA,100,100.0,20260515
+100,16,single_a,1,a,1,1.0,20260515
+100,16,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,16,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,16,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,16,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,16,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,16,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,16,commutator_single,1,abAB,1,1.0,20260515
+100,16,mixed_identity_a,2,1 a,1,1.0,20260515
+100,16,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,16,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,16,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,16,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,17,identity_control,1,1,100,100.0,20260515
+100,17,cancel_control,1,aA,100,100.0,20260515
+100,17,single_a,1,a,1,1.0,20260515
+100,17,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+100,17,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+100,17,duplicate_pair_a_a,2,a a,1,1.0,20260515
+100,17,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,17,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,17,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,17,commutator_single,1,abAB,0,0.0,20260515
+100,17,mixed_identity_a,2,1 a,1,1.0,20260515
+100,17,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,17,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+100,17,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,17,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+100,18,identity_control,1,1,100,100.0,20260515
+100,18,cancel_control,1,aA,100,100.0,20260515
+100,18,single_a,1,a,2,2.0,20260515
+100,18,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,18,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,18,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,18,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,18,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,18,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,18,commutator_single,1,abAB,1,1.0,20260515
+100,18,mixed_identity_a,2,1 a,2,2.0,20260515
+100,18,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,18,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,18,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,18,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+100,19,identity_control,1,1,100,100.0,20260515
+100,19,cancel_control,1,aA,100,100.0,20260515
+100,19,single_a,1,a,2,2.0,20260515
+100,19,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+100,19,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+100,19,duplicate_pair_a_a,2,a a,2,2.0,20260515
+100,19,rank_two_pair_a_b,2,a b,0,0.0,20260515
+100,19,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+100,19,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+100,19,commutator_single,1,abAB,0,0.0,20260515
+100,19,mixed_identity_a,2,1 a,2,2.0,20260515
+100,19,noncyclic_four,4,a b ab aB,0,0.0,20260515
+100,19,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+100,19,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+100,19,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+200,0,identity_control,1,1,200,200.0,20260515
+200,0,cancel_control,1,aA,200,200.0,20260515
+200,0,single_a,1,a,0,0.0,20260515
+200,0,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,0,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,0,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,0,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,0,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,0,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,0,commutator_single,1,abAB,1,1.0,20260515
+200,0,mixed_identity_a,2,1 a,0,0.0,20260515
+200,0,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,0,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,0,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,0,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,1,identity_control,1,1,200,200.0,20260515
+200,1,cancel_control,1,aA,200,200.0,20260515
+200,1,single_a,1,a,1,1.0,20260515
+200,1,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,1,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,1,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,1,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,1,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,1,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,1,commutator_single,1,abAB,2,2.0,20260515
+200,1,mixed_identity_a,2,1 a,1,1.0,20260515
+200,1,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,1,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,1,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,1,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,2,identity_control,1,1,200,200.0,20260515
+200,2,cancel_control,1,aA,200,200.0,20260515
+200,2,single_a,1,a,0,0.0,20260515
+200,2,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,2,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,2,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,2,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,2,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,2,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,2,commutator_single,1,abAB,1,1.0,20260515
+200,2,mixed_identity_a,2,1 a,0,0.0,20260515
+200,2,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,2,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,2,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,2,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,3,identity_control,1,1,200,200.0,20260515
+200,3,cancel_control,1,aA,200,200.0,20260515
+200,3,single_a,1,a,0,0.0,20260515
+200,3,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,3,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,3,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,3,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,3,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,3,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,3,commutator_single,1,abAB,0,0.0,20260515
+200,3,mixed_identity_a,2,1 a,0,0.0,20260515
+200,3,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,3,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,3,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,3,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,4,identity_control,1,1,200,200.0,20260515
+200,4,cancel_control,1,aA,200,200.0,20260515
+200,4,single_a,1,a,0,0.0,20260515
+200,4,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,4,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,4,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,4,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,4,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,4,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,4,commutator_single,1,abAB,2,2.0,20260515
+200,4,mixed_identity_a,2,1 a,0,0.0,20260515
+200,4,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,4,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,4,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,4,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,5,identity_control,1,1,200,200.0,20260515
+200,5,cancel_control,1,aA,200,200.0,20260515
+200,5,single_a,1,a,2,2.0,20260515
+200,5,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+200,5,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+200,5,duplicate_pair_a_a,2,a a,2,2.0,20260515
+200,5,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,5,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,5,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,5,commutator_single,1,abAB,1,1.0,20260515
+200,5,mixed_identity_a,2,1 a,2,2.0,20260515
+200,5,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,5,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+200,5,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,5,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+200,6,identity_control,1,1,200,200.0,20260515
+200,6,cancel_control,1,aA,200,200.0,20260515
+200,6,single_a,1,a,1,1.0,20260515
+200,6,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,6,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,6,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,6,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,6,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,6,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,6,commutator_single,1,abAB,3,3.0,20260515
+200,6,mixed_identity_a,2,1 a,1,1.0,20260515
+200,6,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,6,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,6,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,6,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,7,identity_control,1,1,200,200.0,20260515
+200,7,cancel_control,1,aA,200,200.0,20260515
+200,7,single_a,1,a,1,1.0,20260515
+200,7,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,7,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,7,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,7,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,7,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,7,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,7,commutator_single,1,abAB,0,0.0,20260515
+200,7,mixed_identity_a,2,1 a,1,1.0,20260515
+200,7,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,7,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,7,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,7,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,8,identity_control,1,1,200,200.0,20260515
+200,8,cancel_control,1,aA,200,200.0,20260515
+200,8,single_a,1,a,2,2.0,20260515
+200,8,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+200,8,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+200,8,duplicate_pair_a_a,2,a a,2,2.0,20260515
+200,8,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,8,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,8,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,8,commutator_single,1,abAB,1,1.0,20260515
+200,8,mixed_identity_a,2,1 a,2,2.0,20260515
+200,8,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,8,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+200,8,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,8,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+200,9,identity_control,1,1,200,200.0,20260515
+200,9,cancel_control,1,aA,200,200.0,20260515
+200,9,single_a,1,a,1,1.0,20260515
+200,9,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,9,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,9,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,9,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,9,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,9,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,9,commutator_single,1,abAB,1,1.0,20260515
+200,9,mixed_identity_a,2,1 a,1,1.0,20260515
+200,9,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,9,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,9,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,9,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,10,identity_control,1,1,200,200.0,20260515
+200,10,cancel_control,1,aA,200,200.0,20260515
+200,10,single_a,1,a,1,1.0,20260515
+200,10,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,10,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,10,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,10,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,10,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,10,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,10,commutator_single,1,abAB,0,0.0,20260515
+200,10,mixed_identity_a,2,1 a,1,1.0,20260515
+200,10,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,10,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,10,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,10,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,11,identity_control,1,1,200,200.0,20260515
+200,11,cancel_control,1,aA,200,200.0,20260515
+200,11,single_a,1,a,1,1.0,20260515
+200,11,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,11,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,11,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,11,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,11,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,11,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,11,commutator_single,1,abAB,0,0.0,20260515
+200,11,mixed_identity_a,2,1 a,1,1.0,20260515
+200,11,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,11,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,11,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,11,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,12,identity_control,1,1,200,200.0,20260515
+200,12,cancel_control,1,aA,200,200.0,20260515
+200,12,single_a,1,a,2,2.0,20260515
+200,12,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+200,12,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+200,12,duplicate_pair_a_a,2,a a,2,2.0,20260515
+200,12,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,12,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,12,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,12,commutator_single,1,abAB,2,2.0,20260515
+200,12,mixed_identity_a,2,1 a,2,2.0,20260515
+200,12,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,12,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+200,12,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,12,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+200,13,identity_control,1,1,200,200.0,20260515
+200,13,cancel_control,1,aA,200,200.0,20260515
+200,13,single_a,1,a,2,2.0,20260515
+200,13,cyclic_pair_a_a2,2,a aa,2,2.0,20260515
+200,13,cyclic_triple_a_a2_a3,3,a aa aaa,2,2.0,20260515
+200,13,duplicate_pair_a_a,2,a a,2,2.0,20260515
+200,13,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,13,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,13,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,13,commutator_single,1,abAB,1,1.0,20260515
+200,13,mixed_identity_a,2,1 a,2,2.0,20260515
+200,13,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,13,cyclic_four,4,a aa aaa aaaa,2,2.0,20260515
+200,13,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,13,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,2,2.0,20260515
+200,14,identity_control,1,1,200,200.0,20260515
+200,14,cancel_control,1,aA,200,200.0,20260515
+200,14,single_a,1,a,1,1.0,20260515
+200,14,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,14,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,14,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,14,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,14,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,14,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,14,commutator_single,1,abAB,1,1.0,20260515
+200,14,mixed_identity_a,2,1 a,1,1.0,20260515
+200,14,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,14,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,14,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,14,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,15,identity_control,1,1,200,200.0,20260515
+200,15,cancel_control,1,aA,200,200.0,20260515
+200,15,single_a,1,a,1,1.0,20260515
+200,15,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,15,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,15,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,15,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,15,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,15,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,15,commutator_single,1,abAB,0,0.0,20260515
+200,15,mixed_identity_a,2,1 a,1,1.0,20260515
+200,15,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,15,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,15,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,15,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515
+200,16,identity_control,1,1,200,200.0,20260515
+200,16,cancel_control,1,aA,200,200.0,20260515
+200,16,single_a,1,a,0,0.0,20260515
+200,16,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,16,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,16,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,16,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,16,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,16,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,16,commutator_single,1,abAB,1,1.0,20260515
+200,16,mixed_identity_a,2,1 a,0,0.0,20260515
+200,16,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,16,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,16,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,16,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,17,identity_control,1,1,200,200.0,20260515
+200,17,cancel_control,1,aA,200,200.0,20260515
+200,17,single_a,1,a,0,0.0,20260515
+200,17,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,17,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,17,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,17,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,17,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,17,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,17,commutator_single,1,abAB,1,1.0,20260515
+200,17,mixed_identity_a,2,1 a,0,0.0,20260515
+200,17,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,17,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,17,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,17,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,18,identity_control,1,1,200,200.0,20260515
+200,18,cancel_control,1,aA,200,200.0,20260515
+200,18,single_a,1,a,0,0.0,20260515
+200,18,cyclic_pair_a_a2,2,a aa,0,0.0,20260515
+200,18,cyclic_triple_a_a2_a3,3,a aa aaa,0,0.0,20260515
+200,18,duplicate_pair_a_a,2,a a,0,0.0,20260515
+200,18,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,18,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,18,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,18,commutator_single,1,abAB,1,1.0,20260515
+200,18,mixed_identity_a,2,1 a,0,0.0,20260515
+200,18,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,18,cyclic_four,4,a aa aaa aaaa,0,0.0,20260515
+200,18,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,18,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,0,0.0,20260515
+200,19,identity_control,1,1,200,200.0,20260515
+200,19,cancel_control,1,aA,200,200.0,20260515
+200,19,single_a,1,a,1,1.0,20260515
+200,19,cyclic_pair_a_a2,2,a aa,1,1.0,20260515
+200,19,cyclic_triple_a_a2_a3,3,a aa aaa,1,1.0,20260515
+200,19,duplicate_pair_a_a,2,a a,1,1.0,20260515
+200,19,rank_two_pair_a_b,2,a b,0,0.0,20260515
+200,19,rank_two_pair_ab_aB,2,ab aB,0,0.0,20260515
+200,19,rank_two_triple_a_b_ab,3,a b ab,0,0.0,20260515
+200,19,commutator_single,1,abAB,0,0.0,20260515
+200,19,mixed_identity_a,2,1 a,1,1.0,20260515
+200,19,noncyclic_four,4,a b ab aB,0,0.0,20260515
+200,19,cyclic_four,4,a aa aaa aaaa,1,1.0,20260515
+200,19,noncyclic_eight,8,a b ab aB ba bA aba abA,0,0.0,20260515
+200,19,cyclic_eight,8,a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa,1,1.0,20260515

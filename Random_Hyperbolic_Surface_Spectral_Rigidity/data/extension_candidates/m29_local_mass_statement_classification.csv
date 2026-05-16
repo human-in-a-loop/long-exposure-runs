@@ -1,0 +1,7 @@
+item,classification,source,evidence,decision
+controlled_statistic,centered_pretrace_fourth_mass_after_S_subtraction,2603.01127.txt:1101-1147; docs/proof_ledger/pretrace_local_mass_intermediate.md,V_n is the fourth power of centered local spectral mass; Proposition 4.1 controls int a(V_n-S)^2.,
+fixed_cutoff_local_mass,standalone_smoothed_kernel_mass_corollary,2603.01127.txt:1168-1218; docs/proof_ledger/delocalization_proof_reconstruction.md,6 budget rows show a positive Lambda-power gap over the M28 Linf-derived mass model.,
+arbitrary_fixed_ball_family,not_established,docs/proof_ledger/pretrace_local_mass_intermediate.md,The proof fixes a smooth cutoff a and does not union over spatial centers or nonsmooth indicators.,
+unsupported_lower_mass_claims,unsupported_stronger_claim,docs/proof_ledger/pretrace_local_mass_intermediate.md,Upper local mass bounds do not imply lower mass or equidistribution in specified regions.,
+hypothetical_no_sobolev_loss_reference,comparison_only,scripts/analyze_pretrace_local_mass_budget.py,Included only to show the size of the final analytic conversion loss; it cannot drive the branch decision.,
+branch_decision,standalone_smoothed_kernel_mass_corollary,2603.01127.txt:1215-1229,"The pre-Sobolev local mass estimate has Lambda power 1, while the final squared Linf-derived mass model has Lambda power 3.",advance_pretrace_local_mass_branch

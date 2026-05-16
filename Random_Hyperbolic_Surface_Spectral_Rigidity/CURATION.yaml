@@ -1,0 +1,142 @@
+package_name: "random_hyperbolic_surface_spectral_rigidity"
+description: |
+  This package contains the final synthesis and verification artifacts for a research campaign on Kim and Tao's eigenvalue rigidity theorem for random hyperbolic covers. It includes the final report, manifest, core scripts cited as Key Files, and all manifest-named figures needed to inspect the proof reconstruction, finite permutation benchmarks, obstruction maps, and surface-facing extension targets.
+curation_complete: true
+include:
+  - src: reports/final/final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: reports/final/final_report.pdf
+    dest: report/final_report.pdf
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: scripts/certify_labelled_embedding_expectation.py
+    dest: code/scripts/certify_labelled_embedding_expectation.py
+    role: code
+    justification: "Cited in final report section First Computational and Formal Probes for the labelled-template expectation identity."
+  - src: scripts/analyze_product_ratio_bounds.py
+    dest: code/scripts/analyze_product_ratio_bounds.py
+    role: code
+    justification: "Cited in final report section Product-Ratio Stability and Its Boundary for product-ratio stability and growing-template envelopes."
+  - src: scripts/build_local_window_route_synthesis.py
+    dest: code/scripts/build_local_window_route_synthesis.py
+    role: code
+    justification: "Cited in final report section Local Spectral Windows and the Compact-Support Obstruction for the local-window obstruction and branch decision."
+  - src: scripts/build_schreier_benchmark_package.py
+    dest: code/scripts/build_schreier_benchmark_package.py
+    role: code
+    justification: "Cited in final report section Standalone Schreier Benchmark Theorem for the theorem package artifact synthesis."
+  - src: scripts/analyze_surface_corollary34_numerator_obstruction.py
+    dest: code/scripts/analyze_surface_corollary34_numerator_obstruction.py
+    role: code
+    justification: "Cited in final report section The Corollary 3.4 Numerator Bottleneck for numerator reconstruction and Markov-loss localization."
+  - src: scripts/analyze_direct_small_x_surface_numerator_target.py
+    dest: code/scripts/analyze_direct_small_x_surface_numerator_target.py
+    role: code
+    justification: "Cited in final report section The Corollary 3.4 Numerator Bottleneck for the direct small-x target and denominator-loss budget."
+  - src: scripts/analyze_signed_pointwise_cancellation_surface_aggregate.py
+    dest: code/scripts/analyze_signed_pointwise_cancellation_surface_aggregate.py
+    role: code
+    justification: "Cited in final report section The Corollary 3.4 Numerator Bottleneck for signed pointwise cancellation classification."
+  - src: scripts/analyze_surface_native_grouping_problem.py
+    dest: code/scripts/analyze_surface_native_grouping_problem.py
+    role: code
+    justification: "Cited in final report section Surface-Native Grouping and the Current Pivot for the grouping taxonomy."
+  - src: scripts/analyze_surface_relation_kernel_spc_probe.py
+    dest: code/scripts/analyze_surface_relation_kernel_spc_probe.py
+    role: code
+    justification: "Cited in final report section Surface-Native Grouping and the Current Pivot for the kernel-closure signed-cancellation probe and pivot."
+  - src: reports/figures/m32_pair_quotient_exponent_map.png
+    dest: m32_pair_quotient_exponent_map.png
+    role: figure
+    caption: "Pair quotient exponent map showing fixed-pair covariance exponent classes for reduced word pairs."
+  - src: reports/figures/m32_variance_theorem_dependency_map.png
+    dest: m32_variance_theorem_dependency_map.png
+    role: figure
+    caption: "Dependency map showing how the fixed-pair covariance lemma feeds the Schreier variance theorem."
+  - src: reports/figures/m33_schreier_theorem_dependency_graph.png
+    dest: m33_schreier_theorem_dependency_graph.png
+    role: figure
+    caption: "Theorem dependency graph for the standalone fixed-k Schreier benchmark package."
+  - src: reports/figures/m33_schreier_scope_firewall.png
+    dest: m33_schreier_scope_firewall.png
+    role: figure
+    caption: "Scope firewall separating proved Schreier benchmark claims from non-transferred hyperbolic-cover claims."
+  - src: reports/figures/m33_schreier_variance_package_summary.png
+    dest: m33_schreier_variance_package_summary.png
+    role: figure
+    caption: "Variance package summary showing expectation, covariance, and normalized variance components for the Schreier benchmark."
+  - src: reports/figures/m34_fixed_window_relative_error.png
+    dest: m34_fixed_window_relative_error.png
+    role: figure
+    caption: "Relative error figure for fixed positive-width spectral-window count asymptotics."
+  - src: reports/figures/m34_endpoint_vs_rigidity_map.png
+    dest: m34_endpoint_vs_rigidity_map.png
+    role: figure
+    caption: "Endpoint versus rigidity map comparing fixed-window endpoint subtraction with rigidity-scale constraints."
+  - src: reports/figures/m34_window_regime_classification.png
+    dest: m34_window_regime_classification.png
+    role: figure
+    caption: "Window regime classification separating fixed-width theorem regimes from shrinking-window exclusions."
+  - src: reports/figures/m35_corollary34_interpolation_loss.png
+    dest: m35_corollary34_interpolation_loss.png
+    role: figure
+    caption: "Interpolation-loss figure locating the Corollary 3.4 numerator loss at the Markov interpolation step."
+  - src: reports/figures/m35_mechanism_dependency_graph.png
+    dest: m35_mechanism_dependency_graph.png
+    role: figure
+    caption: "Mechanism dependency graph for Markov, coefficient variation, direct small-x, signed cancellation, and stronger-input routes."
+  - src: reports/figures/m35_direct_vs_coefficient_variation_map.png
+    dest: m35_direct_vs_coefficient_variation_map.png
+    role: figure
+    caption: "Direct versus coefficient-variation map comparing conditional mechanisms for the Corollary 3.4 numerator."
+  - src: reports/figures/m36_direct_small_x_budget_map.png
+    dest: m36_direct_small_x_budget_map.png
+    role: figure
+    caption: "Direct small-x budget map showing exponent requirements for evaluating p(1/n)/Q_id(1/n)."
+  - src: reports/figures/m36_denominator_obstruction_map.png
+    dest: m36_denominator_obstruction_map.png
+    role: figure
+    caption: "Denominator obstruction map showing denominator-loss regimes for the direct small-x target."
+  - src: reports/figures/m36_direct_vs_cv_dependency_graph.png
+    dest: m36_direct_vs_cv_dependency_graph.png
+    role: figure
+    caption: "Dependency graph comparing direct small-x evaluation with coefficient-variation routes."
+  - src: reports/figures/m37_signed_mechanism_map.png
+    dest: m37_signed_mechanism_map.png
+    role: figure
+    caption: "Signed mechanism map classifying viable and blocked signed pointwise cancellation mechanisms."
+  - src: reports/figures/m37_stratum_cancellation_budget.png
+    dest: m37_stratum_cancellation_budget.png
+    role: figure
+    caption: "Stratum cancellation budget figure showing cancellation requirements across evaluated surface strata."
+  - src: reports/figures/m37_direct_vs_cv_cancellation_boundary.png
+    dest: m37_direct_vs_cv_cancellation_boundary.png
+    role: figure
+    caption: "Direct versus coefficient-variation cancellation boundary for signed pointwise cancellation scenarios."
+  - src: reports/figures/m38_surface_grouping_invariant_map.png
+    dest: m38_surface_grouping_invariant_map.png
+    role: figure
+    caption: "Surface grouping invariant map classifying paper-native grouping candidates."
+  - src: reports/figures/m38_grouping_beta_budget.png
+    dest: m38_grouping_beta_budget.png
+    role: figure
+    caption: "Grouping beta-budget figure showing denominator-safe and denominator-loss beta regimes."
+  - src: reports/figures/m38_grouping_vs_coefficient_variation_boundary.png
+    dest: m38_grouping_vs_coefficient_variation_boundary.png
+    role: figure
+    caption: "Grouping versus coefficient-variation boundary for candidate surface-native signed pointwise theorem templates."
+  - src: reports/figures/m39_kernel_constraint_flow.png
+    dest: m39_kernel_constraint_flow.png
+    role: figure
+    caption: "Kernel constraint flow showing how Lemma 3.3 surface-relation kernel closure enters evaluated quotient polynomials."
+  - src: reports/figures/m39_kernel_spc_decision_map.png
+    dest: m39_kernel_spc_decision_map.png
+    role: figure
+    caption: "Kernel signed pointwise cancellation decision map showing why the route is not currently theorem-ready."
+  - src: reports/figures/m39_kernel_beta_budget.png
+    dest: m39_kernel_beta_budget.png
+    role: figure
+    caption: "Kernel beta-budget figure showing candidate kernel scenarios and denominator effects."

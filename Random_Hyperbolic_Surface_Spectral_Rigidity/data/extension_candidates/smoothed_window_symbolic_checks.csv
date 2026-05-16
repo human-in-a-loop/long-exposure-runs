@@ -1,0 +1,8 @@
+"check","result","expression"
+"gaussian_fourier_scaling","True","(delta*Sqrt[2*Pi])/E^((t*((2*I)*r0 + delta^2*t))/2)"
+"bulk_delta_r_series_to_second_order","computed","-(Delta^2/(-1 + 4*lambda)^(3/2)) + Delta/Sqrt[-1 + 4*lambda]"
+"bulk_delta_r_leading_limit","True","1/Sqrt[-1 + 4*lambda]"
+"edge_delta_r_exact","True","Sqrt[Delta]"
+"gaussian_tail_R_to_infinity","True","0"
+"gaussian_tail_R_delta_to_zero","True","1"
+"special_point_exact_delta_zero","True","0"

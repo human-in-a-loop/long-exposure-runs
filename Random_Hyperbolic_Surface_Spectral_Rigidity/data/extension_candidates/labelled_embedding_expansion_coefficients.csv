@@ -1,0 +1,8 @@
+"template","vertices","constraint_total","constraint_counts","normalized_expression_n","normalized_expression_x","series_order4","conflict","description","coeff_0","coeff_1","coeff_2","coeff_3","coeff_4"
+"no_edge_control",2,0,"","(-1 + n)/n","1 - x","1 - x","false","two free injective vertices","1","-1","0","0","0"
+"single_edge_control",2,1,"1","(-1 + n)/n","1 - x","1 - x","false","one forward labelled edge","1","-1","0","0","0"
+"single_label_cycle",1,1,"1","1","1","1","false","one labelled loop","1","0","0","0","0"
+"trace_pair_toy",3,4,"2;2","(-2 + n)/(-1 + n)","2 + (-1 + x)^(-1)","1 - x - x^2 - x^3 - x^4","false","two trace-side cycles sharing a base vertex","1","-1","-1","-1","-1"
+"eight_word_cyclic_toy",8,8,"8","1","1","1","false","eight-edge cyclic diagonal quotient","1","0","0","0","0"
+"eight_word_rank2_toy",7,8,"4;4","1 - 3/(-3 + n) + 24/(-2 + n) - 30/(-1 + n)","20 + 12/(1 - 2*x) + 30/(-1 + x) + (-1 + 3*x)^(-1)","1 - 9*x + 9*x^2 + 39*x^3 + 81*x^4","false","two four-edge labelled cycles sharing one vertex","1","-9","9","39","81"
+"conflicting_domain",3,0,"","0","0","0","true","one source forced to two targets","0","0","0","0","0"

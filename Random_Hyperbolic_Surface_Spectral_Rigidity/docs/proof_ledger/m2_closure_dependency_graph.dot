@@ -1,0 +1,60 @@
+digraph M2Closure {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    label="M2 proof-ledger closure map linking validated Theorem 1 and Theorem 2 reconstruction artifacts to the plan-level milestone.",
+    labelloc="t",
+    fontsize=18
+  ];
+  node [shape=box, style="rounded,filled", fillcolor="#f7f7f7", color="#555555", fontname="Helvetica"];
+  edge [color="#555555", fontname="Helvetica", fontsize=10];
+
+  M2 [label="M2-proof-ledger\nplan-level closure", fillcolor="#d8f0df", penwidth=2];
+
+  subgraph cluster_t1 {
+    label="Theorem 1 eigenvalue rigidity";
+    color="#8aa6c1";
+    style="rounded";
+
+    Rigidity [label="rigidity_proof_reconstruction.md\nunified Theorem 1 artifact", fillcolor="#e6f0fa"];
+    T1Flow [label="theorem1_exponent_flow.md\nProp 3.1 -> Weyl law"];
+    WeylInv [label="weyl_inversion_detail.md\nalpha_W -> alpha_R"];
+    Prop31 [label="proposition31_internal_reconstruction.md\nSelberg/two-trace/Markov"];
+    TwoTrace [label="two_trace_expansion_ledger.md\ncommon fixed points"];
+    Markov [label="markov_loss_reconstruction.md\nq^(2 kappa) loss"];
+  }
+
+  subgraph cluster_t2 {
+    label="Theorem 2 eigenfunction delocalization";
+    color="#b99a61";
+    style="rounded";
+
+    Deloc [label="delocalization_proof_reconstruction.md\npaired Theorem 2 artifact", fillcolor="#fff1d6"];
+    Fourth [label="eigenfunction_fourth_moment_ledger.md\nProp 4.1 / 4.2"];
+    Sterm [label="pretrace_diagonal_term.md\nprimitive diagonal S"];
+    T2Graph [label="theorem2_dependency_graph.*\nvalidated dependency graph"];
+  }
+
+  Loss [label="m2_loss_map.md\ncross-proof loss ledger", fillcolor="#f1e4fa"];
+  Closure [label="m2_proof_ledger_closure.md\nsuccess-criterion map", fillcolor="#f1e4fa"];
+  Next [label="M3 handoff\ncommon fixed-point toy probes", fillcolor="#eeeeee"];
+
+  Prop31 -> Rigidity [label="proposition input"];
+  TwoTrace -> Prop31 [label="randomness mechanism"];
+  Markov -> Prop31 [label="interpolation loss"];
+  T1Flow -> Rigidity [label="smoothing + grid"];
+  WeylInv -> Rigidity [label="rigidity inversion"];
+
+  Fourth -> Deloc [label="fourth-moment estimate"];
+  Sterm -> Deloc [label="diagonal subtraction"];
+  T2Graph -> Deloc [label="dependency check"];
+
+  Rigidity -> M2 [label="plan-required artifact"];
+  Deloc -> M2 [label="paired plan artifact"];
+  Loss -> M2 [label="loss accounting"];
+  Closure -> M2 [label="closure recommendation"];
+
+  Rigidity -> Loss;
+  Deloc -> Loss;
+  M2 -> Next [label="if auditor validates"];
+}

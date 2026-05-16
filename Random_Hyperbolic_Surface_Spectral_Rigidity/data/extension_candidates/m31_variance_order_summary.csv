@@ -1,0 +1,4 @@
+k,length_k_words,word_pairs,reduced_word_types,pair_classes,max_covariance_order_before_normalization,normalized_variance_order_after_n_minus_2,positive_power_obstruction_classes,supports_ok_n_minus_2_template
+2,16,256,13,7,O(1),O(n^-2),,True
+4,256,65536,121,8,O(1),O(n^-2),,True
+6,4096,16777216,1093,8,O(1),O(n^-2),,True

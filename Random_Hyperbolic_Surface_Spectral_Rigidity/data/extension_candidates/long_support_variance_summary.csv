@@ -1,0 +1,13 @@
+regime,architecture,kappa,rows,endpoint_beating_rows,support_met_endpoint_rows,min_required_beta_endpoint_support_met,median_required_beta_endpoint_support_met,impossible_by_support_rows,requires_no_extra_saving_rows,requires_moderate_new_saving_rows,requires_large_new_saving_rows,outside_current_architecture_rows
+bulk,pretrace,3,363,231,84,-0.888,0.35,165,30,15,39,114
+bulk,pretrace,5,363,231,84,-0.824,1.15,165,18,12,54,114
+bulk,trace,3,363,231,84,-0.936,-0.25,165,45,18,21,114
+bulk,trace,5,363,231,84,-0.904,0.15,165,30,15,39,114
+edge,pretrace,3,363,264,132,-0.934,0.059,138,66,18,48,93
+edge,pretrace,5,363,264,132,-0.902,0.659,138,48,18,66,93
+edge,trace,3,363,264,132,-0.958,-0.391,138,84,18,30,93
+edge,trace,5,363,264,132,-0.942,-0.091,138,66,18,48,93
+high_energy,pretrace,3,363,231,84,-0.888,0.35,165,30,15,39,114
+high_energy,pretrace,5,363,231,84,-0.824,1.15,165,18,12,54,114
+high_energy,trace,3,363,231,84,-0.936,-0.25,165,45,18,21,114
+high_energy,trace,5,363,231,84,-0.904,0.15,165,30,15,39,114

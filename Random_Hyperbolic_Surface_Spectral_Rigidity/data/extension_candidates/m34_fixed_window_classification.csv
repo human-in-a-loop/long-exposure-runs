@@ -1,0 +1,8 @@
+claim_id,statement,classification,evidence,decision
+fixed_window_endpoint_subtraction,"N_Xn([a,b])=(2g-2)n(F(b)-F(a))+O(n^(1-alpha_W)b^(1/2+epsilon)) for fixed 1/4<=a<b.",theorem_level_corollary,simultaneous endpoint subtraction from Kim--Tao Weyl estimate,keep
+fixed_window_centered_bound,The centered count is O(n^(1-alpha_W)b^(1/2+epsilon)) for fixed intervals.,theorem_level_deterministic_bound,same statement with main term moved left,keep_but_not_distributional
+rigidity_reference_location_count,Rigidity compares random counts with reference-location counts in intervals expanded by delta_R.,rigidity_bookkeeping,"window inclusion from M16, no sharper count scale than endpoint route",keep_as_comparison
+shrinking_window_count,Delta=n^(-d) windows are controlled below the inherited endpoint threshold.,requires_new_variance_input,M19-M25 obstruction chain remains active,exclude_from_m34_scope
+variance_asymptotics,Variance asymptotics or concentration at smaller than endpoint-error scale.,not_claimed,"Theorem 1 supplies high-probability deterministic count error, not variance",no_claim
+limiting_distribution,"Poisson, Gaussian, GUE/GOE, or other limiting laws for window counts.",not_claimed,no correlation or distributional input in Theorem 1,no_claim
+level_repulsion_or_universality,"Level repulsion, local universality, or mean-spacing statistics.",not_claimed,fixed-window Weyl asymptotics are macroscopic and endpoint-derived,no_claim

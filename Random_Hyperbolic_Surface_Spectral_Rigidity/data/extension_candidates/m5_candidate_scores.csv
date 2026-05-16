@@ -1,0 +1,8 @@
+candidate_id,title,mathematical_value,tractability,evidence_strength,dependency_risk,next_test_clarity,rank,decision
+C1,Markov/interpolation-loss sharpening,5,4,5,3,5,1,advance-primary
+C2,Exact labelled-template polynomial expansion,4,5,5,1,5,2,advance-technical-lemma
+C3,Delocalization-side improvement,4,3,3,3,3,3,advance-secondary
+C4,Schreier spectral-window benchmark,3,4,4,2,4,4,advance-benchmark
+C5,Tree closed-walk moment certification,2,5,3,1,4,5,defer-supporting
+C6,Direct Weil-Petersson transfer,5,1,1,5,1,6,reject-defer
+C7,Full Selberg trace formalization,4,1,2,5,1,7,reject-defer

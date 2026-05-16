@@ -1,0 +1,28 @@
+n,template,vertices,raw_edges,constraint_total,constraint_counts,partial_injection,formula_expectation,bruteforce_expectation,match,normalized_by_naive_power,description
+2,no_edge,2,0,,,1,2,2,1,1/2,two free injective vertices
+3,no_edge,2,0,,,1,6,6,1,2/3,two free injective vertices
+4,no_edge,2,0,,,1,12,12,1,3/4,two free injective vertices
+2,single_edge,2,1,1,a:1,1,1,1,1,1/2,one forward labelled edge
+3,single_edge,2,1,1,a:1,1,2,2,1,2/3,one forward labelled edge
+4,single_edge,2,1,1,a:1,1,3,3,1,3/4,one forward labelled edge
+2,same_label_path,3,2,2,a:2,1,0,0,1,0,two compatible same-label constraints
+3,same_label_path,3,2,2,a:2,1,1,1,1,1/3,two compatible same-label constraints
+4,same_label_path,3,2,2,a:2,1,2,2,1,1/2,two compatible same-label constraints
+2,conflicting_domain,3,2,,,0,0,0,1,0,one source forced to two targets
+3,conflicting_domain,3,2,,,0,0,0,1,0,one source forced to two targets
+4,conflicting_domain,3,2,,,0,0,0,1,0,one source forced to two targets
+2,conflicting_image,3,2,,,0,0,0,1,0,two sources forced to one target
+3,conflicting_image,3,2,,,0,0,0,1,0,two sources forced to one target
+4,conflicting_image,3,2,,,0,0,0,1,0,two sources forced to one target
+2,inverse_edge,2,1,1,a:1,1,1,1,1,1/2,inverse label normalized by reversing orientation
+3,inverse_edge,2,1,1,a:1,1,2,2,1,2/3,inverse label normalized by reversing orientation
+4,inverse_edge,2,1,1,a:1,1,3,3,1,3/4,inverse label normalized by reversing orientation
+2,inverse_regression_pair,2,2,2,a:2,1,1,1,1,1,Cycle 8 inverse-label regression case
+3,inverse_regression_pair,2,2,2,a:2,1,1,1,1,1,Cycle 8 inverse-label regression case
+4,inverse_regression_pair,2,2,2,a:2,1,1,1,1,1,Cycle 8 inverse-label regression case
+2,eight_word_cyclic_toy,8,8,8,a:8,1,0,0,1,0,eight-edge cyclic diagonal quotient
+3,eight_word_cyclic_toy,8,8,8,a:8,1,0,0,1,0,eight-edge cyclic diagonal quotient
+4,eight_word_cyclic_toy,8,8,8,a:8,1,0,0,1,0,eight-edge cyclic diagonal quotient
+2,eight_word_rank2_toy,7,8,8,a:4 b:4,1,0,0,1,0,two four-edge labelled cycles sharing one vertex
+3,eight_word_rank2_toy,7,8,8,a:4 b:4,1,0,0,1,0,two four-edge labelled cycles sharing one vertex
+4,eight_word_rank2_toy,7,8,8,a:4 b:4,1,0,0,1,0,two four-edge labelled cycles sharing one vertex

@@ -1,0 +1,43 @@
+cycle,artifact_path,artifact_type,milestone_id,status,short_role
+6,scripts/probe_common_fixed_points.py,script,M3-computational-probes,validated,random-permutation common fixed-point harness
+6,tests/test_permutation_word_eval.py,test,M3-computational-probes,validated,word reduction and permutation evaluation tests
+6,data/polynomial_method/common_fixed_point_probe.csv,data,M3-computational-probes,validated,raw fixed-point sample data
+6,data/polynomial_method/common_fixed_point_summary.csv,data,M3-computational-probes,validated,summary fixed-point statistics
+6,reports/figures/m3_common_fixed_point_scaling.png,figure,M3-computational-probes,validated,fixed-point scaling plot
+6,reports/figures/m3_common_fixed_point_tails.png,figure,M3-computational-probes,validated,fixed-point tail diagnostics
+6,reports/computational_probes/m3_common_fixed_point_probe.md,report,M3-computational-probes,validated,cycle 6 probe report
+7,scripts/probe_folded_word_graphs.py,script,M3-computational-probes,validated,folded trajectory quotient profile harness
+7,tests/test_folded_word_graphs.py,test,M3-computational-probes,validated,folded quotient invariant tests
+7,data/polynomial_method/folded_word_graph_probe.csv,data,M3-computational-probes,validated,raw folded quotient profile data
+7,data/polynomial_method/folded_word_graph_summary.csv,data,M3-computational-probes,validated,summary folded quotient statistics
+7,reports/figures/m3_folded_graph_rank_scaling.png,figure,M3-computational-probes,validated,rank/cyclicity scaling plot
+7,reports/figures/m3_folded_graph_profile_heatmap.png,figure,M3-computational-probes,validated,trajectory profile heatmap
+7,reports/computational_probes/m3_folded_word_graph_probe.md,report,M3-computational-probes,validated,cycle 7 probe report
+8,scripts/probe_labelled_graph_embeddings.py,script,M3-computational-probes,validated,direct labelled quotient embedding estimator
+8,tests/test_labelled_graph_embeddings.py,test,M3-computational-probes,validated,labelled embedding exact and estimator tests
+8,data/polynomial_method/labelled_graph_embedding_probe.csv,data,M3-computational-probes,validated,raw labelled embedding results
+8,data/polynomial_method/labelled_graph_embedding_summary.csv,data,M3-computational-probes,validated,summary labelled embedding statistics
+8,reports/figures/m3_labelled_embedding_scaling.png,figure,M3-computational-probes,validated,labelled embedding scaling plot
+8,reports/figures/m3_labelled_embedding_normalized.png,figure,M3-computational-probes,validated,normalized embedding plot
+8,reports/computational_probes/m3_labelled_graph_embedding_probe.md,report,M3-computational-probes,validated,cycle 8 probe report
+9,scripts/probe_polynomial_window_diagnostics.py,script,M3-computational-probes,validated,Chebyshev polynomial-window diagnostic harness
+9,tests/test_polynomial_window_diagnostics.py,test,M3-computational-probes,validated,polynomial-window fit tests
+9,data/polynomial_method/polynomial_window_diagnostics.csv,data,M3-computational-probes,validated,raw polynomial-window diagnostics
+9,data/polynomial_method/polynomial_window_fit_summary.csv,data,M3-computational-probes,validated,summary polynomial-window fit metrics
+9,reports/figures/m3_polynomial_window_fit_error.png,figure,M3-computational-probes,validated,fit and holdout error plot
+9,reports/figures/m3_polynomial_window_derivative_growth.png,figure,M3-computational-probes,validated,derivative and coefficient growth plot
+9,reports/figures/m3_polynomial_window_extrapolation.png,figure,M3-computational-probes,validated,x=1/n extrapolation plot
+9,reports/computational_probes/m3_polynomial_window_diagnostics.md,report,M3-computational-probes,validated,cycle 9 diagnostic report
+10,scripts/probe_schreier_spectral_toy.py,script,M3-computational-probes,validated,Schreier adjacency spectral toy harness
+10,tests/test_schreier_spectral_toy.py,test,M3-computational-probes,validated,Schreier graph and spectral identity tests
+10,data/polynomial_method/schreier_spectral_toy_trials.csv,data,M3-computational-probes,validated,raw Schreier spectral trial observables
+10,data/polynomial_method/schreier_spectral_toy_summary.csv,data,M3-computational-probes,validated,summary Schreier spectral statistics
+10,data/polynomial_method/schreier_spectral_window_fits.csv,data,M3-computational-probes,validated,Schreier spectral polynomial-window fits
+10,reports/figures/m3_schreier_spectral_eigenvalue_histograms.png,figure,M3-computational-probes,validated,Schreier eigenvalue histogram plot
+10,reports/figures/m3_schreier_spectral_trace_scaling.png,figure,M3-computational-probes,validated,centered trace moment scaling plot
+10,reports/figures/m3_schreier_spectral_window_fit.png,figure,M3-computational-probes,validated,Schreier spectral window fit plot
+10,reports/computational_probes/m3_schreier_spectral_toy.md,report,M3-computational-probes,validated,cycle 10 spectral report
+11,data/polynomial_method/m3_probe_artifact_index.csv,data,M3-computational-probes,validated,M3 canonical artifact index
+11,reports/figures/m3_probe_ladder_summary.png,figure,M3-computational-probes,validated,five-stage M3 mechanism ladder summary
+11,scripts/plot_m3_probe_ladder_summary.py,script,M3-computational-probes,validated,matplotlib source for M3 ladder summary
+11,reports/computational_probes/m3_computational_probe_synthesis.md,report,M3-computational-probes,validated,audit-ready M3 synthesis and closure report
