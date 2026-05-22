@@ -1,0 +1,17 @@
+trait	n_retained_edges	n_accepted_taxa	n_pending_crosswalk_taxa	n_families	n_orders	top_10_families_with_counts	floor_met_500_taxa	data_limited_flag
+c4_photosynthesis	1378	157	1219	3	0	Poaceae:98; Amaranthaceae:7; Nyctaginaceae:4	no	yes
+cam_photosynthesis	285	10	268	3	0	Lamiaceae:2; Anacampserotaceae:1; Vitaceae:1	no	yes
+succulence	46	2	43	1	0	Loranthaceae:2	no	yes
+fleshy_fruit	4748	716	3371	41	0	Loranthaceae:42; Rutaceae:22; Pittosporaceae:20; Rubiaceae:19; Araliaceae:19; Lauraceae:12; Meliaceae:12; Primulaceae:9; Arecaceae:8; Vitaceae:8	yes	no
+drupe	2072	186	1886	31	0	Loranthaceae:35; Rutaceae:21; Lauraceae:12; Rubiaceae:10; Primulaceae:9; Arecaceae:7; Elaeocarpaceae:5; Phyllanthaceae:5; Rhamnaceae:5; Proteaceae:4	no	yes
+samara	179	93	86	2	0	Casuarinaceae:61; Simaroubaceae:2	no	yes
+capsule	9074	543	8531	47	0	Euphorbiaceae:77; Malvaceae:34; Convolvulaceae:19; Restionaceae:15; Phyllanthaceae:14; Meliaceae:13; Amaryllidaceae:11; Pittosporaceae:11; Elatinaceae:10; Acanthaceae:10	yes	no
+achene	1957	199	1758	10	0	Proteaceae:29; Nyctaginaceae:13; Rosaceae:12; Alismataceae:5; Urticaceae:2; Ranunculaceae:2; Asteraceae:1; Potamogetonaceae:1; Atherospermataceae:1; Basellaceae:1	no	yes
+follicle	2184	311	1873	11	0	Proteaceae:182; Rutaceae:95; Aponogetonaceae:9; Restionaceae:6; Poaceae:3; Rhamnaceae:2; Crassulaceae:2; Amaranthaceae:1; Primulaceae:1; Ranunculaceae:1	no	yes
+aril	759	472	287	1	0	Rutaceae:1	no	yes
+elaiosome	202	92	110	3	0	Euphorbiaceae:2; Apiaceae:1; Cunoniaceae:1	no	yes
+myrmecochory	2195	288	849	13	0	Euphorbiaceae:12; Rutaceae:9; Elatinaceae:6; Poaceae:6; Proteaceae:4; Malvaceae:3; Rosaceae:2; Apiaceae:1; Cunoniaceae:1; Goodeniaceae:1	no	yes
+ant_domatia	0	0	0	0	0		no	yes
+carnivory	0	0	0	0	0		no	yes
+parasitism	0	0	0	0	0		no	yes
+_other	184218	3252	29285	99	0	Poaceae:238; Proteaceae:215; Rutaceae:123; Malvaceae:81; Euphorbiaceae:78; Casuarinaceae:61; Loranthaceae:42; Amaranthaceae:37; Lamiaceae:36; Apiaceae:35	yes	no

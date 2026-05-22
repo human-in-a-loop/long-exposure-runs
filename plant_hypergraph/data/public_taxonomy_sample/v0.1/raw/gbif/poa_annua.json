@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Poa annua",
+    "class": "Liliopsida",
+    "classKey": 196,
+    "confidence": 99,
+    "family": "Poaceae",
+    "familyKey": 3073,
+    "genus": "Poa",
+    "genusKey": 2704173,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Poales",
+    "orderKey": 1369,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Poa annua L.",
+    "species": "Poa annua",
+    "speciesKey": 2704179,
+    "status": "ACCEPTED",
+    "usageKey": 2704179
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Poa annua"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "b6ce90187ecf4b4210c10e138a2a564d0225df73b8057aca7c5df64888f09b27",
+  "used_insecure_tls_fallback": false
+}

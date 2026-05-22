@@ -1,0 +1,161 @@
+input_name	panel_role	source_group	accepted_key	accepted_name	accepted_key_match	synonym_path	failure_mode	source_hit_count	usable_event_shaped_hit_count	diagnostic_class
+Triticum aestivum	canonical_positive	gbif_species_api	gbif:7795888	Triticum aestivum L.	True			1	0	metadata_only_or_no_event
+Triticum aestivum	canonical_positive	crossref_metadata	gbif:7795888	Triticum aestivum L.	True			711124	0	metadata_only_or_no_event
+Triticum aestivum	canonical_positive	openalex_metadata	gbif:7795888	Triticum aestivum L.	True			187487	0	metadata_only_or_no_event
+Triticum aestivum	canonical_positive	curated_open_literature	gbif:7795888	Triticum aestivum L.	True			2	2	event_evidence_recovered
+Brassica napus	canonical_positive	gbif_species_api	gbif:3042636	Brassica napus L.	True			1	0	metadata_only_or_no_event
+Brassica napus	canonical_positive	crossref_metadata	gbif:3042636	Brassica napus L.	True			721261	0	metadata_only_or_no_event
+Brassica napus	canonical_positive	openalex_metadata	gbif:3042636	Brassica napus L.	True			95495	0	metadata_only_or_no_event
+Brassica napus	canonical_positive	curated_open_literature	gbif:3042636	Brassica napus L.	True			1	1	event_evidence_recovered
+Arachis hypogaea	canonical_positive	gbif_species_api	gbif:5353770	Arachis hypogaea L.	True			1	0	metadata_only_or_no_event
+Arachis hypogaea	canonical_positive	crossref_metadata	gbif:5353770	Arachis hypogaea L.	True			696263	0	metadata_only_or_no_event
+Arachis hypogaea	canonical_positive	openalex_metadata	gbif:5353770	Arachis hypogaea L.	True			52595	0	metadata_only_or_no_event
+Arachis hypogaea	canonical_positive	curated_open_literature	gbif:5353770	Arachis hypogaea L.	True			1	1	event_evidence_recovered
+Gossypium hirsutum	canonical_positive	gbif_species_api	gbif:3152661	Gossypium hirsutum L.	True			1	0	metadata_only_or_no_event
+Gossypium hirsutum	canonical_positive	crossref_metadata	gbif:3152661	Gossypium hirsutum L.	True			696783	0	metadata_only_or_no_event
+Gossypium hirsutum	canonical_positive	openalex_metadata	gbif:3152661	Gossypium hirsutum L.	True			52701	0	metadata_only_or_no_event
+Gossypium hirsutum	canonical_positive	curated_open_literature	gbif:3152661	Gossypium hirsutum L.	True			1	1	event_evidence_recovered
+Coffea arabica	canonical_positive	gbif_species_api	gbif:2895345	Coffea arabica L.	True			1	0	metadata_only_or_no_event
+Coffea arabica	canonical_positive	crossref_metadata	gbif:2895345	Coffea arabica L.	True			701294	0	metadata_only_or_no_event
+Coffea arabica	canonical_positive	openalex_metadata	gbif:2895345	Coffea arabica L.	True			36368	0	metadata_only_or_no_event
+Coffea arabica	canonical_positive	curated_open_literature	gbif:2895345	Coffea arabica L.	True			1	1	event_evidence_recovered
+Nicotiana tabacum	canonical_positive	gbif_species_api	gbif:2928774	Nicotiana tabacum L.	True			1	0	metadata_only_or_no_event
+Nicotiana tabacum	canonical_positive	crossref_metadata	gbif:2928774	Nicotiana tabacum L.	True			699401	0	metadata_only_or_no_event
+Nicotiana tabacum	canonical_positive	openalex_metadata	gbif:2928774	Nicotiana tabacum L.	True			66842	0	metadata_only_or_no_event
+Nicotiana tabacum	canonical_positive	curated_open_literature	gbif:2928774	Nicotiana tabacum L.	True			1	1	event_evidence_recovered
+Fragaria x ananassa	canonical_positive	gbif_species_api	gbif:3029912	Fragaria ×ananassa (Weston) Rozier	True			1	0	metadata_only_or_no_event
+Fragaria x ananassa	canonical_positive	crossref_metadata	gbif:3029912	Fragaria ×ananassa (Weston) Rozier	True			693104	0	metadata_only_or_no_event
+Fragaria x ananassa	canonical_positive	openalex_metadata	gbif:3029912	Fragaria ×ananassa (Weston) Rozier	True			10335	0	metadata_only_or_no_event
+Fragaria x ananassa	canonical_positive	curated_open_literature	gbif:3029912	Fragaria ×ananassa (Weston) Rozier	True			1	1	event_evidence_recovered
+Spartina anglica	canonical_positive	gbif_species_api	gbif:9398259	Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	True	Spartina anglica C.E.Hubb. -> Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela		1	0	metadata_only_or_no_event
+Spartina anglica	canonical_positive	crossref_metadata	gbif:9398259	Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	True	Spartina anglica C.E.Hubb. -> Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela		692641	0	metadata_only_or_no_event
+Spartina anglica	canonical_positive	openalex_metadata	gbif:9398259	Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	True	Spartina anglica C.E.Hubb. -> Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela		2465	0	metadata_only_or_no_event
+Spartina anglica	canonical_positive	curated_open_literature	gbif:9398259	Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	True	Spartina anglica C.E.Hubb. -> Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela		1	1	event_evidence_recovered
+Tragopogon mirus	canonical_positive	gbif_species_api	gbif:5386951	Tragopogon ×mirus Ownbey	True			1	0	metadata_only_or_no_event
+Tragopogon mirus	canonical_positive	crossref_metadata	gbif:5386951	Tragopogon ×mirus Ownbey	True			689767	0	metadata_only_or_no_event
+Tragopogon mirus	canonical_positive	openalex_metadata	gbif:5386951	Tragopogon ×mirus Ownbey	True			277	0	metadata_only_or_no_event
+Tragopogon mirus	canonical_positive	curated_open_literature	gbif:5386951	Tragopogon ×mirus Ownbey	True			1	1	event_evidence_recovered
+Tragopogon miscellus	canonical_positive	gbif_species_api	gbif:5386909	Tragopogon ×miscellus Ownbey	True			1	0	metadata_only_or_no_event
+Tragopogon miscellus	canonical_positive	crossref_metadata	gbif:5386909	Tragopogon ×miscellus Ownbey	True			689273	0	metadata_only_or_no_event
+Tragopogon miscellus	canonical_positive	openalex_metadata	gbif:5386909	Tragopogon ×miscellus Ownbey	True			439	0	metadata_only_or_no_event
+Tragopogon miscellus	canonical_positive	curated_open_literature	gbif:5386909	Tragopogon ×miscellus Ownbey	True			1	1	event_evidence_recovered
+Arabidopsis suecica	canonical_positive	gbif_species_api	gbif:3052544	Arabidopsis suecica (Fr.) Norrl.	True			1	0	metadata_only_or_no_event
+Arabidopsis suecica	canonical_positive	crossref_metadata	gbif:3052544	Arabidopsis suecica (Fr.) Norrl.	True			754657	0	metadata_only_or_no_event
+Arabidopsis suecica	canonical_positive	openalex_metadata	gbif:3052544	Arabidopsis suecica (Fr.) Norrl.	True			1914	0	metadata_only_or_no_event
+Arabidopsis suecica	canonical_positive	curated_open_literature	gbif:3052544	Arabidopsis suecica (Fr.) Norrl.	True			1	1	event_evidence_recovered
+Helianthus anomalus	canonical_positive	gbif_species_api	gbif:3119246	Helianthus anomalus S.F.Blake	True			1	0	metadata_only_or_no_event
+Helianthus anomalus	canonical_positive	crossref_metadata	gbif:3119246	Helianthus anomalus S.F.Blake	True			695859	0	metadata_only_or_no_event
+Helianthus anomalus	canonical_positive	openalex_metadata	gbif:3119246	Helianthus anomalus S.F.Blake	True			173	0	metadata_only_or_no_event
+Helianthus anomalus	canonical_positive	curated_open_literature	gbif:3119246	Helianthus anomalus S.F.Blake	True			1	1	event_evidence_recovered
+Helianthus deserticola	canonical_positive	gbif_species_api	gbif:3119233	Helianthus deserticola Heiser	True			1	0	metadata_only_or_no_event
+Helianthus deserticola	canonical_positive	crossref_metadata	gbif:3119233	Helianthus deserticola Heiser	True			695705	0	metadata_only_or_no_event
+Helianthus deserticola	canonical_positive	openalex_metadata	gbif:3119233	Helianthus deserticola Heiser	True			119	0	metadata_only_or_no_event
+Helianthus deserticola	canonical_positive	curated_open_literature	gbif:3119233	Helianthus deserticola Heiser	True			1	1	event_evidence_recovered
+Helianthus paradoxus	canonical_positive	gbif_species_api	gbif:3119149	Helianthus paradoxus Heiser	True			1	0	metadata_only_or_no_event
+Helianthus paradoxus	canonical_positive	crossref_metadata	gbif:3119149	Helianthus paradoxus Heiser	True			696133	0	metadata_only_or_no_event
+Helianthus paradoxus	canonical_positive	openalex_metadata	gbif:3119149	Helianthus paradoxus Heiser	True			353	0	metadata_only_or_no_event
+Helianthus paradoxus	canonical_positive	curated_open_literature	gbif:3119149	Helianthus paradoxus Heiser	True			1	1	event_evidence_recovered
+Iris nelsonii	canonical_positive	gbif_species_api	gbif:5298384	Iris ×nelsonii Randolph	True			1	0	metadata_only_or_no_event
+Iris nelsonii	canonical_positive	crossref_metadata	gbif:5298384	Iris ×nelsonii Randolph	True			715360	0	metadata_only_or_no_event
+Iris nelsonii	canonical_positive	openalex_metadata	gbif:5298384	Iris ×nelsonii Randolph	True			88	0	metadata_only_or_no_event
+Iris nelsonii	canonical_positive	curated_open_literature	gbif:5298384	Iris ×nelsonii Randolph	True			1	1	event_evidence_recovered
+Malus domestica	canonical_positive	gbif_species_api	gbif:3001244	Malus domestica (Suckow) Borkh.	True			1	0	metadata_only_or_no_event
+Malus domestica	canonical_positive	crossref_metadata	gbif:3001244	Malus domestica (Suckow) Borkh.	True			701480	0	metadata_only_or_no_event
+Malus domestica	canonical_positive	openalex_metadata	gbif:3001244	Malus domestica (Suckow) Borkh.	True			36942	0	metadata_only_or_no_event
+Malus domestica	canonical_positive	curated_open_literature	gbif:3001244	Malus domestica (Suckow) Borkh.	True			1	1	event_evidence_recovered
+Citrus sinensis	canonical_positive	gbif_species_api	gbif:8077391	Citrus ×aurantium L.	True	Citrus sinensis (Mill.) Pers., 1806 -> Citrus ×aurantium L.		1	0	metadata_only_or_no_event
+Citrus sinensis	canonical_positive	crossref_metadata	gbif:8077391	Citrus ×aurantium L.	True	Citrus sinensis (Mill.) Pers., 1806 -> Citrus ×aurantium L.		751684	0	metadata_only_or_no_event
+Citrus sinensis	canonical_positive	openalex_metadata	gbif:8077391	Citrus ×aurantium L.	True	Citrus sinensis (Mill.) Pers., 1806 -> Citrus ×aurantium L.		40814	0	metadata_only_or_no_event
+Citrus sinensis	canonical_positive	curated_open_literature	gbif:8077391	Citrus ×aurantium L.	True	Citrus sinensis (Mill.) Pers., 1806 -> Citrus ×aurantium L.		1	0	metadata_only_or_no_event
+Citrus aurantium	canonical_positive	gbif_species_api	gbif:8077391	Citrus ×aurantium L.	True			1	0	metadata_only_or_no_event
+Citrus aurantium	canonical_positive	crossref_metadata	gbif:8077391	Citrus ×aurantium L.	True			733783	0	metadata_only_or_no_event
+Citrus aurantium	canonical_positive	openalex_metadata	gbif:8077391	Citrus ×aurantium L.	True			16487	0	metadata_only_or_no_event
+Citrus aurantium	canonical_positive	curated_open_literature	gbif:8077391	Citrus ×aurantium L.	True			1	1	event_evidence_recovered
+Rosa canina	canonical_positive	gbif_species_api	gbif:3002461	Rosa canina L.	True			1	0	metadata_only_or_no_event
+Rosa canina	canonical_positive	crossref_metadata	gbif:3002461	Rosa canina L.	True			822104	0	metadata_only_or_no_event
+Rosa canina	canonical_positive	openalex_metadata	gbif:3002461	Rosa canina L.	True			10961	0	metadata_only_or_no_event
+Rosa canina	canonical_positive	curated_open_literature	gbif:3002461	Rosa canina L.	True			1	1	event_evidence_recovered
+Quercus robur	canonical_positive	gbif_species_api	gbif:2878688	Quercus robur L.	True			1	0	metadata_only_or_no_event
+Quercus robur	canonical_positive	crossref_metadata	gbif:2878688	Quercus robur L.	True			700820	0	metadata_only_or_no_event
+Quercus robur	canonical_positive	openalex_metadata	gbif:2878688	Quercus robur L.	True			32379	0	metadata_only_or_no_event
+Quercus robur	canonical_positive	curated_open_literature	gbif:2878688	Quercus robur L.	True			1	1	event_evidence_recovered
+Musa x paradisiaca	canonical_positive	gbif_species_api	gbif:2762752	Musa ×paradisiaca L.	True			1	0	metadata_only_or_no_event
+Musa x paradisiaca	canonical_positive	crossref_metadata	gbif:2762752	Musa ×paradisiaca L.	True			720903	0	metadata_only_or_no_event
+Musa x paradisiaca	canonical_positive	openalex_metadata	gbif:2762752	Musa ×paradisiaca L.	True			1174	0	metadata_only_or_no_event
+Musa x paradisiaca	canonical_positive	curated_open_literature	gbif:2762752	Musa ×paradisiaca L.	True			1	1	event_evidence_recovered
+Prunus domestica	canonical_positive	gbif_species_api	gbif:7931731	Prunus domestica L.	True			1	0	metadata_only_or_no_event
+Prunus domestica	canonical_positive	crossref_metadata	gbif:7931731	Prunus domestica L.	True			709626	0	metadata_only_or_no_event
+Prunus domestica	canonical_positive	openalex_metadata	gbif:7931731	Prunus domestica L.	True			12159	0	metadata_only_or_no_event
+Prunus domestica	canonical_positive	curated_open_literature	gbif:7931731	Prunus domestica L.	True			1	1	event_evidence_recovered
+Camelina sativa	canonical_positive	gbif_species_api	gbif:9073641	Camelina sativa (L.) Crantz	True			1	0	metadata_only_or_no_event
+Camelina sativa	canonical_positive	crossref_metadata	gbif:9073641	Camelina sativa (L.) Crantz	True			736420	0	metadata_only_or_no_event
+Camelina sativa	canonical_positive	openalex_metadata	gbif:9073641	Camelina sativa (L.) Crantz	True			9640	0	metadata_only_or_no_event
+Camelina sativa	canonical_positive	curated_open_literature	gbif:9073641	Camelina sativa (L.) Crantz	True			1	1	event_evidence_recovered
+Triticum monococcum	matched_control	gbif_species_api	gbif:7883427	Triticum monococcum L.	True			1	0	metadata_only_or_no_event
+Triticum monococcum	matched_control	crossref_metadata	gbif:7883427	Triticum monococcum L.	True			710461	0	metadata_only_or_no_event
+Triticum monococcum	matched_control	openalex_metadata	gbif:7883427	Triticum monococcum L.	True			5613	0	metadata_only_or_no_event
+Triticum monococcum	matched_control	curated_open_literature	gbif:7883427	Triticum monococcum L.	True			0	0	metadata_only_or_no_event
+Brassica rapa	matched_control	gbif_species_api	gbif:7903057	Brassica rapa L.	True			1	0	metadata_only_or_no_event
+Brassica rapa	matched_control	crossref_metadata	gbif:7903057	Brassica rapa L.	True			722766	0	metadata_only_or_no_event
+Brassica rapa	matched_control	openalex_metadata	gbif:7903057	Brassica rapa L.	True			53585	0	metadata_only_or_no_event
+Brassica rapa	matched_control	curated_open_literature	gbif:7903057	Brassica rapa L.	True			0	0	metadata_only_or_no_event
+Arachis duranensis	matched_control	gbif_species_api	gbif:5353841	Arachis duranensis Krapov. & W.C.Greg.	True			1	0	metadata_only_or_no_event
+Arachis duranensis	matched_control	crossref_metadata	gbif:5353841	Arachis duranensis Krapov. & W.C.Greg.	True			696164	0	metadata_only_or_no_event
+Arachis duranensis	matched_control	openalex_metadata	gbif:5353841	Arachis duranensis Krapov. & W.C.Greg.	True			3929	0	metadata_only_or_no_event
+Arachis duranensis	matched_control	curated_open_literature	gbif:5353841	Arachis duranensis Krapov. & W.C.Greg.	True			0	0	metadata_only_or_no_event
+Gossypium arboreum	matched_control	gbif_species_api	gbif:3152663	Gossypium arboreum L.	True			1	0	metadata_only_or_no_event
+Gossypium arboreum	matched_control	crossref_metadata	gbif:3152663	Gossypium arboreum L.	True			696424	0	metadata_only_or_no_event
+Gossypium arboreum	matched_control	openalex_metadata	gbif:3152663	Gossypium arboreum L.	True			4459	0	metadata_only_or_no_event
+Gossypium arboreum	matched_control	curated_open_literature	gbif:3152663	Gossypium arboreum L.	True			0	0	metadata_only_or_no_event
+Coffea canephora	matched_control	gbif_species_api	gbif:2895528	Coffea canephora Pierre ex A.Froehner	True			1	0	metadata_only_or_no_event
+Coffea canephora	matched_control	crossref_metadata	gbif:2895528	Coffea canephora Pierre ex A.Froehner	True			695036	0	metadata_only_or_no_event
+Coffea canephora	matched_control	openalex_metadata	gbif:2895528	Coffea canephora Pierre ex A.Froehner	True			14301	0	metadata_only_or_no_event
+Coffea canephora	matched_control	curated_open_literature	gbif:2895528	Coffea canephora Pierre ex A.Froehner	True			0	0	metadata_only_or_no_event
+Nicotiana sylvestris	matched_control	gbif_species_api	gbif:2928767	Nicotiana sylvestris Speg.	True			1	0	metadata_only_or_no_event
+Nicotiana sylvestris	matched_control	crossref_metadata	gbif:2928767	Nicotiana sylvestris Speg.	True			705535	0	metadata_only_or_no_event
+Nicotiana sylvestris	matched_control	openalex_metadata	gbif:2928767	Nicotiana sylvestris Speg.	True			3693	0	metadata_only_or_no_event
+Nicotiana sylvestris	matched_control	curated_open_literature	gbif:2928767	Nicotiana sylvestris Speg.	True			0	0	metadata_only_or_no_event
+Fragaria vesca	matched_control	gbif_species_api	gbif:3029817	Fragaria vesca L.	True			1	0	metadata_only_or_no_event
+Fragaria vesca	matched_control	crossref_metadata	gbif:3029817	Fragaria vesca L.	True			693100	0	metadata_only_or_no_event
+Fragaria vesca	matched_control	openalex_metadata	gbif:3029817	Fragaria vesca L.	True			14287	0	metadata_only_or_no_event
+Fragaria vesca	matched_control	curated_open_literature	gbif:3029817	Fragaria vesca L.	True			0	0	metadata_only_or_no_event
+Sporobolus alterniflorus	matched_control	gbif_species_api	gbif:9394776	Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	True			1	0	metadata_only_or_no_event
+Sporobolus alterniflorus	matched_control	crossref_metadata	gbif:9394776	Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	True			689396	0	metadata_only_or_no_event
+Sporobolus alterniflorus	matched_control	openalex_metadata	gbif:9394776	Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	True			351	0	metadata_only_or_no_event
+Sporobolus alterniflorus	matched_control	curated_open_literature	gbif:9394776	Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	True			0	0	metadata_only_or_no_event
+Tragopogon dubius	matched_control	gbif_species_api	gbif:6443709	Tragopogon dubius Scop.	True			1	0	metadata_only_or_no_event
+Tragopogon dubius	matched_control	crossref_metadata	gbif:6443709	Tragopogon dubius Scop.	True			690050	0	metadata_only_or_no_event
+Tragopogon dubius	matched_control	openalex_metadata	gbif:6443709	Tragopogon dubius Scop.	True			1257	0	metadata_only_or_no_event
+Tragopogon dubius	matched_control	curated_open_literature	gbif:6443709	Tragopogon dubius Scop.	True			0	0	metadata_only_or_no_event
+Arabidopsis thaliana	matched_control	gbif_species_api	gbif:3052436	Arabidopsis thaliana (L.) Heynh.	True			1	0	metadata_only_or_no_event
+Arabidopsis thaliana	matched_control	crossref_metadata	gbif:3052436	Arabidopsis thaliana (L.) Heynh.	True			755383	0	metadata_only_or_no_event
+Arabidopsis thaliana	matched_control	openalex_metadata	gbif:3052436	Arabidopsis thaliana (L.) Heynh.	True			283297	0	metadata_only_or_no_event
+Arabidopsis thaliana	matched_control	curated_open_literature	gbif:3052436	Arabidopsis thaliana (L.) Heynh.	True			0	0	metadata_only_or_no_event
+Helianthus annuus	matched_control	gbif_species_api	gbif:9206251	Helianthus annuus L.	True			1	0	metadata_only_or_no_event
+Helianthus annuus	matched_control	crossref_metadata	gbif:9206251	Helianthus annuus L.	True			696241	0	metadata_only_or_no_event
+Helianthus annuus	matched_control	openalex_metadata	gbif:9206251	Helianthus annuus L.	True			50695	0	metadata_only_or_no_event
+Helianthus annuus	matched_control	curated_open_literature	gbif:9206251	Helianthus annuus L.	True			0	0	metadata_only_or_no_event
+Iris fulva	matched_control	gbif_species_api	gbif:5299121	Iris fulva Ker Gawl.	True			1	0	metadata_only_or_no_event
+Iris fulva	matched_control	crossref_metadata	gbif:5299121	Iris fulva Ker Gawl.	True			716021	0	metadata_only_or_no_event
+Iris fulva	matched_control	openalex_metadata	gbif:5299121	Iris fulva Ker Gawl.	True			325	0	metadata_only_or_no_event
+Iris fulva	matched_control	curated_open_literature	gbif:5299121	Iris fulva Ker Gawl.	True			0	0	metadata_only_or_no_event
+Malus sieversii	matched_control	gbif_species_api	gbif:3001244	Malus domestica (Suckow) Borkh.	True	Malus sieversii (Ledeb.) Koidz. -> Malus domestica (Suckow) Borkh.		1	0	metadata_only_or_no_event
+Malus sieversii	matched_control	crossref_metadata	gbif:3001244	Malus domestica (Suckow) Borkh.	True	Malus sieversii (Ledeb.) Koidz. -> Malus domestica (Suckow) Borkh.		694567	0	metadata_only_or_no_event
+Malus sieversii	matched_control	openalex_metadata	gbif:3001244	Malus domestica (Suckow) Borkh.	True	Malus sieversii (Ledeb.) Koidz. -> Malus domestica (Suckow) Borkh.		1915	0	metadata_only_or_no_event
+Malus sieversii	matched_control	curated_open_literature	gbif:3001244	Malus domestica (Suckow) Borkh.	True	Malus sieversii (Ledeb.) Koidz. -> Malus domestica (Suckow) Borkh.		0	0	metadata_only_or_no_event
+Citrus medica	matched_control	gbif_species_api	gbif:3190157	Citrus medica L.	True			1	0	metadata_only_or_no_event
+Citrus medica	matched_control	crossref_metadata	gbif:3190157	Citrus medica L.	True			850407	0	metadata_only_or_no_event
+Citrus medica	matched_control	openalex_metadata	gbif:3190157	Citrus medica L.	True			5086	0	metadata_only_or_no_event
+Citrus medica	matched_control	curated_open_literature	gbif:3190157	Citrus medica L.	True			0	0	metadata_only_or_no_event
+Rosa rugosa	matched_control	gbif_species_api	gbif:3003979	Rosa rugosa Thunb.	True			1	0	metadata_only_or_no_event
+Rosa rugosa	matched_control	crossref_metadata	gbif:3003979	Rosa rugosa Thunb.	True			822492	0	metadata_only_or_no_event
+Rosa rugosa	matched_control	openalex_metadata	gbif:3003979	Rosa rugosa Thunb.	True			6762	0	metadata_only_or_no_event
+Rosa rugosa	matched_control	curated_open_literature	gbif:3003979	Rosa rugosa Thunb.	True			0	0	metadata_only_or_no_event
+Quercus alba	matched_control	gbif_species_api	gbif:2879737	Quercus alba L.	True			1	0	metadata_only_or_no_event
+Quercus alba	matched_control	crossref_metadata	gbif:2879737	Quercus alba L.	True			731759	0	metadata_only_or_no_event
+Quercus alba	matched_control	openalex_metadata	gbif:2879737	Quercus alba L.	True			6481	0	metadata_only_or_no_event
+Quercus alba	matched_control	curated_open_literature	gbif:2879737	Quercus alba L.	True			0	0	metadata_only_or_no_event
+Musa acuminata	matched_control	gbif_species_api	gbif:2762680	Musa acuminata Colla	True			1	0	metadata_only_or_no_event
+Musa acuminata	matched_control	crossref_metadata	gbif:2762680	Musa acuminata Colla	True			723492	0	metadata_only_or_no_event
+Musa acuminata	matched_control	openalex_metadata	gbif:2762680	Musa acuminata Colla	True			15810	0	metadata_only_or_no_event
+Musa acuminata	matched_control	curated_open_literature	gbif:2762680	Musa acuminata Colla	True			0	0	metadata_only_or_no_event

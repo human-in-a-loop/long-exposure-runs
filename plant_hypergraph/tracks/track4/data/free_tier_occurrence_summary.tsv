@@ -1,0 +1,31 @@
+queried_name	accepted_key	gbif_usage_key	gbif_scientific_name	role	crop_anchor	source	total_records	coordinate_records	license_compatible_records	post_filter_records	cultivated_flagged_records	wild_candidate_records	dominant_rejection_reason
+Aegilops speltoides	wfo:wfo-0000841819-2025-12	5289790	Aegilops speltoides Tausch	seed_panel		GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	188	188	19	173	license_not_cc0_or_cc_by
+Aegilops speltoides	wfo:wfo-0000841819-2025-12	5289790	Aegilops speltoides Tausch	wild_relative	Triticum aestivum	GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	188	173	19	173	license_not_cc0_or_cc_by
+Aegilops speltoides	wfo:wfo-0000841819-2025-12	5289790	Aegilops speltoides Tausch	wild_relative	Triticum turgidum subsp. durum	GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	188	173	19	173	license_not_cc0_or_cc_by
+Aegilops tauschii	wfo:wfo-0000841857-2025-12	5289779	Aegilops tauschii Coss.	seed_panel		GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	275	275	4	271	license_not_cc0_or_cc_by
+Aegilops tauschii	wfo:wfo-0000841857-2025-12	5289779	Aegilops tauschii Coss.	wild_relative	Triticum aestivum	GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	275	271	4	271	license_not_cc0_or_cc_by
+Ananas comosus	wfo:wfo-0000339432-2025-12	5288819	Ananas comosus (L.) Merr.	heldout_crop	Ananas comosus	GBIF_iNaturalist_mediated	300	300	26	26	0	26	license_not_cc0_or_cc_by
+Arachis duranensis	wfo:wfo-0000193812-2025-12	5353841	Arachis duranensis Krapov. & W.C.Greg.	seed_panel		GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	234	234	15	219	license_not_cc0_or_cc_by
+Arachis duranensis	wfo:wfo-0000193812-2025-12	5353841	Arachis duranensis Krapov. & W.C.Greg.	wild_relative	Arachis hypogaea	GBIF:07044577-bd82-4089-9f3a-f4a9d2170b2e:fee3882f-5360-4f01-a1ca-767c48fa629c	300	300	234	219	15	219	license_not_cc0_or_cc_by
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	5353770	Arachis hypogaea L.	crop_anchor	Arachis hypogaea	GBIF:14d5676a-2c54-4f94-9023-1e8dcd822aa0:da86174a-a605-43a4-a5e8-53d484152cd3	300	300	152	152	2	152	license_not_cc0_or_cc_by
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	5353770	Arachis hypogaea L.	seed_panel		GBIF:14d5676a-2c54-4f94-9023-1e8dcd822aa0:da86174a-a605-43a4-a5e8-53d484152cd3	300	300	152	152	2	152	license_not_cc0_or_cc_by
+Arachis ipaensis	wfo:wfo-0000193806-2025-12	5353793	Arachis ipaensis Krapov. & W.C.Greg.	seed_panel		GBIF:Tropicos:90fd6680-349f-11d8-aa2d-b8a03c50a862	28	28	27	27	0	27	license_not_cc0_or_cc_by
+Arachis ipaensis	wfo:wfo-0000193806-2025-12	5353793	Arachis ipaensis Krapov. & W.C.Greg.	wild_relative	Arachis hypogaea	GBIF:Tropicos:90fd6680-349f-11d8-aa2d-b8a03c50a862	28	28	27	27	0	27	license_not_cc0_or_cc_by
+Avena sativa	wfo:wfo-0000852231-2025-12	2705290	Avena sativa L.	crop_anchor	Avena sativa	GBIF_iNaturalist_mediated	300	300	109	109	0	109	license_not_cc0_or_cc_by
+Avena sativa	wfo:wfo-0000852231-2025-12	2705290	Avena sativa L.	seed_panel		GBIF_iNaturalist_mediated	300	300	109	109	0	109	license_not_cc0_or_cc_by
+Avena sterilis	wfo:wfo-0000852332-2025-12	2705286	Avena sterilis L.	seed_panel		GBIF_iNaturalist_mediated	300	300	6	6	0	6	license_not_cc0_or_cc_by
+Avena sterilis	wfo:wfo-0000852332-2025-12	2705286	Avena sterilis L.	wild_relative	Avena sativa	GBIF_iNaturalist_mediated	300	300	6	6	0	6	license_not_cc0_or_cc_by
+Cajanus cajan		7587087	Cajanus cajan (L.) Huth	heldout_crop	Cajanus cajan	GBIF_iNaturalist_mediated	300	300	40	40	0	40	license_not_cc0_or_cc_by
+Carica papaya		2874484	Carica papaya L.	heldout_crop	Carica papaya	GBIF_iNaturalist_mediated	300	300	16	16	0	16	license_not_cc0_or_cc_by
+Chenopodium quinoa		3083935	Chenopodium quinoa Willd.	heldout_crop	Chenopodium quinoa	GBIF:Tedersoo L et al. Global soil samples:0870a77b-587c-4369-a8ed-bc3d347b8e1c	300	300	250	250	0	250	license_not_cc0_or_cc_by
+Citrullus lanatus		2874621	Citrullus lanatus (Thunb.) Matsum. & Nakai	heldout_crop	Citrullus lanatus	GBIF_iNaturalist_mediated	300	300	56	56	7	53	license_not_cc0_or_cc_by
+Colocasia esculenta		5330776	Colocasia esculenta (L.) Schott	heldout_crop	Colocasia esculenta	GBIF_iNaturalist_mediated	300	300	55	55	0	55	license_not_cc0_or_cc_by
+Dioscorea alata		2754476	Dioscorea alata L.	heldout_crop	Dioscorea alata	GBIF_iNaturalist_mediated	300	300	62	62	0	62	license_not_cc0_or_cc_by
+Elettaria cardamomum		2759871	Elettaria cardamomum (L.) Maton	heldout_crop	Elettaria cardamomum	GBIF:216459af-dd06-4cbb-920f-80b312b8bf09:1928bdf0-f5d2-11dc-8c12-b8a03c50a862	267	267	219	218	9	209	license_not_cc0_or_cc_by
+Lablab purpureus		2952236	Lablab purpureus (L.) Sweet	heldout_crop	Lablab purpureus	GBIF_iNaturalist_mediated	300	300	52	52	1	52	license_not_cc0_or_cc_by
+Mangifera indica		3190638	Mangifera indica L.	heldout_crop	Mangifera indica	GBIF_iNaturalist_mediated	300	300	40	40	1	40	license_not_cc0_or_cc_by
+Persea americana		3034046	Persea americana Mill.	heldout_crop	Persea americana	GBIF_iNaturalist_mediated	300	300	53	53	0	53	license_not_cc0_or_cc_by
+Psidium guajava		5420380	Psidium guajava L.	heldout_crop	Psidium guajava	GBIF_iNaturalist_mediated	300	300	37	37	1	37	license_not_cc0_or_cc_by
+Sesamum indicum		3172622	Sesamum indicum L.	heldout_crop	Sesamum indicum	GBIF_iNaturalist_mediated	300	300	44	44	2	44	license_not_cc0_or_cc_by
+Setaria italica		5289698	Setaria italica (L.) P.Beauv.	heldout_crop	Setaria italica	GBIF:Artportalen:b8323864-602a-4a7d-9127-bb903054e97d	300	300	135	135	2	133	license_not_cc0_or_cc_by
+Vigna unguiculata		2982583	Vigna unguiculata (L.) Walp.	heldout_crop	Vigna unguiculata	GBIF:7a3679ef-5582-4aaa-81f0-8c2545cafc81:da86174a-a605-43a4-a5e8-53d484152cd3	300	300	153	153	5	148	license_not_cc0_or_cc_by

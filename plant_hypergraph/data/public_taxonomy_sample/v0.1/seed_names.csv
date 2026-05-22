@@ -1,0 +1,17 @@
+query_name,rationale_class
+Quercus robur,accepted_species
+Poa annua,accepted_species
+Rosa canina,accepted_species
+Arabidopsis thaliana,accepted_species
+Solanum lycopersicum,accepted_species
+Zea mays,accepted_species
+Oryza sativa,accepted_species
+Triticum aestivum,accepted_species
+Acer saccharum,accepted_species
+Betula pendula,accepted_species
+Acacia dealbata,accepted_species
+Eucalyptus globulus,accepted_species
+Picea abies,accepted_species
+Pinus sylvestris,accepted_species
+Rhopalocarpus alternifolius (Baker) Capuron,authorship_name
+Rosa,genus_level_ambiguity

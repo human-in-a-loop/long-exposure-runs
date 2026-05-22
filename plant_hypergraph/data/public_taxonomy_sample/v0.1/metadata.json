@@ -1,0 +1,112 @@
+{
+  "access_date": "2026-05-17",
+  "created": "2026-05-17T01:45:00Z",
+  "cycle": 3,
+  "endpoints": {
+    "gbif_match": "https://api.gbif.org/v1/species/match",
+    "opentree_tnrs": "https://api.opentreeoflife.org/v3/tnrs/match_names",
+    "wfo": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "hashes": {
+    "hyperedges.csv": "93b6c098523c951956a5d0e8c1a73484101f6f018f9418aa7904c86876baa0e6",
+    "names.csv": "93010084ac22ac9a51a02e8cfa07c6f5015381f9fbb055ffb73bda53f89a83f5",
+    "raw/gbif/acacia_dealbata.json": "f5119eaddfb2f7051ddf28586693f82a027a89513de2d49c26fc167b0e6b9ab3",
+    "raw/gbif/acer_saccharum.json": "a5ba86803a149310b179daf1029f5718d359e5956a7673b529cc5782687f0173",
+    "raw/gbif/arabidopsis_thaliana.json": "2e6fbfe0e3e9cc480055e17217d16ae43423e657f70c0b52a6851e00ff04e99b",
+    "raw/gbif/betula_pendula.json": "165582057ffdf2ff4d8a61f4af217406d15cd2ac8ab99f36c30037473b153ff6",
+    "raw/gbif/eucalyptus_globulus.json": "20a3bc8d87451b92ae5b7c387852ae6c273246ddb0c7e11c2a1484d47fc8c436",
+    "raw/gbif/oryza_sativa.json": "b61babab1de76b9279851c1e0690028b4a3ba3193354dac10645459de14a1f93",
+    "raw/gbif/picea_abies.json": "aa6a10a9d5497cc675cce21042c832f35e4752696510ee7f57b98d9e0de0b3cb",
+    "raw/gbif/pinus_sylvestris.json": "6864f15f1d5ddf59fa32afbaca3e2b3e53631f3c462dfcd2470985e0d0560b1b",
+    "raw/gbif/poa_annua.json": "21f59a64e23b768f1ef107fad5520677907f102fe43167a18950f244b9d977a5",
+    "raw/gbif/quercus_robur.json": "a43cee87192a473acc752ebc73f3fdbba314ee850e7ce27e7f16c8e873f4d774",
+    "raw/gbif/rhopalocarpus_alternifolius_baker_capuron.json": "84b02e432fdfcf84ea619a4b2eb1599f266bad88c5bc1b967c32e6a165f9d469",
+    "raw/gbif/rosa.json": "26e24b13e2580a140b81d60cde03ce16a310c248cbffe536a7adbe2381aa688d",
+    "raw/gbif/rosa_canina.json": "a20371565a2279cab4119ded1bc802b758c040248fe86a532faed22ae01125e4",
+    "raw/gbif/solanum_lycopersicum.json": "404309319ce599d2e8a83cd3f922c6c5ca5126eb7f54fc12a17309c2269acbc9",
+    "raw/gbif/triticum_aestivum.json": "82692b3a02dfab903c0cb7f792f14fa03c24dde1b4abdd6b223c5471f8e5e1bb",
+    "raw/gbif/zea_mays.json": "2ec6689c2d67647cbeca6740c6a546f0552ecc0e893c0990155e1605287a8460",
+    "raw/opentree/acacia_dealbata.json": "9abe3be6a0be1c413ab2901419538efa181c57239cfd45c51b35dc5e26de5c1e",
+    "raw/opentree/acer_saccharum.json": "4cf116b37d0d16aecdf52685b1a717d2d10c9db5100a1979eebaafbb4d89863f",
+    "raw/opentree/arabidopsis_thaliana.json": "7165ba89d2a51cd0fffa6d4dd9951396d30f1b6b65e4d3facae39a36a842414e",
+    "raw/opentree/betula_pendula.json": "d6dafac1081fbc27adf55b6d3439db826a52d90e6f7ce429090c6d5347db396a",
+    "raw/opentree/eucalyptus_globulus.json": "197abb4de28c389d9e7538d6b93abfc146dbb889a87e779400532bf7e1981972",
+    "raw/opentree/oryza_sativa.json": "b1ade8fba8c2c20fbdaf8f2a2b8bacdd8765b753f4818f31f1fd45ccb2dbe7b9",
+    "raw/opentree/picea_abies.json": "d3e882b805e142698c1f25ce31c849163494acda4b92f1d1b25cfde9884e6181",
+    "raw/opentree/pinus_sylvestris.json": "eefc62127ac2cd747457bb014e6d31f8370d1b05ca1aefbc3118afa28e6e2f9c",
+    "raw/opentree/poa_annua.json": "0036d5163661cc1f80d1fa8d2097b4891dee6270caec4a323407df57b652f414",
+    "raw/opentree/quercus_robur.json": "201c856dffe7bf70f1c374309c360444a7c5ff69d8e4b9121429c55e1e7d5982",
+    "raw/opentree/rhopalocarpus_alternifolius_baker_capuron.json": "f3c2a20300535dc4fb8265f5d4bb869f3211b2f2a3b5cadd08f5a29e574d9600",
+    "raw/opentree/rosa.json": "f3d89ac8a305bf6453f79088f1bf16b9cb27c649b219f6fcd1e4b398f760210c",
+    "raw/opentree/rosa_canina.json": "77d86df6c52a7cbfcc6c476a27d6d05c0dd4c14f55c9fdfbd1b38f893b08082e",
+    "raw/opentree/solanum_lycopersicum.json": "e4ed7cff086b5dc7b0f8361530aa1f26f56ef16d182a7e0dabc804d9084b8ace",
+    "raw/opentree/triticum_aestivum.json": "3848ce424a84aeae9dcc2e7216b290f040763fbeb55ac2f6e35f4a7ee3636ccf",
+    "raw/opentree/zea_mays.json": "046960d739d160073c498854e054d2c6e36ab5cdb46fd8d250eb5632b44a1a3d",
+    "raw/wfo/acacia_dealbata.json": "d2b7db34a532b473d08d61139d4e6c601a35d3d34a336c29937e20934c5eac8c",
+    "raw/wfo/acer_saccharum.json": "5e41e8e752c454a9eea89f1f3733f8ee158627649cf3250591a2b5d653f79526",
+    "raw/wfo/arabidopsis_thaliana.json": "da1fca33b85b09bf137265e64b912b27441261cc0d7fce11b6ba05e40910f1f1",
+    "raw/wfo/betula_pendula.json": "97752920b46dc1cbf2edc49cdbedb607969db33a1d3b47b5f4edfc562a2faae9",
+    "raw/wfo/eucalyptus_globulus.json": "543f2eeef33084ac974b8ea81d2a175dd127262374fbf12595023940acf36ba2",
+    "raw/wfo/oryza_sativa.json": "cb930448078750e4befc092de34d655ae2a002d1671376cc6035623d4397530c",
+    "raw/wfo/picea_abies.json": "a70b9f9eea3f9a75fd14f1a22d9188638a08ec80b09d74dbcfabc0b269707b07",
+    "raw/wfo/pinus_sylvestris.json": "d346b4e7d916397c5e6fa322162c8a7c6f167620e0679d6197349b200ddb9792",
+    "raw/wfo/poa_annua.json": "1da13fbb7cff1fe93eade7102689edde7746910371269323b3b63d287fbc4f2e",
+    "raw/wfo/quercus_robur.json": "36689ac314a7d26bfe6e84a1a18647514c005bd80e4eb36f72287d8410ffae02",
+    "raw/wfo/rhopalocarpus_alternifolius_baker_capuron.json": "d59c9e74521ee60500d09a2f1dbdca6f6cc160e5b0958cdc4873c47b69b6604c",
+    "raw/wfo/rosa.json": "77c9542d9885bf0606e5be4590f2f77ba7f0c79b23c4767579008fa8eba8f189",
+    "raw/wfo/rosa_canina.json": "37bcc164f94fd49f8eeb70a559625cd828482b6afaed8da7e74179ae8ce9e6d3",
+    "raw/wfo/solanum_lycopersicum.json": "fc21f1a67456bdfb25ed5ed91f24c2683e8bf160b96fade9fb761c0a51ce0b6c",
+    "raw/wfo/triticum_aestivum.json": "c660bde20c576ecdfb59db48ba3e4d992f4b166958d1063fe86a39a730cdc318",
+    "raw/wfo/zea_mays.json": "2cc7838ab38a700ed65d18dfbe4a1a7324fd0288f7c33ab0d214cc4b78194a85",
+    "seed_names.csv": "35082018582918e82f8021e13025217c6325534557b9a624d54bea10f7477e0d",
+    "source_coverage.png": "15c1e3a8b653b95f40526b4bf630b2630443b5b1111ad458bbf126a825690b4b",
+    "source_crosswalk.csv": "637616f9b9eae994898dae85af45dfbabc3b2fb261f41cce3157837c78880212",
+    "splits.csv": "ca36d644f2c2796e0cbe76fe78ffa71e8dcaef6bcd797dd07fd084a66befa1b7",
+    "taxa.csv": "f85562595566b528f6216fc89c0b3b288f75f70ce6951c7e7e50f65f9e68ebe1"
+  },
+  "known_limitations": [
+    "Small seed-list sample; not representative of plant taxonomy.",
+    "No occurrence provenance edges are emitted because occurrence reads are disabled for this cycle.",
+    "No trait, reticulate, hybrid-origin, range, or phylogenetic novelty claims are supported.",
+    "WFO/GBIF/Open Tree records are source-specific and intentionally not reconciled into one accepted truth."
+  ],
+  "license_citation_notes": {
+    "GBIF": "Use GBIF citation/terms guidance; species match API only, no async downloads or occurrence records in this cycle.",
+    "OpenTree": "Use Open Tree license/citation guidance; TNRS used as taxonomy/phylogeny synthesis context, not WFO-equivalent truth.",
+    "WFO": "Use WFO Plant List/API citation guidance; source used only for tiny no-auth name matching sample."
+  },
+  "milestone": "M5",
+  "query_parameters": {
+    "gbif": {
+      "kingdom": "Plantae",
+      "name": "<seed_name>"
+    },
+    "opentree": {
+      "context_name": "Land plants",
+      "do_approximate_matching": false,
+      "include_suppressed": false,
+      "names": [
+        "<seed_name>"
+      ]
+    },
+    "wfo": {
+      "input_string": "<seed_name>"
+    }
+  },
+  "script": "scripts/build_public_taxonomy_sample.py",
+  "software_versions": {
+    "httpx": "0.28.1",
+    "matplotlib": "3.10.9",
+    "python": "3.12.3"
+  },
+  "summary": {
+    "disagreement_categories": {
+      "different_status": 16
+    },
+    "hyperedge_rows": 327,
+    "name_rows": 63,
+    "seed_count": 16,
+    "seeds_with_two_or_more_sources": 16,
+    "taxa_rows": 62
+  }
+}

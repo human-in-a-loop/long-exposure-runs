@@ -1,0 +1,41 @@
+input_name	panel_role	matched_control_for	accepted_key	accepted_name	family	gbif_match_type	synonym_path	crossref_reticulation_hit_count	openalex_reticulation_hit_count	source_density_band	usable_event_shaped_evidence_count	rationale
+Triticum aestivum	canonical_positive		gbif:7795888	Triticum aestivum L.	Poaceae	EXACT;status=ACCEPTED;confidence=97		711124	187487	high	2	bread wheat allopolyploid seed case
+Brassica napus	canonical_positive		gbif:3042636	Brassica napus L.	Brassicaceae	EXACT;status=ACCEPTED;confidence=99		721261	95495	high	1	rapeseed amphidiploid seed case
+Arachis hypogaea	canonical_positive		gbif:5353770	Arachis hypogaea L.	Fabaceae	EXACT;status=ACCEPTED;confidence=99		696263	52595	high	1	peanut allotetraploid seed case
+Gossypium hirsutum	canonical_positive		gbif:3152661	Gossypium hirsutum L.	Malvaceae	EXACT;status=ACCEPTED;confidence=97		696783	52701	high	1	upland cotton allopolyploid seed case
+Coffea arabica	canonical_positive		gbif:2895345	Coffea arabica L.	Rubiaceae	EXACT;status=ACCEPTED;confidence=98		701294	36368	high	1	coffee allotetraploid seed case
+Nicotiana tabacum	canonical_positive		gbif:2928774	Nicotiana tabacum L.	Solanaceae	EXACT;status=ACCEPTED;confidence=99		699401	66842	high	1	tobacco allotetraploid seed case
+Fragaria x ananassa	canonical_positive		gbif:3029912	Fragaria ×ananassa (Weston) Rozier	Rosaceae	EXACT;status=ACCEPTED;confidence=97		693104	10335	high	1	cultivated strawberry hybrid/polyploid seed case
+Spartina anglica	canonical_positive		gbif:9398259	Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	Poaceae	EXACT;status=SYNONYM;confidence=98	Spartina anglica C.E.Hubb. -> Sporobolus anglicus (C.E.Hubb.) P.M.Peterson & Saarela	692641	2465	high	1	classic recent allopolyploid seed case
+Tragopogon mirus	canonical_positive		gbif:5386951	Tragopogon ×mirus Ownbey	Asteraceae	EXACT;status=ACCEPTED;confidence=99		689767	277	high	1	recent allopolyploid seed case
+Tragopogon miscellus	canonical_positive		gbif:5386909	Tragopogon ×miscellus Ownbey	Asteraceae	EXACT;status=ACCEPTED;confidence=99		689273	439	high	1	recent allopolyploid seed case
+Arabidopsis suecica	canonical_positive		gbif:3052544	Arabidopsis suecica (Fr.) Norrl.	Brassicaceae	EXACT;status=ACCEPTED;confidence=98		754657	1914	high	1	allopolyploid model seed case
+Helianthus anomalus	canonical_positive		gbif:3119246	Helianthus anomalus S.F.Blake	Asteraceae	EXACT;status=ACCEPTED;confidence=99		695859	173	high	1	homoploid hybrid species seed case
+Helianthus deserticola	canonical_positive		gbif:3119233	Helianthus deserticola Heiser	Asteraceae	EXACT;status=ACCEPTED;confidence=99		695705	119	high	1	homoploid hybrid species seed case
+Helianthus paradoxus	canonical_positive		gbif:3119149	Helianthus paradoxus Heiser	Asteraceae	EXACT;status=ACCEPTED;confidence=99		696133	353	high	1	homoploid hybrid species seed case
+Iris nelsonii	canonical_positive		gbif:5298384	Iris ×nelsonii Randolph	Iridaceae	EXACT;status=ACCEPTED;confidence=99		715360	88	high	1	Louisiana iris hybrid species seed case
+Malus domestica	canonical_positive		gbif:3001244	Malus domestica (Suckow) Borkh.	Rosaceae	EXACT;status=ACCEPTED;confidence=98		701480	36942	high	1	crop introgression seed case
+Citrus sinensis	canonical_positive		gbif:8077391	Citrus ×aurantium L.	Rutaceae	EXACT;status=SYNONYM;confidence=97	Citrus sinensis (Mill.) Pers., 1806 -> Citrus ×aurantium L.	751684	40814	high	0	sweet orange admixed origin seed case
+Citrus aurantium	canonical_positive		gbif:8077391	Citrus ×aurantium L.	Rutaceae	EXACT;status=ACCEPTED;confidence=97		733783	16487	high	1	sour orange hybrid origin seed case
+Rosa canina	canonical_positive		gbif:3002461	Rosa canina L.	Rosaceae	EXACT;status=ACCEPTED;confidence=97		822104	10961	high	1	dogrose reticulate/canine meiosis seed case
+Quercus robur	canonical_positive		gbif:2878688	Quercus robur L.	Fagaceae	EXACT;status=ACCEPTED;confidence=97		700820	32379	high	1	oak introgression seed case
+Musa x paradisiaca	canonical_positive		gbif:2762752	Musa ×paradisiaca L.	Musaceae	EXACT;status=ACCEPTED;confidence=99		720903	1174	high	1	cultivated banana hybrid seed case
+Prunus domestica	canonical_positive		gbif:7931731	Prunus domestica L.	Rosaceae	EXACT;status=ACCEPTED;confidence=98		709626	12159	high	1	European plum polyploid origin seed case
+Camelina sativa	canonical_positive		gbif:9073641	Camelina sativa (L.) Crantz	Brassicaceae	EXACT;status=ACCEPTED;confidence=97		736420	9640	high	1	allohexaploid oilseed seed case
+Triticum monococcum	matched_control	Triticum aestivum	gbif:7883427	Triticum monococcum L.	Poaceae	EXACT;status=ACCEPTED;confidence=99		710461	5613	high	0	same crop complex control
+Brassica rapa	matched_control	Brassica napus	gbif:7903057	Brassica rapa L.	Brassicaceae	EXACT;status=ACCEPTED;confidence=97		722766	53585	high	0	diploid progenitor/control
+Arachis duranensis	matched_control	Arachis hypogaea	gbif:5353841	Arachis duranensis Krapov. & W.C.Greg.	Fabaceae	EXACT;status=ACCEPTED;confidence=99		696164	3929	high	0	diploid progenitor/control
+Gossypium arboreum	matched_control	Gossypium hirsutum	gbif:3152663	Gossypium arboreum L.	Malvaceae	EXACT;status=ACCEPTED;confidence=97		696424	4459	high	0	diploid cotton control
+Coffea canephora	matched_control	Coffea arabica	gbif:2895528	Coffea canephora Pierre ex A.Froehner	Rubiaceae	EXACT;status=ACCEPTED;confidence=97		695036	14301	high	0	diploid coffee control
+Nicotiana sylvestris	matched_control	Nicotiana tabacum	gbif:2928767	Nicotiana sylvestris Speg.	Solanaceae	EXACT;status=ACCEPTED;confidence=99		705535	3693	high	0	parental-lineage control
+Fragaria vesca	matched_control	Fragaria x ananassa	gbif:3029817	Fragaria vesca L.	Rosaceae	EXACT;status=ACCEPTED;confidence=98		693100	14287	high	0	diploid strawberry control
+Sporobolus alterniflorus	matched_control	Spartina anglica	gbif:9394776	Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	Poaceae	EXACT;status=ACCEPTED;confidence=99		689396	351	high	0	parental-lineage control
+Tragopogon dubius	matched_control	Tragopogon mirus	gbif:6443709	Tragopogon dubius Scop.	Asteraceae	EXACT;status=ACCEPTED;confidence=97		690050	1257	high	0	parental-lineage control
+Arabidopsis thaliana	matched_control	Arabidopsis suecica	gbif:3052436	Arabidopsis thaliana (L.) Heynh.	Brassicaceae	EXACT;status=ACCEPTED;confidence=98		755383	283297	high	0	model relative control
+Helianthus annuus	matched_control	Helianthus anomalus	gbif:9206251	Helianthus annuus L.	Asteraceae	EXACT;status=ACCEPTED;confidence=99		696241	50695	high	0	congeneric control
+Iris fulva	matched_control	Iris nelsonii	gbif:5299121	Iris fulva Ker Gawl.	Iridaceae	EXACT;status=ACCEPTED;confidence=98		716021	325	high	0	parental-lineage control
+Malus sieversii	matched_control	Malus domestica	gbif:3001244	Malus domestica (Suckow) Borkh.	Rosaceae	EXACT;status=SYNONYM;confidence=97	Malus sieversii (Ledeb.) Koidz. -> Malus domestica (Suckow) Borkh.	694567	1915	high	0	wild-relative control
+Citrus medica	matched_control	Citrus sinensis	gbif:3190157	Citrus medica L.	Rutaceae	EXACT;status=ACCEPTED;confidence=97		850407	5086	high	0	ancestral citron control
+Rosa rugosa	matched_control	Rosa canina	gbif:3003979	Rosa rugosa Thunb.	Rosaceae	EXACT;status=ACCEPTED;confidence=97		822492	6762	high	0	congeneric control
+Quercus alba	matched_control	Quercus robur	gbif:2879737	Quercus alba L.	Fagaceae	EXACT;status=ACCEPTED;confidence=98		731759	6481	high	0	oak source-density control
+Musa acuminata	matched_control	Musa x paradisiaca	gbif:2762680	Musa acuminata Colla	Musaceae	EXACT;status=ACCEPTED;confidence=99		723492	15810	high	0	banana progenitor/control

@@ -1,0 +1,24 @@
+reject_id	candidate	reject_class	reason	ingest_clone_id
+c4_wikipedia_list	C4 plants from Wikipedia list	secondary_web_page	not a primary curated dataset; not used for staging	clone-3
+c4_sage_2011_review	C4 plant lineages of planet Earth	publication_review	review enumerates lineages but no redistributable species table was staged	clone-3
+c4_china_frontiers_2023	Geographic distribution of C4 species across China	publication_supplement_candidate	regional list pending supplement retrieval; not enough campaign-scale coverage alone	clone-3
+c4_grass_global_database	Global database of C4 photosynthesis in grasses	publication_supplement_candidate	candidate source identified but not retrieved in this branch	clone-3
+succulence_family_inference_cactaceae	Treat all Cactaceae as succulent	inference	family membership is not a source-stated row-level succulence assertion	clone-3
+succulence_family_inference_crassulaceae	Treat all Crassulaceae as succulent	inference	family membership is not a source-stated row-level succulence assertion	clone-3
+succulence_family_inference_aizoaceae	Treat all Aizoaceae as succulent	inference	family membership is not a source-stated row-level succulence assertion	clone-3
+myrmecochory_wikipedia_summary	Myrmecochory summary page	secondary_web_page	not a row-level taxon dataset	clone-3
+elaiosome_britannica_examples	Britannica elaiosome examples	secondary_web_page	not a scalable trait list	clone-3
+myrmecochory_genus_expansion	Expand myrmecochorous genera to all species	forbidden_expansion	genus-level claims cannot be expanded to species	clone-3
+samara_family_inference_aceraceae	Treat maples as samara-bearing	inference	family/genus membership does not assert every species row has samara	clone-3
+samara_common_name_inference	Infer samara from common name winged seed	inference	common-name morphology was not accepted as source-stated fruit type	clone-3
+fruit_syndrome_from_fruit_type	Infer dispersal syndrome from berry/drupe	forbidden_scope	fruit morphology does not support dispersal syndrome	clone-3
+zoochory_from_fleshy_fruit	Infer animal dispersal from fleshy fruit	forbidden_scope	fleshiness alone is not staged as animal dispersal	clone-3
+ant_dispersal_from_elaiosome	Infer observed ant partnership from elaiosome	forbidden_scope	appendage trait does not assert observed animal partnership	clone-3
+convergence_from_c4_trait	Emit convergence_signature for all C4 taxa	forbidden_scope	trait membership does not enumerate independent-origin set	clone-3
+convergence_from_succulence_trait	Emit convergence_signature for succulent taxa	forbidden_scope	trait membership does not enumerate independent-origin set	clone-3
+convergence_from_samara_trait	Emit convergence_signature for samara taxa	forbidden_scope	trait membership does not enumerate independent-origin set	clone-3
+try_full_trait_database	TRY full database	license_registration	registration/license workflow outside no-auth branch	clone-3
+powo_trait_scrape	Scrape POWO pages for fruit morphology	scraping	aggressive scraping rejected where dumps/APIs preferred	clone-3
+manual_pdf_table_extraction	Extract unnamed PDF tables manually	missing_provenance	not staged without stable table identifiers and row provenance	clone-3
+horticultural_trait_blog	Horticultural blog fruit-type lists	weak_source	insufficient source reliability for substrate staging	clone-3
+image_based_trait_calls	Infer fruit type from images	forbidden_inference	media evidence cannot establish biology in M1.5	clone-3

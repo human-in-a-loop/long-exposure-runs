@@ -1,0 +1,125 @@
+  events: 76, plan milestones: 40
+! WARNING: ledger:line 17: artifact path 'data/public_taxonomy_sample/v0.1/raw/wfo/' not canonicalized
+! WARNING: ledger:line 17: artifact path 'data/public_taxonomy_sample/v0.1/raw/gbif/' not canonicalized
+! WARNING: ledger:line 17: artifact path 'data/public_taxonomy_sample/v0.1/raw/opentree/' not canonicalized
+! WARNING: plan milestone 'M3.T3' has no ledger events yet
+! WARNING: plan milestone 'M3.T2' has no ledger events yet
+! WARNING: plan milestone 'M2.T1' has no ledger events yet
+! WARNING: plan milestone 'M2.T6' has no ledger events yet
+! WARNING: plan milestone 'M4.V1–V6' has no ledger events yet
+! WARNING: plan milestone 'M2.T5' has no ledger events yet
+! WARNING: plan milestone 'M3.T6' has no ledger events yet
+! WARNING: plan milestone '(Barrier 3)' has no ledger events yet
+! WARNING: plan milestone 'M1.2' has no ledger events yet
+! WARNING: plan milestone '(Barrier 2)' has no ledger events yet
+! WARNING: plan milestone 'M2.T3' has no ledger events yet
+! WARNING: plan milestone 'M3.A' has no ledger events yet
+! WARNING: plan milestone 'M1.3' has no ledger events yet
+! WARNING: plan milestone '(Barrier 4)' has no ledger events yet
+! WARNING: plan milestone 'M0.1' has no ledger events yet
+! WARNING: plan milestone 'M1.4' has no ledger events yet
+! WARNING: plan milestone '(Barrier 1)' has no ledger events yet
+! WARNING: plan milestone 'M4.F1–F≥3' has no ledger events yet
+! WARNING: plan milestone 'M1.6' has no ledger events yet
+! WARNING: plan milestone 'M2.T2' has no ledger events yet
+! WARNING: plan milestone 'M1.8' has no ledger events yet
+! WARNING: plan milestone 'M3.T4' has no ledger events yet
+! WARNING: plan milestone 'M5.1' has no ledger events yet
+! WARNING: plan milestone 'M3.T1' has no ledger events yet
+! WARNING: plan milestone 'M4.A1–An' has no ledger events yet
+! WARNING: plan milestone 'Milestone' has no ledger events yet
+! WARNING: plan milestone 'M1.9' has no ledger events yet
+! WARNING: plan milestone 'M3.T5' has no ledger events yet
+! WARNING: plan milestone 'M2.T4' has no ledger events yet
+! WARNING: plan_of_record.md mtime is 4082s newer than the latest '_plan/' ledger event — possible silent edit
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_1.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_1.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_2.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_2.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_3.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_3.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_6.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/cycles/report_cycles_1-3_clone_6.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/draft.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/final_report.committed (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/final_report.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/final_report.pdf (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/outline.md (no ledger event references it)
+! WARNING: orphan artifact in managed path: reports/final/run_mode.json (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/check_reticulation_handoff.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/ingest_reticulation_sources.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/m1_6_domestication/assertions.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/m1_6_domestication/build_staging.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/m1_6_domestication/probe_sources.sh (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/plot_m1_3_scale_gap_closure.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: scripts/reticulation_bulk_intake.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/m1_6_domestication/test_heldout_leakage.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/m1_6_domestication/test_license_compliance.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/m1_6_domestication/test_provenance_uniformity.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/m1_6_domestication/test_schema_conformance.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/test_reticulation_bulk_intake.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/test_reticulation_format_readiness.py (no ledger event references it)
+! WARNING: orphan artifact in managed path: tests/test_reticulation_staging.py (no ledger event references it)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T014540Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T024541Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T034541Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T044542Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T054542Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T064542Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T074542Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T084543Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T094543Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T104543Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T114543Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T124544Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T134544Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T144545Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T154545Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: long-exposure/manager_assessments/manager_assessment_20260517T172823Z.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_10-12.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_10-12.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_13-15.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_13-15.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_16-18.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_16-18.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_19-21.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_19-21.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_22-24.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_22-24.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_25-27.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_25-27.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_28-30.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_28-30.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_31-33.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_31-33.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_34-36.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_34-36.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_37-39.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_37-39.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_40-42.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_40-42.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_43-45.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_43-45.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_46-48.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_46-48.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_49-51.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_49-51.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_52-54.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_52-54.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_55-57.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_55-57.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_58-60.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_58-60.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_61-63.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_61-63.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_64-66.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_64-66.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_67-69.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_67-69.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_70-72.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_70-72.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_73-75.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_73-75.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_76-77.md (referenced by an event but not on disk and no '_archive/*' event explains the move)
+! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_76-77.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)
+

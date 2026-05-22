@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Eucalyptus globulus",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Eucalyptus</i> <i>globulus</i></span> <span class=\"wfo-name-authors\" >Labill.</span></span>",
+      "full_name_plain": "Eucalyptus globulus Labill.",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Myrtales/Myrtaceae/Myrtoideae/Eucalypteae/Eucalyptus/globulus",
+      "wfo_id": "wfo-0000954998"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Eucalyptus'",
+      "Word is found in index and so is part of name: 'globulus'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'globulus'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Eucalyptus globulus' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000954998) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Eucalyptus globulus",
+      "rank": "species"
+    },
+    "searchString": "Eucalyptus globulus"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Eucalyptus globulus"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "912d89a4b9f9f40da0a18dc16c4d306f202723a9b27687e6189335ef3223df34",
+  "used_insecure_tls_fallback": true
+}

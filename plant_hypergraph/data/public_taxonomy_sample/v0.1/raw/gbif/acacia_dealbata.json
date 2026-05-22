@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Acacia dealbata",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 99,
+    "family": "Fabaceae",
+    "familyKey": 5386,
+    "genus": "Acacia",
+    "genusKey": 2978223,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Fabales",
+    "orderKey": 1370,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Acacia dealbata Link",
+    "species": "Acacia dealbata",
+    "speciesKey": 2979474,
+    "status": "ACCEPTED",
+    "usageKey": 2979474
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Acacia dealbata"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "708684d1b87d7a20044e6718b2be0362d2693a95494774f71e60f4fe41436806",
+  "used_insecure_tls_fallback": false
+}

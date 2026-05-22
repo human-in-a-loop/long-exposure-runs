@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Oryza sativa",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Oryza</i> <i>sativa</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+      "full_name_plain": "Oryza sativa L.",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Poales/Poaceae/Oryza/sativa",
+      "wfo_id": "wfo-0000882438"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Oryza'",
+      "Word is found in index and so is part of name: 'sativa'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'sativa'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Oryza sativa' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000882438) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Oryza sativa",
+      "rank": "species"
+    },
+    "searchString": "Oryza sativa"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Oryza sativa"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "3fbe87c963132af96cbfdfba30c50a392171371494da99d26ad6d99b4543418a",
+  "used_insecure_tls_fallback": true
+}

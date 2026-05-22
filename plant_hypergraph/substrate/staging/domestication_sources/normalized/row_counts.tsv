@@ -1,0 +1,10 @@
+artifact	row_count
+vavilov_center_nodes	11
+wild_ancestor_nodes	397
+cultivar_nodes	1383
+landrace_nodes	61
+breeder_pedigree_nodes	15
+crop_pedigree_edges	43
+vavilov_center_hyperedges	43
+cultivation_or_domestication_edges	104
+climate_envelope_taxa	375

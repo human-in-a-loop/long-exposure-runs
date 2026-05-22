@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 1",
+    "theme": "Reticulation and polyploidy",
+    "source": "namespace reconciliation and source-control review",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "reticulation evidence",
+    "key_counts": "22 GBIF event taxa; 11 source groups; 2 WFO-projected taxa; 0/17 matched-control event recovery",
+    "validation_use": "accepted-key projection and matched controls",
+    "status": "sidecar evidence only",
+    "rejection_reason": "Sidecar records did not clear controlled accepted-key recovery.",
+    "claim_boundary": "No established reticulation hotspot, hybridization, or polyploid recovery claim",
+    "future_evidence_predicate": "Audited GBIF-to-WFO accepted-key projection or admitted sidecar namespace plus source-density controls preserving event signal"
+  }
+]

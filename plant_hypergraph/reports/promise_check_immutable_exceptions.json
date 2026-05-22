@@ -1,0 +1,14 @@
+{
+  "policy": "immutable historical ledger exceptions must match exact line, event_id, timestamp, milestone_id, raw JSON-line SHA-256, and validator error string",
+  "exceptions": [
+    {
+      "line": 85,
+      "event_id": "auditor-closure-m18-clone6",
+      "ts": "2026-05-17T17:25:00+00:00",
+      "milestone_id": "M1.8",
+      "raw_sha256": "0f3249698f13496ce2e094eaf8316b8937d042293b7bcf8a022d56bc7f407632",
+      "error": "event_id is not a valid UUID",
+      "rationale": "Append-only ledger policy forbids rewriting the historical auditor row; this exception is exact and does not cover any other malformed event_id."
+    }
+  ]
+}

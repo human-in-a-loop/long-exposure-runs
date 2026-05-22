@@ -1,0 +1,70 @@
+crop_taxon	crop_accepted_taxon_key	wild_ancestor_node	wild_ancestor_name	wild_ancestor_accepted_key	pair_join_status	source_id
+Triticum aestivum		wild_ancestor:Triticum_urartu_A_genome	Triticum urartu		data-limited	curated_breeder_pedigree_literature
+Triticum aestivum		wild_ancestor:Aegilops_speltoides_B_genome_donor_lineage	Aegilops speltoides	wfo:wfo-0000841819-2025-12	data-limited	curated_breeder_pedigree_literature
+Triticum aestivum		wild_ancestor:Aegilops_tauschii_D_genome	Aegilops tauschii	wfo:wfo-0000841857-2025-12	data-limited	curated_breeder_pedigree_literature
+Triticum turgidum subsp. durum		wild_ancestor:Triticum_urartu_A_genome	Triticum urartu		data-limited	curated_breeder_pedigree_literature
+Triticum turgidum subsp. durum		wild_ancestor:Aegilops_speltoides_B_genome_donor_lineage	Aegilops speltoides	wfo:wfo-0000841819-2025-12	data-limited	curated_breeder_pedigree_literature
+Malus domestica		wild_ancestor:Malus_sieversii	Malus sieversii		data-limited	curated_breeder_pedigree_literature
+Malus domestica		wild_ancestor:Malus_sylvestris	Malus sylvestris		data-limited	curated_breeder_pedigree_literature
+Malus domestica		wild_ancestor:Malus_baccata_introgression	Malus baccata		data-limited	curated_breeder_pedigree_literature
+Musa x paradisiaca / Musa acuminata cultivar group		wild_ancestor:Musa_acuminata_A_genome	Musa acuminata		data-limited	curated_breeder_pedigree_literature
+Musa x paradisiaca / Musa acuminata cultivar group		wild_ancestor:Musa_balbisiana_B_genome	Musa balbisiana		data-limited	curated_breeder_pedigree_literature
+Brassica napus		wild_ancestor:Brassica_rapa_A_genome	Brassica rapa		data-limited	curated_breeder_pedigree_literature
+Brassica napus		wild_ancestor:Brassica_oleracea_C_genome	Brassica oleracea		data-limited	curated_breeder_pedigree_literature
+Brassica juncea		wild_ancestor:Brassica_rapa_A_genome	Brassica rapa		data-limited	curated_breeder_pedigree_literature
+Brassica juncea		wild_ancestor:Brassica_nigra_B_genome	Brassica nigra		data-limited	curated_breeder_pedigree_literature
+Brassica carinata		wild_ancestor:Brassica_nigra_B_genome	Brassica nigra		data-limited	curated_breeder_pedigree_literature
+Brassica carinata		wild_ancestor:Brassica_oleracea_C_genome	Brassica oleracea		data-limited	curated_breeder_pedigree_literature
+Gossypium hirsutum		wild_ancestor:Gossypium_arboreum_herbaceum_A_genome_lineage	Gossypium arboreum/herbaceum		data-limited	curated_breeder_pedigree_literature
+Gossypium hirsutum		wild_ancestor:Gossypium_raimondii_D_genome	Gossypium raimondii		data-limited	curated_breeder_pedigree_literature
+Gossypium barbadense		wild_ancestor:Gossypium_arboreum_herbaceum_A_genome_lineage	Gossypium arboreum/herbaceum		data-limited	curated_breeder_pedigree_literature
+Gossypium barbadense		wild_ancestor:Gossypium_raimondii_D_genome	Gossypium raimondii		data-limited	curated_breeder_pedigree_literature
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	wild_ancestor:Arachis_duranensis_A_genome	Arachis duranensis	wfo:wfo-0000193812-2025-12	joined	curated_breeder_pedigree_literature
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	wild_ancestor:Arachis_ipaensis_B_genome	Arachis ipaensis	wfo:wfo-0000193806-2025-12	joined	curated_breeder_pedigree_literature
+Coffea arabica		wild_ancestor:Coffea_canephora	Coffea canephora		data-limited	curated_breeder_pedigree_literature
+Coffea arabica		wild_ancestor:Coffea_eugenioides	Coffea eugenioides		data-limited	curated_breeder_pedigree_literature
+Nicotiana tabacum		wild_ancestor:Nicotiana_sylvestris_S_genome	Nicotiana sylvestris		data-limited	curated_breeder_pedigree_literature
+Nicotiana tabacum		wild_ancestor:Nicotiana_tomentosiformis_T_genome	Nicotiana tomentosiformis		data-limited	curated_breeder_pedigree_literature
+Fragaria x ananassa		wild_ancestor:Fragaria_chiloensis_octoploid	Fragaria chiloensis		data-limited	curated_breeder_pedigree_literature
+Fragaria x ananassa		wild_ancestor:Fragaria_virginiana_octoploid	Fragaria virginiana		data-limited	curated_breeder_pedigree_literature
+Manihot esculenta		wild_ancestor:Manihot_esculenta_subsp._flabellifolia_wild_progenitor	Manihot esculenta subsp. flabellifolia		data-limited	curated_breeder_pedigree_literature
+Solanum tuberosum		wild_ancestor:Solanum_brevicaule_complex_wild_progenitors	Solanum brevicaule complex		data-limited	curated_breeder_pedigree_literature
+Solanum tuberosum		wild_ancestor:Solanum_maglia	Solanum maglia		data-limited	curated_breeder_pedigree_literature
+Solanum tuberosum		wild_ancestor:Solanum_bukasovii	Solanum bukasovii		data-limited	curated_breeder_pedigree_literature
+Solanum lycopersicum		wild_ancestor:Solanum_lycopersicum_var._cerasiforme	Solanum lycopersicum var. cerasiforme		data-limited	curated_breeder_pedigree_literature
+Solanum lycopersicum		wild_ancestor:Solanum_pimpinellifolium	Solanum pimpinellifolium		data-limited	curated_breeder_pedigree_literature
+Capsicum annuum		wild_ancestor:Capsicum_annuum_var._glabriusculum_wild_bird_pepper	Capsicum annuum var. glabriusculum		data-limited	curated_breeder_pedigree_literature
+Glycine max		wild_ancestor:Glycine_soja	Glycine soja		data-limited	curated_breeder_pedigree_literature
+Phaseolus vulgaris		wild_ancestor:Phaseolus_vulgaris_wild_Andean_gene_pool	Phaseolus vulgaris wild Andean gene pool		data-limited	curated_breeder_pedigree_literature
+Phaseolus vulgaris		wild_ancestor:Phaseolus_vulgaris_wild_Mesoamerican_gene_pool	Phaseolus vulgaris wild Mesoamerican gene pool		data-limited	curated_breeder_pedigree_literature
+Cicer arietinum		wild_ancestor:Cicer_reticulatum_wild_progenitor	Cicer reticulatum		data-limited	curated_breeder_pedigree_literature
+Cicer arietinum		wild_ancestor:Cicer_echinospermum_introgression	Cicer echinospermum		data-limited	curated_breeder_pedigree_literature
+Lens culinaris		wild_ancestor:Lens_orientalis_wild_progenitor	Lens orientalis		data-limited	curated_breeder_pedigree_literature
+Pisum sativum		wild_ancestor:Pisum_sativum_subsp._elatius_wild_progenitor	Pisum sativum subsp. elatius		data-limited	curated_breeder_pedigree_literature
+Hordeum vulgare		wild_ancestor:Hordeum_vulgare_subsp._spontaneum_wild_barley	Hordeum vulgare subsp. spontaneum		data-limited	curated_breeder_pedigree_literature
+Oryza sativa subsp. japonica		wild_ancestor:Oryza_rufipogon_Chinese_populations	Oryza rufipogon		data-limited	curated_breeder_pedigree_literature
+Oryza sativa subsp. indica		wild_ancestor:Oryza_rufipogon_South_Asian_populations	Oryza rufipogon		data-limited	curated_breeder_pedigree_literature
+Oryza sativa subsp. indica		wild_ancestor:introgression_from_Oryza_nivara	introgression from Oryza nivara		data-limited	curated_breeder_pedigree_literature
+Zea mays subsp. mays		wild_ancestor:Zea_mays_subsp._parviglumis_Balsas_teosinte	Zea mays subsp. parviglumis		data-limited	curated_breeder_pedigree_literature
+Sorghum bicolor		wild_ancestor:Sorghum_bicolor_subsp._verticilliflorum_wild_progenitor	Sorghum bicolor subsp. verticilliflorum		data-limited	curated_breeder_pedigree_literature
+Pennisetum glaucum (Cenchrus americanus)		wild_ancestor:Pennisetum_violaceum___Pennisetum_mollissimum_wild_progenitors	Pennisetum violaceum / Pennisetum mollissimum		data-limited	curated_breeder_pedigree_literature
+Eleusine coracana		wild_ancestor:Eleusine_indica_+_Eleusine_africana_allotetraploid_progenitor_pair	Eleusine indica + Eleusine africana		data-limited	curated_breeder_pedigree_literature
+Digitaria exilis (fonio)		wild_ancestor:Digitaria_longiflora_probable_wild_progenitor	Digitaria longiflora		data-limited	curated_breeder_pedigree_literature
+Eragrostis tef		wild_ancestor:Eragrostis_pilosa_probable_wild_progenitor	Eragrostis pilosa		data-limited	curated_breeder_pedigree_literature
+Vigna subterranea (bambara groundnut)		wild_ancestor:Vigna_subterranea_var._spontanea_wild_progenitor	Vigna subterranea var. spontanea		data-limited	curated_breeder_pedigree_literature
+Vitis vinifera subsp. vinifera		wild_ancestor:Vitis_vinifera_subsp._sylvestris_wild_progenitor	Vitis vinifera subsp. sylvestris		data-limited	curated_breeder_pedigree_literature
+Olea europaea subsp. europaea var. europaea		wild_ancestor:Olea_europaea_subsp._europaea_var._sylvestris_wild_olive	Olea europaea subsp. europaea var. sylvestris		data-limited	curated_breeder_pedigree_literature
+Citrus x sinensis (sweet orange)		wild_ancestor:Citrus_maxima_pummelo	Citrus maxima		data-limited	curated_breeder_pedigree_literature
+Citrus x sinensis (sweet orange)		wild_ancestor:Citrus_reticulata_mandarin	Citrus reticulata		data-limited	curated_breeder_pedigree_literature
+Citrus x limon (lemon)		wild_ancestor:Citrus_medica_citron	Citrus medica		data-limited	curated_breeder_pedigree_literature
+Citrus x limon (lemon)		wild_ancestor:Citrus_x_aurantium_sour_orange_which_is_itself_C._maxima_x_C._reticulata	Citrus x aurantium		data-limited	curated_breeder_pedigree_literature
+Theobroma cacao		wild_ancestor:Theobroma_cacao_Criollo_population	Theobroma cacao Criollo population		data-limited	curated_breeder_pedigree_literature
+Theobroma cacao		wild_ancestor:Theobroma_cacao_Forastero_Amazonian_populations	Theobroma cacao Forastero/Amazonian populations		data-limited	curated_breeder_pedigree_literature
+Saccharum officinarum		wild_ancestor:Saccharum_spontaneum_wild_progenitor	Saccharum spontaneum		data-limited	curated_breeder_pedigree_literature
+Saccharum officinarum		wild_ancestor:Saccharum_robustum	Saccharum robustum		data-limited	curated_breeder_pedigree_literature
+Ipomoea batatas		wild_ancestor:Ipomoea_trifida_probable_wild_progenitor	Ipomoea trifida		data-limited	curated_breeder_pedigree_literature
+Ipomoea batatas		wild_ancestor:Ipomoea_triloba_introgression	Ipomoea triloba		data-limited	curated_breeder_pedigree_literature
+Avena sativa	wfo:wfo-0000852231-2025-12	wild_ancestor:Avena_sterilis_wild_progenitor	Avena sterilis	wfo:wfo-0000852332-2025-12	joined	curated_breeder_pedigree_literature
+Secale cereale		wild_ancestor:Secale_cereale_subsp._segetale___S._cereale_subsp._dighoricum_weedy_wild_progenitors	Secale cereale subsp. segetale / S. cereale subsp. dighoricum		data-limited	curated_breeder_pedigree_literature
+Helianthus annuus		wild_ancestor:Helianthus_annuus_wild_populations_mid-continental_N._America	Helianthus annuus wild populations		data-limited	curated_breeder_pedigree_literature
+Beta vulgaris (sugar beet/chard/garden beet)		wild_ancestor:Beta_vulgaris_subsp._maritima_sea_beet	Beta vulgaris subsp. maritima	wfo:wfo-0000564998-2025-12	data-limited	curated_breeder_pedigree_literature

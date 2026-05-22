@@ -1,0 +1,8 @@
+source_name	candidate_rows	accepted_key_rows	dated_rows	non_duke_rows	heldout_taxa_covered	chemical_classes_covered	rejected_rows	dominant_rejection_reason
+Dr. Duke Phytochemical and Ethnobotanical Databases	103663	13867	0	0	1	62	103663	Duke rows have accepted-key joins but no usable discovery_or_isolation_year field and are not non-Duke evidence
+ChEBI	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source
+KNApSAcK	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source
+NPASS	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source
+Native American Ethnobotany Database (Moerman), NAEB mirror	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source
+PROSEA	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source
+PROTA	0	0	0	0	0	0	0	no local phytochemical taxon-compound detection rows staged for this source

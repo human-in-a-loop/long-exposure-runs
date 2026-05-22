@@ -1,0 +1,9 @@
+holdout_taxon	accepted_key	target_compound_or_class	target_year	non_duke_evidence_before_year	non_duke_evidence_after_year	duke_only_before_year	training_label_hidden	validation_allowed	dominant_failure_reason
+Taxus brevifolia		Diterpene	1971	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Catharanthus roseus		Alkaloid	1958	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Cinchona officinalis		Alkaloid	1820	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Artemisia annua	wfo:wfo-0000083255-2025-12	Sesquiterpene	1972	false	false	false	true	false	no accepted-key non-Duke taxon-compound row has a usable discovery_or_isolation_year before or after target year
+Digitalis purpurea		Cardenolide	1875	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Papaver somniferum		Alkaloid	1804	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Atropa belladonna		Alkaloid	1831	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available
+Salix alba		Glycoside	1828	false	false	false	true	false	holdout taxon lacks accepted-key join in frozen substrate; no non-Duke dated evidence available

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560" role="img">
+<defs>
+<style><![CDATA[
+text{font-family:Inter,Arial,sans-serif;fill:#17201b} .title{font-size:26px;font-weight:800}.label{font-size:15px;font-weight:700}.small{font-size:12px}.tiny{font-size:10px}.muted{fill:#5f6f67}.box{fill:#f7faf8;stroke:#b8c8bf;stroke-width:1.2}.green{fill:#dff2df;stroke:#6aa56a}.amber{fill:#fff1cf;stroke:#c28b23}.red{fill:#ffe0dd;stroke:#c75b4e}.blue{fill:#dfeefd;stroke:#5b89c7}.violet{fill:#eee4ff;stroke:#8b70bf}.gray{fill:#edf0ef;stroke:#8c9892}.line{stroke:#698075;stroke-width:2;fill:none}]]></style>
+</defs>
+<rect width="980" height="560" fill="#fbfdfb"/>
+<text x="34" y="44" class="title">Evidence that would change the conclusion</text>
+<rect x="40" y="84" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="108" class="label">Track 1 · Reticulation and polyploidy</text>
+<text x="58" y="132" class="small">Audited GBIF-to-WFO accepted-key projection or admitted sidecar namespace plus source-density controls preserving event signal</text>
+<rect x="40" y="158" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="182" class="label">Track 2 · Ecological anachronisms</text>
+<text x="58" y="206" class="small">Accepted-key modern-failure evidence, multi-source/source-class support, living-megafauna controls, and source-class-independent held-out recovery</text>
+<rect x="40" y="232" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="256" class="label">Track 3 · Convergent traits</text>
+<text x="58" y="280" class="small">Broader trait coverage, phylogenetically separated carrier sets, and family-size/sampling-density controls</text>
+<rect x="40" y="306" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="330" class="label">Track 4 · Crop wild relatives and climate</text>
+<text x="58" y="354" class="small">Audited crop/CWR BIOCLIM summaries and disjoint candidate-level expert comparator rows</text>
+<rect x="40" y="380" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="404" class="label">Track 5 · Chemodiversity</text>
+<text x="58" y="428" class="small">Accepted-key, dated, non-Duke taxon-compound rows across enough families/classes to estimate signatures without source collapse</text>
+<rect x="40" y="454" width="900" height="62" rx="7" class="box"/>
+<text x="58" y="478" class="label">Track 6 · Botanical model benchmark</text>
+<text x="58" y="502" class="small">Approved local/open model weights and documented response rows with scorer diagnostics</text>
+</svg>

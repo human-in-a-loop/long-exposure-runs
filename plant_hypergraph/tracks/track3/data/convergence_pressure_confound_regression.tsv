@@ -1,0 +1,15 @@
+name	coef
+intercept_obs	27.468844715614743
+log_n_families_obs	0.8566189594611697
+log_n_carriers_obs	-2.493867580256751
+log_mean_density_obs	-2.2142529129379263
+R2_observed_H_family	0.8353257800871441
+intercept_cp	403.9170509350758
+log_n_families_cp	8.243090439085393
+log_n_carriers_cp	-38.81685440289972
+log_mean_density_cp	-32.739138100413356
+R2_CP_min	0.8516893046089283
+spearman_rho_residOBS_vs_CPmin	0.40559440559440557
+falsifier_threshold_R2_obs_geq	0.7
+falsifier_threshold_abs_rho_gt	0.8
+verdict	PASS

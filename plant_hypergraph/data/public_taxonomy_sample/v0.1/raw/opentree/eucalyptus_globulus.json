@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "context": "Land plants",
+    "governing_code": "ICN",
+    "includes_approximate_matches": false,
+    "includes_deprecated_taxa": false,
+    "includes_suppressed_names": false,
+    "matched_names": [
+      "Eucalyptus globulus"
+    ],
+    "results": [
+      {
+        "matches": [
+          {
+            "is_approximate_match": false,
+            "is_synonym": false,
+            "matched_name": "Eucalyptus globulus",
+            "nomenclature_code": "ICN",
+            "score": 1.0,
+            "search_string": "eucalyptus globulus",
+            "taxon": {
+              "flags": [],
+              "is_suppressed": false,
+              "is_suppressed_from_synth": false,
+              "name": "Eucalyptus globulus",
+              "ott_id": 847929,
+              "rank": "species",
+              "source": "ott3.7draft3",
+              "synonyms": [
+                "Eucalyptus cordata",
+                "Eucalyptus diversifolia",
+                "Eucalyptus gigantea",
+                "Eucalyptus glauca",
+                "Eucalyptus perfoliata",
+                "Eucalyptus pulverulenta"
+              ],
+              "tax_sources": [
+                "ncbi:34317",
+                "gbif:3176787",
+                "irmng:10183969"
+              ],
+              "unique_name": "Eucalyptus globulus"
+            }
+          }
+        ],
+        "name": "Eucalyptus globulus"
+      }
+    ],
+    "taxonomy": {
+      "author": "open tree of life project",
+      "name": "ott",
+      "source": "ott3.7draft3",
+      "version": "3.7",
+      "weburl": "https://tree.opentreeoflife.org/about/taxonomy-version/ott3.7"
+    },
+    "unambiguous_names": [
+      "Eucalyptus globulus"
+    ],
+    "unmatched_names": []
+  },
+  "request": {
+    "json": {
+      "context_name": "Land plants",
+      "do_approximate_matching": false,
+      "include_suppressed": false,
+      "names": [
+        "Eucalyptus globulus"
+      ]
+    },
+    "method": "POST",
+    "params": {},
+    "url": "https://api.opentreeoflife.org/v3/tnrs/match_names"
+  },
+  "response_sha256": "8bc7b3f3f945e9f59b4dc974a7984c18996581723dbec94b15a5008a2a0bce45",
+  "used_insecure_tls_fallback": false
+}

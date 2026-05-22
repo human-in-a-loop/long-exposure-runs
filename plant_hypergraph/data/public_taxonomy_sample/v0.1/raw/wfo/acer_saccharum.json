@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Acer saccharum",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Acer</i> <i>saccharum</i></span> <span class=\"wfo-name-authors\" >Marshall</span></span>",
+      "full_name_plain": "Acer saccharum Marshall",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Sapindales/Sapindaceae/Hippocastanoideae/Acer/saccharum",
+      "wfo_id": "wfo-0000515026"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Acer'",
+      "Word is found in index and so is part of name: 'saccharum'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'saccharum'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Acer saccharum' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000515026) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Acer saccharum",
+      "rank": "species"
+    },
+    "searchString": "Acer saccharum"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Acer saccharum"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "33d0e45043a95d8fe44e5c2838d68158d5a38dd9fe0d762f9de4c00d2fe73779",
+  "used_insecure_tls_fallback": true
+}

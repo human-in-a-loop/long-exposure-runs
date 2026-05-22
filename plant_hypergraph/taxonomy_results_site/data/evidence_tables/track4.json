@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 4",
+    "theme": "Crop wild relatives and climate",
+    "source": "occurrence and climate-readiness review",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "crop and occurrence evidence",
+    "key_counts": "3358 post-filter occurrence records; 0 numeric BIOCLIM vectors; 0 validation-allowed comparator rows",
+    "validation_use": "climate-substitution validation",
+    "status": "data-limited",
+    "rejection_reason": "No numeric BIOCLIM vectors or validation-allowed comparators.",
+    "claim_boundary": "No crop-substitution recommendation or climate-adaptation claim",
+    "future_evidence_predicate": "Audited crop/CWR BIOCLIM summaries and disjoint candidate-level expert comparator rows"
+  }
+]

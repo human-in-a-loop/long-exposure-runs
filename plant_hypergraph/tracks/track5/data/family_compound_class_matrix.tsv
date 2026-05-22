@@ -1,0 +1,544 @@
+family	compound_class	n_taxa	n_assertions	n_sources
+Acanthaceae	Triterpene	5	13	1
+Acoraceae	Monoterpene	1	20	1
+Acoraceae	Sesquiterpene	1	11	1
+Acoraceae	Inorganic	1	9	1
+Acoraceae	Phenylpropanoid	1	9	1
+Acoraceae	Essential Oil	1	3	1
+Acoraceae	Miscellaneous Alkaloid	1	3	1
+Acoraceae	Benzenoid	1	2	1
+Acoraceae	Carbohydrate	1	2	1
+Acoraceae	Alkaloid Misc	1	1	1
+Acoraceae	Alkaloid-Misc	1	1	1
+Acoraceae	Alkane	1	1	1
+Acoraceae	Alkane to C4	1	1	1
+Acoraceae	Flavonoid	1	1	1
+Acoraceae	Lipid	1	1	1
+Acoraceae	Miscellaneous	1	1	1
+Acoraceae	Oxygen Heterocycle	1	1	1
+Acoraceae	Tannin	1	1	1
+Acoraceae	Vitamin	1	1	1
+Actinidiaceae	Inorganic	1	8	1
+Actinidiaceae	Carotenoid	1	7	1
+Actinidiaceae	Carbohydrate	1	5	1
+Actinidiaceae	Flavonoid	1	3	1
+Actinidiaceae	Vitamin	1	2	1
+Actinidiaceae	Alicyclic	1	1	1
+Actinidiaceae	Alkane	1	1	1
+Actinidiaceae	Lipid	1	1	1
+Actinidiaceae	Monoterpene Alkaloid	1	1	1
+Actinidiaceae	Phenylpropanoid	1	1	1
+Actinidiaceae	Proteid	1	1	1
+Actinidiaceae	Sesquiterpene	1	1	1
+Actinidiaceae	Steroid	1	1	1
+Actinidiaceae	Tannin	1	1	1
+Alismataceae	Inorganic	1	9	1
+Alismataceae	Carbohydrate	1	8	1
+Alismataceae	Flavonoid	1	4	1
+Alismataceae	Lipid	1	4	1
+Alismataceae	Proteid	1	3	1
+Alismataceae	Miscellaneous Alkaloid	1	2	1
+Alismataceae	Alkaloid	1	1	1
+Alismataceae	Benzenoid	1	1	1
+Alismataceae	Phenylpropanoid	1	1	1
+Alismataceae	Steroid	1	1	1
+Alismataceae	Tannin	1	1	1
+Alismataceae	Vitamin	1	1	1
+Amaranthaceae	Inorganic	2	15	1
+Amaranthaceae	Carbohydrate	2	7	1
+Amaranthaceae	Steroid	2	7	1
+Amaranthaceae	Proteid	3	4	1
+Amaranthaceae	Triterpene	3	3	1
+Amaranthaceae	Vitamin	1	2	1
+Amaranthaceae	Alkaloid	1	1	1
+Amaranthaceae	Carotenoid	1	1	1
+Amaranthaceae	Flavonoid	1	1	1
+Amaranthaceae	Lipid	1	1	1
+Amaryllidaceae	Proteid	4	204	1
+Amaryllidaceae	Sulfur Compound	4	188	1
+Amaryllidaceae	Inorganic	4	113	1
+Amaryllidaceae	Carbohydrate	4	89	1
+Amaryllidaceae	Lipid	4	75	1
+Amaryllidaceae	Flavonoid	4	42	1
+Amaryllidaceae	Phenylpropanoid	4	35	1
+Amaryllidaceae	Vitamin	4	27	1
+Amaryllidaceae	Steroid	4	24	1
+Amaryllidaceae	Benzenoid	2	19	1
+Amaryllidaceae	Sapogenin	2	17	1
+Amaryllidaceae	Carotenoid	4	15	1
+Amaryllidaceae	Triterpene	3	15	1
+Amaryllidaceae	Alkaloid	3	10	1
+Amaryllidaceae	Alkane	3	10	1
+Amaryllidaceae	Alkane to C4	4	8	1
+Amaryllidaceae	Miscellaneous	2	7	1
+Amaryllidaceae	Alkaloid-Misc	2	6	1
+Amaryllidaceae	Monoterpene	2	6	1
+Amaryllidaceae	Oxygen Heterocycle	3	6	1
+Amaryllidaceae	Alkanal to C4	1	5	1
+Amaryllidaceae	Alkanol to C4	2	5	1
+Amaryllidaceae	Coumarin	1	3	1
+Amaryllidaceae	Diterpene	2	3	1
+Amaryllidaceae	Essential Oil	2	3	1
+Amaryllidaceae	Miscellaneoul	2	3	1
+Amaryllidaceae	Miscellaneous Alkaloid	2	3	1
+Amaryllidaceae	Quinolizidine Alkaloid	2	3	1
+Amaryllidaceae	Alicyclic	2	2	1
+Amaryllidaceae	Alkanal	1	2	1
+Amaryllidaceae	Alkanol	1	2	1
+Amaryllidaceae	Alkanone to C4	1	2	1
+Amaryllidaceae	Alkene to C3	1	2	1
+Amaryllidaceae	Misc Alkaloid	1	2	1
+Amaryllidaceae	Proted	1	2	1
+Amaryllidaceae	Sesquiterpene	2	2	1
+Amaryllidaceae	Unknown	1	2	1
+Amaryllidaceae	Alkene	1	1	1
+Amaryllidaceae	Chromone	1	1	1
+Amaryllidaceae	Indole Alkaloid	1	1	1
+Amaryllidaceae	Miscellaneous alkaloid	1	1	1
+Amaryllidaceae	Non-Alkaloid N-Heterocycle	1	1	1
+Anacardiaceae	Inorganic	1	30	1
+Anacardiaceae	Proteid	1	20	1
+Anacardiaceae	Lipid	1	14	1
+Anacardiaceae	Carbohydrate	1	12	1
+Anacardiaceae	Vitamin	1	8	1
+Anacardiaceae	Benzenoid	1	6	1
+Anacardiaceae	Carotenoid	1	3	1
+Anacardiaceae	Flavonoid	1	3	1
+Anacardiaceae	Monoterpene	1	2	1
+Anacardiaceae	Alkane to C4	1	1	1
+Anacardiaceae	Quinolizidine Alkaloid	1	1	1
+Anacardiaceae	Steroid	1	1	1
+Anacardiaceae	Tannin	1	1	1
+Anacardiaceae	Triterpene	1	1	1
+Apiaceae	Monoterpene	6	398	1
+Apiaceae	Coumarin	6	197	1
+Apiaceae	Inorganic	8	169	1
+Apiaceae	Sesquiterpene	4	95	1
+Apiaceae	Lipid	7	93	1
+Apiaceae	Proteid	7	76	1
+Apiaceae	Alkane	4	60	1
+Apiaceae	Phenylpropanoid	4	60	1
+Apiaceae	Flavonoid	5	53	1
+Apiaceae	Miscellaneous Lactone	4	48	1
+Apiaceae	Carbohydrate	7	46	1
+Apiaceae	Vitamin	6	32	1
+Apiaceae	Steroid	4	25	1
+Apiaceae	Alkaloid	4	21	1
+Apiaceae	Lactone-Misc	3	21	1
+Apiaceae	Benzenoid	3	19	1
+Apiaceae	Essential Oil	6	15	1
+Apiaceae	Carotenoid	5	11	1
+Apiaceae	Miscellaneous	3	10	1
+Apiaceae	Miscellaneous Alkaloid	2	9	1
+Apiaceae	Sesuiterpene	3	9	1
+Apiaceae	Oxygen Heterocycle	4	8	1
+Apiaceae	Alicyclic	2	7	1
+Apiaceae	Alkenyne	3	7	1
+Apiaceae	Alkaloid-Misc	3	6	1
+Apiaceae	Alkanol	2	5	1
+Apiaceae	Triterpene	1	5	1
+Apiaceae	Alkanal	1	4	1
+Apiaceae	Alkane to C4	3	4	1
+Apiaceae	Alkene	2	4	1
+Apiaceae	Unknown	2	4	1
+Apiaceae	Lignan	2	3	1
+Apiaceae	Tannin	3	3	1
+Apiaceae	Chromone	1	2	1
+Apiaceae	Proted	1	2	1
+Apiaceae	Quinolizidine Alkaloid	2	2	1
+Apiaceae	Xanthone	1	2	1
+Apiaceae	Alkaloid Misc	1	1	1
+Apiaceae	Alkanone to C4	1	1	1
+Apiaceae	Esequiterpene	1	1	1
+Apiaceae	Isoquinoline Alkaloid	1	1	1
+Apiaceae	Miscellaneoul	1	1	1
+Apiaceae	Non-Alkaloid N-Heterocycle	1	1	1
+Araceae	Inorganic	3	43	1
+Araceae	Carbohydrate	3	12	1
+Araceae	Carotenoid	3	9	1
+Araceae	Proteid	3	6	1
+Araceae	Alkaloid	4	5	1
+Araceae	Lipid	3	4	1
+Araceae	Vitamin	2	3	1
+Araceae	Alkane to C4	2	2	1
+Araceae	Alkaloid-Misc	1	1	1
+Araceae	Benzenoid	1	1	1
+Araceae	Miscellaneous Alkaloid	1	1	1
+Araceae	Phenylpropanoid	1	1	1
+Araliaceae	Monoterpene	1	14	1
+Araliaceae	Sesquiterpene	1	7	1
+Araliaceae	Inorganic	1	6	1
+Araliaceae	Lipid	2	4	1
+Araliaceae	Carbohydrate	1	2	1
+Araliaceae	Vitamin	1	2	1
+Araliaceae	Alkanol	1	1	1
+Araliaceae	Diterpene	1	1	1
+Araliaceae	Essential Oil	1	1	1
+Araliaceae	Proteid	1	1	1
+Araliaceae	Sesuiterpene	1	1	1
+Arecaceae	Lipid	4	32	1
+Arecaceae	Inorganic	3	28	1
+Arecaceae	Carbohydrate	3	13	1
+Arecaceae	Proteid	3	6	1
+Arecaceae	Vitamin	2	4	1
+Arecaceae	Carotenoid	2	2	1
+Arecaceae	Steroid	2	2	1
+Arecaceae	Alkaloid-Misc	1	1	1
+Arecaceae	Benzenoid	1	1	1
+Arecaceae	Miscellaneous Alkaloid	1	1	1
+Arecaceae	Sapogenin	1	1	1
+Arecaceae	Tannin	1	1	1
+Balanopaceae	Triterpene	1	2	1
+Basellaceae	Proteid	2	19	1
+Basellaceae	Carbohydrate	2	5	1
+Basellaceae	Inorganic	2	5	1
+Basellaceae	Flavonoid	2	2	1
+Basellaceae	Phenylpropanoid	1	2	1
+Basellaceae	Carotenoid	1	1	1
+Basellaceae	Lipid	1	1	1
+Basellaceae	Quinolizidine Alkaloid	1	1	1
+Basellaceae	Triterpene	1	1	1
+Basellaceae	Vitamin	1	1	1
+Berberidaceae	Isoquinoline Alkaloid	9	155	1
+Berberidaceae	Inorganic	1	29	1
+Berberidaceae	Carbohydrate	3	18	1
+Berberidaceae	Flavonoid	1	9	1
+Berberidaceae	Carotenoid	1	7	1
+Berberidaceae	Vitamin	1	7	1
+Berberidaceae	Alkaloid-Misc	1	5	1
+Berberidaceae	Phenylpropanoid	2	5	1
+Berberidaceae	Alkane	2	4	1
+Berberidaceae	Lignan	2	3	1
+Berberidaceae	Tannin	2	3	1
+Berberidaceae	Lipid	1	2	1
+Berberidaceae	Proteid	1	2	1
+Berberidaceae	Benzenoid	1	1	1
+Berberidaceae	Chromone	1	1	1
+Berberidaceae	Coumarin	1	1	1
+Berberidaceae	Miscellaneoul	1	1	1
+Berberidaceae	Oxygen Heterocycle	1	1	1
+Berberidaceae	Triterpene	1	1	1
+Betulaceae	Triterpene	15	28	1
+Betulaceae	Carbohydrate	2	3	1
+Betulaceae	Steroid	1	3	1
+Betulaceae	Essential Oil	1	2	1
+Betulaceae	Benzenoid	1	1	1
+Betulaceae	Flavonoid	1	1	1
+Betulaceae	Inorganic	1	1	1
+Betulaceae	Lipid	1	1	1
+Betulaceae	Proteid	1	1	1
+Betulaceae	Tannin	1	1	1
+Bixaceae	Proteid	1	11	1
+Bixaceae	Inorganic	1	10	1
+Bixaceae	Carotenoid	1	8	1
+Bixaceae	Carbohydrate	1	7	1
+Bixaceae	Lipid	1	6	1
+Bixaceae	Vitamin	1	3	1
+Bixaceae	Essential Oil	1	2	1
+Bixaceae	Benzenoid	1	1	1
+Bixaceae	Coumarin	1	1	1
+Bixaceae	Flavonoid	1	1	1
+Bixaceae	Phenylpropanoid	1	1	1
+Bixaceae	Tannin	1	1	1
+Bixaceae	Triterpene	1	1	1
+Bonnetiaceae	Triterpene	1	2	1
+Bromeliaceae	Proteid	1	23	1
+Bromeliaceae	Inorganic	1	15	1
+Bromeliaceae	Carbohydrate	1	10	1
+Bromeliaceae	Miscellaneous	1	10	1
+Bromeliaceae	Lipid	1	8	1
+Bromeliaceae	Steroid	1	7	1
+Bromeliaceae	Phenylpropanoid	1	5	1
+Bromeliaceae	Alkane	1	4	1
+Bromeliaceae	Vitamin	1	4	1
+Bromeliaceae	Lactone-Misc	1	3	1
+Bromeliaceae	Alkane to C4	1	2	1
+Bromeliaceae	Alkanol	1	2	1
+Bromeliaceae	Monoterpene	1	2	1
+Bromeliaceae	Benzenoid	1	1	1
+Bromeliaceae	Carotenoid	1	1	1
+Bromeliaceae	Flavonoid	1	1	1
+Bromeliaceae	Indole Alkaloid	1	1	1
+Bromeliaceae	Miscellaneoul	1	1	1
+Bromeliaceae	Oxygen Heterocycle	1	1	1
+Bromeliaceae	Quinoid	1	1	1
+Bromeliaceae	Quinolizidine Alkaloid	1	1	1
+Bromeliaceae	Sesquiterpene	1	1	1
+Cornaceae	Triterpene	1	2	1
+Cucurbitaceae	Inorganic	1	7	1
+Cucurbitaceae	Lipid	1	5	1
+Cucurbitaceae	Proteid	1	4	1
+Cucurbitaceae	Carbohydrate	1	2	1
+Cucurbitaceae	Vitamin	1	2	1
+Cucurbitaceae	Alkane to C4	1	1	1
+Cucurbitaceae	Carotenoid	1	1	1
+Dilleniaceae	Triterpene	2	4	1
+Euphorbiaceae	Inorganic	1	4	1
+Euphorbiaceae	Carbohydrate	1	3	1
+Euphorbiaceae	Alkaloid-Misc	1	2	1
+Euphorbiaceae	Alkane	1	1	1
+Euphorbiaceae	Alkane to C4	1	1	1
+Euphorbiaceae	Flavonoid	1	1	1
+Euphorbiaceae	Lipid	1	1	1
+Euphorbiaceae	Miscellaneous	1	1	1
+Euphorbiaceae	Proteid	1	1	1
+Euphorbiaceae	Quinoid	1	1	1
+Euphorbiaceae	Tannin	1	1	1
+Euphorbiaceae	Vitamin	1	1	1
+Garryaceae	Monoterpene	1	1	1
+Lamiaceae	Monoterpene	11	61	1
+Lamiaceae	Flavonoid	8	50	1
+Lamiaceae	Steroid	6	44	1
+Lamiaceae	Phenylpropanoid	5	41	1
+Lamiaceae	Sesquiterpene	5	36	1
+Lamiaceae	Diterpene	6	25	1
+Lamiaceae	Proteid	2	19	1
+Lamiaceae	Inorganic	1	13	1
+Lamiaceae	Essential Oil	7	11	1
+Lamiaceae	Benzenoid	3	8	1
+Lamiaceae	Triterpene	3	8	1
+Lamiaceae	Alkane	2	6	1
+Lamiaceae	Alkene	1	4	1
+Lamiaceae	Carbohydrate	2	4	1
+Lamiaceae	Lipid	2	4	1
+Lamiaceae	Tannin	3	4	1
+Lamiaceae	Alicyclic	1	2	1
+Lamiaceae	Alkaloid	2	2	1
+Lamiaceae	Miscellaneous Alkaloid	2	2	1
+Lamiaceae	Vitamin	1	2	1
+Lamiaceae	Carotenoid	1	1	1
+Lamiaceae	Sesuiterpene	1	1	1
+Lardizabalaceae	Inorganic	1	8	1
+Lardizabalaceae	Lipid	1	5	1
+Lardizabalaceae	Carbohydrate	1	3	1
+Lardizabalaceae	Triterpene	1	3	1
+Lardizabalaceae	Alkane to C4	1	1	1
+Lardizabalaceae	Proteid	1	1	1
+Lauraceae	Monoterpene	1	11	1
+Lauraceae	Sesquiterpene	1	3	1
+Lauraceae	Benzenoid	1	2	1
+Lecythidaceae	Inorganic	1	22	1
+Lecythidaceae	Proteid	1	20	1
+Lecythidaceae	Lipid	1	9	1
+Lecythidaceae	Vitamin	1	4	1
+Lecythidaceae	Carbohydrate	1	3	1
+Lecythidaceae	Coumarin	1	3	1
+Lecythidaceae	Carotenoid	1	1	1
+Lecythidaceae	Quinolizidine Alkaloid	1	1	1
+Lythraceae	Triterpene	1	1	1
+Malvaceae	Carbohydrate	4	53	1
+Malvaceae	Inorganic	3	50	1
+Malvaceae	Flavonoid	4	38	1
+Malvaceae	Proteid	5	31	1
+Malvaceae	Lipid	6	30	1
+Malvaceae	Coumarin	1	20	1
+Malvaceae	Benzenoid	2	19	1
+Malvaceae	Phenylpropanoid	1	16	1
+Malvaceae	Steroid	4	10	1
+Malvaceae	Vitamin	2	9	1
+Malvaceae	Essential Oil	2	5	1
+Malvaceae	Oxygen Heterocycle	2	4	1
+Malvaceae	Alkane to C4	3	3	1
+Malvaceae	Miscellaneous	1	3	1
+Malvaceae	Alkane	2	2	1
+Malvaceae	Carotenoid	1	2	1
+Malvaceae	Monoterpene	1	2	1
+Malvaceae	Sesquiterpene	2	2	1
+Malvaceae	Triterpene	2	2	1
+Malvaceae	Alicyclic	1	1	1
+Malvaceae	Miscellaneous Alkaloid	1	1	1
+Malvaceae	Quinoid	1	1	1
+Malvaceae	Quinolizidine Alkaloid	1	1	1
+Malvaceae	Tannin	1	1	1
+Meliaceae	Lipid	1	10	1
+Meliaceae	Inorganic	1	9	1
+Meliaceae	Flavonoid	1	7	1
+Meliaceae	Carbohydrate	1	3	1
+Meliaceae	Steroid	2	3	1
+Meliaceae	Phenylpropanoid	1	2	1
+Meliaceae	Proteid	1	2	1
+Meliaceae	Triterpene	1	2	1
+Meliaceae	Coumarin	1	1	1
+Meliaceae	Essential Oil	1	1	1
+Meliaceae	Tannin	1	1	1
+Menispermaceae	Lipid	1	5	1
+Menispermaceae	Alkane	1	1	1
+Menispermaceae	Alkane to C4	1	1	1
+Menispermaceae	Carbohydrate	1	1	1
+Menispermaceae	Miscellaneous	1	1	1
+Moraceae	Inorganic	2	30	1
+Moraceae	Proteid	2	27	1
+Moraceae	Vitamin	2	9	1
+Moraceae	Carbohydrate	2	8	1
+Moraceae	Lipid	2	7	1
+Moraceae	Triterpene	2	4	1
+Moraceae	Carotenoid	2	3	1
+Moraceae	Flavonoid	2	3	1
+Moraceae	Quinolizidine Alkaloid	1	2	1
+Moraceae	Alkane	1	1	1
+Moraceae	Miscellaneous Alkaloid	1	1	1
+Moraceae	Tannin	1	1	1
+Nartheciaceae	Alkaloid-Misc	1	1	1
+Nartheciaceae	Sapogenin	1	1	1
+Oxalidaceae	Inorganic	2	20	1
+Oxalidaceae	Proteid	2	18	1
+Oxalidaceae	Carotenoid	2	6	1
+Oxalidaceae	Alkane	1	4	1
+Oxalidaceae	Carbohydrate	2	4	1
+Oxalidaceae	Vitamin	2	4	1
+Oxalidaceae	Lipid	2	2	1
+Oxalidaceae	Phenylpropanoid	1	2	1
+Oxalidaceae	Sesquiterpene	1	2	1
+Oxalidaceae	Alkane to C4	1	1	1
+Oxalidaceae	Flavonoid	1	1	1
+Oxalidaceae	Miscellaneoul	1	1	1
+Oxalidaceae	Miscellaneous	1	1	1
+Phyllanthaceae	Triterpene	2	4	1
+Plantaginaceae	Proteid	1	5	1
+Plantaginaceae	Carbohydrate	1	4	1
+Plantaginaceae	Inorganic	1	4	1
+Plantaginaceae	Alkaloid	1	2	1
+Plantaginaceae	Steroid	1	2	1
+Plantaginaceae	Lipid	1	1	1
+Plantaginaceae	Vitamin	1	1	1
+Poaceae	Inorganic	2	51	1
+Poaceae	Proteid	2	37	1
+Poaceae	Steroid	2	31	1
+Poaceae	Carbohydrate	2	25	1
+Poaceae	Flavonoid	2	24	1
+Poaceae	Alkane	1	16	1
+Poaceae	Vitamin	1	11	1
+Poaceae	Benzenoid	1	10	1
+Poaceae	Phenylpropanoid	3	10	1
+Poaceae	Triterpene	2	9	1
+Poaceae	Alkene	1	7	1
+Poaceae	Lipid	2	7	1
+Poaceae	Miscellaneous Alkaloid	1	6	1
+Poaceae	Alkaloid	1	4	1
+Poaceae	Carotenoid	1	4	1
+Poaceae	Coumarin	2	4	1
+Poaceae	Miscellaneous	1	4	1
+Poaceae	Monoterpene	1	4	1
+Poaceae	Indole Alkaloid	2	3	1
+Poaceae	Oxygen Heterocycle	1	3	1
+Poaceae	Sesquiterpene	1	3	1
+Poaceae	Alkane to C4	1	2	1
+Poaceae	Non-Alkaloid N-Heterocycle	1	2	1
+Poaceae	Alkaloid-Misc	1	1	1
+Poaceae	Alkanal	1	1	1
+Poaceae	Isoquinoline Alkaloid	1	1	1
+Poaceae	Miscellaneoul	1	1	1
+Poaceae	Quinoid	1	1	1
+Poaceae	Quinolizidine Alkaloid	1	1	1
+Poaceae	Sulfur Compound	1	1	1
+Polygalaceae	Triterpene	1	1	1
+Primulaceae	Flavonoid	1	3	1
+Primulaceae	Essential Oil	1	1	1
+Ranunculaceae	Inorganic	4	56	1
+Ranunculaceae	Lipid	4	22	1
+Ranunculaceae	Carbohydrate	4	17	1
+Ranunculaceae	Phenylpropanoid	5	11	1
+Ranunculaceae	Proteid	4	9	1
+Ranunculaceae	Miscellaneous	4	7	1
+Ranunculaceae	Flavonoid	3	6	1
+Ranunculaceae	Miscellaneous Lactone	4	6	1
+Ranunculaceae	Tannin	3	6	1
+Ranunculaceae	Vitamin	1	6	1
+Ranunculaceae	Alkane	3	5	1
+Ranunculaceae	Benzenoid	2	5	1
+Ranunculaceae	Triterpene	2	5	1
+Ranunculaceae	Alkaloid-Misc	2	3	1
+Ranunculaceae	Alkane to C4	2	3	1
+Ranunculaceae	Carotenoid	1	3	1
+Ranunculaceae	Essential Oil	1	3	1
+Ranunculaceae	Isoquinoline Alkaloid	2	2	1
+Ranunculaceae	Miscellaneoul	2	2	1
+Ranunculaceae	Quinolizidine Alkaloid	1	2	1
+Ranunculaceae	Alicyclic	1	1	1
+Ranunculaceae	Miscellaneous Alkaloid	1	1	1
+Rhamnaceae	Triterpene	5	23	1
+Rosaceae	Flavonoid	1	21	1
+Rosaceae	Benzenoid	1	11	1
+Rosaceae	Triterpene	1	6	1
+Rosaceae	Phenylpropanoid	1	4	1
+Rosaceae	Lipid	1	3	1
+Rosaceae	Monoterpene	1	3	1
+Rosaceae	Tannin	1	2	1
+Rosaceae	Alkaloid	1	1	1
+Rosaceae	Alkane	1	1	1
+Rosaceae	Carbohydrate	1	1	1
+Rosaceae	Coumarin	1	1	1
+Rosaceae	Essential Oil	1	1	1
+Rosaceae	Steroid	1	1	1
+Rosaceae	Triperpene	1	1	1
+Rosaceae	Vitamin	1	1	1
+Rutaceae	Monoterpene	4	153	1
+Rutaceae	Inorganic	3	39	1
+Rutaceae	Sesquiterpene	4	24	1
+Rutaceae	Flavonoid	1	12	1
+Rutaceae	Benzenoid	3	9	1
+Rutaceae	Carbohydrate	3	8	1
+Rutaceae	Vitamin	3	8	1
+Rutaceae	Lipid	3	7	1
+Rutaceae	Proteid	3	7	1
+Rutaceae	Coumarin	2	6	1
+Rutaceae	Essential Oil	5	6	1
+Rutaceae	Alkene	1	4	1
+Rutaceae	Oxygen Heterocycle	2	4	1
+Rutaceae	Phenylpropanoid	2	3	1
+Rutaceae	Alicyclic	2	2	1
+Rutaceae	Carotenoid	2	2	1
+Rutaceae	Miscellaneous	1	2	1
+Rutaceae	Sesuiterpene	1	2	1
+Rutaceae	Tannin	1	2	1
+Rutaceae	Alkane	1	1	1
+Rutaceae	Alkane to C4	1	1	1
+Rutaceae	Quinoline-Alkaloid	1	1	1
+Rutaceae	Steroid	1	1	1
+Rutaceae	Triterpene	1	1	1
+Saururaceae	Phenylpropanoid	1	1	1
+Simaroubaceae	Carbohydrate	1	5	1
+Simaroubaceae	Flavonoid	1	4	1
+Simaroubaceae	Alkane	1	2	1
+Simaroubaceae	Lipid	1	2	1
+Simaroubaceae	Alkane to C4	1	1	1
+Simaroubaceae	Benzenoid	1	1	1
+Simaroubaceae	Coumarin	1	1	1
+Simaroubaceae	Phenylpropanoid	1	1	1
+Simaroubaceae	Proteid	1	1	1
+Simaroubaceae	Quinoid	1	1	1
+Simaroubaceae	Steroid	1	1	1
+Simaroubaceae	Tannin	1	1	1
+Thymelaeaceae	Phenylpropanoid	1	1	1
+Urticaceae	Inorganic	1	22	1
+Urticaceae	Carbohydrate	1	5	1
+Urticaceae	Vitamin	1	3	1
+Urticaceae	Lipid	1	2	1
+Urticaceae	Phenylpropanoid	1	2	1
+Urticaceae	Proteid	1	2	1
+Urticaceae	Carotenoid	1	1	1
+Urticaceae	Flavonoid	1	1	1
+Urticaceae	Quinoid	1	1	1
+Urticaceae	Triterpene	1	1	1
+Verbenaceae	Monoterpene	1	34	1
+Verbenaceae	Sesquiterpene	1	25	1
+Verbenaceae	Flavonoid	1	8	1
+Verbenaceae	Oxygen Heterocycle	1	2	1
+Verbenaceae	Alkaloid	1	1	1
+Verbenaceae	Alkane	1	1	1
+Verbenaceae	Alkane to C4	1	1	1
+Verbenaceae	Alkene	1	1	1
+Verbenaceae	Carotenoid	1	1	1
+Verbenaceae	Essential Oil	1	1	1
+Verbenaceae	Phenylpropanoid	1	1	1
+Verbenaceae	Sesuiterpene	1	1	1
+Verbenaceae	Tannin	1	1	1
+Zygophyllaceae	Carbohydrate	1	13	1
+Zygophyllaceae	Lipid	1	9	1
+Zygophyllaceae	Inorganic	1	8	1
+Zygophyllaceae	Proteid	1	4	1
+Zygophyllaceae	Sapogenin	1	3	1
+Zygophyllaceae	Coumarin	1	2	1
+Zygophyllaceae	Carotenoid	1	1	1
+Zygophyllaceae	Steroid	1	1	1
+Zygophyllaceae	Vitamin	1	1	1

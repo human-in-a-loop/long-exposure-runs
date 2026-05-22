@@ -1,0 +1,8 @@
+ablation,model,split,case_type,n,flat_exact_match,synonym_normalized_exact_match,mean_hierarchy_distance,hierarchy_coherence_violation_rate,mean_reticulate_near_miss
+strict_negative_control,label_frequency,test,all,7,0.000000,0.000000,5.142857,0.000000,0.000000
+strict_negative_control,taxonomy_depth,test,all,7,0.000000,0.000000,3.428571,0.000000,0.000000
+strict_negative_control,flat_lookup_or_centroid,test,all,7,0.000000,0.000000,3.428571,0.000000,0.000000
+strict_negative_control,tree_dag,test,all,7,0.857143,0.857143,0.571429,0.000000,0.857143
+strict_negative_control,ordinary_graph,test,all,7,0.857143,0.857143,0.571429,0.000000,0.857143
+strict_negative_control,clique_expansion,test,all,7,0.857143,0.857143,0.571429,0.000000,0.857143
+strict_negative_control,native_hypergraph,test,all,7,0.857143,0.857143,0.571429,0.000000,0.857143

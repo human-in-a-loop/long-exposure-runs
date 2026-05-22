@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Triticum aestivum",
+    "class": "Liliopsida",
+    "classKey": 196,
+    "confidence": 99,
+    "family": "Poaceae",
+    "familyKey": 3073,
+    "genus": "Triticum",
+    "genusKey": 2706388,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Poales",
+    "orderKey": 1369,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Triticum aestivum L.",
+    "species": "Triticum aestivum",
+    "speciesKey": 7795888,
+    "status": "ACCEPTED",
+    "usageKey": 7795888
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Triticum aestivum"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "df99bd205d30ad3c2cc43e59a273404cc3b032eacf9c2adbf15be75a913a4d2c",
+  "used_insecure_tls_fallback": false
+}

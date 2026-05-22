@@ -1,0 +1,78 @@
+{
+  "confound": {
+    "R2_CP_min": 0.8516893046089283,
+    "R2_observed_H_family": 0.8353257800871441,
+    "spearman_rho_residOBS_vs_CPmin": 0.40559440559440557,
+    "verdict": "PASS"
+  },
+  "h3_decision": "data_limited",
+  "inputs": [
+    "tracks/track3/data/convergence_pressure_scores.tsv",
+    "tracks/track3/data/convergence_pressure_nulls.tsv",
+    "tracks/track3/data/convergence_pressure_confound_regression.tsv",
+    "tracks/track3/data/convergence_pressure_canonical_recovery.tsv",
+    "tracks/track3/data/convergence_predictions.tsv",
+    "tracks/track3/data/convergence_pressure_run_summary.json"
+  ],
+  "m3_run_summary": {
+    "R2_CP_min": 0.8516893046089283,
+    "R2_observed": 0.8353257800871441,
+    "b_replicates": 1000,
+    "data_limited_traits": [
+      "ant_domatia",
+      "carnivory",
+      "parasitism"
+    ],
+    "excluded_traits": [
+      "_other"
+    ],
+    "falsifier_verdict": "PASS",
+    "scored_traits": [
+      "achene",
+      "ant_domatia",
+      "aril",
+      "c4_photosynthesis",
+      "cam_photosynthesis",
+      "capsule",
+      "carnivory",
+      "drupe",
+      "elaiosome",
+      "fleshy_fruit",
+      "follicle",
+      "myrmecochory",
+      "parasitism",
+      "samara",
+      "succulence"
+    ],
+    "seed": 20260517,
+    "spearman_rho_residOBS_vs_CPmin": 0.40559440559440557,
+    "swap_multiplier": 10,
+    "version": "track3-cp-v1.0"
+  },
+  "master_ledgers_promoted": false,
+  "milestone": "M4.A-track3-convergence-confounds",
+  "n_rows": 16,
+  "other_status": "diagnostic_not_prediction",
+  "outputs": [
+    "tracks/track3/data/track3_wave4_validation_outcomes.tsv",
+    "tracks/track3/data/track3_wave4_validation_summary.json",
+    "tracks/track3/figures/track3_wave4_null_model_comparison.png",
+    "tracks/track3/reports/track3_wave4_validation_ablation.md"
+  ],
+  "pending_traits": [
+    "capsule",
+    "drupe"
+  ],
+  "run_id": "fork-cc044bf40be3-clone-2-track3-wave4-validation",
+  "status_counts": {
+    "data_limited_not_prediction": 8,
+    "diagnostic_not_prediction": 1,
+    "observed_evidence_not_prediction": 5,
+    "pending_convergence_prior": 2
+  },
+  "zero_carrier_traits": [
+    "ant_domatia",
+    "carnivory",
+    "parasitism"
+  ]
+}

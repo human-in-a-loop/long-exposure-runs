@@ -1,0 +1,64 @@
+name_id,name_string,accepted_taxon_id,source,source_name_id,name_status,query_name,leakage_group_id,task_visibility
+name:wfo:wfo-0000292858:query,Quercus robur,wfo:wfo-0000292858,WFO,wfo-0000292858,query_name,Quercus robur,cluster:wfo:wfo-0000292858,name_normalization_only
+name:wfo:wfo-0000292858:canonical,Quercus robur L.,wfo:wfo-0000292858,WFO,wfo-0000292858,candidate_unresolved,Quercus robur,cluster:wfo:wfo-0000292858,name_normalization_only
+name:gbif:2878688:query,Quercus robur,gbif:2878688,GBIF,2878688,ACCEPTED,Quercus robur,cluster:gbif:2878688,name_normalization_only
+name:ott:239659:query,Quercus robur,ott:239659,OpenTree,239659,matched,Quercus robur,cluster:ott:239659,name_normalization_only
+name:wfo:wfo-0000891536:query,Poa annua,wfo:wfo-0000891536,WFO,wfo-0000891536,query_name,Poa annua,cluster:wfo:wfo-0000891536,name_normalization_only
+name:wfo:wfo-0000891536:canonical,Poa annua L.,wfo:wfo-0000891536,WFO,wfo-0000891536,candidate_unresolved,Poa annua,cluster:wfo:wfo-0000891536,name_normalization_only
+name:gbif:2704179:query,Poa annua,gbif:2704179,GBIF,2704179,ACCEPTED,Poa annua,cluster:gbif:2704179,name_normalization_only
+name:ott:510850:query,Poa annua,ott:510850,OpenTree,510850,matched,Poa annua,cluster:ott:510850,name_normalization_only
+name:wfo:wfo-0001001226:query,Rosa canina,wfo:wfo-0001001226,WFO,wfo-0001001226,query_name,Rosa canina,cluster:wfo:wfo-0001001226,name_normalization_only
+name:wfo:wfo-0001001226:canonical,Rosa canina Siev. ex Ledeb.,wfo:wfo-0001001226,WFO,wfo-0001001226,candidate_unresolved,Rosa canina,cluster:wfo:wfo-0001001226,name_normalization_only
+name:gbif:3002461:query,Rosa canina,gbif:3002461,GBIF,3002461,ACCEPTED,Rosa canina,cluster:gbif:3002461,name_normalization_only
+name:ott:333885:query,Rosa canina,ott:333885,OpenTree,333885,matched,Rosa canina,cluster:ott:333885,name_normalization_only
+name:wfo:wfo-0000541830:query,Arabidopsis thaliana,wfo:wfo-0000541830,WFO,wfo-0000541830,query_name,Arabidopsis thaliana,cluster:wfo:wfo-0000541830,name_normalization_only
+name:wfo:wfo-0000541830:canonical,Arabidopsis thaliana (L.) Heynh.,wfo:wfo-0000541830,WFO,wfo-0000541830,candidate_unresolved,Arabidopsis thaliana,cluster:wfo:wfo-0000541830,name_normalization_only
+name:gbif:3052436:query,Arabidopsis thaliana,gbif:3052436,GBIF,3052436,ACCEPTED,Arabidopsis thaliana,cluster:gbif:3052436,name_normalization_only
+name:ott:309263:query,Arabidopsis thaliana,ott:309263,OpenTree,309263,matched,Arabidopsis thaliana,cluster:ott:309263,name_normalization_only
+name:wfo:wfo-0001029216:query,Solanum lycopersicum,wfo:wfo-0001029216,WFO,wfo-0001029216,query_name,Solanum lycopersicum,cluster:wfo:wfo-0001029216,name_normalization_only
+name:wfo:wfo-0001029216:canonical,Solanum lycopersicum L.,wfo:wfo-0001029216,WFO,wfo-0001029216,candidate_unresolved,Solanum lycopersicum,cluster:wfo:wfo-0001029216,name_normalization_only
+name:gbif:2930137:query,Solanum lycopersicum,gbif:2930137,GBIF,2930137,ACCEPTED,Solanum lycopersicum,cluster:gbif:2930137,name_normalization_only
+name:ott:378964:query,Solanum lycopersicum,ott:378964,OpenTree,378964,matched,Solanum lycopersicum,cluster:ott:378964,name_normalization_only
+name:wfo:wfo-0000907754:query,Zea mays,wfo:wfo-0000907754,WFO,wfo-0000907754,query_name,Zea mays,cluster:wfo:wfo-0000907754,name_normalization_only
+name:wfo:wfo-0000907754:canonical,Zea mays L.,wfo:wfo-0000907754,WFO,wfo-0000907754,matched,Zea mays,cluster:wfo:wfo-0000907754,name_normalization_only
+name:gbif:5290052:query,Zea mays,gbif:5290052,GBIF,5290052,ACCEPTED,Zea mays,cluster:gbif:5290052,name_normalization_only
+name:ott:605194:query,Zea mays,ott:605194,OpenTree,605194,matched,Zea mays,cluster:ott:605194,name_normalization_only
+name:wfo:wfo-0000882438:query,Oryza sativa,wfo:wfo-0000882438,WFO,wfo-0000882438,query_name,Oryza sativa,cluster:wfo:wfo-0000882438,name_normalization_only
+name:wfo:wfo-0000882438:canonical,Oryza sativa L.,wfo:wfo-0000882438,WFO,wfo-0000882438,matched,Oryza sativa,cluster:wfo:wfo-0000882438,name_normalization_only
+name:gbif:2703459:query,Oryza sativa,gbif:2703459,GBIF,2703459,ACCEPTED,Oryza sativa,cluster:gbif:2703459,name_normalization_only
+name:ott:709894:query,Oryza sativa,ott:709894,OpenTree,709894,matched,Oryza sativa,cluster:ott:709894,name_normalization_only
+name:wfo:wfo-0000905667:query,Triticum aestivum,wfo:wfo-0000905667,WFO,wfo-0000905667,query_name,Triticum aestivum,cluster:wfo:wfo-0000905667,name_normalization_only
+name:wfo:wfo-0000905667:canonical,Triticum aestivum L.,wfo:wfo-0000905667,WFO,wfo-0000905667,matched,Triticum aestivum,cluster:wfo:wfo-0000905667,name_normalization_only
+name:gbif:7795888:query,Triticum aestivum,gbif:7795888,GBIF,7795888,ACCEPTED,Triticum aestivum,cluster:gbif:7795888,name_normalization_only
+name:ott:31926:query,Triticum aestivum,ott:31926,OpenTree,31926,matched,Triticum aestivum,cluster:ott:31926,name_normalization_only
+name:wfo:wfo-0000515026:query,Acer saccharum,wfo:wfo-0000515026,WFO,wfo-0000515026,query_name,Acer saccharum,cluster:wfo:wfo-0000515026,name_normalization_only
+name:wfo:wfo-0000515026:canonical,Acer saccharum Marshall,wfo:wfo-0000515026,WFO,wfo-0000515026,matched,Acer saccharum,cluster:wfo:wfo-0000515026,name_normalization_only
+name:gbif:3189859:query,Acer saccharum,gbif:3189859,GBIF,3189859,ACCEPTED,Acer saccharum,cluster:gbif:3189859,name_normalization_only
+name:ott:948916:query,Acer saccharum,ott:948916,OpenTree,948916,matched,Acer saccharum,cluster:ott:948916,name_normalization_only
+name:wfo:wfo-0000335449:query,Betula pendula,wfo:wfo-0000335449,WFO,wfo-0000335449,query_name,Betula pendula,cluster:wfo:wfo-0000335449,name_normalization_only
+name:wfo:wfo-0000335449:canonical,Betula pendula Roth,wfo:wfo-0000335449,WFO,wfo-0000335449,matched,Betula pendula,cluster:wfo:wfo-0000335449,name_normalization_only
+name:gbif:5331916:query,Betula pendula,gbif:5331916,GBIF,5331916,ACCEPTED,Betula pendula,cluster:gbif:5331916,name_normalization_only
+name:ott:267719:query,Betula pendula,ott:267719,OpenTree,267719,matched,Betula pendula,cluster:ott:267719,name_normalization_only
+name:wfo:wfo-0000192338:query,Acacia dealbata,wfo:wfo-0000192338,WFO,wfo-0000192338,query_name,Acacia dealbata,cluster:wfo:wfo-0000192338,name_normalization_only
+name:wfo:wfo-0000192338:canonical,Acacia dealbata Link,wfo:wfo-0000192338,WFO,wfo-0000192338,candidate_unresolved,Acacia dealbata,cluster:wfo:wfo-0000192338,name_normalization_only
+name:gbif:2979474:query,Acacia dealbata,gbif:2979474,GBIF,2979474,ACCEPTED,Acacia dealbata,cluster:gbif:2979474,name_normalization_only
+name:ott:274405:query,Acacia dealbata,ott:274405,OpenTree,274405,matched,Acacia dealbata,cluster:ott:274405,name_normalization_only
+name:wfo:wfo-0000954998:query,Eucalyptus globulus,wfo:wfo-0000954998,WFO,wfo-0000954998,query_name,Eucalyptus globulus,cluster:wfo:wfo-0000954998,name_normalization_only
+name:wfo:wfo-0000954998:canonical,Eucalyptus globulus Labill.,wfo:wfo-0000954998,WFO,wfo-0000954998,matched,Eucalyptus globulus,cluster:wfo:wfo-0000954998,name_normalization_only
+name:gbif:3176787:query,Eucalyptus globulus,gbif:3176787,GBIF,3176787,ACCEPTED,Eucalyptus globulus,cluster:gbif:3176787,name_normalization_only
+name:ott:847929:query,Eucalyptus globulus,ott:847929,OpenTree,847929,matched,Eucalyptus globulus,cluster:ott:847929,name_normalization_only
+name:wfo:wfo-0000482030:query,Picea abies,wfo:wfo-0000482030,WFO,wfo-0000482030,query_name,Picea abies,cluster:wfo:wfo-0000482030,name_normalization_only
+name:wfo:wfo-0000482030:canonical,Picea abies (L.) H.Karst.,wfo:wfo-0000482030,WFO,wfo-0000482030,matched,Picea abies,cluster:wfo:wfo-0000482030,name_normalization_only
+name:gbif:5284884:query,Picea abies,gbif:5284884,GBIF,5284884,ACCEPTED,Picea abies,cluster:gbif:5284884,name_normalization_only
+name:ott:517943:query,Picea abies,ott:517943,OpenTree,517943,matched,Picea abies,cluster:ott:517943,name_normalization_only
+name:wfo:wfo-0000481646:query,Pinus sylvestris,wfo:wfo-0000481646,WFO,wfo-0000481646,query_name,Pinus sylvestris,cluster:wfo:wfo-0000481646,name_normalization_only
+name:wfo:wfo-0000481646:canonical,Pinus sylvestris Thunb.,wfo:wfo-0000481646,WFO,wfo-0000481646,candidate_unresolved,Pinus sylvestris,cluster:wfo:wfo-0000481646,name_normalization_only
+name:gbif:5285637:query,Pinus sylvestris,gbif:5285637,GBIF,5285637,ACCEPTED,Pinus sylvestris,cluster:gbif:5285637,name_normalization_only
+name:ott:568619:query,Pinus sylvestris,ott:568619,OpenTree,568619,matched,Pinus sylvestris,cluster:ott:568619,name_normalization_only
+name:wfo:wfo-0000627675:query,Rhopalocarpus alternifolius (Baker) Capuron,wfo:wfo-0000627675,WFO,wfo-0000627675,query_name,Rhopalocarpus alternifolius (Baker) Capuron,cluster:wfo:wfo-0000627675,name_normalization_only
+name:gbif:5553786:query,Rhopalocarpus alternifolius (Baker) Capuron,gbif:5553786,GBIF,5553786,ACCEPTED,Rhopalocarpus alternifolius (Baker) Capuron,cluster:gbif:5553786,name_normalization_only
+name:gbif:5553786:canonical,Rhopalocarpus alternifolius,gbif:5553786,GBIF,5553786,canonical,Rhopalocarpus alternifolius (Baker) Capuron,cluster:gbif:5553786,name_normalization_only
+name:wfo:wfo-4000033476:query,Rosa,wfo:wfo-4000033476,WFO,wfo-4000033476,query_name,Rosa,cluster:wfo:wfo-4000033476,name_normalization_only
+name:wfo:wfo-4000033476:canonical,Rosa L.,wfo:wfo-4000033476,WFO,wfo-4000033476,matched,Rosa,cluster:wfo:wfo-4000033476,name_normalization_only
+name:gbif:8395064:query,Rosa,gbif:8395064,GBIF,8395064,ACCEPTED,Rosa,cluster:gbif:8395064,name_normalization_only
+name:ott:259066:query,Rosa,ott:259066,OpenTree,259066,matched,Rosa,cluster:ott:259066,name_normalization_only

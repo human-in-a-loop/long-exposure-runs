@@ -1,0 +1,5 @@
+source	endpoint_or_dump_url	release_or_version	access_date	license	local_raw_path	row_count	checksum_sha256
+WFO	https://zenodo.org/records/18007552/files/wfo_plantlist_2025-12.zip	2025-12	2026-05-17	WFO Plant List 2025-12; Zenodo DOI 10.5281/zenodo.18007552; see metadata.json/license	substrate/staging/taxonomy_backbone/raw/wfo/wfo_plantlist_2025-12.zip	3133659	3458f5841c4f5a598016b88d57571a65fed0f59cf6e367bdd85b511699046f28
+GBIF	https://api.gbif.org/v1/species/match	API live read	2026-05-17	GBIF API terms/citation guidelines	not cached; normalized API results staged	505	
+OpenTree	https://api.opentreeoflife.org/v3/tnrs/match_names	API live read	2026-05-17	Open Tree of Life license/citation guidance	not cached; normalized API results staged	436	
+POWO	https://powo.science.kew.org/api/2/search	API live read	2026-05-17	Royal Botanic Gardens, Kew POWO website terms; API sampled conservatively	not cached; normalized API results staged	477	

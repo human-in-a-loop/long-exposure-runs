@@ -1,0 +1,32 @@
+{
+  "source_group": "paleobotany_sources",
+  "milestone": "M1.4",
+  "clone": "fork-e34b5b2c1c6c/clone-2",
+  "floor": 200,
+  "yield": 237,
+  "yield_breakdown": {
+    "lqe_extinct_fauna_nodes": 215,
+    "pbdb_extinct_fauna_nodes": 22,
+    "combined_extinct_fauna_nodes_with_T_and_range": 237,
+    "lqe_paleo_context_nodes": 70,
+    "pbdb_paleo_context_nodes": 10,
+    "faurby_svenning_taxon_nodes": 26,
+    "faurby_svenning_region_nodes": 52,
+    "faurby_svenning_distribution_edges": 52,
+    "iucn_extant_disperser_nodes": 49,
+    "anachronism_canon_plant_stubs": 24,
+    "anachronism_canon_fruit_type_stubs": 20,
+    "anachronism_candidate_edges_cited": 31,
+    "anachronism_candidate_edges_inferred": 0,
+    "quarantine_count": 0
+  },
+  "status": "above-floor",
+  "schema_revision_needed": false,
+  "license_compliance": {
+    "iucn_polygons_redistributed": false,
+    "phylacine_polygons_redistributed": false,
+    "all_derived_features_only": true
+  },
+  "access_posture": "literature-curated (sandbox has no network; documented in INGEST_AUDIT.md)",
+  "ready_for_barrier_1": true
+}

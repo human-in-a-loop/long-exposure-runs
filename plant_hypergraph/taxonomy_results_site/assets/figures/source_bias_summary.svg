@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="430" viewBox="0 0 820 430" role="img">
+<defs>
+<style><![CDATA[
+text{font-family:Inter,Arial,sans-serif;fill:#17201b} .title{font-size:26px;font-weight:800}.label{font-size:15px;font-weight:700}.small{font-size:12px}.tiny{font-size:10px}.muted{fill:#5f6f67}.box{fill:#f7faf8;stroke:#b8c8bf;stroke-width:1.2}.green{fill:#dff2df;stroke:#6aa56a}.amber{fill:#fff1cf;stroke:#c28b23}.red{fill:#ffe0dd;stroke:#c75b4e}.blue{fill:#dfeefd;stroke:#5b89c7}.violet{fill:#eee4ff;stroke:#8b70bf}.gray{fill:#edf0ef;stroke:#8c9892}.line{stroke:#698075;stroke-width:2;fill:none}]]></style>
+</defs>
+<rect width="820" height="430" fill="#fbfdfb"/>
+<text x="34" y="44" class="title">Source dominance and source-density caution</text>
+<rect x="70" y="98" width="290" height="220" rx="9" class="violet"/>
+<text x="92" y="132" class="label">Track 5</text>
+<text x="92" y="164" class="small">Full predictor rows existed only with</text>
+<text x="92" y="186" class="small">the dominant chemistry source present.</text>
+<rect x="420" y="98" width="290" height="220" rx="9" class="amber"/>
+<text x="442" y="132" class="label">Cross-track caution</text>
+<text x="442" y="164" class="small">Source density can mimic biological</text>
+<text x="442" y="186" class="small">signal unless ablations preserve it.</text>
+<path d="M210 338 C300 374 474 374 565 338" class="line"/>
+<text x="214" y="390" class="small muted">Negative source-ablation outcomes are scientific results: they prevent overclaiming.</text>
+</svg>

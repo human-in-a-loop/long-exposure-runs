@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Zea mays",
+    "class": "Liliopsida",
+    "classKey": 196,
+    "confidence": 100,
+    "family": "Poaceae",
+    "familyKey": 3073,
+    "genus": "Zea",
+    "genusKey": 2705049,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Poales",
+    "orderKey": 1369,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Zea mays L.",
+    "species": "Zea mays",
+    "speciesKey": 5290052,
+    "status": "ACCEPTED",
+    "usageKey": 5290052
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Zea mays"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "e99ed34bb1269c8d1499bee64c2cf990e0ffdb056aaa2637f24c8388afae23de",
+  "used_insecure_tls_fallback": false
+}

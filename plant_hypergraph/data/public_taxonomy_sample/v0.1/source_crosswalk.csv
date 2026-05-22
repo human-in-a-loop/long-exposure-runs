@@ -1,0 +1,17 @@
+query_name,rationale_class,wfo_id,wfo_status,gbif_key,gbif_status,ott_id,opentree_status,sources_matched,match_summary,disagreement_category
+Quercus robur,accepted_species,wfo-0000292858,candidate_unresolved,2878688,ACCEPTED,239659,matched,3,gbif=gbif:2878688;opentree=ott:239659;wfo=wfo:wfo-0000292858,different_status
+Poa annua,accepted_species,wfo-0000891536,candidate_unresolved,2704179,ACCEPTED,510850,matched,3,gbif=gbif:2704179;opentree=ott:510850;wfo=wfo:wfo-0000891536,different_status
+Rosa canina,accepted_species,wfo-0001001226,candidate_unresolved,3002461,ACCEPTED,333885,matched,3,gbif=gbif:3002461;opentree=ott:333885;wfo=wfo:wfo-0001001226,different_status
+Arabidopsis thaliana,accepted_species,wfo-0000541830,candidate_unresolved,3052436,ACCEPTED,309263,matched,3,gbif=gbif:3052436;opentree=ott:309263;wfo=wfo:wfo-0000541830,different_status
+Solanum lycopersicum,accepted_species,wfo-0001029216,candidate_unresolved,2930137,ACCEPTED,378964,matched,3,gbif=gbif:2930137;opentree=ott:378964;wfo=wfo:wfo-0001029216,different_status
+Zea mays,accepted_species,wfo-0000907754,matched,5290052,ACCEPTED,605194,matched,3,gbif=gbif:5290052;opentree=ott:605194;wfo=wfo:wfo-0000907754,different_status
+Oryza sativa,accepted_species,wfo-0000882438,matched,2703459,ACCEPTED,709894,matched,3,gbif=gbif:2703459;opentree=ott:709894;wfo=wfo:wfo-0000882438,different_status
+Triticum aestivum,accepted_species,wfo-0000905667,matched,7795888,ACCEPTED,31926,matched,3,gbif=gbif:7795888;opentree=ott:31926;wfo=wfo:wfo-0000905667,different_status
+Acer saccharum,accepted_species,wfo-0000515026,matched,3189859,ACCEPTED,948916,matched,3,gbif=gbif:3189859;opentree=ott:948916;wfo=wfo:wfo-0000515026,different_status
+Betula pendula,accepted_species,wfo-0000335449,matched,5331916,ACCEPTED,267719,matched,3,gbif=gbif:5331916;opentree=ott:267719;wfo=wfo:wfo-0000335449,different_status
+Acacia dealbata,accepted_species,wfo-0000192338,candidate_unresolved,2979474,ACCEPTED,274405,matched,3,gbif=gbif:2979474;opentree=ott:274405;wfo=wfo:wfo-0000192338,different_status
+Eucalyptus globulus,accepted_species,wfo-0000954998,matched,3176787,ACCEPTED,847929,matched,3,gbif=gbif:3176787;opentree=ott:847929;wfo=wfo:wfo-0000954998,different_status
+Picea abies,accepted_species,wfo-0000482030,matched,5284884,ACCEPTED,517943,matched,3,gbif=gbif:5284884;opentree=ott:517943;wfo=wfo:wfo-0000482030,different_status
+Pinus sylvestris,accepted_species,wfo-0000481646,candidate_unresolved,5285637,ACCEPTED,568619,matched,3,gbif=gbif:5285637;opentree=ott:568619;wfo=wfo:wfo-0000481646,different_status
+Rhopalocarpus alternifolius (Baker) Capuron,authorship_name,wfo-0000627675,matched,5553786,ACCEPTED,,missing,2,gbif=gbif:5553786;wfo=wfo:wfo-0000627675,different_status
+Rosa,genus_level_ambiguity,wfo-4000033476,matched,8395064,ACCEPTED,259066,matched,3,gbif=gbif:8395064;opentree=ott:259066;wfo=wfo:wfo-4000033476,different_status

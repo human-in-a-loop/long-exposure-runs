@@ -1,0 +1,77 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "context": "Land plants",
+    "governing_code": "ICN",
+    "includes_approximate_matches": false,
+    "includes_deprecated_taxa": false,
+    "includes_suppressed_names": false,
+    "matched_names": [
+      "Zea mays"
+    ],
+    "results": [
+      {
+        "matches": [
+          {
+            "is_approximate_match": false,
+            "is_synonym": false,
+            "matched_name": "Zea mays",
+            "nomenclature_code": "ICN",
+            "score": 1.0,
+            "search_string": "zea mays",
+            "taxon": {
+              "flags": [],
+              "is_suppressed": false,
+              "is_suppressed_from_synth": false,
+              "name": "Zea mays",
+              "ott_id": 605194,
+              "rank": "species",
+              "source": "ott3.7draft3",
+              "synonyms": [
+                "Thalysia mays",
+                "Zea amylesaccharata",
+                "Zea mays var. japonica",
+                "Zea minor"
+              ],
+              "tax_sources": [
+                "ncbi:4577",
+                "gbif:5290052",
+                "irmng:10207796"
+              ],
+              "unique_name": "Zea mays"
+            }
+          }
+        ],
+        "name": "Zea mays"
+      }
+    ],
+    "taxonomy": {
+      "author": "open tree of life project",
+      "name": "ott",
+      "source": "ott3.7draft3",
+      "version": "3.7",
+      "weburl": "https://tree.opentreeoflife.org/about/taxonomy-version/ott3.7"
+    },
+    "unambiguous_names": [
+      "Zea mays"
+    ],
+    "unmatched_names": []
+  },
+  "request": {
+    "json": {
+      "context_name": "Land plants",
+      "do_approximate_matching": false,
+      "include_suppressed": false,
+      "names": [
+        "Zea mays"
+      ]
+    },
+    "method": "POST",
+    "params": {},
+    "url": "https://api.opentreeoflife.org/v3/tnrs/match_names"
+  },
+  "response_sha256": "071aecaa37ed1f1fcf1b89cc196749242b6dd48b8d5563d54dae75a8cc7d7934",
+  "used_insecure_tls_fallback": false
+}

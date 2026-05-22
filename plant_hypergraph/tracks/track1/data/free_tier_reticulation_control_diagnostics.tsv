@@ -1,0 +1,7 @@
+diagnostic	case_mean	case_median	control_mean	control_median	effect_direction	caveat	pass_fail
+retained_event_taxa	1.045	1.0	0.0	0.0	cases_above_controls	Counts are from retained GBIF-sidecar event rows; they support readiness diagnostics only.	pass
+source_density_control	1.045	1.0	0.0	0.0	cases_have_event_source_exposure_controls_zero	Controls have comparable metadata search exposure but no curated event source groups; this leaves targeted-source artifact risk.	fail
+publication_proxy_control	29623.636	10648.0	29816.059	6481.0	metadata_exposure_overlaps	OpenAlex reticulation-query counts are broad metadata proxies and not evidence rows.	pass
+family_size_control	1.833	1.0	1.417	1.0	same_family_opportunity_present	Existing controls cover 12 case families; family size is measured within the local panel, not global taxonomy.	pass
+gbif_wfo_resolution_control	0.909	1.0	0.0	0.0	cases_have_more_wfo_sidecar_name_turnover	WFO projection was intentionally not attempted for controls because WFO-only case evidence already collapsed to 2 taxa.	fail
+low_publication_control_constructibility	29623.636	10648.0	338.0	338.0	low_publication_controls_sparse_or_insufficient	Only 2 low-publication control(s) are available from the local panel; this is not enough to interpret sparse-control non-recovery.	fail

@@ -1,0 +1,23 @@
+{
+  "candidate_classes": 6,
+  "candidate_seed_edges": 31,
+  "extinct_fauna_support_nodes": 237,
+  "inferred_candidate_rows": 0,
+  "modern_disperser_support_nodes": 49,
+  "paleo_context_support_nodes": 80,
+  "pending_crosswalk_rows": 25,
+  "prediction_ledger_rows_written": 0,
+  "range_context_edges": 52,
+  "resolved_candidate_rows": 6,
+  "source_counts": {
+    "Barlow2000": 9,
+    "Bond&Silander2007": 2,
+    "Greenwood&Atkinson1977": 2,
+    "Guimaraes2008": 8,
+    "Hansen&Galetti2009": 1,
+    "Janzen&Martin1982": 9
+  },
+  "support_nodes": 366,
+  "unique_extinct_fauna": 11,
+  "unique_plant_names": 24
+}

@@ -1,0 +1,7 @@
+raw_scientific_name	canonical_node_id	case_role	expected_reticulation_seed_flag	expected_event_supported_flag	expected_count_only_flag	observed_reticulation_seed_flag	observed_event_supported_flag	observed_count_only_flag	expected_reason
+Triticum aestivum	raw_name:Triticum_aestivum	event-supported positive	true	true	false	true	true	false	source-backed hybridization/polyploidization or explicit reticulate-inheritance evidence row
+Brassica napus	raw_name:Brassica_napus	event-supported positive	true	true	false	true	true	false	source-backed hybridization/polyploidization or explicit reticulate-inheritance evidence row
+Spartina anglica	raw_name:Spartina_anglica	event-supported positive	true	true	false	true	true	false	source-backed hybridization/polyploidization or explicit reticulate-inheritance evidence row
+Tragopogon mirus	raw_name:Tragopogon_mirus	event-supported positive	true	true	false	true	true	false	source-backed hybridization/polyploidization or explicit reticulate-inheritance evidence row
+Tragopogon miscellus	raw_name:Tragopogon_miscellus	event-supported positive	true	true	false	true	true	false	source-backed hybridization/polyploidization or explicit reticulate-inheritance evidence row
+Arabidopsis thaliana	raw_name:Arabidopsis_thaliana	count/ploidy-context negative control	true	false	false	true	false	false	chromosome count plus caveated diploid ploidy context only; no hybridization/polyploidization event rows

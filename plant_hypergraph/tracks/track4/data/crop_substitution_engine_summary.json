@@ -1,0 +1,11 @@
+{
+  "availability_rows": 4,
+  "candidate_rows": 3,
+  "climate_claims_emitted": false,
+  "crops_with_candidates": 2,
+  "instrument": "Track 4 Crop Substitution Engine",
+  "milestone": "M3.T4",
+  "observed_bioclim_vectors": 0,
+  "score_basis": "pedigree_cwr_selection_vavilov_only",
+  "status": "ready_data_limited"
+}

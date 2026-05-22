@@ -1,0 +1,13 @@
+runtime_name	availability	version_if_detectable	model_path	license_or_provenance_status	runnable_flag	blocker
+python-package:llama_cpp	missing			not_applicable	false	runtime package not installed in local environment
+python-package:transformers	missing			not_applicable	false	runtime package not installed in local environment
+python-package:torch	missing			not_applicable	false	runtime package not installed in local environment
+python-package:ctransformers	missing			not_applicable	false	runtime package not installed in local environment
+python-package:gpt4all	missing			not_applicable	false	runtime package not installed in local environment
+python-package:onnxruntime	missing			not_applicable	false	runtime package not installed in local environment
+python-package:sentencepiece	missing			not_applicable	false	runtime package not installed in local environment
+binary:ollama	missing			not_applicable	false	runtime binary not found on PATH
+binary:llama-cli	missing			not_applicable	false	runtime binary not found on PATH
+binary:llamafile	missing			not_applicable	false	runtime binary not found on PATH
+binary:gpt4all	missing			not_applicable	false	runtime binary not found on PATH
+workspace-model-files	missing			not_applicable	false	no workspace model weights found for patterns: *.gguf, *.safetensors, pytorch_model*.bin, model*.onnx

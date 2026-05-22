@@ -1,0 +1,96 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >Siev. ex Ledeb.</span></span>",
+        "full_name_plain": "Rosa canina Siev. ex Ledeb.",
+        "placement": "",
+        "wfo_id": "wfo-0001001226"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+        "full_name_plain": "Rosa canina L.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Rosales/Rosaceae/Rosa/canina",
+        "wfo_id": "wfo-0001005999"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >Siev.</span></span>",
+        "full_name_plain": "Rosa canina Siev.",
+        "placement": "",
+        "wfo_id": "wfo-0000984721"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >L\u00e9man</span></span>",
+        "full_name_plain": "Rosa canina L\u00e9man",
+        "placement": "",
+        "wfo_id": "wfo-0001009153"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >Sol. ex Bab.</span></span>",
+        "full_name_plain": "Rosa canina Sol. ex Bab.",
+        "placement": "",
+        "wfo_id": "wfo-0001011274"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >auct.</span></span>",
+        "full_name_plain": "Rosa canina auct.",
+        "placement": "",
+        "wfo_id": "wfo-0001011639"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i> <i>canina</i></span> <span class=\"wfo-name-authors\" >Sm.</span></span>",
+        "full_name_plain": "Rosa canina Sm.",
+        "placement": "",
+        "wfo_id": "wfo-0001011707"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Rosa canina",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Rosa'",
+      "Word is found in index and so is part of name: 'canina'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'canina'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Rosa canina' and found 7 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 7 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Rosa canina",
+      "rank": "species"
+    },
+    "searchString": "Rosa canina"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Rosa canina"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "10c040a5bb0b98cc404329c438d81b2bec618ce77833d573cb2bcd9248fd9fc9",
+  "used_insecure_tls_fallback": true
+}

@@ -1,0 +1,185 @@
+package_name: "phytograph"
+description: |
+  PhytoGraph is a six-track plant-biology hypergraph campaign covering reticulation, ghost coevolutionary partners, convergence, domestication, chemodiversity, and botanical model-probe failures. This package contains the final synthesis, source references, selected reproducibility artifacts, track-local validation and closure records, and figures needed to verify the report's conservative conclusion: the substrate, instruments, Atlas integration, diagnostics, and reopen gates were built, but no biological prediction was promoted into the master ledgers.
+curation_complete: true
+include:
+  - src: reports/final/final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: reports/final/final_report.pdf
+    dest: report/final_report.pdf
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: REFERENCES.md
+    dest: report/REFERENCES.md
+    role: report
+  - src: phytograph_schema.md
+    dest: code/phytograph_schema.md
+    role: code
+    justification: "Final report section 'Substrate, Schema, And Evidence Boundaries' cites the shared typed-hypergraph schema and evidence-boundary rules."
+  - src: data_source_audit.md
+    dest: code/data_source_audit.md
+    role: code
+    justification: "Final report cites the source-role and provenance audit in the schema/source-audit summary."
+  - src: coverage_report.md
+    dest: code/coverage_report.md
+    role: code
+    justification: "Final report cites the coverage artifact in schema/source-audit and reproducibility sections."
+  - src: scripts/barrier1_common.py
+    dest: code/scripts/barrier1_common.py
+    role: code
+    justification: "Final report 'Reproducibility And Artifact Map' cites Barrier 1 repair helpers for the repaired shared substrate."
+  - src: scripts/barrier1_merge_substrate.py
+    dest: code/scripts/barrier1_merge_substrate.py
+    role: code
+    justification: "Final report cites the Barrier 1 merge script for the repaired shared substrate."
+  - src: scripts/barrier1_apply_synonyms.py
+    dest: code/scripts/barrier1_apply_synonyms.py
+    role: code
+    justification: "Final report 'Barrier Repairs And Atlas Integration' cites accepted-key propagation as a Barrier 1 repair."
+  - src: scripts/barrier1_deduplicate_edges.py
+    dest: code/scripts/barrier1_deduplicate_edges.py
+    role: code
+    justification: "Final report cites typed-member deduplication as the Barrier 1 repair that preserved role-map distinctions."
+  - src: tools/validate_barrier1_substrate.py
+    dest: code/tools/validate_barrier1_substrate.py
+    role: test
+    justification: "Final report cites this validator for the 363,237-node and 641,183-hyperedge repaired substrate state."
+  - src: tools/validate_barrier2_track_enrichment.py
+    dest: code/tools/validate_barrier2_track_enrichment.py
+    role: test
+    justification: "Final report cites Barrier 2 conformance validation for enrichment readiness."
+  - src: reports/barrier2_wave2_integration_report.md
+    dest: code/reports/barrier2_wave2_integration_report.md
+    role: code
+    justification: "Final report cites the Wave 2 integration report for six-track conformance and enrichment status."
+  - src: data/barrier2_track_enrichment_conformance.json
+    dest: code/data/barrier2_track_enrichment_conformance.json
+    role: data
+    justification: "Final report artifact map cites this machine-readable Barrier 2 conformance result."
+  - src: botanical_atlas_site/build_atlas.py
+    dest: code/botanical_atlas_site/build_atlas.py
+    role: code
+    justification: "Final report cites the Atlas builder for the 60,000-page integration surface."
+  - src: botanical_atlas_site/page_contract.md
+    dest: code/botanical_atlas_site/page_contract.md
+    role: code
+    justification: "Final report cites the Atlas evidence-class contract in Atlas integration and formal contributions."
+  - src: reports/barrier3_atlas_instrument_readiness.md
+    dest: code/reports/barrier3_atlas_instrument_readiness.md
+    role: code
+    justification: "Final report cites the Barrier 3 readiness report for six-track Atlas integration."
+  - src: data/barrier3_atlas_instrument_contract.tsv
+    dest: code/data/barrier3_atlas_instrument_contract.tsv
+    role: data
+    justification: "Final report artifact map cites this machine-readable Atlas instrument contract."
+  - src: tracks/track1/instruments/tci_spec.md
+    dest: code/tracks/track1/instruments/tci_spec.md
+    role: code
+    justification: "Final report cites the Track 1 TCI definition in track status and formal contributions."
+  - src: tracks/track1/instruments/build_tci.py
+    dest: code/tracks/track1/instruments/build_tci.py
+    role: code
+    justification: "Final report cites the Track 1 builder that produced the per-taxon TCI output."
+  - src: tracks/track1/outputs/tci_per_taxon.tsv
+    dest: code/tracks/track1/outputs/tci_per_taxon.tsv
+    role: data
+    justification: "Final report artifact map cites this Track 1 TCI table."
+  - src: tracks/track1/data/reticulation_reopen_candidate_events.tsv
+    dest: code/tracks/track1/data/reticulation_reopen_candidate_events.tsv
+    role: data
+    justification: "Final report cites this Track 1 reopen candidate table for the H1 non-reopen result."
+  - src: tracks/track1/data/reticulation_reopen_join_diagnostics.tsv
+    dest: code/tracks/track1/data/reticulation_reopen_join_diagnostics.tsv
+    role: data
+    justification: "Final report cites Track 1 reopen diagnostics for accepted-key and event-shaped recovery limits."
+  - src: tracks/track2/data/track2_wave4_validation_outcomes.tsv
+    dest: code/tracks/track2/data/track2_wave4_validation_outcomes.tsv
+    role: data
+    justification: "Final report cites this Track 2 validation table for the H2 null/data-limited result."
+  - src: tracks/track2/reports/track2_wave4_validation_closure.md
+    dest: code/tracks/track2/reports/track2_wave4_validation_closure.md
+    role: code
+    justification: "Final report cites the Track 2 closure report for held-out and ablation status."
+  - src: tracks/track3/data/track3_wave4_validation_outcomes.tsv
+    dest: code/tracks/track3/data/track3_wave4_validation_outcomes.tsv
+    role: data
+    justification: "Final report cites this Track 3 validation table for H3 data-limited status."
+  - src: tracks/track3/data/track3_wave4_validation_summary.json
+    dest: code/tracks/track3/data/track3_wave4_validation_summary.json
+    role: data
+    justification: "Final report cites this Track 3 validation summary for convergence-prior status."
+  - src: tracks/track3/data/convergence_pressure_scores.tsv
+    dest: code/tracks/track3/data/convergence_pressure_scores.tsv
+    role: data
+    justification: "Final report cites the Track 3 score table for convergence-pressure priors."
+  - src: tracks/track4/data/crop_cwr_bioclim_vectors.tsv
+    dest: code/tracks/track4/data/crop_cwr_bioclim_vectors.tsv
+    role: data
+    justification: "Final report cites the Track 4 climate-vector attempt table for the H4 non-reopen result."
+  - src: tracks/track4/data/crop_cwr_validation_pairs.tsv
+    dest: code/tracks/track4/data/crop_cwr_validation_pairs.tsv
+    role: data
+    justification: "Final report cites the Track 4 held-out comparator table for validation-readiness limits."
+  - src: tracks/track4/reports/track4_barrier4_closure.md
+    dest: code/tracks/track4/reports/track4_barrier4_closure.md
+    role: code
+    justification: "Final report cites the Track 4 closure report for data-limited climate substitution."
+  - src: tracks/track5/data/track5_wave4_validation_outcomes.tsv
+    dest: code/tracks/track5/data/track5_wave4_validation_outcomes.tsv
+    role: data
+    justification: "Final report cites this Track 5 validation table for temporal holdout limits."
+  - src: tracks/track5/data/source_ablation_results.tsv
+    dest: code/tracks/track5/data/source_ablation_results.tsv
+    role: data
+    justification: "Final report cites this Track 5 ablation table for no-Duke and matched-source collapse."
+  - src: tracks/track5/reports/track5_wave4_temporal_source_closure.md
+    dest: code/tracks/track5/reports/track5_wave4_temporal_source_closure.md
+    role: code
+    justification: "Final report cites the Track 5 closure report for source-limited temporal validation."
+  - src: tracks/track6/data/probe_results.tsv
+    dest: code/tracks/track6/data/probe_results.tsv
+    role: data
+    justification: "Final report cites this Track 6 deterministic control-result table for benchmark-only status."
+  - src: tracks/track6/data/local_model_availability.json
+    dest: code/tracks/track6/data/local_model_availability.json
+    role: data
+    justification: "Final report cites this Track 6 local runtime check for environment-limited closure."
+  - src: tracks/track6/reports/track6_barrier4_closure.md
+    dest: code/tracks/track6/reports/track6_barrier4_closure.md
+    role: code
+    justification: "Final report cites the Track 6 closure report for no audited model-response rates."
+  - src: reports/reopen/reopen_evidence_gate.md
+    dest: code/reports/reopen/reopen_evidence_gate.md
+    role: code
+    justification: "Final report cites the post-closure reopen gate for H1/H4/H5/H6 reopen requirements."
+  - src: data/reopen/reopen_branch_matrix.tsv
+    dest: code/data/reopen/reopen_branch_matrix.tsv
+    role: data
+    justification: "Final report cites the machine-readable reopen matrix for evidence requirements and promotion risk."
+  - src: prediction_ledger.tsv
+    dest: code/prediction_ledger.tsv
+    role: data
+    justification: "Final report cites this header-only master prediction ledger in Validation, Ablations, And Master Ledgers."
+  - src: speculation_ledger.tsv
+    dest: code/speculation_ledger.tsv
+    role: data
+    justification: "Final report cites this header-only master speculation ledger in Validation, Ablations, And Master Ledgers."
+  - src: tracks/track1/figures/reticulation_reopen_join_recovery.png
+    dest: reticulation_reopen_join_recovery.png
+    role: figure
+    caption: "Track 1 accepted-key/event-shaped recovery visualization showing reopened reticulation evidence recovery counts by source and accepted-key status."
+  - src: tracks/track1/scripts/plot_reticulation_reopen_join_recovery.py
+    dest: code/tracks/track1/scripts/plot_reticulation_reopen_join_recovery.py
+    role: code
+    justification: "MANIFEST names the Track 1 recovery figure; this co-located plot script regenerates that figure."
+  - src: tracks/track4/figures/track4_reopen_bioclim_coverage.png
+    dest: track4_reopen_bioclim_coverage.png
+    role: figure
+    caption: "Track 4 bioclim and held-out validation-readiness coverage visualization showing accepted-key joins, numeric BIOCLIM vector absence, and validation-allowed comparator absence."
+  - src: tracks/track4/scripts/plot_reopen_bioclim_coverage.py
+    dest: code/tracks/track4/scripts/plot_reopen_bioclim_coverage.py
+    role: code
+    justification: "MANIFEST names the Track 4 bioclim coverage figure; this co-located plot script regenerates that figure."

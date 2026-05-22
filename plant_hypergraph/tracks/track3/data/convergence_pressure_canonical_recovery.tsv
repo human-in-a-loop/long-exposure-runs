@@ -1,0 +1,7 @@
+trait	CP_min	rank_among_canonical_traits	n_canonical_with_score	expected_band	in_upper_half	agreement
+c4_photosynthesis	-7.066116	8	12	high	True	yes
+fleshy_fruit	-5.850457	6	12	high	True	yes
+drupe	5.647328	1	12	high	True	yes
+myrmecochory	-10.328344	11	12	medium	False	yes
+elaiosome	-9.142060	10	12	medium	False	yes
+samara	-5.929682	7	12	medium	True	yes

@@ -1,0 +1,4 @@
+edge_family,hyperedges,taxon_members,introduced_pairs,licensed_pairs,unlicensed_pairs,unlicensed_pair_ratio,pairwise_similarity_licensed_by_schema,semantic_note
+regional_checklist_context,4,20,40,0,40,1.000000,no,"checklist co-membership is source context, not pairwise taxon similarity"
+reticulate_or_hybrid_signal,7,21,21,14,7,0.333333,partial_role_dependent,"role labels license child-source near-miss, not all clique pairs"
+trait_syndrome,22,44,22,0,22,1.000000,no_for_taxonomic_similarity,"shared trait state is a convergence stressor, not taxonomic identity"

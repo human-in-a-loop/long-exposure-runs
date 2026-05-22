@@ -1,0 +1,7 @@
+track	readiness	reason
+Track 1 Reticulation	ready_data_limited	M1.3 seed rows merged, but CCDB/C-values/Wood 2009 production-scale acquisition deferred.
+Track 2 Ghost Hyperedges	ready_data_limited	Literature-curated paleo/anachronism seed rows merged; no inferred anachronism rows introduced.
+Track 3 Convergence	ready	AusTraits trait_syndrome/fruit_morphology/life_form rows merged; convergence_signature count remains zero.
+Track 4 Domestication	ready_data_limited	Current crop-pedigree/CWR seed rows merged; CWR expansion and climate extraction still deferred.
+Track 5 Chemodiversity	ready	Phytochemical and ethnobotanical assertions merged with provenance; Duke source dominance flagged for ablation.
+Track 6 Foundation Model Probe	ready_static_only	Static/free/open benchmark scaffolding only; paid-provider harness work remains out of scope and was not executed.

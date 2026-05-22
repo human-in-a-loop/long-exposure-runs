@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Poa</i> <i>annua</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+        "full_name_plain": "Poa annua L.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Poales/Poaceae/Poa/annua",
+        "wfo_id": "wfo-0000891536"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Poa</i> <i>annua</i></span> <span class=\"wfo-name-authors\" >Schltdl. & Cham.</span></span>",
+        "full_name_plain": "Poa annua Schltdl. & Cham.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Poales/Poaceae/Poa/infirma$Poa/annua",
+        "wfo_id": "wfo-0000891537"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Poa annua",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Poa'",
+      "Word is found in index and so is part of name: 'annua'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'annua'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Poa annua' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Poa annua",
+      "rank": "species"
+    },
+    "searchString": "Poa annua"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Poa annua"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "cd1a2f503d31cae3fbb12679b7fe6c697fe10ac22c9097e69afabbb2dd701404",
+  "used_insecure_tls_fallback": true
+}

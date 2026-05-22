@@ -1,0 +1,9 @@
+heldout_scientific_name	common_name	in_seed_layer	best_candidate_id	best_rank	candidate_status	candidate_score	accepted_taxon_key	recovery_bucket	validation_use
+Persea americana	avocado	True	T2C0031	26	data_limited	0.55		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Maclura pomifera	osage orange	True	T2C0021	5	data_limited	0.8		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Gleditsia triacanthos	honey locust	True	T2C0020	21	data_limited	0.55		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Annona cherimola	cherimoya	True	T2C0006	14	insufficient_support	0.55	wfo:wfo-0000537707-2025-12	recovered_but_insufficient_support	hold-out label scaffold only; do not train on canonical label
+Mauritia flexuosa	moriche palm	True	T2C0030	24	data_limited	0.55		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Spondias mombin	hog plum	True	T2C0026	30	data_limited	0.55		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Sideroxylon foetidissimum	mastic bully	True	T2C0009	9	data_limited	0.775		recovered_but_data_limited	hold-out label scaffold only; do not train on canonical label
+Asimina triloba	pawpaw	True	T2C0016	1	candidate_pending_validation	0.8	wfo:wfo-0000552025-2025-12	recovered_validation_ready_seed	hold-out label scaffold only; do not train on canonical label

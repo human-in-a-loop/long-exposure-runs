@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Oryza sativa",
+    "class": "Liliopsida",
+    "classKey": 196,
+    "confidence": 99,
+    "family": "Poaceae",
+    "familyKey": 3073,
+    "genus": "Oryza",
+    "genusKey": 2703455,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Poales",
+    "orderKey": 1369,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Oryza sativa L.",
+    "species": "Oryza sativa",
+    "speciesKey": 2703459,
+    "status": "ACCEPTED",
+    "usageKey": 2703459
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Oryza sativa"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "2ea9bb2e9611ea1c5b401ea912663267b8900e5addbcd3cff34224ad64f49fd1",
+  "used_insecure_tls_fallback": false
+}

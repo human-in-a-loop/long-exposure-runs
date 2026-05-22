@@ -1,0 +1,13 @@
+{
+  "caveat": "No free/open local model configuration is runnable from this workspace.",
+  "checked_at": "2026-05-18T13:29:20+00:00",
+  "local_model_files": [],
+  "local_open_model_runnable": false,
+  "runner_mode": "benchmark_only_data_limited",
+  "runtime_modules_available": {
+    "llama_cpp": false,
+    "torch": false,
+    "transformers": false
+  },
+  "scope": "workspace-local discovery only; no model import, network call, or inference"
+}

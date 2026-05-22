@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Quercus robur",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 99,
+    "family": "Fagaceae",
+    "familyKey": 4689,
+    "genus": "Quercus",
+    "genusKey": 2877951,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Fagales",
+    "orderKey": 1354,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Quercus robur L.",
+    "species": "Quercus robur",
+    "speciesKey": 2878688,
+    "status": "ACCEPTED",
+    "usageKey": 2878688
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Quercus robur"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "d1492f8559e0a458349ee5b2c53a8924049c8acc4c7c0fec62bc5ca11596c5d2",
+  "used_insecure_tls_fallback": false
+}

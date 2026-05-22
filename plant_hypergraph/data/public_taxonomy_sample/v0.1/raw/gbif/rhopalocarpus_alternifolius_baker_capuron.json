@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Rhopalocarpus alternifolius",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 100,
+    "family": "Sphaerosepalaceae",
+    "familyKey": 3233918,
+    "genus": "Rhopalocarpus",
+    "genusKey": 3233919,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Malvales",
+    "orderKey": 941,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Rhopalocarpus alternifolius (Baker) Capuron",
+    "species": "Rhopalocarpus alternifolius",
+    "speciesKey": 5553786,
+    "status": "ACCEPTED",
+    "usageKey": 5553786
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Rhopalocarpus alternifolius (Baker) Capuron"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "1d58dbd0dfbacfaabbb1b73e5d505c2bbed346543f29815ec6597959e5194df3",
+  "used_insecure_tls_fallback": false
+}

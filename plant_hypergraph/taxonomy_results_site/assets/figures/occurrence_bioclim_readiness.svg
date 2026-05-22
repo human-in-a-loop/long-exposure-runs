@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="430" viewBox="0 0 820 430" role="img">
+<defs>
+<style><![CDATA[
+text{font-family:Inter,Arial,sans-serif;fill:#17201b} .title{font-size:26px;font-weight:800}.label{font-size:15px;font-weight:700}.small{font-size:12px}.tiny{font-size:10px}.muted{fill:#5f6f67}.box{fill:#f7faf8;stroke:#b8c8bf;stroke-width:1.2}.green{fill:#dff2df;stroke:#6aa56a}.amber{fill:#fff1cf;stroke:#c28b23}.red{fill:#ffe0dd;stroke:#c75b4e}.blue{fill:#dfeefd;stroke:#5b89c7}.violet{fill:#eee4ff;stroke:#8b70bf}.gray{fill:#edf0ef;stroke:#8c9892}.line{stroke:#698075;stroke-width:2;fill:none}]]></style>
+</defs>
+<rect width="820" height="430" fill="#fbfdfb"/>
+<text x="34" y="44" class="title">Occurrence and BIOCLIM readiness</text>
+<text x="70" y="123" class="label">post-filter occurrence records</text>
+<rect x="330" y="105" width="360" height="24" rx="4" fill="#edf0ef"/>
+<rect x="330" y="105" width="360" height="24" rx="4" fill="#79a887"/>
+<text x="710" y="123" class="label">3358</text>
+<text x="70" y="193" class="label">numeric BIOCLIM vectors</text>
+<rect x="330" y="175" width="360" height="24" rx="4" fill="#edf0ef"/>
+<rect x="330" y="175" width="3" height="24" rx="4" fill="#c75b4e"/>
+<text x="710" y="193" class="label">0</text>
+<text x="70" y="263" class="label">validation-allowed comparator rows</text>
+<rect x="330" y="245" width="360" height="24" rx="4" fill="#edf0ef"/>
+<rect x="330" y="245" width="3" height="24" rx="4" fill="#c75b4e"/>
+<text x="710" y="263" class="label">0</text>
+<text x="70" y="350" class="small muted">Occurrences alone did not support climate-substitution recommendations without numeric climate vectors and comparators.</text>
+</svg>

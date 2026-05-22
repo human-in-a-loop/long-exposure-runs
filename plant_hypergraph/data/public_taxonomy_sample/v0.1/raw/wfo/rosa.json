@@ -1,0 +1,54 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Rosa",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rosa</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+      "full_name_plain": "Rosa L.",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Rosales/Rosaceae/Rosa",
+      "wfo_id": "wfo-4000033476"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Rosa'",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Searched index of 2025-12 for canonical form of name 'Rosa' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-4000033476) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Rosa",
+      "rank": null
+    },
+    "searchString": "Rosa"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Rosa"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "04eead0d4144a2815224e2890647fe645911ec9796857a70e738e55626f65c40",
+  "used_insecure_tls_fallback": true
+}

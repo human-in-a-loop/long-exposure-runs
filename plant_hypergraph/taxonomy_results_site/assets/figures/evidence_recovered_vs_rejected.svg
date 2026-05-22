@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img">
+<defs>
+<style><![CDATA[
+text{font-family:Inter,Arial,sans-serif;fill:#17201b} .title{font-size:26px;font-weight:800}.label{font-size:15px;font-weight:700}.small{font-size:12px}.tiny{font-size:10px}.muted{fill:#5f6f67}.box{fill:#f7faf8;stroke:#b8c8bf;stroke-width:1.2}.green{fill:#dff2df;stroke:#6aa56a}.amber{fill:#fff1cf;stroke:#c28b23}.red{fill:#ffe0dd;stroke:#c75b4e}.blue{fill:#dfeefd;stroke:#5b89c7}.violet{fill:#eee4ff;stroke:#8b70bf}.gray{fill:#edf0ef;stroke:#8c9892}.line{stroke:#698075;stroke-width:2;fill:none}]]></style>
+</defs>
+<rect width="900" height="500" fill="#fbfdfb"/>
+<text x="34" y="42" class="title">Evidence recovered versus promotion-ready evidence</text>
+<text x="36" y="104" class="label">Track 1</text>
+<rect x="142" y="90" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="90" width="3" height="20" rx="3" fill="#79a887"/>
+<rect x="142" y="116" width="3" height="14" rx="3" fill="#2f6d4a"/>
+<text x="768" y="105" class="small">22 / 2 · event taxa vs WFO projected</text>
+<text x="36" y="166" class="label">Track 2</text>
+<rect x="142" y="152" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="152" width="5" height="20" rx="3" fill="#79a887"/>
+<text x="768" y="167" class="small">31 / 0 · candidates vs held-outs passing</text>
+<text x="36" y="228" class="label">Track 3</text>
+<rect x="142" y="214" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="214" width="557" height="20" rx="3" fill="#79a887"/>
+<text x="768" y="229" class="small">3069 / 0 · trait rows vs controlled-ready traits</text>
+<text x="36" y="290" class="label">Track 4</text>
+<rect x="142" y="276" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="276" width="610" height="20" rx="3" fill="#79a887"/>
+<text x="768" y="291" class="small">3358 / 0 · occurrences vs numeric climate vectors</text>
+<text x="36" y="352" class="label">Track 5</text>
+<rect x="142" y="338" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="338" width="3" height="20" rx="3" fill="#79a887"/>
+<text x="768" y="353" class="small">1 / 0 · source stratum vs validation-ready stratum</text>
+<text x="36" y="414" class="label">Track 6</text>
+<rect x="142" y="400" width="610" height="20" rx="3" fill="#edf0ef"/>
+<rect x="142" y="400" width="3" height="20" rx="3" fill="#79a887"/>
+<text x="768" y="415" class="small">0 / 0 · responses vs scored responses</text>
+<text x="36" y="470" class="small muted">Upper bars show local evidence recovered; lower promotion-ready bars remain zero where validation predicates failed.</text>
+</svg>

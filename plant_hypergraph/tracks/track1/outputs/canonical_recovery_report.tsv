@@ -1,0 +1,13 @@
+taxon	accepted_key	accepted_key_status	tci	tci_observed	n_evidence_edges	recovery_status
+Triticum aestivum	nan	pending_crosswalk			0	data_limited
+Brassica napus	nan	pending_crosswalk			0	data_limited
+Spartina anglica	nan	pending_crosswalk			0	data_limited
+Tragopogon mirus	nan	pending_crosswalk			0	data_limited
+Tragopogon miscellus	nan	pending_crosswalk			0	data_limited
+Musa acuminata × balbisiana		absent			0	data_limited
+Musa acuminata	nan	pending_crosswalk			0	data_limited
+Musa balbisiana	nan	pending_crosswalk			0	data_limited
+Nicotiana tabacum		pending_or_absent			0	data_limited
+Gossypium hirsutum		pending_or_absent			0	data_limited
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	resolved	0.5	0.5	1	recovered
+Avena sativa	wfo:wfo-0000852231-2025-12	resolved	0.5	0.5	1	recovered

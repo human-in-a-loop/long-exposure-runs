@@ -1,0 +1,48 @@
+leakage_group_id,split,query_name,basis
+cluster:gbif:2703459,validation,Oryza sativa,accepted_taxon_or_source_name_cluster
+cluster:gbif:2704179,train,Poa annua,accepted_taxon_or_source_name_cluster
+cluster:gbif:2878688,test,Quercus robur,accepted_taxon_or_source_name_cluster
+cluster:gbif:2930137,train,Solanum lycopersicum,accepted_taxon_or_source_name_cluster
+cluster:gbif:2979474,test,Acacia dealbata,accepted_taxon_or_source_name_cluster
+cluster:gbif:3002461,train,Rosa canina,accepted_taxon_or_source_name_cluster
+cluster:gbif:3052436,test,Arabidopsis thaliana,accepted_taxon_or_source_name_cluster
+cluster:gbif:3176787,train,Eucalyptus globulus,accepted_taxon_or_source_name_cluster
+cluster:gbif:3189859,validation,Acer saccharum,accepted_taxon_or_source_name_cluster
+cluster:gbif:5284884,train,Picea abies,accepted_taxon_or_source_name_cluster
+cluster:gbif:5285637,test,Pinus sylvestris,accepted_taxon_or_source_name_cluster
+cluster:gbif:5290052,validation,Zea mays,accepted_taxon_or_source_name_cluster
+cluster:gbif:5331916,validation,Betula pendula,accepted_taxon_or_source_name_cluster
+cluster:gbif:5553786,train,Rhopalocarpus alternifolius (Baker) Capuron,accepted_taxon_or_source_name_cluster
+cluster:gbif:7795888,train,Triticum aestivum,accepted_taxon_or_source_name_cluster
+cluster:gbif:8395064,test,Rosa,accepted_taxon_or_source_name_cluster
+cluster:ott:239659,test,Quercus robur,accepted_taxon_or_source_name_cluster
+cluster:ott:259066,train,Rosa,accepted_taxon_or_source_name_cluster
+cluster:ott:267719,train,Betula pendula,accepted_taxon_or_source_name_cluster
+cluster:ott:274405,train,Acacia dealbata,accepted_taxon_or_source_name_cluster
+cluster:ott:309263,train,Arabidopsis thaliana,accepted_taxon_or_source_name_cluster
+cluster:ott:31926,validation,Triticum aestivum,accepted_taxon_or_source_name_cluster
+cluster:ott:333885,test,Rosa canina,accepted_taxon_or_source_name_cluster
+cluster:ott:378964,train,Solanum lycopersicum,accepted_taxon_or_source_name_cluster
+cluster:ott:510850,validation,Poa annua,accepted_taxon_or_source_name_cluster
+cluster:ott:517943,test,Picea abies,accepted_taxon_or_source_name_cluster
+cluster:ott:568619,test,Pinus sylvestris,accepted_taxon_or_source_name_cluster
+cluster:ott:605194,train,Zea mays,accepted_taxon_or_source_name_cluster
+cluster:ott:709894,train,Oryza sativa,accepted_taxon_or_source_name_cluster
+cluster:ott:847929,test,Eucalyptus globulus,accepted_taxon_or_source_name_cluster
+cluster:ott:948916,train,Acer saccharum,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000192338,validation,Acacia dealbata,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000292858,test,Quercus robur,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000335449,train,Betula pendula,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000481646,validation,Pinus sylvestris,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000482030,train,Picea abies,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000515026,train,Acer saccharum,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000541830,validation,Arabidopsis thaliana,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000627675,test,Rhopalocarpus alternifolius (Baker) Capuron,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000882438,train,Oryza sativa,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000891536,test,Poa annua,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000905667,test,Triticum aestivum,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000907754,train,Zea mays,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0000954998,train,Eucalyptus globulus,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0001001226,train,Rosa canina,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-0001029216,test,Solanum lycopersicum,accepted_taxon_or_source_name_cluster
+cluster:wfo:wfo-4000033476,validation,Rosa,accepted_taxon_or_source_name_cluster

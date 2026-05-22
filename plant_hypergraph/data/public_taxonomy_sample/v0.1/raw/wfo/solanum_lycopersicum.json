@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Solanum</i> <i>lycopersicum</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+        "full_name_plain": "Solanum lycopersicum L.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Solanales/Solanaceae/Solanoideae/Solaneae/Solanum/lycopersicum",
+        "wfo_id": "wfo-0001029216"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Solanum</i> <i>lycopersicum</i></span> <span class=\"wfo-name-authors\" >Blanco</span></span>",
+        "full_name_plain": "Solanum lycopersicum Blanco",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Solanales/Solanaceae/Solanoideae/Solaneae/Solanum/lycopersicum$Solanum/lycopersicum",
+        "wfo_id": "wfo-0001029217"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Solanum lycopersicum",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Solanum'",
+      "Word is found in index and so is part of name: 'lycopersicum'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'lycopersicum'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Solanum lycopersicum' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Solanum lycopersicum",
+      "rank": "species"
+    },
+    "searchString": "Solanum lycopersicum"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Solanum lycopersicum"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "ce6567169c2e3ae1bf70f76f2411563f381f9cfab43f1add4156b4e41fa884d8",
+  "used_insecure_tls_fallback": true
+}

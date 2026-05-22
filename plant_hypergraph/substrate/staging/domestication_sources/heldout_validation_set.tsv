@@ -1,0 +1,23 @@
+crop_taxon	heldout_class	cgiar_or_recommendation_source	region_of_practical_relevance	notes
+Vigna unguiculata	pulse	IITA cowpea program (Boukar et al. 2018, Plant Breed. 137:415-424)	West Africa, Sahel	carry-over from cycle 1; disjoint from curated; held out for genus-level CGIAR agreement test
+Dioscorea alata	root_tuber	IITA yam program (Asiedu & Sartie 2010, Food Sec. 2:305-315)	West Africa, Caribbean, Oceania	carry-over from cycle 1; disjoint from curated
+Chenopodium quinoa	pseudocereal	Bioversity / FAO quinoa adaptation (Bazile et al. 2016, Front. Plant Sci. 7:622)	Andes; expanding to Mediterranean + high-latitude	pseudocereal under-served by major-cereal pipelines
+Lablab purpureus	pulse	ICRISAT / WorldVeg dry-zone legume program (Pengelly & Maass 2001, Genet. Resour. Crop Evol. 48:261-272)	South Asia, East/Southern Africa	dual-purpose grain/forage legume
+Cajanus cajan	pulse	ICRISAT pigeonpea program (Varshney et al. 2012, Nat. Biotechnol. 30:83-89)	South Asia, East Africa, Caribbean	rainfed semi-arid grain legume
+Mangifera indica	fruit	Bioversity / FAO mango CWR (Bompard 2009, Acta Hort. 820:19-27)	South/Southeast Asia, tropics globally	tropical evergreen fruit tree
+Carica papaya	fruit	FAO / Hawaii AES papaya program (Manshardt 2014, in Genetic Improvement of Tropical Crops)	Tropics globally	fast-cycle dioecious fruit tree
+Psidium guajava	fruit	FAO underutilized-tropical-fruit program (Pommer & Murakami 2009, Acta Hort. 849:127-134)	Tropics globally	hardy tropical fruit
+Ananas comosus	fruit	FAO pineapple germplasm (Coppens d'Eeckenbrugge & Leal 2003, in The Pineapple: Botany, Production and Uses CABI)	Tropics, lowland	monocot crassulacean-acid metabolism (CAM) fruit
+Persea americana	fruit	Mexico INIFAP / California UC avocado CWR (Galindo-Tovar et al. 2008, Genet. Resour. Crop Evol. 55:441-450)	Mexico, Central America, Mediterranean climates	Track-2 anachronism case (note flag)
+Citrullus lanatus	fruit	Renner 2021 (J. Syst. Evol. 59:1-13) reframing of cultivated watermelon	NE Africa, semi-arid tropics globally	melon CWR pending re-curation per cycle-1 Section G
+Setaria italica	orphan_cereal	ICRISAT foxtail-millet program (Diao & Jia 2017, Methods Mol. Biol. 1669:1-7)	East Asia, semi-arid	semi-arid C4 cereal
+Sesamum indicum	oilseed	ICAR / ICRISAT sesame program (Bedigian 2003, Econ. Bot. 57:255-269)	South Asia, East Africa, Middle East	drought-tolerant oilseed
+Colocasia esculenta	root_tuber	SPC / IITA taro program (Singh et al. 2012, S. Pacific Comm. taro report)	Oceania, Southeast Asia, West Africa	monocot tuber crop
+Elettaria cardamomum	spice	ICAR Spices Board India (Madhusoodanan et al. 2002, in Cardamom: The Genus Elettaria CRC)	South India, Sri Lanka, Guatemala	understorey perennial spice
+Zingiber officinale	spice	ICAR Indian Institute of Spices Research (Ravindran & Babu 2005, in Ginger: The Genus Zingiber CRC)	South Asia, tropics globally	sterile cultivated rhizome crop (no seed dispersal)
+Curcuma longa	spice	ICAR / FAO turmeric program (Sasikumar 2005, Genet. Resour. Newsl. 142:48-53)	South Asia, tropics	sterile cultivated rhizome crop (allopolyploid)
+Allium cepa	allium	WorldVeg / USDA-ARS onion program (Brewster 2008, in Onions and Other Vegetable Alliums 2e CABI)	Temperate globally	biennial bulb crop
+Solanum melongena	vegetable	WorldVeg / ICAR eggplant program (Knapp et al. 2013, J. Syst. Evol. 51:586-602)	South/Southeast Asia, Mediterranean	Solanaceae fruit-vegetable distinct from S. tuberosum / S. lycopersicum (curated)
+Cucurbita pepo	vegetable	USDA-ARS / Mexico INIFAP cucurbit program (Smith 1997, Econ. Bot. 51:127-134)	Americas, temperate-to-warm globally	multi-domestication cucurbit
+Daucus carota subsp. sativus	vegetable	USDA-ARS carrot program (Iorizzo et al. 2013, Am. J. Bot. 100:930-938)	Temperate globally	biennial taproot crop
+Camellia sinensis	beverage	China CATAS / FAO tea program (Meegahakumbura et al. 2018, Front. Plant Sci. 8:2270)	South/East Asia, montane tropics	perennial evergreen leaf beverage

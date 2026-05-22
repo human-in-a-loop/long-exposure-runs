@@ -1,0 +1,9 @@
+taxon	canonical_compound	canonical_compound_class	canonical_compound_class_normalized	discovery_year	reference_id
+Taxus brevifolia	Paclitaxel	Diterpene	Diterpene	1971	[REF_CANON_PACLITAXEL]
+Catharanthus roseus	Vincristine	Indole alkaloid	Alkaloid	1958	[REF_CANON_VINCA]
+Cinchona officinalis	Quinine	Quinoline alkaloid	Alkaloid	1820	[REF_CANON_QUININE]
+Artemisia annua	Artemisinin	Sesquiterpene lactone	Sesquiterpene	1972	[REF_CANON_ARTEMISININ]
+Digitalis purpurea	Digoxin	Cardenolide	Cardenolide	1875	[REF_CANON_DIGOXIN]
+Papaver somniferum	Morphine	Isoquinoline alkaloid	Alkaloid	1804	[REF_CANON_MORPHINE]
+Atropa belladonna	Atropine	Tropane alkaloid	Alkaloid	1831	[REF_CANON_ATROPINE]
+Salix alba	Salicin	Glycoside	Glycoside	1828	[REF_CANON_SALICIN]

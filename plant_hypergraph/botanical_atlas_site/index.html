@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>PhytoGraph Botanical Atlas — Wave 3</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header>
+  <h1>PhytoGraph Botanical Atlas</h1>
+  <p class="subtitle">Wave 3 / M3.A — researcher-facing window over frozen
+     Barrier-1 substrate plus available Wave-3 instrument outputs.</p>
+  <p class="warn">This Atlas is a <em>research instrument</em>, not a wiki.
+     Every claim carries an evidence class
+     (<span class="band observed">OBSERVED</span>
+      <span class="band enriched">ENRICHED</span>
+      <span class="band predicted">PREDICTION</span>
+      <span class="band data-limited">DATA-LIMITED</span>)
+     and a provenance pointer. See
+     <a href="page_contract.md">page_contract.md</a> and
+     <a href="reports/atlas_barrier3_scaffold.md">atlas_barrier3_scaffold.md</a>.</p>
+</header>
+<section id="searchbox">
+  <input id="q" placeholder="Search accepted name, synonym, common name, or genus…" autofocus>
+  <div id="filters">
+    <label>Genus <input id="f_genus" placeholder="e.g. Triticum"></label>
+  </div>
+  <ul id="results"></ul>
+</section>
+<section id="page"></section>
+<footer>
+  <p>Build: <span id="buildmeta"></span>. Read-only over
+     <code>phytograph_dataset/</code> and <code>tracks/track*/</code>.</p>
+</footer>
+<script src="app.js"></script>
+</body></html>

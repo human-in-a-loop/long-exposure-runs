@@ -1,0 +1,2 @@
+accepted_taxon_key	compound_id	compound_class	source_id	source_class	harmonization_status	evidence_scope
+					no_local_non_duke_detection_class_rows	detection/class harmonization only; does not support taxon-level bioactivity, clinical efficacy, safety, dosage, or therapeutic claim

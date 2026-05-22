@@ -1,0 +1,18 @@
+taxon_name	accepted_key	family	genus	publication_proxy	source_density_band	gbif_match_status	candidate_status	rejection_reason
+Triticum monococcum L.	gbif:7883427	Poaceae	Triticum	5613	medium	EXACT;status=ACCEPTED;confidence=99	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Brassica rapa L.	gbif:7903057	Brassicaceae	Brassica	53585	high	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Arachis duranensis Krapov. & W.C.Greg.	gbif:5353841	Fabaceae	Arachis	3929	medium	EXACT;status=ACCEPTED;confidence=99	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Gossypium arboreum L.	gbif:3152663	Malvaceae	Gossypium	4459	medium	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Coffea canephora Pierre ex A.Froehner	gbif:2895528	Rubiaceae	Coffea	14301	high	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Nicotiana sylvestris Speg.	gbif:2928767	Solanaceae	Nicotiana	3693	medium	EXACT;status=ACCEPTED;confidence=99	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Fragaria vesca L.	gbif:3029817	Rosaceae	Fragaria	14287	high	EXACT;status=ACCEPTED;confidence=98	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Sporobolus alterniflorus (Loisel.) P.M.Peterson & Saarela	gbif:9394776	Poaceae	Sporobolus	351	low	EXACT;status=ACCEPTED;confidence=99	usable_low_publication_control	
+Tragopogon dubius Scop.	gbif:6443709	Asteraceae	Tragopogon	1257	medium	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Arabidopsis thaliana (L.) Heynh.	gbif:3052436	Brassicaceae	Arabidopsis	283297	high	EXACT;status=ACCEPTED;confidence=98	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Helianthus annuus L.	gbif:9206251	Asteraceae	Helianthus	50695	high	EXACT;status=ACCEPTED;confidence=99	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Iris fulva Ker Gawl.	gbif:5299121	Iridaceae	Iris	325	low	EXACT;status=ACCEPTED;confidence=98	usable_low_publication_control	
+Malus domestica (Suckow) Borkh.	gbif:3001244	Rosaceae	Malus	1915	medium	EXACT;status=SYNONYM;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Citrus medica L.	gbif:3190157	Rutaceae	Citrus	5086	medium	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Rosa rugosa Thunb.	gbif:3003979	Rosaceae	Rosa	6762	medium	EXACT;status=ACCEPTED;confidence=97	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Quercus alba L.	gbif:2879737	Fagaceae	Quercus	6481	medium	EXACT;status=ACCEPTED;confidence=98	rejected_low_publication_control	not low-publication under local OpenAlex proxy
+Musa acuminata Colla	gbif:2762680	Musaceae	Musa	15810	high	EXACT;status=ACCEPTED;confidence=99	rejected_low_publication_control	not low-publication under local OpenAlex proxy

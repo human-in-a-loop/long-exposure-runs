@@ -1,0 +1,1003 @@
+{
+  "adjacent_checks": {
+    "taxonomy_asset_compile": {
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "taxonomy_public_text_tests": {
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": ".....                                                                    [100%]\n5 passed in 0.08s"
+    }
+  },
+  "baseline": {
+    "marker_exists": true,
+    "marker_mtime": 1779122678.8554895,
+    "report_exists": true,
+    "report_mtime": 1779122564.5672483
+  },
+  "closure_docs": [
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 5,
+      "mtime_iso": "2026-05-18T19:20:29Z",
+      "newer_than_boundary": true,
+      "path": "data/reopen/reopen_closure_status.tsv"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T14:06:00+00:00",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-18T13:54:19Z",
+      "newer_than_boundary": false,
+      "path": "reports/barrier4_closure_integration.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-19T00:10:00+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-19T00:09:35Z",
+      "newer_than_boundary": true,
+      "path": "reports/final_campaign_handoff_manifest.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T19:52:32Z",
+      "newer_than_boundary": true,
+      "path": "reports/reopen/final_free_tier_closure_synthesis.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T19:20:29Z",
+      "newer_than_boundary": true,
+      "path": "reports/reopen/free_tier_track2_track3_closure_integration.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 5,
+      "mtime_iso": "2026-05-18T19:54:57Z",
+      "newer_than_boundary": true,
+      "path": "reports/reopen/reopen_closure_addendum.md"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T20:01:38Z",
+      "newer_than_boundary": true,
+      "path": "reports/reopen/scripts/__pycache__/build_final_free_tier_closure_synthesis.cpython-312.pyc"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T19:52:28Z",
+      "newer_than_boundary": true,
+      "path": "reports/reopen/scripts/build_final_free_tier_closure_synthesis.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:50:00+00:00",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-18T23:55:46Z",
+      "newer_than_boundary": true,
+      "path": "reports/taxonomy_results_site_closure_note.md"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-17T17:43:44Z",
+      "newer_than_boundary": false,
+      "path": "scripts/__pycache__/plot_m1_3_scale_gap_closure.cpython-312.pyc"
+    },
+    {
+      "latest_ref_ts": "2026-05-17T18:20:00Z",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-17T17:23:40Z",
+      "newer_than_boundary": false,
+      "path": "scripts/plot_m1_3_scale_gap_closure.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-17T18:20:00Z",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-17T17:28:30Z",
+      "newer_than_boundary": false,
+      "path": "substrate/staging/reticulation_sources/plots/m1_3_scale_gap_closure_matrix.png"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T13:55:12Z",
+      "newer_than_boundary": false,
+      "path": "tests/__pycache__/test_barrier4_closure_integration.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T19:57:31Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_final_free_tier_closure_synthesis.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T20:01:38Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_final_free_tier_closure_synthesis.cpython-312.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T19:23:36Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_free_tier_track2_track3_closure_integration.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T19:33:49Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_free_tier_track2_track3_closure_integration.cpython-312.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T19:56:33Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_reopen_closure_addendum.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T20:01:38Z",
+      "newer_than_boundary": true,
+      "path": "tests/__pycache__/test_reopen_closure_addendum.cpython-312.pyc"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T14:06:00+00:00",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-18T13:53:37Z",
+      "newer_than_boundary": false,
+      "path": "tests/test_barrier4_closure_integration.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T19:57:24Z",
+      "newer_than_boundary": true,
+      "path": "tests/test_final_free_tier_closure_synthesis.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T19:23:27Z",
+      "newer_than_boundary": true,
+      "path": "tests/test_free_tier_track2_track3_closure_integration.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T23:59:59+00:00",
+      "ledger_ref_count": 5,
+      "mtime_iso": "2026-05-18T19:56:25Z",
+      "newer_than_boundary": true,
+      "path": "tests/test_reopen_closure_addendum.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T14:06:00+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T13:40:25Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track1/reports/track1_barrier4_closure.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T11:05:00+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T18:48:56Z",
+      "newer_than_boundary": true,
+      "path": "tracks/track2/reports/track2_wave4_validation_closure.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T05:22:56+00:00",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-18T05:21:45Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track2/scripts/track2_wave4_validation_closure.py"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T05:19:26Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track2/tests/__pycache__/test_track2_wave4_validation_closure.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T05:22:56+00:00",
+      "ledger_ref_count": 1,
+      "mtime_iso": "2026-05-18T05:18:51Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track2/tests/test_track2_wave4_validation_closure.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T14:06:00+00:00",
+      "ledger_ref_count": 3,
+      "mtime_iso": "2026-05-18T13:30:20Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track4/reports/track4_barrier4_closure.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T11:05:00+00:00",
+      "ledger_ref_count": 3,
+      "mtime_iso": "2026-05-18T05:21:30Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track5/reports/track5_wave4_temporal_source_closure.md"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T10:21:00+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T05:21:21Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track5/scripts/build_wave4_temporal_source_closure.py"
+    },
+    {
+      "latest_ref_ts": "",
+      "ledger_ref_count": 0,
+      "mtime_iso": "2026-05-18T05:18:37Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track5/tests/__pycache__/test_track5_wave4_closure.cpython-312-pytest-9.0.3.pyc"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T10:21:00+00:00",
+      "ledger_ref_count": 2,
+      "mtime_iso": "2026-05-18T05:18:20Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track5/tests/test_track5_wave4_closure.py"
+    },
+    {
+      "latest_ref_ts": "2026-05-18T14:06:00+00:00",
+      "ledger_ref_count": 3,
+      "mtime_iso": "2026-05-18T13:30:30Z",
+      "newer_than_boundary": false,
+      "path": "tracks/track6/reports/track6_barrier4_closure.md"
+    }
+  ],
+  "ledger": {
+    "active_terminal_risks": [
+      {
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "event_id": "18652b6a-9715-4f21-9b02-e171eeb93dd2",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "promise_check reported schema or lifecycle errors."
+        },
+        "event_id": "c628ed81-238b-4a6a-a43c-c08430cf8121",
+        "milestone_id": "_manager/ledger-integrity",
+        "status": "action_required",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "medium",
+          "rationale": "Barrier 1 merged current Wikidata/Commons rows, including display-only image evidence. Dump-based recovery remains late-arrival work and is not part of this normalization cycle."
+        },
+        "event_id": "b2ce76ec-fd94-43fa-995e-adcccb864c83",
+        "milestone_id": "M1.9",
+        "status": "action_required",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "medium",
+          "rationale": "The unified status vocabulary used by ledger_append validation does not admit data-limited. M1.6 cycle 1 and cycle 2 both had to map to in-progress while the correct designation is data-limited (CWR-pair count 397/1000, climate-envelope value population 0/1000). Other clones (M1.4 megafauna ranges with redistribution-restricted sources, future M1.7/M1.8 partial ingests) will likely hit the same gap. Conductor decision needed: extend the vocabulary, or document the in-progress+rationale workaround as canonical."
+        },
+        "event_id": "19a1496c-7407-4df7-893c-3a15da90621a",
+        "milestone_id": "_plan/data-limited-status-vocabulary",
+        "status": "action_required",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "medium",
+          "rationale": "Track 5 enrichment projection complete. Resolved-key Track 5 evidence projected from frozen Barrier 1 substrate; 23,524 resolved phyto+ethno rows, 28,733 compound-level bioactivity rows. Dr. Duke dominance is extreme (99.96 percent of edges; 87 families lost entirely and 4 demoted under Duke ablation); recorded as data-limited carry-forward against Track 5 falsification protocol, not as a halt condition. Sovereignty audit zero missing-required-field rows. No predictions, no chemodiversity_signature edges, no synonym renormalization, no paid APIs, no writes outside tracks/track5/."
+        },
+        "event_id": "60d9e8b3-177c-4d75-8905-307893975166",
+        "milestone_id": "_plan/track5-wave2-enrichment",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "medium",
+          "rationale": "Wave 2 Track 3 enrichment projection complete and tested. 209297 retained Track 3 candidate rows projected into per-(trait, accepted_taxon_key) membership table under tracks/track3/. No convergence_signature rows emitted (hard-asserted in build and pytest). Substrate read-only verified by mtime check. 12 of 15 canonical traits have non-zero retained edges. 9 of 12 canonical Track 3 validation cases reachable. 11 of 11 tests pass. Auditor must ratify before Barrier 2."
+        },
+        "event_id": "8f12a4d1-3e9f-4a7e-b3c2-1d4f8e9c2a01",
+        "milestone_id": "_plan/wave2-track3-convergence-enrichment",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Track 4 data-limited enrichment regenerated, audit written, and focused tests pass; final validation remains for the auditor/conductor."
+        },
+        "event_id": "d5419d19-fbd8-4481-bab3-018bd443a427",
+        "milestone_id": "M2.T4",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Post-merge worker integration completed; Barrier 2 conformance validator, machine-readable summary, and integration report were produced and locally checked. This is not auditor validation and does not promote Wave 2 enrichment to predictions."
+        },
+        "event_id": "b0c3ef94-5b71-4b59-9e66-6b50514386e4",
+        "milestone_id": "_plan/wave2-postmerge-integration",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Track 6 Wave 3 offline probe runner executed without paid, hosted, key-gated, remote, or live model calls. No local free/open model runtime plus model files were available, so results are benchmark-only deterministic controls: positive rubric control 210/210 pass, empty negative control 0/210, forbidden-overclaim negative control 0/210, and verbatim expected-answer diagnostic 90/210 exposing lexical scorer limits."
+        },
+        "event_id": "9e6fa2f8-5be0-4b61-a48d-6405797f3e81",
+        "milestone_id": "M3.T6",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Track 2 Wave 4 held-out validation closure is generated over the frozen M3.T2 ranker and existing ablation scaffold. The result is a track-local null/data-limited validation outcome: 0 held-out cases validated, 1 pre-ablation validation-ready case falsified by singleton/source controls, 6 data-limited, and 1 insufficient-support."
+        },
+        "event_id": "e9010024-0496-4f24-8563-ad9b3efb6cc0",
+        "milestone_id": "M4.V2",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Required report and merge report exist, branch citations are unique in the report, focused Track 5 tests pass, promise/org checks exit 0 with inherited warnings only, and master prediction/speculation ledgers remain header-only."
+        },
+        "event_id": "cdb62567-79f1-4c76-a563-6469c531d675",
+        "milestone_id": "M4.V5",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Built the Track 3 Convergence Pressure instrument from frozen Track 3 enrichment only. The instrument emits canonical trait CP scores, family-size and sampling-density null comparisons, a confound regression, canonical recovery diagnostics, a figure, a track-local convergence_predictions.tsv with evidence-vs-prediction row classes, and the required report. Focused Track 3 tests pass; auditor validation remains pending."
+        },
+        "event_id": "9ac3ef94-2eb5-4d0d-b5f6-782165f6f2a1",
+        "milestone_id": "M3.T3",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Built the Track 1 Reticulation Atlas instrument at current data-limited coverage: TCI is reproducible over 60000 accepted keys, hotspot diagnostics are emitted, pending-crosswalk seed evidence is preserved, and canonical polyploid recovery is explicitly data-limited."
+        },
+        "event_id": "4fb0a5c9-52a0-42fe-b8d4-fd12b9b18410",
+        "milestone_id": "M3.T1",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Built Barrier 3 Atlas scaffold with 60,000 searchable taxon pages, evidence-vs-prediction bands, Track 2/4/5/6 prediction adapters, Track 1/3 contract placeholders, and counter-claim capture path. Global Barrier 3 remains open until sibling Track 1/3 integration is reconciled."
+        },
+        "event_id": "1c7dd536-ef93-4b4a-8415-5362e7e38977",
+        "milestone_id": "M3.A",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "researcher",
+          "level": "medium",
+          "rationale": "Next cycle brief advances Barrier 3 by requesting a combined instrument-to-Atlas readiness package and audit surface, while holding substrate, schema, instrument outputs, and master ledgers fixed."
+        },
+        "event_id": "691f7b53-0bcf-4070-b38f-40fe0ec76717",
+        "milestone_id": "_plan/barrier3-readiness-audit-cycle",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "A milestone has accumulated three or more active cycles since the latest terminal event without ledger evidence of a mechanism statement."
+        },
+        "event_id": "08e97dee-06dc-4846-928e-d6f71083bb16",
+        "milestone_id": "_manager/mechanism-overdue",
+        "status": "action_required",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Track 3 Wave 4 validation/confound ablation package produced and validated locally; no master prediction/speculation ledger promotion."
+        },
+        "event_id": "b1d1cfa7-9289-4ce5-a7c8-cc044bf40202",
+        "milestone_id": "_plan/wave4-track3-validation-ablation-branch",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Registered the exact Track 3 Wave 4 convergence/confound child milestone after post-merge plan repair. The package is track-local, tested, and not promoted to the master prediction/speculation ledgers."
+        },
+        "event_id": "0c3f897b-eb7e-4071-9b55-0871da7a73fd",
+        "milestone_id": "M4.A-track3-convergence-confounds",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "The conditioning now asks for axis and cycle-kind fields. This is watch-only unless a stale milestone counter also fires."
+        },
+        "event_id": "5e1545a5-0e1f-4914-8c19-410fbd2631c0",
+        "milestone_id": "_manager/brief-contract-missing",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Focused tests passed, figure check passed, occurrence/BIOCLIM/comparator TSVs quantify the two gating predicates, and master prediction/speculation ledgers remain header-only."
+        },
+        "event_id": "f23f8644-a9dd-42bd-95ee-9f9bd2dc8fc4",
+        "milestone_id": "_plan/track4-free-tier-bioclim-recovery",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Focused branch and spanning integration tests passed, figure check passed, forbidden-claim scan for integration reports returned no matches, and master ledgers remain header-only."
+        },
+        "event_id": "7c3c79db-c2c9-4df0-8b3d-cc407f55a3bc",
+        "milestone_id": "_plan/free-tier-recovery-integration",
+        "status": "in-progress",
+        "summary": null
+      },
+      {
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Build script regenerated all requested Track 3 outputs, focused and existing Track 3 tests passed, and master prediction/speculation ledgers remained header-only before validator checks."
+        },
+        "event_id": "b4fc2b80-1df7-4a5c-9a81-6d7e7556e5e1",
+        "milestone_id": "_plan/track3-free-tier-trait-confound-matrix",
+        "status": "in-progress",
+        "summary": null
+      }
+    ],
+    "exists": true,
+    "latest_lines": [
+      {
+        "_line": 218,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Merge report records the generated Track 3 artifacts, commands, validation outcomes, H3 decision, and merge guidance after the branch tests and validators passed."
+        },
+        "cycle": 30,
+        "event_id": "00cd4131-7e62-43ff-8652-a7165023e87a",
+        "milestone_id": "_run/clone-1-merge-report-fork-2f05eabe3800",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:59:30+00:00"
+      },
+      {
+        "_line": 219,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Focused branch and integration tests passed, both branch figures passed figure check, and prediction/speculation ledgers remained header-only. This is worker-level post-merge integration, not audit-level validation."
+        },
+        "cycle": 31,
+        "event_id": "c52f6af3-31fe-49b2-9ccc-f45d3e16da66",
+        "milestone_id": "_plan/fork-2f05eabe3800-postmerge-integration",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T00:30:00+00:00"
+      },
+      {
+        "_line": 220,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Corrects the integration metadata timestamp to the session date while preserving the same tested integration result. Focused tests, figure checks, and ledger-boundary checks had passed."
+        },
+        "cycle": 31,
+        "event_id": "895b8040-bccf-408f-b67c-5901e642e39c",
+        "milestone_id": "_plan/fork-2f05eabe3800-postmerge-integration",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:59:55+00:00"
+      },
+      {
+        "_line": 221,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 32,
+        "event_id": "72e5d01b-9110-4a67-907e-65e7c101612b",
+        "milestone_id": "_run/report_cycles_30-32",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T19:08:29.388138+00:00"
+      },
+      {
+        "_line": 222,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "The conditioning now asks for axis and cycle-kind fields. This is watch-only unless a stale milestone counter also fires."
+        },
+        "cycle": 32,
+        "event_id": "5e1545a5-0e1f-4914-8c19-410fbd2631c0",
+        "milestone_id": "_manager/brief-contract-missing",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-18T19:27:02.090174+00:00"
+      },
+      {
+        "_line": 223,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "The closure integration test and existing Track 2/3 branch tests passed before registration; final validators are run after this append."
+        },
+        "cycle": 32,
+        "event_id": "8b2b6d8e-9504-4f3a-96be-fb1964f0a2ce",
+        "milestone_id": "_plan/free-tier-track2-track3-closure-integration",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:59:59+00:00"
+      },
+      {
+        "_line": 224,
+        "agent": "auditor",
+        "confidence": {
+          "assessor": "auditor",
+          "level": "high",
+          "rationale": "Auditor inspected the Track 2/3 closure integration report, reopen integration report, closure status table, root synthesis artifacts, branch TSV/JSON facts, figures, worker ledger event, and master ledgers; focused tests, figure checks, and validators passed with inherited warnings only."
+        },
+        "cycle": 32,
+        "event_id": "8d9dbd48-4057-4b96-b4b8-34bad4f97730",
+        "milestone_id": "_plan/free-tier-track2-track3-closure-integration",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T19:33:12+00:00"
+      },
+      {
+        "_line": 225,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Generated the final six-track free-tier status table, synthesis report, and figure; propagated statuses to root/reopen docs; focused tests, figure check, and ledgers passed before registration."
+        },
+        "cycle": 33,
+        "event_id": "3d046e5d-0f4d-4d37-9fd9-2e499032455f",
+        "milestone_id": "_plan/final-free-tier-closure-synthesis",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:59:59+00:00"
+      },
+      {
+        "_line": 226,
+        "agent": "auditor",
+        "confidence": {
+          "assessor": "auditor",
+          "level": "high",
+          "rationale": "Auditor inspected the final six-track free-tier status TSV, synthesis report, generator/test, root and reopen report propagation, summary figure, worker ledger event, prediction/speculation ledgers, and focused tests; validators passed with inherited warnings only."
+        },
+        "cycle": 33,
+        "event_id": "9910b77f-f139-43fa-b0e1-b3ffa297c050",
+        "milestone_id": "_plan/final-free-tier-closure-synthesis",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T20:01:50+00:00"
+      },
+      {
+        "_line": 227,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 35,
+        "event_id": "7aaef30f-3b2e-46c0-bcf8-84f7e4ea246a",
+        "milestone_id": "_run/report_cycles_33-35",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T20:16:55.212756+00:00"
+      },
+      {
+        "_line": 228,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 35,
+        "event_id": "86c17f54-259c-42de-9d88-0a6de861fc7a",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-18T20:27:02.584767+00:00"
+      },
+      {
+        "_line": 229,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 37,
+        "event_id": "7ad2b2f7-3302-4ec3-93d7-7d5b33aacd0a",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-18T21:27:03.107050+00:00"
+      },
+      {
+        "_line": 230,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 37,
+        "event_id": "34a88b7b-6615-4ac6-bdfb-beba5e42b557",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-18T22:27:03.586576+00:00"
+      },
+      {
+        "_line": 231,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Static local website, public data, figures, provenance, QA report, and validation test completed without altering scientific ledgers."
+        },
+        "cycle": 34,
+        "event_id": "d725bc62-2139-47b4-aa00-61f3be663bfe",
+        "milestone_id": "_plan/taxonomy-results-site",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:39:54.471673+00:00"
+      },
+      {
+        "_line": 232,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Existing site validation tests passed, master ledgers remained header-only, and the closure note adds only maintenance-boundary prose without reopening scientific claims."
+        },
+        "cycle": 34,
+        "event_id": "c7d17c3c-848a-4438-8ac4-d70ad74fdc4d",
+        "milestone_id": "_plan/taxonomy-results-site-closure",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-18T23:50:00+00:00"
+      },
+      {
+        "_line": 233,
+        "agent": "worker",
+        "confidence": {
+          "assessor": "worker",
+          "level": "high",
+          "rationale": "Manifest was created after comparing canonical final artifacts; public site tests, py_compile, ledger line counts, promise_check, and org_check were run. Remaining validator warnings are inherited/nonblocking."
+        },
+        "cycle": 35,
+        "event_id": "5e48e4cc-b096-4b60-9c8b-2781f1db37c8",
+        "milestone_id": "_plan/final-campaign-handoff-manifest",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T00:00:00+00:00"
+      },
+      {
+        "_line": 234,
+        "agent": "auditor",
+        "confidence": {
+          "assessor": "auditor",
+          "level": "high",
+          "rationale": "Auditor repaired one broken manifest link to nonexistent atlas_runbook.md by pointing to existing Atlas page contract and Barrier 3 readiness record, then verified manifest links resolve without changing scientific claims or master ledgers."
+        },
+        "cycle": 35,
+        "event_id": "04cc74e0-f7ca-4dd5-8509-e4f03cfe456a",
+        "milestone_id": "_plan/final-campaign-handoff-manifest",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T00:10:00+00:00"
+      },
+      {
+        "_line": 235,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 40,
+        "event_id": "a12726cb-6c92-4678-9025-0e3ce2106587",
+        "milestone_id": "_run/report_cycles_38-40",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T00:15:40.199834+00:00"
+      },
+      {
+        "_line": 236,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 40,
+        "event_id": "88ed90e4-01fb-413d-9f7a-5b849663ccf0",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-19T00:20:06.428087+00:00"
+      },
+      {
+        "_line": 237,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 43,
+        "event_id": "58d73d33-96ab-4ac4-9af3-0d76912fdcff",
+        "milestone_id": "_run/report_cycles_41-43",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T00:48:32.651423+00:00"
+      },
+      {
+        "_line": 238,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 46,
+        "event_id": "559519bd-eb7f-4328-b31e-958f0f515a21",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-19T01:20:06.968927+00:00"
+      },
+      {
+        "_line": 239,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 46,
+        "event_id": "4a599f3c-7938-449d-8d41-ce5dc4480a76",
+        "milestone_id": "_run/report_cycles_44-46",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T01:21:39.370247+00:00"
+      },
+      {
+        "_line": 240,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 49,
+        "event_id": "6af96162-dbe1-4a10-8d31-5b87080b2afc",
+        "milestone_id": "_run/report_cycles_47-49",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T01:52:19.626684+00:00"
+      },
+      {
+        "_line": 241,
+        "agent": "manager",
+        "confidence": {
+          "assessor": "manager",
+          "level": "medium",
+          "rationale": "Warnings exist but no manager intervention threshold fired."
+        },
+        "cycle": 52,
+        "event_id": "18652b6a-9715-4f21-9b02-e171eeb93dd2",
+        "milestone_id": "_manager/validator-warnings",
+        "status": "in-progress",
+        "summary": null,
+        "ts": "2026-05-19T02:20:07.403696+00:00"
+      },
+      {
+        "_line": 242,
+        "agent": "harness",
+        "confidence": {
+          "assessor": "harness",
+          "level": "high",
+          "rationale": "periodic report artifact written by the harness"
+        },
+        "cycle": 52,
+        "event_id": "cb608152-b7cb-4b5e-8221-9211c04b44cb",
+        "milestone_id": "_run/report_cycles_50-52",
+        "status": "validated",
+        "summary": null,
+        "ts": "2026-05-19T02:21:51.931927+00:00"
+      }
+    ],
+    "total_events": 242
+  },
+  "prediction_ledger.tsv": {
+    "exists": true,
+    "header": "track\tprediction_id\tprediction_statement\tsupporting_hyperedges\texpected_validation_source\tstatus\tablation_sensitivity\tdate_filed\tdate_resolved",
+    "line_count": 1,
+    "non_header_rows": 0
+  },
+  "reports": {
+    "all_count": 22,
+    "boundary": 1779122678.854827,
+    "newer": [
+      {
+        "mtime": 1779123948.6827943,
+        "mtime_iso": "2026-05-18T17:05:48Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_24-26.md",
+        "size": 23657
+      },
+      {
+        "mtime": 1779127822.1160512,
+        "mtime_iso": "2026-05-18T18:10:22Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_27-29.md",
+        "size": 22272
+      },
+      {
+        "mtime": 1779131300.6497123,
+        "mtime_iso": "2026-05-18T19:08:20Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_30-32.md",
+        "size": 20140
+      },
+      {
+        "mtime": 1779135407.18906,
+        "mtime_iso": "2026-05-18T20:16:47Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_33-35.md",
+        "size": 15716
+      },
+      {
+        "mtime": 1779149732.1845677,
+        "mtime_iso": "2026-05-19T00:15:32Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_38-40.md",
+        "size": 15156
+      },
+      {
+        "mtime": 1779151704.6226022,
+        "mtime_iso": "2026-05-19T00:48:24Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_41-43.md",
+        "size": 12110
+      },
+      {
+        "mtime": 1779153690.938651,
+        "mtime_iso": "2026-05-19T01:21:30Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_44-46.md",
+        "size": 15107
+      },
+      {
+        "mtime": 1779155531.6798906,
+        "mtime_iso": "2026-05-19T01:52:11Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_47-49.md",
+        "size": 14896
+      },
+      {
+        "mtime": 1779157303.3445976,
+        "mtime_iso": "2026-05-19T02:21:43Z",
+        "newer_than_boundary": true,
+        "path": "reports/cycles/report_cycles_50-52.md",
+        "size": 16211
+      }
+    ]
+  },
+  "run_mode": {
+    "agent": "final_auditor",
+    "baseline_boundary_ts": 1779122678.854827,
+    "budget_tokens": 38793,
+    "canonical_path": "<run-root>/audits/final/final_audit_report.md",
+    "commit_marker": "<run-root>/audits/final/final_audit_report.committed",
+    "detection_source": "marker",
+    "mode": "delta",
+    "stages": 4,
+    "total_input_tokens": 190074
+  },
+  "speculation_ledger.tsv": {
+    "exists": true,
+    "header": "track\tspeculation_id\tspeculation_statement\tsupporting_hyperedges\treason_not_a_prediction\tdate_filed",
+    "line_count": 1,
+    "non_header_rows": 0
+  },
+  "taxonomy_figures_count": 11,
+  "taxonomy_figures_sample": [
+    "taxonomy_results_site/assets/qa/desktop_start.png",
+    "taxonomy_results_site/assets/qa/desktop_evidence.png",
+    "taxonomy_results_site/assets/qa/mobile_start.png",
+    "taxonomy_results_site/assets/figures/validation_outcomes.svg",
+    "taxonomy_results_site/assets/figures/occurrence_bioclim_readiness.svg",
+    "taxonomy_results_site/assets/figures/future_evidence_predicates.svg",
+    "taxonomy_results_site/assets/figures/accepted_key_joins.svg",
+    "taxonomy_results_site/assets/figures/evidence_recovered_vs_rejected.svg",
+    "taxonomy_results_site/assets/figures/campaign_hypergraph_map.svg",
+    "taxonomy_results_site/assets/figures/track_status_overview.svg",
+    "taxonomy_results_site/assets/figures/source_bias_summary.svg"
+  ],
+  "validators": {
+    "org_check": {
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "  legacy root stage artifact: final_report.md (new runs write final-stage artifacts under reports/final/ or audits/final/)\n  root files: 29, root dirs: 14; standard folders present: ['audits', 'data', 'docs', 'reports', 'scripts', 'stale', 'tests', 'tools']\n! WARNING: file at workspace root not in allowed-set: CURATION.yaml\n! WARNING: file at workspace root not in allowed-set: artifact_index.md\n! WARNING: file at workspace root not in allowed-set: audit_report.md\n! WARNING: file at workspace root not in allowed-set: codex_fanout_session_inheritance_bug.md\n! WARNING: file at workspace root not in allowed-set: coverage_report.md\n! WARNING: file at workspace root not in allowed-set: data_source_audit.md\n! WARNING: file at workspace root not in allowed-set: falsification_and_ablation_report.md\n! WARNING: file at workspace root not in allowed-set: long-exposure-health.log\n! WARNING: file at workspace root not in allowed-set: long-exposure-live.log\n! WARNING: file at workspace root not in allowed-set: long-exposure-pool.env\n! WARNING: file at workspace root not in allowed-set: phytograph_package_2026-05-18T1631.zip\n! WARNING: file at workspace root not in allowed-set: phytograph_package_latest.zip\n! WARNING: file at workspace root not in allowed-set: phytograph_schema.md\n! WARNING: file at workspace root not in allowed-set: phytograph_six_track_discovery_substrate_package.zip\n! WARNING: file at workspace root not in allowed-set: plant_hypergraph_long_exposure_prompt.md\n! WARNING: file at workspace root not in allowed-set: plant_hypergraph_score.yaml\n! WARNING: file at workspace root not in allowed-set: plant_hypergraph_score_pooled.yaml\n! WARNING: file at workspace root not in allowed-set: plant_hypergraph_score_pooled.yaml.pre_codex_recovery_20260518T132626Z.bak\n! WARNING: file at workspace root not in allowed-set: prediction_ledger.tsv\n! WARNING: file at workspace root not in allowed-set: research_contribution_ledger.md\n! WARNING: file at workspace root not in allowed-set: risk_register.md\n! WARNING: file at workspace root not in allowed-set: speculation_ledger.tsv\n"
+    },
+    "promise_check": {
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_29-31.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_31-33.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_31-33.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_32-34.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_32-34.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_34-36.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_34-36.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_35-37.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_35-37.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_37-39.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_37-39.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_40-42.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_40-42.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_43-45.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_43-45.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_44-45.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_44-45.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_46-48.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_46-48.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_49-51.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_49-51.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_52-54.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_52-54.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_55-57.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_55-57.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_58-60.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_58-60.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_61-63.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_61-63.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_64-66.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_64-66.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_67-69.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_67-69.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_70-72.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_70-72.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_73-75.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_73-75.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_76-77.md (referenced by an event but not on disk and no '_archive/*' event explains the move)\n! WARNING: ledger-tracked artifact missing: reports/cycles/report_cycles_76-77.pdf (referenced by an event but not on disk and no '_archive/*' event explains the move)\n"
+    }
+  }
+}

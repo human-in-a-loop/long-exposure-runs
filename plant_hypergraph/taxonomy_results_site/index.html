@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PhytoGraph Taxonomy Results Review</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#start" data-route-target="start">
+        <span class="brand-mark">P</span>
+        <span>
+          <strong>PhytoGraph</strong>
+          <small>taxonomy results review</small>
+        </span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a href="#start" data-route-target="start">Start Here</a>
+        <a href="#tracks" data-route-target="tracks">Choose a Track</a>
+        <a href="#found" data-route-target="found">What Was Found</a>
+        <a href="#not-promoted" data-route-target="not-promoted">Why Claims Were Not Promoted</a>
+        <a href="#evidence" data-route-target="evidence">Evidence Explorer</a>
+        <a href="#methods" data-route-target="methods">Methods for Taxonomists</a>
+        <a href="#limits" data-route-target="limits">Limitations</a>
+        <a href="#future" data-route-target="future">What Evidence Would Change the Conclusion</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="start" class="route active" data-route="start">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Interactive study review</p>
+            <h1>Follow plant evidence from names to conclusions.</h1>
+            <p class="lead">
+              This site explains how plant names, synonym handling, traits, crop relatives,
+              chemistry records, and benchmark questions were linked to test six biological themes.
+              The outcome is deliberately restrained: no cross-track prediction or speculation
+              entries were promoted beyond table headers because the required validation
+              predicates were not met.
+            </p>
+            <div class="hero-actions" aria-label="Suggested paths">
+              <button type="button" data-route-target="tracks">Choose a biological theme</button>
+              <button type="button" data-route-target="evidence">Inspect evidence tables</button>
+              <button type="button" data-route-target="not-promoted">See why claims stopped</button>
+            </div>
+          </div>
+          <figure class="hero-figure inspectable" data-figure="campaign_hypergraph_map.svg">
+            <img src="assets/figures/campaign_hypergraph_map.svg" alt="Diagram of a shared plant-evidence hypergraph connected to six research themes" />
+            <figcaption>
+              A shared typed plant-evidence hypergraph links accepted names, traits, source records,
+              and validation controls. Each theme draws from the same substrate.
+            </figcaption>
+          </figure>
+        </div>
+        <div class="quick-grid" id="quick-track-cards" aria-live="polite"></div>
+      </section>
+
+      <section id="tracks" class="route" data-route="tracks">
+        <div class="section-head">
+          <p class="eyebrow">Choose a track</p>
+          <h2>Six paths through the same evidence substrate</h2>
+          <p>Pick a theme to move from plain-language questions to expert controls and future evidence predicates.</p>
+        </div>
+        <div class="track-layout">
+          <div class="track-list" id="track-list"></div>
+          <article class="track-detail" id="track-detail" tabindex="-1">
+            <p class="muted">Select a theme to inspect status, evidence basis, limits, and next evidence needs.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="found" class="route" data-route="found">
+        <div class="section-head">
+          <p class="eyebrow">What was found</p>
+          <h2>Useful substrate, strong limits, no promoted biological predictions</h2>
+          <p>
+            The review surface indexes 60,000 accepted-name substrate records and exposes track-local
+            instruments, evidence tables, and closure reasons. The strongest durable result is the
+            auditability of what did not clear validation.
+          </p>
+        </div>
+        <div class="figure-grid">
+          <figure class="figure-card inspectable" data-figure="track_status_overview.svg">
+            <img src="assets/figures/track_status_overview.svg" alt="Six final track statuses" />
+            <figcaption>Every theme ended below promotion threshold, for different scientific reasons.</figcaption>
+          </figure>
+          <figure class="figure-card inspectable" data-figure="evidence_recovered_vs_rejected.svg">
+            <img src="assets/figures/evidence_recovered_vs_rejected.svg" alt="Recovered evidence compared with promotion-ready evidence" />
+            <figcaption>Recovered local evidence is not the same as validation-ready evidence.</figcaption>
+          </figure>
+          <figure class="figure-card inspectable" data-figure="validation_outcomes.svg">
+            <img src="assets/figures/validation_outcomes.svg" alt="Validation outcome counts across six themes" />
+            <figcaption>Negative, limited, biased, and untested outcomes are retained as findings.</figcaption>
+          </figure>
+        </div>
+        <div class="status-table-wrap">
+          <table class="status-table" id="status-table">
+            <caption>Track-level closure summary</caption>
+            <thead>
+              <tr>
+                <th>Theme</th>
+                <th>Status</th>
+                <th>Key counts</th>
+                <th>Claim boundary</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="not-promoted" class="route" data-route="not-promoted">
+        <div class="section-head">
+          <p class="eyebrow">Non-promotion boundary</p>
+          <h2>Why the study did not promote prediction claims</h2>
+          <p>
+            A result was not promoted unless it had accepted-name support, an explicit validation
+            source, and controls showing it was not an artifact of source density, family size,
+            missing joins, crop popularity, or unavailable response evidence.
+          </p>
+        </div>
+        <div class="explain-grid">
+          <article>
+            <h3>Observed evidence</h3>
+            <p>Source-backed records were retained with provenance, caveats, and accepted-name status.</p>
+          </article>
+          <article>
+            <h3>Candidate patterns</h3>
+            <p>Track-local instruments could rank or organize cases, but rank alone was not treated as validation.</p>
+          </article>
+          <article>
+            <h3>Promoted predictions</h3>
+            <p>No cross-track entries reached this level because validation predicates failed or evidence remained incomplete.</p>
+          </article>
+        </div>
+        <figure class="wide-figure inspectable" data-figure="accepted_key_joins.svg">
+          <img src="assets/figures/accepted_key_joins.svg" alt="Accepted-name joins and blockers" />
+          <figcaption>Accepted-name joins were treated as evidence gates. Failed joins remain visible as blockers.</figcaption>
+        </figure>
+      </section>
+
+      <section id="evidence" class="route" data-route="evidence">
+        <div class="section-head">
+          <p class="eyebrow">Evidence explorer</p>
+          <h2>Inspect source basis, accepted-name status, validation use, and rejection reason</h2>
+          <p>Use the filters to review each theme without reading the underlying reports.</p>
+        </div>
+        <div class="filters" role="search">
+          <label>
+            Theme
+            <select id="track-filter">
+              <option value="all">All themes</option>
+            </select>
+          </label>
+          <label>
+            Search evidence
+            <input id="evidence-search" type="search" placeholder="source, status, blocker, future evidence" />
+          </label>
+        </div>
+        <div class="evidence-grid" id="evidence-grid"></div>
+      </section>
+
+      <section id="methods" class="route" data-route="methods">
+        <div class="section-head">
+          <p class="eyebrow">Methods for taxonomists</p>
+          <h2>Accepted names were operational join keys, not final biological truth</h2>
+          <p>
+            The review separates taxonomy, phylogeny, reticulate inheritance, traits, distribution,
+            human use, chemistry, media, and benchmark evidence. Each edge type declares what it can
+            support, and unsupported inferences remain outside the promoted conclusion set.
+          </p>
+        </div>
+        <div class="method-grid">
+          <article>
+            <h3>Accepted-name handling</h3>
+            <p>Accepted names anchor joins across sources while synonym conflicts and unresolved rows remain inspectable.</p>
+          </article>
+          <article>
+            <h3>Evidence permissions</h3>
+            <p>A chemistry detection supports detection, not clinical efficacy. An image supports media review, not distribution.</p>
+          </article>
+          <article>
+            <h3>Validation philosophy</h3>
+            <p>Each candidate needed an external validation predicate and a stated reason it could fail.</p>
+          </article>
+          <article>
+            <h3>Study-level closure</h3>
+            <p>Unpromoted rows are visible so reviewers can see exactly what evidence would be needed next.</p>
+          </article>
+        </div>
+        <figure class="wide-figure inspectable" data-figure="campaign_hypergraph_map.svg">
+          <img src="assets/figures/campaign_hypergraph_map.svg" alt="Typed hypergraph method map" />
+          <figcaption>The same typed substrate supports lay navigation and expert evidence inspection.</figcaption>
+        </figure>
+      </section>
+
+      <section id="limits" class="route" data-route="limits">
+        <div class="section-head">
+          <p class="eyebrow">Limitations</p>
+          <h2>Different limits have different scientific meanings</h2>
+          <p>
+            The site distinguishes negative validation, true data limits, source bias, uncontrolled
+            sidecar readiness, and untested benchmark status. These categories should not be collapsed.
+          </p>
+        </div>
+        <div class="figure-grid">
+          <figure class="figure-card inspectable" data-figure="source_bias_summary.svg">
+            <img src="assets/figures/source_bias_summary.svg" alt="Source dominance summary" />
+            <figcaption>Source dominance can make a pattern look biological when it is a literature artifact.</figcaption>
+          </figure>
+          <figure class="figure-card inspectable" data-figure="occurrence_bioclim_readiness.svg">
+            <img src="assets/figures/occurrence_bioclim_readiness.svg" alt="Occurrence and BIOCLIM readiness" />
+            <figcaption>Occurrence recovery did not yield numeric climate validation inputs.</figcaption>
+          </figure>
+        </div>
+        <div class="limit-list" id="limit-list"></div>
+      </section>
+
+      <section id="future" class="route" data-route="future">
+        <div class="section-head">
+          <p class="eyebrow">Future evidence predicates</p>
+          <h2>What would change the conclusion?</h2>
+          <p>
+            Each theme has a concrete evidence predicate. A future study should reopen a theme only
+            when that predicate is satisfied by source-backed, accepted-name-aware evidence.
+          </p>
+        </div>
+        <figure class="wide-figure inspectable" data-figure="future_evidence_predicates.svg">
+          <img src="assets/figures/future_evidence_predicates.svg" alt="Future evidence predicates for each track" />
+          <figcaption>Future work is framed as evidence requirements, not speculation.</figcaption>
+        </figure>
+        <div class="future-list" id="future-list"></div>
+      </section>
+    </main>
+
+    <div class="figure-modal" id="figure-modal" hidden>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head">
+          <h2 id="modal-title">Figure inspection</h2>
+          <button type="button" id="modal-close">Close</button>
+        </div>
+        <img id="modal-image" alt="" />
+        <p id="modal-caption"></p>
+      </div>
+    </div>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>

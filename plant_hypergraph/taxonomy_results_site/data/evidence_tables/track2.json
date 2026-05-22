@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 2",
+    "theme": "Ecological anachronisms",
+    "source": "ghost-interaction evidence and control closure",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "anachronism support",
+    "key_counts": "8 canonical held-outs; 31 local candidates; 0/8 canonical held-outs pass validation contract",
+    "validation_use": "held-out recovery and control checks",
+    "status": "not supported or data-limited",
+    "rejection_reason": "Modern-failure and source-class support were insufficient.",
+    "claim_boundary": "No new anachronism, ghost-partner, or ecological-interaction claim",
+    "future_evidence_predicate": "Accepted-key modern-failure evidence, multi-source/source-class support, living-megafauna controls, and source-class-independent held-out recovery"
+  }
+]

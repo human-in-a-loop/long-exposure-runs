@@ -1,0 +1,134 @@
+{
+  "categories": {
+    "convergence_detection": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "adaptive proof",
+        "establishes convergence",
+        "related because shape"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "no",
+        "requires downstream",
+        "source-stated"
+      ]
+    },
+    "ghost_partner_reasoning": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "established fact",
+        "newly discovered",
+        "proves"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "cited",
+        "hypothesis",
+        "not established"
+      ]
+    },
+    "hybrid_pedigree": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "new taxonomy",
+        "precise date",
+        "proves performance"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "date",
+        "does not support",
+        "source-backed"
+      ]
+    },
+    "phytochemistry_safety": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "clinically effective",
+        "safe to eat",
+        "typical concentration"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "clinical",
+        "does not prove",
+        "safe"
+      ]
+    },
+    "region_conditional": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "absent elsewhere",
+        "invasive impact",
+        "native everywhere"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "cultivation_or_domestication",
+        "not",
+        "source-recorded"
+      ]
+    },
+    "synonym_confusion": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "edible",
+        "native",
+        "new species",
+        "phylogeny proves"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "aa leucantha",
+        "aa maderoi",
+        "aa matthewsii",
+        "acacia dodonaeifolia",
+        "albizia dolichadena",
+        "archidendron arborescens",
+        "archidendron bauchei",
+        "archidendron baucheri",
+        "archidendron bigeminum",
+        "archidendron borneense",
+        "archidendron clypearia",
+        "archidendron contortum",
+        "archidendron cordifolium",
+        "archidendron crateradenum",
+        "archidendron dalatense",
+        "archidendron ellipticum",
+        "archidendron globosum",
+        "archidendron glomeriflorum",
+        "archidendron tenuiracemosum",
+        "archidendropsis fournieri",
+        "archidendropsis fulgens",
+        "breynia",
+        "chamaelirium",
+        "colchicum",
+        "gethyllis",
+        "name normalization",
+        "narthecium",
+        "not support",
+        "uapaca",
+        "vicia"
+      ]
+    },
+    "toxicity_lookalike_media_scope": {
+      "answer_kind": "scoped_free_text",
+      "forbidden_term_examples": [
+        "accepted taxonomy",
+        "edible",
+        "native",
+        "safe"
+      ],
+      "pass_rule": "all row.required_terms must appear case-insensitively and no row.forbidden_terms may appear",
+      "required_term_examples": [
+        "display",
+        "does not establish",
+        "weak morphology"
+      ]
+    }
+  },
+  "model_response_status": "not_run",
+  "provider_execution": "forbidden",
+  "schema_version": "track6_offline_scoring_v1"
+}

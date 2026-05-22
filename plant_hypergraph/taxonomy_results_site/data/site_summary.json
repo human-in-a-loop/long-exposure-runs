@@ -1,0 +1,229 @@
+{
+  "title": "PhytoGraph taxonomy results review",
+  "updated": "2026-05-18",
+  "study_boundary": "No cross-track prediction or speculation entries were promoted beyond table headers, because the required validation predicates were not met.",
+  "substrate": {
+    "taxa_indexed": 60000,
+    "schema": "typed plant-evidence hypergraph",
+    "accepted_name_policy": "accepted names are operational join keys; synonym and source conflicts remain visible",
+    "evidence_policy": "observed evidence, inferred fields, predicted fields, and missing data are separated"
+  },
+  "routes": [
+    "Start Here",
+    "Choose a Track",
+    "What Was Found",
+    "Why Claims Were Not Promoted",
+    "Evidence Explorer",
+    "Methods for Taxonomists",
+    "Limitations",
+    "What Evidence Would Change the Conclusion"
+  ],
+  "tracks": [
+    {
+      "track": "Track 1",
+      "slug": "track1",
+      "label": "Reticulation and polyploidy",
+      "status_code": "sidecar_readiness_uncontrolled",
+      "status_label": "sidecar evidence only",
+      "status_class": "status-caution",
+      "plain_question": "Where do plant histories depart from a simple branching tree?",
+      "field_focus": "Reticulation evidence, chromosome/ploidy rows, hybridization rows, accepted-key projection.",
+      "public_result": "Evidence was visible in sidecar records, but controlled accepted-name recovery did not support a promoted reticulation result.",
+      "validated_branch_basis": "namespace reconciliation and source-control review",
+      "key_counts": "22 GBIF event taxa; 11 source groups; 2 WFO-projected taxa; 0/17 matched-control event recovery",
+      "counts": [
+        {
+          "value": "22",
+          "label": "GBIF event taxa"
+        },
+        {
+          "value": "11",
+          "label": "source groups"
+        },
+        {
+          "value": "2",
+          "label": "WFO-projected taxa"
+        },
+        {
+          "value": "0/17",
+          "label": "matched-control event recovery"
+        }
+      ],
+      "blocker": "GBIF sidecar signal is not WFO-projected and source-density controls remain unresolved",
+      "future_data_required": "Audited GBIF-to-WFO accepted-key projection or admitted sidecar namespace plus source-density controls preserving event signal",
+      "claim_boundary": "No established reticulation hotspot, hybridization, or polyploid recovery claim",
+      "evidence_type": "reticulation evidence",
+      "validation_use": "accepted-key projection and matched controls",
+      "rejection_reason": "Sidecar records did not clear controlled accepted-key recovery."
+    },
+    {
+      "track": "Track 2",
+      "slug": "track2",
+      "label": "Ecological anachronisms",
+      "status_code": "H2_remains_not_supported_or_data_limited",
+      "status_label": "not supported or data-limited",
+      "status_class": "status-negative",
+      "plain_question": "Can lost animal-plant partnerships be detected from plant evidence?",
+      "field_focus": "Canonical anachronism held-outs, modern dispersal-failure evidence, living-disperser controls.",
+      "public_result": "No canonical held-out case passed the validation criteria with the available accepted-name evidence.",
+      "validated_branch_basis": "ghost-interaction evidence and control closure",
+      "key_counts": "8 canonical held-outs; 31 local candidates; 0/8 canonical held-outs pass validation contract",
+      "counts": [
+        {
+          "value": "8",
+          "label": "canonical held-outs"
+        },
+        {
+          "value": "31",
+          "label": "local candidates"
+        },
+        {
+          "value": "0/8",
+          "label": "canonical held-outs pass validation contract"
+        }
+      ],
+      "blocker": "Accepted-key modern-failure evidence, source-class support, and living-megafauna controls do not clear the validation contract",
+      "future_data_required": "Accepted-key modern-failure evidence, multi-source/source-class support, living-megafauna controls, and source-class-independent held-out recovery",
+      "claim_boundary": "No new anachronism, ghost-partner, or ecological-interaction claim",
+      "evidence_type": "anachronism support",
+      "validation_use": "held-out recovery and control checks",
+      "rejection_reason": "Modern-failure and source-class support were insufficient."
+    },
+    {
+      "track": "Track 3",
+      "slug": "track3",
+      "label": "Convergent traits",
+      "status_code": "confound_limited",
+      "status_label": "confound-limited",
+      "status_class": "status-caution",
+      "plain_question": "Can repeated plant traits be separated from family size and sampling density?",
+      "field_focus": "Trait carriers, family-size controls, sampling-density controls, projection-loss gates.",
+      "public_result": "Trait signals remained inseparable from confounders, so convergence claims were not promoted.",
+      "validated_branch_basis": "trait and confound matrix review",
+      "key_counts": "3069 accepted-key trait carrier rows; 15 canonical traits; 0 controlled-ready traits",
+      "counts": [
+        {
+          "value": "3069",
+          "label": "accepted-key trait carrier rows"
+        },
+        {
+          "value": "15",
+          "label": "canonical traits"
+        },
+        {
+          "value": "0",
+          "label": "controlled-ready traits"
+        }
+      ],
+      "blocker": "No trait separates convergence signal from family-size, sampling-density, projection-loss, and source gates",
+      "future_data_required": "Broader trait coverage, phylogenetically separated carrier sets, and family-size/sampling-density controls",
+      "claim_boundary": "No convergence or adaptive-origin claim",
+      "evidence_type": "trait carrier matrix",
+      "validation_use": "convergence controls",
+      "rejection_reason": "No trait was controlled-ready."
+    },
+    {
+      "track": "Track 4",
+      "slug": "track4",
+      "label": "Crop wild relatives and climate",
+      "status_code": "still_data_limited",
+      "status_label": "data-limited",
+      "status_class": "status-limited",
+      "plain_question": "Can crop relatives be ranked for climate substitution from local evidence?",
+      "field_focus": "Crop-wild-relative rows, occurrence records, climate summaries, expert comparator rows.",
+      "public_result": "Occurrences were recovered, but numeric climate summaries and comparator rows were absent.",
+      "validated_branch_basis": "occurrence and climate-readiness review",
+      "key_counts": "3358 post-filter occurrence records; 0 numeric BIOCLIM vectors; 0 validation-allowed comparator rows",
+      "counts": [
+        {
+          "value": "3358",
+          "label": "post-filter occurrence records"
+        },
+        {
+          "value": "0",
+          "label": "numeric BIOCLIM vectors"
+        },
+        {
+          "value": "0",
+          "label": "validation-allowed comparator rows"
+        }
+      ],
+      "blocker": "Coordinate recovery did not yield numeric local/free BIOCLIM vectors or disjoint expert comparator rows",
+      "future_data_required": "Audited crop/CWR BIOCLIM summaries and disjoint candidate-level expert comparator rows",
+      "claim_boundary": "No crop-substitution recommendation or climate-adaptation claim",
+      "evidence_type": "crop and occurrence evidence",
+      "validation_use": "climate-substitution validation",
+      "rejection_reason": "No numeric BIOCLIM vectors or validation-allowed comparators."
+    },
+    {
+      "track": "Track 5",
+      "slug": "track5",
+      "label": "Chemodiversity",
+      "status_code": "H5_remains_source_biased",
+      "status_label": "source-biased",
+      "status_class": "status-bias",
+      "plain_question": "Can under-screened plants be prioritized for chemistry from source-backed evidence?",
+      "field_focus": "Compound-class rows, dated chemistry evidence, source-ablation checks.",
+      "public_result": "The evidence remained dominated by one source family, so chemistry predictions were not promoted.",
+      "validated_branch_basis": "non-Duke temporal chemistry review and source ablation",
+      "key_counts": "Non-Duke temporal evidence insufficient; no validation-ready structured family/class stratum",
+      "counts": [
+        {
+          "value": "not quantified",
+          "label": "Non-Duke temporal evidence insufficient"
+        },
+        {
+          "value": "not quantified",
+          "label": "no validation-ready structured family/class stratum"
+        }
+      ],
+      "blocker": "Open non-Duke detections do not support a structured temporal family/class predictor rerun independent of Duke/source density",
+      "future_data_required": "Accepted-key, dated, non-Duke taxon-compound rows across enough families/classes to estimate signatures without source collapse",
+      "claim_boundary": "No new phytochemical, bioactivity, or screening-priority claim",
+      "evidence_type": "phytochemistry evidence",
+      "validation_use": "temporal holdout and source ablation",
+      "rejection_reason": "Non-Duke dated strata were insufficient."
+    },
+    {
+      "track": "Track 6",
+      "slug": "track6",
+      "label": "Botanical model benchmark",
+      "status_code": "environment_limited_untested",
+      "status_label": "untested under local/open constraints",
+      "status_class": "status-limited",
+      "plain_question": "Can botanical reasoning questions be scored against audited local responses?",
+      "field_focus": "Question bank, scoring rubric, response rows, scorer diagnostics.",
+      "public_result": "The benchmark scaffold exists, but no audited local/open response set was available for scoring.",
+      "validated_branch_basis": "local/open benchmark feasibility review",
+      "key_counts": "0 approved local/open model pairings; 0 executed responses; 0 scored responses",
+      "counts": [
+        {
+          "value": "0",
+          "label": "approved local/open model pairings"
+        },
+        {
+          "value": "0",
+          "label": "executed responses"
+        },
+        {
+          "value": "0",
+          "label": "scored responses"
+        }
+      ],
+      "blocker": "No approved local/open model and response set was available under the study constraints",
+      "future_data_required": "Approved local/open model weights and documented response rows with scorer diagnostics",
+      "claim_boundary": "No model error-rate, leaderboard, toxicity-look-alike, or vendor-comparison claim",
+      "evidence_type": "benchmark response evidence",
+      "validation_use": "scored local/open response rows",
+      "rejection_reason": "No audited response rows were produced."
+    }
+  ],
+  "source_notes": [
+    "Final synthesis report",
+    "Audit report",
+    "Falsification and ablation report",
+    "Research contribution ledger",
+    "Final local-evidence track status table",
+    "Track-local reports and evidence tables"
+  ]
+}

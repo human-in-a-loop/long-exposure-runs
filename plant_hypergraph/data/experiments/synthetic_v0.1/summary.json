@@ -1,0 +1,42 @@
+{
+  "ablation_rows": 63,
+  "benchmark_dir": "data/synthetic_benchmark/v0.1",
+  "case_type_rows": 42,
+  "clique_false_similarity_rows": 33,
+  "created": "2026-05-17T02:25:00Z",
+  "cycle": 4,
+  "file_hashes_sha256": {
+    "ablation_results.csv": "244f0b2e0d7f55bc754375af941e6194bee1588c92a131fc60a6f5b944e98255",
+    "case_type_breakdown.csv": "85d517fcab5871f0cb5e9d4ad22d4ad19e80aef08cf630b5fdee921e76a7a67e",
+    "clique_false_similarity.csv": "0634429b78a4963591847cc2206df9f3f71db35300a48e74ce63fb0719d8bb4c",
+    "results.csv": "5e16e0071ab21d975d1d3dab1623d271967c7d3b6d0d8fe0632eae8065d51655",
+    "strict_negative_control.csv": "7b66beed396c2d4eedb5984bd8a473c19a297a5d3246824a52f1ac0a359d4073"
+  },
+  "key_findings": {
+    "best_flat_model": "clique_expansion",
+    "best_hierarchy_distance_model": "native_hypergraph",
+    "native_missing_rank_distance": "0.000000",
+    "native_random_trait_distance_delta": "0.000000",
+    "native_remove_reticulate_distance_delta": "0.000000",
+    "native_reticulate_synonym_accuracy": "0.750000",
+    "strict_control_native_distance": "0.571429",
+    "strict_control_tree_distance": "0.571429",
+    "tree_missing_rank_distance": "0.000000",
+    "tree_reticulate_synonym_accuracy": "0.750000"
+  },
+  "milestone": "M6",
+  "prediction_rows": 6489,
+  "public_sample_check": {
+    "all_is_synthetic_false": true,
+    "edge_families": [
+      "regional_checklist_context",
+      "synonym_cluster",
+      "taxonomic_parentage"
+    ],
+    "hyperedge_rows": 327,
+    "path": "data/public_taxonomy_sample/v0.1/hyperedges.csv"
+  },
+  "result_rows": 63,
+  "seed": 20260517,
+  "strict_negative_control_rows": 7
+}

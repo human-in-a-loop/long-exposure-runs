@@ -1,0 +1,35 @@
+{
+  "version": "track3-cp-v1.0",
+  "seed": 20260517,
+  "b_replicates": 1000,
+  "swap_multiplier": 10,
+  "scored_traits": [
+    "achene",
+    "ant_domatia",
+    "aril",
+    "c4_photosynthesis",
+    "cam_photosynthesis",
+    "capsule",
+    "carnivory",
+    "drupe",
+    "elaiosome",
+    "fleshy_fruit",
+    "follicle",
+    "myrmecochory",
+    "parasitism",
+    "samara",
+    "succulence"
+  ],
+  "excluded_traits": [
+    "_other"
+  ],
+  "data_limited_traits": [
+    "ant_domatia",
+    "carnivory",
+    "parasitism"
+  ],
+  "falsifier_verdict": "PASS",
+  "R2_observed": 0.8353257800871441,
+  "R2_CP_min": 0.8516893046089283,
+  "spearman_rho_residOBS_vs_CPmin": 0.40559440559440557
+}

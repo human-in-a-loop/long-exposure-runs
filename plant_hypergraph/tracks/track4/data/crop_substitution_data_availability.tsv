@@ -1,0 +1,5 @@
+crop_taxon	crop_accepted_taxon_key	has_retained_crop_pedigree	joined_cwr_pair_count	scored_candidate_count	climate_evidence_status	bioclim_values_present	instrument_status	shortfall_reason
+Arachis hypogaea	wfo:wfo-0000174378-2025-12	True	2	2	data-limited	False	candidate_scored_pedigree_only	climate excluded from score; pedigree/CWR evidence only
+Avena sativa	wfo:wfo-0000852231-2025-12	True	1	1	data-limited	False	candidate_scored_pedigree_only	climate excluded from score; pedigree/CWR evidence only
+Allium cepa	wfo:wfo-0000755919-2025-12	False	0	0	data-limited	False	data_limited_no_scored_candidate	no observed climate vectors; many held-out crops lack accepted keys or retained pedigree evidence
+Ananas comosus	wfo:wfo-0000339432-2025-12	False	0	0	data-limited	False	data_limited_no_scored_candidate	no observed climate vectors; many held-out crops lack accepted keys or retained pedigree evidence
