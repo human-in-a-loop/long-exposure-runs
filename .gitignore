@@ -1,0 +1,9 @@
+# Transient long-exposure session/run state — NOT the deliverable.
+*/.instance/
+**/sessions.db
+**/exploration_state.json
+**/exploration.log
+**/local_sessions/
+**/*.log
+# Curated package archives (large/binary); the .md/.pdf reports are the record.
+*_package*.zip
