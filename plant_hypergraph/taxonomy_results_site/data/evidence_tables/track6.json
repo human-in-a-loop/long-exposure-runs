@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 6",
+    "theme": "Botanical model benchmark",
+    "source": "local/open benchmark feasibility review",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "benchmark response evidence",
+    "key_counts": "0 approved local/open model pairings; 0 executed responses; 0 scored responses",
+    "validation_use": "scored local/open response rows",
+    "status": "untested under local/open constraints",
+    "rejection_reason": "No audited response rows were produced.",
+    "claim_boundary": "No model error-rate, leaderboard, toxicity-look-alike, or vendor-comparison claim",
+    "future_evidence_predicate": "Approved local/open model weights and documented response rows with scorer diagnostics"
+  }
+]

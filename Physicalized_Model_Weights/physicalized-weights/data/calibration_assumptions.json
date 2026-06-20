@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-CAL-1",
+  "unit_conventions": {
+    "energy": "pJ for primitive operation/access proxies",
+    "latency": "us/request for local and modeled overhead proxies",
+    "request_volume": "requests/day",
+    "update_cadence": "days/update",
+    "amortization": "requests/update"
+  },
+  "rows": [
+    {"variable": "dram_access_energy_proxy", "value_or_range": "1300-2600", "unit": "pJ/access", "source_type": "sourced", "citation_or_artifact_path": "[7]; [8]", "confidence": "medium", "notes": "Off-chip movement ratio anchor, not modern exact energy."},
+    {"variable": "sram_8kb_access_energy_proxy", "value_or_range": "10", "unit": "pJ/access", "source_type": "sourced", "citation_or_artifact_path": "[7]; [8]", "confidence": "medium", "notes": "Small local memory proxy."},
+    {"variable": "sram_32kb_access_energy_proxy", "value_or_range": "20", "unit": "pJ/access", "source_type": "sourced", "citation_or_artifact_path": "[7]; [8]", "confidence": "medium", "notes": "Larger local memory proxy."},
+    {"variable": "sram_1mb_access_energy_proxy", "value_or_range": "100", "unit": "pJ/access", "source_type": "sourced", "citation_or_artifact_path": "[7]; [8]", "confidence": "medium", "notes": "Upper local-memory proxy."},
+    {"variable": "int8_mac_energy_proxy", "value_or_range": "0.2-1.5", "unit": "pJ/MAC", "source_type": "inferred", "citation_or_artifact_path": "[7]; physicalized-weights/scripts/local_overhead_probe.py", "confidence": "low", "notes": "Ratio-scale arithmetic proxy."},
+    {"variable": "host_software_classifier_latency_proxy", "value_or_range": "measured_by_probe", "unit": "us/request", "source_type": "local_measured", "citation_or_artifact_path": "physicalized-weights/data/local_overhead_probe.json", "confidence": "medium", "notes": "Local Python classifier proxy."},
+    {"variable": "programmable_accelerator_efficiency_proxy", "value_or_range": "derived_bound", "unit": "normalized", "source_type": "inferred", "citation_or_artifact_path": "[9]; [10]", "confidence": "low", "notes": "Broad programmable baseline bound."},
+    {"variable": "feature_extraction_overhead", "value_or_range": "0.5-4.0", "unit": "us/request", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/docs/calibration_plan.md", "confidence": "low", "notes": "Trace gap deferred to M-WORKLOAD-1."},
+    {"variable": "register_control_overhead", "value_or_range": "0.05-0.8", "unit": "us/request", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/docs/calibration_plan.md", "confidence": "low", "notes": "MMIO/control proxy."},
+    {"variable": "audit_logging_overhead", "value_or_range": "measured_by_probe", "unit": "us/request", "source_type": "local_measured", "citation_or_artifact_path": "physicalized-weights/data/local_overhead_probe.json", "confidence": "medium", "notes": "Local audit logging proxy."},
+    {"variable": "fallback_dispatch_overhead", "value_or_range": "measured_by_probe", "unit": "us/request", "source_type": "local_measured", "citation_or_artifact_path": "physicalized-weights/data/local_overhead_probe.json", "confidence": "medium", "notes": "Local dispatch proxy."},
+    {"variable": "update_rollback_overhead", "value_or_range": "1000-1000000", "unit": "requests/update_equivalent", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/docs/calibration_plan.md", "confidence": "low", "notes": "Signed update and rollback equivalent cost."},
+    {"variable": "utilization_bounds", "value_or_range": "0.35-0.85", "unit": "fraction", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/docs/calibration_plan.md", "confidence": "medium", "notes": "Stress range."},
+    {"variable": "request_volume_ranges", "value_or_range": "0;100;1000;10000;100000;1000000;10000000", "unit": "requests/day", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/scripts/calibrated_breakeven.py", "confidence": "medium", "notes": "Includes zero-volume falsification point."},
+    {"variable": "update_cadence_ranges", "value_or_range": "1;7;30;90;365", "unit": "days/update", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/scripts/calibrated_breakeven.py", "confidence": "medium", "notes": "Daily to yearly update stress."},
+    {"variable": "software_runtime_memory_savings", "value_or_range": "0.0;0.2;0.35;0.5", "unit": "fraction", "source_type": "sourced", "citation_or_artifact_path": "physicalized-weights/data/breakeven_summary.json; [10]", "confidence": "medium", "notes": "Software pressure range."},
+    {"variable": "fallback_frequency", "value_or_range": "0.0;0.1;0.25;0.5;1.0", "unit": "fraction", "source_type": "modeled", "citation_or_artifact_path": "physicalized-weights/scripts/calibrated_breakeven.py", "confidence": "medium", "notes": "Includes full-fallback falsification point."}
+  ]
+}

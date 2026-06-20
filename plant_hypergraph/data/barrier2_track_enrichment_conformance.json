@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "scope": "Barrier 2 Wave 2 enrichment integration conformance only",
+  "checks": [
+    "all six ENRICHMENT_AUDIT.md files exist",
+    "master prediction_ledger.tsv remains empty"
+  ],
+  "findings": [
+    {
+      "track": "track1",
+      "status": "ready_data_limited",
+      "finding": "28 seed rows retained; canonical validation seeds remain mostly pending_crosswalk."
+    },
+    {
+      "track": "track2",
+      "status": "ready_seed_scale",
+      "finding": "31 cited seeds and 52 range-context supports remain not_prediction."
+    },
+    {
+      "track": "track3",
+      "status": "ready_with_conformance_review_item",
+      "finding": "209297 memberships retained; _other bucket has 184218 rows and must be interpreted explicitly at Barrier 2."
+    },
+    {
+      "track": "track4",
+      "status": "ready_data_limited",
+      "finding": "6 observed edges retained; CWR joins and all bioclim vectors remain data-limited."
+    },
+    {
+      "track": "track5",
+      "status": "ready_with_source_bias_warning",
+      "finding": "23524 resolved taxon-keyed rows retained; Duke share of combined signal is 0.999598."
+    },
+    {
+      "track": "track6",
+      "status": "ready_offline_static",
+      "finding": "210 offline questions and schema-shaped adversarial_probe_edge rows retained; no live responses present."
+    }
+  ],
+  "nonblocking_review_items": [
+    "Track 1 canonical polyploid validation seeds remain pending or absent.",
+    "Track 3 _other bucket is large under strict headline counting.",
+    "Track 4 crop/CWR and climate coverage is sparse.",
+    "Track 5 is Dr. Duke dominated and must carry source-density ablations.",
+    "Track 6 is an offline static benchmark only; provider scoring is absent by design."
+  ]
+}

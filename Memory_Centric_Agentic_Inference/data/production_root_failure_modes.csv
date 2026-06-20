@@ -1,0 +1,17 @@
+blocked_reason,case_count,fail_closed,pre_gatechain_block
+bundle_id_mismatch,1,true,true
+duplicate_collector_id_different_operator,1,true,true
+fixture_attempted_production_root,1,true,true
+key_rotation_gap,1,true,true
+measurement_run_id_mismatch,1,true,true
+missing_collector_firmware_identity,1,true,true
+missing_counter_source_binding,1,true,true
+missing_tenant_security_binding,1,true,true
+replayed_enrollment_id,1,true,true
+schema_version_mismatch,1,true,true
+stale_enrollment_window,1,true,true
+stale_firmware_attestation,1,true,true
+topology_drift,1,true,true
+topology_id_mismatch,1,true,true
+unknown_deployment_root,1,true,true
+unknown_key_id,1,true,true

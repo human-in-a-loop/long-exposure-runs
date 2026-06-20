@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Arabidopsis</i> <i>thaliana</i></span> <span class=\"wfo-name-authors\" >(L.) Heynh.</span></span>",
+        "full_name_plain": "Arabidopsis thaliana (L.) Heynh.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Brassicales/Brassicaceae/Brassicoideae/Camelinodae/Arabidopsideae/Arabidopsis/thaliana",
+        "wfo_id": "wfo-0000541830"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Arabidopsis</i> <i>thaliana</i></span> <span class=\"wfo-name-authors\" >(L.) Schur</span></span>",
+        "full_name_plain": "Arabidopsis thaliana (L.) Schur",
+        "placement": "",
+        "wfo_id": "wfo-1200113214"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Arabidopsis thaliana",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Arabidopsis'",
+      "Word is found in index and so is part of name: 'thaliana'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'thaliana'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Arabidopsis thaliana' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Arabidopsis thaliana",
+      "rank": "species"
+    },
+    "searchString": "Arabidopsis thaliana"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Arabidopsis thaliana"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "47529d71b974bdab0508dbf7a14de3b4652e1200cf9723de893c458cb07fd386",
+  "used_insecure_tls_fallback": true
+}

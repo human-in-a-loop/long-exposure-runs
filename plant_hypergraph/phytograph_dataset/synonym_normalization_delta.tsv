@@ -1,0 +1,8 @@
+source_group	rows_before	raw_name_diversity_before	rows_after	accepted_key_diversity_after	resolved_rows	unresolved_rows	diversity_delta
+chemodiversity_ethnobotany_sources	259960	18342	259960	18164	23532	236428	-178
+convergence_sources	420545	32652	420545	32552	61501	359044	-100
+domestication_sources	190	104	190	104	6	184	0
+paleobotany_sources	83	50	83	50	6	77	0
+reticulation_sources	28	12	28	12	3	25	0
+taxonomy_backbone	173644	166837	173644	59908	173582	62	-106929
+wikidata_commons	160	160	160	160	10	150	0

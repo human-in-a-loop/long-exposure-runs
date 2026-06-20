@@ -1,0 +1,7 @@
+field,requirement,fail_closed_semantics
+tenant_id,mandatory,blocks cross-tenant reuse when absent or mismatched
+reuse_scope,mandatory,private_run < tenant < deployment < public_immutable; planner may narrow but not widen
+security_label,mandatory,binds object to isolation/provenance policy
+lineage_ids,mandatory,"prevents untraceable reuse, retention, or compression"
+freshness_source_id,mandatory for tool/retrieval/cache,prevents stale tool and retrieval reuse
+retention_policy_id,mandatory for durable/infinite retention,prevents unbounded durable storage

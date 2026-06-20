@@ -1,0 +1,169 @@
+{
+  "energy_guardrail": "proxy energy cannot satisfy measured production-energy requirements",
+  "interpretation": "Schema-valid traces are only reopen candidates when measured accelerator and hybrid evidence, baselines, audit fields, nonzero accepted fast-path volume, and consistent policy windows are present.",
+  "issue_status_counts": {
+    "invalid_inconsistent_policy": 1,
+    "invalid_missing_baseline": 1,
+    "invalid_privacy_risk": 1,
+    "invalid_units": 1,
+    "valid_but_insufficient": 2
+  },
+  "milestone_id": "M-TRACE-1",
+  "privacy_guardrail": "raw prompts, raw user IDs, tenant identifiers, API keys, IPs, emails, and raw content columns are invalid",
+  "reopen_candidates": [],
+  "schema_version": 1,
+  "status": "validated",
+  "status_counts": {
+    "invalid_privacy_risk": 1,
+    "valid_but_insufficient": 1
+  },
+  "trace_count": 2,
+  "traces": [
+    {
+      "accepted_fast_path_requests": 4,
+      "audit_logging_rate": 1.0,
+      "drift_gate_failure_rate": 0.0,
+      "energy_coverage": {
+        "accelerator_measured_rows": 6,
+        "accelerator_proxy_rows": 0,
+        "hybrid_measured_rows": 0,
+        "hybrid_proxy_rows": 6,
+        "measured_energy_coverage": 0.0
+      },
+      "fallback_frequency": 0.3333333333333333,
+      "health_gate_failure_rate": 0.0,
+      "insufficient_reasons": [
+        "measured_energy_required",
+        "production_or_shadow_environment_required"
+      ],
+      "issues": [
+        {
+          "field": "reopen_eligibility",
+          "message": "measured_energy_required",
+          "status": "valid_but_insufficient"
+        },
+        {
+          "field": "reopen_eligibility",
+          "message": "production_or_shadow_environment_required",
+          "status": "valid_but_insufficient"
+        }
+      ],
+      "latency": {
+        "accelerator_baseline_latency_ns": {
+          "median": 4200.0,
+          "p10": 4100.0,
+          "p90": 4300.0
+        },
+        "audit_latency_ns": {
+          "median": 8100.0,
+          "p10": 7900.0,
+          "p90": 8300.0
+        },
+        "feature_extract_latency_ns": {
+          "median": 1800.0,
+          "p10": 1700.0,
+          "p90": 1900.0
+        },
+        "hybrid_fast_path_latency_ns": {
+          "median": 1300.0,
+          "p10": 1250.0,
+          "p90": 1400.0
+        },
+        "route_latency_ns": {
+          "median": 510.0,
+          "p10": 490.0,
+          "p90": 600.0
+        },
+        "software_baseline_latency_ns": {
+          "median": 9200.0,
+          "p10": 9000.0,
+          "p90": 9300.0
+        }
+      },
+      "near_threshold_frequency": 0.16666666666666666,
+      "requests": 6,
+      "rollback_count": 0,
+      "status": "valid_but_insufficient",
+      "trace_file": "<workspace>/physicalized-weights/data/example_production_trace_valid.csv",
+      "update_count": 0
+    },
+    {
+      "accepted_fast_path_requests": 2,
+      "audit_logging_rate": 1.0,
+      "drift_gate_failure_rate": 0.0,
+      "energy_coverage": {
+        "accelerator_measured_rows": 0,
+        "accelerator_proxy_rows": 3,
+        "hybrid_measured_rows": 0,
+        "hybrid_proxy_rows": 3,
+        "measured_energy_coverage": 0.0
+      },
+      "fallback_frequency": 0.3333333333333333,
+      "health_gate_failure_rate": 0.0,
+      "insufficient_reasons": [
+        "measured_energy_required",
+        "production_or_shadow_environment_required"
+      ],
+      "issues": [
+        {
+          "field": "raw_prompt",
+          "message": "raw or sensitive column is not allowed",
+          "status": "invalid_privacy_risk"
+        },
+        {
+          "field": "accelerator_baseline_latency_ns",
+          "message": "required column is missing",
+          "status": "invalid_missing_baseline"
+        },
+        {
+          "field": "feature_extract_latency_ns",
+          "message": "row 3: value must be positive",
+          "status": "invalid_units"
+        },
+        {
+          "field": "policy_version_hash",
+          "message": "invalid_mixed_policy: mixed policy versions without update or rollback",
+          "status": "invalid_inconsistent_policy"
+        }
+      ],
+      "latency": {
+        "accelerator_baseline_latency_ns": {
+          "median": NaN,
+          "p10": NaN,
+          "p90": NaN
+        },
+        "audit_latency_ns": {
+          "median": 8100.0,
+          "p10": 8050.0,
+          "p90": 8300.0
+        },
+        "feature_extract_latency_ns": {
+          "median": 1750.0,
+          "p10": 1750.0,
+          "p90": 1800.0
+        },
+        "hybrid_fast_path_latency_ns": {
+          "median": 1300.0,
+          "p10": 1280.0,
+          "p90": 1400.0
+        },
+        "route_latency_ns": {
+          "median": 510.0,
+          "p10": 500.0,
+          "p90": 600.0
+        },
+        "software_baseline_latency_ns": {
+          "median": 9200.0,
+          "p10": 9100.0,
+          "p90": 9300.0
+        }
+      },
+      "near_threshold_frequency": 0.3333333333333333,
+      "requests": 3,
+      "rollback_count": 0,
+      "status": "invalid_privacy_risk",
+      "trace_file": "<workspace>/physicalized-weights/data/example_production_trace_invalid.csv",
+      "update_count": 0
+    }
+  ]
+}

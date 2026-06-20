@@ -1,0 +1,13 @@
+canonical_case	trait	family_target	reachable	path	n_resolved_taxa_family	n_genus_match_names	n_total_reachable	gap_reason
+C4 Poaceae	c4_photosynthesis	Poaceae	yes	resolved_family_match	98	0	98	
+C4 Cyperaceae	c4_photosynthesis	Cyperaceae	yes	pending_genus_match	0	139	139	
+C4 Amaranthaceae	c4_photosynthesis	Amaranthaceae	yes	resolved_family_match	7	65	65	
+CAM Crassulaceae	cam_photosynthesis	Crassulaceae	yes	pending_genus_match	0	18	18	
+CAM Orchidaceae	cam_photosynthesis	Orchidaceae	yes	pending_genus_match	0	3	3	
+Succulence Cactaceae	succulence	Cactaceae	no	none	0	0	0	family_and_genus_absent_from_substrate
+Succulence Euphorbiaceae	succulence	Euphorbiaceae	no	none	0	0	0	family_and_genus_absent_from_substrate
+Myrmecochory Liliaceae/Melanthiaceae (Trillium)	myrmecochory	Melanthiaceae	no	none	0	0	0	family_and_genus_absent_from_substrate
+Elaiosome Fabaceae (Acacia)	elaiosome	Fabaceae	yes	pending_genus_match	0	87	87	
+Drupe Anacardiaceae	drupe	Anacardiaceae	yes	resolved_family_match	2	7	7	
+Samara Sapindaceae	samara	Sapindaceae	yes	pending_genus_match	0	4	4	
+Fleshy fruit Solanaceae	fleshy_fruit	Solanaceae	yes	pending_genus_match	0	235	235	

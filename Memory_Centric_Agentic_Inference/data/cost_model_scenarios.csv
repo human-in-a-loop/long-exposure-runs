@@ -1,0 +1,7 @@
+"scenario","representative_object","object_size_units","reuse_probability","branch_fanout","verifier_delay","durability_horizon","dominant_cost_term","dominant_object_class","best_symbolic_tier_choice","memory_centric_thesis","retained_value_score","energy_proxy_score","dollar_proxy_score","assumption_status"
+"single-turn chat control","KV cache","4096.","0.05","1","0","0","transfer_avoidance","KV cache","CPU DRAM","weakened","0.2","50.995200000000004","30.72","synthetic_placeholder"
+"batch summarization/offline inference control","weights","12000.","0.1","1","0","0","transfer_avoidance","weights","CPU DRAM","weakened","0.2","149.4","90.","synthetic_placeholder"
+"RAG with retrieved-context reuse","retrieved context","2500.","0.45","1","0","2","residency_pressure","retrieved context","CPU DRAM","ambiguous","10.2","34.5","75.","synthetic_placeholder"
+"code-agent loop with tool outputs and durable workspace","tool output","5200.","0.6","2","2","10","residency_pressure","tool output","NVMe_local","ambiguous","34.4","234.","124.80000000000001","synthetic_placeholder"
+"verification-heavy agent","verifier state","3600.","0.55","3","5","4","residency_pressure","verifier state","NVMe_local","ambiguous","52.25","192.24","51.84","synthetic_placeholder"
+"multi-agent branch/merge run","branch state","7000.","0.5","4","3","6","transfer_avoidance","branch state","NVMe_local","strengthened","24.5","451.5","84.","synthetic_placeholder"

@@ -1,0 +1,11 @@
+read_verilog -sv physicalized-weights/hdl/safety_filter_core.sv
+hierarchy -top safety_filter_core
+proc
+opt
+check
+stat
+show -format dot -prefix physicalized-weights/data/safety_filter_core_netlist safety_filter_core
+techmap
+opt
+check
+stat

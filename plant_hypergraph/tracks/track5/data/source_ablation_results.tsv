@@ -1,0 +1,6 @@
+variant	duke_weight	prediction_count	top_decile_holdout_recovery_count	ablation_status	notes
+full	1.0	1405	0	baseline_source_dominated	M3.T5 baseline; all prediction rows carry Dr. Duke sensitivity.
+no_duke	0.0	0	0	collapsed_to_zero	Removing Dr. Duke leaves no qualifying phytochemical family/class signal.
+duke_downweighted	0.1	1405	0	scores_scaled_not_independent	Rows persist only because Duke evidence still supplies S_f[k]; not independent support.
+source_density_matched	0.0	0	0	no_non_duke_phytochemical_stratum	No matched non-Duke phytochemical source stratum exists in current frozen data.
+screening_count_matched	0.0	0	0	no_non_duke_screening_stratum	Screening-count match cannot be formed without non-Duke detection rows.

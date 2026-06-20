@@ -1,0 +1,61 @@
+{
+  "created": "2026-05-17T03:00:00Z",
+  "cycle": 5,
+  "finite_checks": {
+    "k0_pairs": 0,
+    "k1_pairs": 0,
+    "k2_pairs": 1,
+    "k3_pairs": 3,
+    "k5_pairs": 10,
+    "pair_count_formula": "k * (k - 1) / 2"
+  },
+  "finite_example_rows": 8,
+  "m6_family_rows": 3,
+  "m6_numeric_anchors": {
+    "clique_expansion_mean_hierarchy_distance": "2.090909",
+    "collapse_to_clique_distance_delta": "0.318182",
+    "collapsed_native_mean_hierarchy_distance": "2.090909",
+    "native_hypergraph_mean_hierarchy_distance": "1.772727"
+  },
+  "m6_summary": [
+    {
+      "edge_family": "regional_checklist_context",
+      "hyperedges": "4",
+      "introduced_pairs": "40",
+      "licensed_pairs": "0",
+      "pairwise_similarity_licensed_by_schema": "no",
+      "semantic_note": "checklist co-membership is source context, not pairwise taxon similarity",
+      "taxon_members": "20",
+      "unlicensed_pair_ratio": "1.000000",
+      "unlicensed_pairs": "40"
+    },
+    {
+      "edge_family": "reticulate_or_hybrid_signal",
+      "hyperedges": "7",
+      "introduced_pairs": "21",
+      "licensed_pairs": "14",
+      "pairwise_similarity_licensed_by_schema": "partial_role_dependent",
+      "semantic_note": "role labels license child-source near-miss, not all clique pairs",
+      "taxon_members": "21",
+      "unlicensed_pair_ratio": "0.333333",
+      "unlicensed_pairs": "7"
+    },
+    {
+      "edge_family": "trait_syndrome",
+      "hyperedges": "22",
+      "introduced_pairs": "22",
+      "licensed_pairs": "0",
+      "pairwise_similarity_licensed_by_schema": "no_for_taxonomic_similarity",
+      "semantic_note": "shared trait state is a convergence stressor, not taxonomic identity",
+      "taxon_members": "44",
+      "unlicensed_pair_ratio": "1.000000",
+      "unlicensed_pairs": "22"
+    }
+  ],
+  "milestone": "M7",
+  "outputs": {
+    "figure": "data/formal_diagnostic/clique_warning_diagnostic.png",
+    "finite_examples": "data/formal_diagnostic/finite_examples.csv",
+    "m6_clique_diagnostic_summary": "data/formal_diagnostic/m6_clique_diagnostic_summary.csv"
+  }
+}

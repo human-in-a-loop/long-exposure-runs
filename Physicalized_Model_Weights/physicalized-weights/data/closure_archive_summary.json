@@ -1,0 +1,67 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "artifact_class_counts": {
+    "evidence_data": 5,
+    "figure": 7,
+    "hdl_source": 1,
+    "manifest": 2,
+    "report": 16,
+    "schema": 2,
+    "summary_data": 21
+  },
+  "canonical_artifact_count": 54,
+  "closure_claim_support_count": 16,
+  "current_artifacts_reopen": false,
+  "current_superiority_claim_count": 0,
+  "figure_caption": "Archive coverage by milestone and artifact class, showing canonical closure/campaign artifacts present versus missing.",
+  "interpretation": "The archive indexes validated campaign endpoint artifacts for handoff while preserving zero current superiority claims, zero actual reopen candidates, and zero new reopen gates.",
+  "known_warning_count": 2,
+  "known_warnings": [
+    {
+      "classification": "pre_existing_noncanonical",
+      "note": "Generated cycle reports are outside the curated closure archive and remain non-blocking.",
+      "scope": "reports/cycles/report_cycles_*",
+      "source": "promise_check",
+      "warning_id": "orphan_cycle_reports"
+    },
+    {
+      "classification": "pre_existing_noncanonical",
+      "note": "The original prompt and live log remain root-level directive artifacts and are not archive failures.",
+      "scope": "physicalized_model_weights_long_exposure_prompt.md; physicalized_weights_long_exposure_live.log",
+      "source": "org_check",
+      "warning_id": "root_prompt_and_log"
+    }
+  ],
+  "milestone_artifact_counts": {
+    "M-ACQUIRE-1": 1,
+    "M-ARCH-1": 2,
+    "M-CAL-1": 1,
+    "M-CLOSURE-1": 6,
+    "M-DEFER-1": 4,
+    "M-DRYRUN-1": 1,
+    "M-EVIDENCEPACK-1": 2,
+    "M-FINAL-1": 2,
+    "M-INTAKE-1": 1,
+    "M-LIFECYCLE-1": 2,
+    "M-MODEL-1": 1,
+    "M-PHASE3-SYNTH-1": 2,
+    "M-PHASE4-SYNTH-1": 5,
+    "M-PIPELINE-1": 1,
+    "M-PROTO-1": 5,
+    "M-REOPEN-1": 1,
+    "M-ROBUST-1": 4,
+    "M-SWBASE-2": 3,
+    "M-SYNTH-2": 3,
+    "M-TARGET-1": 2,
+    "M-TAX-1": 1,
+    "M-TRACE-1": 1,
+    "M-UNCERTAINTY-1": 2,
+    "M-WORKLOAD-1": 1
+  },
+  "milestone_id": "M-ARCHIVE-1",
+  "missing_canonical_artifact_count": 0,
+  "new_reopen_gate_count": 0,
+  "schema_version": 1,
+  "status": "validated",
+  "zero_size_canonical_artifact_count": 0
+}

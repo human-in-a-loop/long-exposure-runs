@@ -1,0 +1,8 @@
+category	static_benchmark_questions	runnable_response_count	scored_response_count	skipped_response_count	scorer_coverage	error_rate_claim_allowed	dominant_blocker
+convergence_detection	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+ghost_partner_reasoning	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+hybrid_pedigree	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+phytochemistry_safety	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+region_conditional	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+synonym_confusion	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available
+toxicity_lookalike_media_scope	30	0	0	30	0.0	false	no runnable local/free/open model runtime plus weights available

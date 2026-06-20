@@ -1,0 +1,22 @@
+field_name,required,binding,fixture_scope
+case_id,true,fixture metadata or boundary label,test_attestation_fixture
+key_id,true,registry key identifier; unknown IDs fail closed,test_attestation_fixture
+attestation_type,true,fixture metadata or boundary label,test_attestation_fixture
+evidence_label,true,fixture metadata or boundary label,test_attestation_fixture
+operator_id,true,operator identity bound to the intake manifest,test_attestation_fixture
+collector_id,true,collector identity bound to the intake manifest,test_attestation_fixture
+schema_version,true,must equal production_dc12_v1,test_attestation_fixture
+bundle_id,true,bundle ID bound into signature input and replay registry,test_attestation_fixture
+manifest_digest,true,sha256 over canonicalized manifest rows,test_attestation_fixture
+payload_digest_set_digest,true,sha256 over manifest payload path/count/checksum/target set,test_attestation_fixture
+adapter_conformance_digest,true,sha256 over adapter conformance report,test_attestation_fixture
+collection_window_start,true,signed collection interval start,test_attestation_fixture
+collection_window_end,true,signed collection interval end,test_attestation_fixture
+issued_at,true,test signature issue timestamp,test_attestation_fixture
+expires_at,true,test signature expiry timestamp,test_attestation_fixture
+signature_algorithm,true,fixture metadata or boundary label,test_attestation_fixture
+signature_input_version,true,fixture metadata or boundary label,test_attestation_fixture
+signature,true,HMAC-SHA256 over signed envelope fields,test_attestation_fixture
+attestation_source_trusted,true,fixture metadata or boundary label,test_attestation_fixture
+production_trust_established,true,fixture metadata or boundary label,test_attestation_fixture
+expected_blocked_reason,false,fixture metadata or boundary label,test_attestation_fixture

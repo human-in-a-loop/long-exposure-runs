@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 5",
+    "theme": "Chemodiversity",
+    "source": "non-Duke temporal chemistry review and source ablation",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "phytochemistry evidence",
+    "key_counts": "Non-Duke temporal evidence insufficient; no validation-ready structured family/class stratum",
+    "validation_use": "temporal holdout and source ablation",
+    "status": "source-biased",
+    "rejection_reason": "Non-Duke dated strata were insufficient.",
+    "claim_boundary": "No new phytochemical, bioactivity, or screening-priority claim",
+    "future_evidence_predicate": "Accepted-key, dated, non-Duke taxon-compound rows across enough families/classes to estimate signatures without source collapse"
+  }
+]

@@ -1,0 +1,13 @@
+fixture_case_id,conformance_status,evidence_label,ingestion_gate_schema_valid,ingestion_boundary,production_target_allowed,production_calibrated,production_ready,claim_credit_allowed,reason
+valid-conformance-profile,pass,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-unknown-alias,fail,adapter_conformance_fixture,false,missing_required_field,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-run-id-replacement,fail,adapter_conformance_fixture,false,missing_required_field,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-energy-unit,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-latency-unit,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-missing-clock,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-interval-mismatch,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-stale-provenance,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-missing-tenant,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-missing-security-context,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-missing-security-stream,fail,adapter_conformance_fixture,false,missing_required_field,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required
+invalid-production-target-evidence,fail,adapter_conformance_fixture,true,not_production_evidence_label,false,false,false,false,conformance only validates adapter shape; trusted production_target evidence is still required

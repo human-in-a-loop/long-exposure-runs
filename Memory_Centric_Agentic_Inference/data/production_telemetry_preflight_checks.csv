@@ -1,0 +1,11 @@
+check_id,collector_category,check,blocks_calibration,fail_closed_consequence,claim_impact
+PF-001,interval alignment and noise-floor metadata,run manifest declares evidence_label=production_target and a stable production_target_id,true,production_calibrated=false for all rows,all
+PF-002,accelerator energy/power counters,accelerator or bounded host+accelerator joules counter is present above energy_noise_floor_j,true,DC-001 and CL-012 blocked,CL-012
+PF-003,host energy/power counters,host energy counter is present or host contribution is bounded relative to accelerator counter noise floor,true,CL-012 blocked when host energy cannot be separated or bounded,CL-012
+PF-004,source/destination tier byte counters,"bytes_moved and resident_bytes are emitted by source_tier, destination_tier, object_class, and interval_id",true,joules/byte and placement claims are unusable,CL-004; CL-005; CL-012
+PF-005,CXL or pooled-memory latency p50/p95/p99,latency p50/p95/p99 histograms are captured under the target hardware_topology_id,true,DC-002 contention replay blocked,CL-004; CL-005
+PF-006,queue depth and tenant concurrency,"tenant_count and queue_depth share interval_id, topology_id, and tenant/security context",true,DC-002 blocked; multi-tenant contention rows are diagnostic only,CL-004; CL-005
+PF-007,workload/object classification,"every counter row joins to workload_class, object_class, workload_id, and object_id before aggregation",true,Option A/B/C replay is unjoinable and unusable for calibration,CL-002; CL-003; CL-004; CL-005; CL-012
+PF-008,reuse decision and architecture option,architecture_option and reuse_decision are emitted for controls and candidate Option B/C rows,true,claimed reuse and energy credits are zero,CL-002; CL-003; CONTROL-OPTION-A
+PF-009,security/provenance/retention/verifier gates,"security_allowed, provenance_valid, retention_valid, and verifier_valid join to object_id and decision_id",true,zero reuse_credit_granted and zero energy_credit_granted_j,CL-002; CL-003; CL-009; SECURITY-GATE-ENERGY-001
+PF-010,interval alignment and noise-floor metadata,"clock offset and interval drift are within tolerance across power, byte, latency, queue, and security streams",true,row is rejected before threshold replay,all

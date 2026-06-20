@@ -1,0 +1,42 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "blocked_evidence_classes": [
+    "non-crossing measured packages",
+    "privacy-risk",
+    "proxy/local",
+    "stale-hash",
+    "synthetic",
+    "unknown-threshold",
+    "vendor-only"
+  ],
+  "central_conclusion": "Current evidence remains downgraded; physicalized safety/filter is not a current performance/economic winner against the strong programmable accelerator baseline.",
+  "claim_count": 14,
+  "current_artifacts_reopen": false,
+  "evidence_pack_final_decision_counts": {
+    "package_invalid": 2,
+    "synthetic_counterfactual_crossed": 1,
+    "threshold_evaluable_not_crossed": 1,
+    "valid_but_insufficient": 1
+  },
+  "figure_caption": "Phase 3 evidence chain from measurement requirements through evidence-pack replay, showing that all current committed artifacts preserve the Phase 2 downgrade and only a measured eligible threshold-crossing package can reopen.",
+  "future_reopen_condition": "valid_package \u2227 hash_match \u2227 schema_compatible \u2227 known_threshold_scenario \u2227 valid_trace \u2227 admissible_ingestion_path \u2227 measured_terms \u2227 production_or_shadow_or_canary_source \u2227 provenance_attestation \u2227 privacy_attestation \u2227 threshold_crossed",
+  "ingestion_actual_reopened_count": 0,
+  "integrated_milestones": [
+    "M-MEASURE-1",
+    "M-TRACE-1",
+    "M-REOPEN-1",
+    "M-INGEST-1",
+    "M-PIPELINE-1",
+    "M-EVIDENCEPACK-1"
+  ],
+  "milestone_id": "M-PHASE3-SYNTH-1",
+  "pipeline_final_status_counts": {
+    "invalid_trace": 1,
+    "synthetic_counterfactual_crossed": 1,
+    "threshold_evaluable_not_crossed": 1,
+    "valid_but_insufficient": 1
+  },
+  "reopen_threshold_evidence_status": "modeled_proxy_not_measured_production",
+  "schema_version": 1,
+  "status": "validated"
+}

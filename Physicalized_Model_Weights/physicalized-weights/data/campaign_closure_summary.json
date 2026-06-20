@@ -1,0 +1,50 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "claim_count": 7,
+  "claim_ids": [
+    "full_frontier_fixed_weight_physicalization",
+    "safety_filter_performance_superiority",
+    "hybrid_architecture_failure_mode_value",
+    "prototype_hdl_evidence",
+    "future_measured_reopen_path",
+    "non_safety_target_robustness",
+    "campaign_deferral_state"
+  ],
+  "current_artifacts_reopen": false,
+  "current_measured_evidence_available": false,
+  "current_superiority_claim_count": 0,
+  "deferral_insufficient_trigger_ids": [
+    "vendor_benchmark_only",
+    "synthetic_counterfactual_only",
+    "local_proxy_only",
+    "template_or_dryrun_only"
+  ],
+  "deferral_measured_reopen_trigger_ids": [
+    "measured_shadow_or_canary_package",
+    "measured_production_package",
+    "new_stable_high-volume_target_evidence"
+  ],
+  "disposition_counts": {
+    "closed_under_current_evidence_deferred_until_valid_measured_package": 1,
+    "complete_but_inactive_absent_actual_measured_evidence": 1,
+    "falsified_under_stronger_programmable_baseline": 1,
+    "no_calibrated_current_superiority_claim": 1,
+    "rejected_under_current_evidence": 1,
+    "retained_as_architecture_and_failure_mode_study": 1,
+    "retained_as_bounded_prototype_evidence": 1
+  },
+  "figure_caption": "Campaign evidence flow from taxonomy and modeling through Phase 2 downgrade, Phase 3/4 reopen pathway, robustness stress test, deferral watchlist, and final current-evidence closure.",
+  "future_reopen_condition": "valid_package && hash_match && schema_compatible && known_threshold_scenario && valid_trace && admissible_ingestion_path && measured_terms && production_or_shadow_or_canary_source && provenance_attestation && privacy_attestation && nonzero_request_volume && nonzero_accepted_fast_path_volume && measured_best_programmable_baseline && threshold_crossed && UCB_alpha(H - B) < 0 && lifecycle_terminal_state=actual_reopen_candidate",
+  "interpretation": "The campaign is closed under current evidence: no current physicalized-weight performance/economic superiority claim is supported, no current artifact reopens the Phase 2 downgrade, architecture and prototype value are retained, and future evaluation is deferred until actual lifecycle-valid measured evidence appears.",
+  "milestone_id": "M-CLOSURE-1",
+  "new_reopen_gate_count": 0,
+  "phase2_hybrid_workload_wins": 0,
+  "phase4_future_reopen_condition_unchanged": true,
+  "robust_calibrated_physicalized_win_count": 0,
+  "schema_version": 1,
+  "status": "validated",
+  "stronger_baseline_winner_counts": {
+    "optimized_software_runtime": 1,
+    "programmable_accelerator": 9
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Solanum lycopersicum",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 99,
+    "family": "Solanaceae",
+    "familyKey": 7717,
+    "genus": "Solanum",
+    "genusKey": 2928997,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Solanales",
+    "orderKey": 1176,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Solanum lycopersicum L.",
+    "species": "Solanum lycopersicum",
+    "speciesKey": 2930137,
+    "status": "ACCEPTED",
+    "usageKey": 2930137
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Solanum lycopersicum"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "8279409353df6b39869bf2ea73a7da4ba23bf46bbc18f96ca3205243e6519ad1",
+  "used_insecure_tls_fallback": false
+}

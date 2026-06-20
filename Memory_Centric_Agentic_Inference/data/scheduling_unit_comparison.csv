@@ -1,0 +1,49 @@
+workload_class,scheduling_unit,alignment_score,movement_avoidance_score,reuse_capture_score,branch_capture_score,durability_capture_score,correctness_capture_score,coordination_overhead_score,total_score,dominant_object_class,preferred_unit_for_workload
+RAG with retrieved-context reuse,memory_object,1.000000,1.000000,0.201932,0.000000,0.176747,0.217419,0.180000,0.360635,semantic cache entry,memory_object
+RAG with retrieved-context reuse,agent_trajectory_dag,1.000000,1.000000,0.201932,0.000000,0.176747,0.217419,0.280000,0.260635,semantic cache entry,memory_object
+RAG with retrieved-context reuse,context_segment,0.600000,1.000000,0.201932,0.000000,0.000000,0.000000,0.120000,0.240290,semantic cache entry,memory_object
+RAG with retrieved-context reuse,cache_page,0.400000,1.000000,0.201932,0.000000,0.000000,0.000000,0.100000,0.200290,semantic cache entry,memory_object
+RAG with retrieved-context reuse,model,0.200000,1.000000,0.050483,0.000000,0.000000,0.000000,0.050000,0.167572,semantic cache entry,memory_object
+RAG with retrieved-context reuse,job,0.000000,0.450000,0.050483,0.000000,0.176747,0.000000,0.040000,0.056282,semantic cache entry,memory_object
+RAG with retrieved-context reuse,request,0.000000,0.450000,0.050483,0.000000,0.000000,0.000000,0.030000,0.045072,semantic cache entry,memory_object
+RAG with retrieved-context reuse,kernel,0.000000,0.450000,0.050483,0.000000,0.000000,0.000000,0.080000,-0.004928,semantic cache entry,memory_object
+batch summarization/offline inference control,model,1.000000,1.000000,0.020196,0.000000,0.000000,0.000000,0.050000,0.403029,intermediate scratch,model
+batch summarization/offline inference control,cache_page,1.000000,1.000000,0.080786,0.000000,0.000000,0.000000,0.100000,0.362118,intermediate scratch,model
+batch summarization/offline inference control,context_segment,1.000000,1.000000,0.080786,0.000000,0.000000,0.000000,0.120000,0.342118,intermediate scratch,model
+batch summarization/offline inference control,memory_object,1.000000,1.000000,0.080786,0.000000,0.000000,0.000000,0.180000,0.282118,intermediate scratch,model
+batch summarization/offline inference control,request,0.500000,0.450000,0.020196,0.000000,0.000000,0.000000,0.030000,0.190529,intermediate scratch,model
+batch summarization/offline inference control,agent_trajectory_dag,1.000000,1.000000,0.080786,0.000000,0.000000,0.000000,0.280000,0.182118,intermediate scratch,model
+batch summarization/offline inference control,job,0.500000,0.450000,0.020196,0.000000,0.000000,0.000000,0.040000,0.180529,intermediate scratch,model
+batch summarization/offline inference control,kernel,0.500000,0.450000,0.020196,0.000000,0.000000,0.000000,0.080000,0.140529,intermediate scratch,model
+code-agent loop with tool outputs and durable workspace,agent_trajectory_dag,1.000000,1.000000,0.371219,0.583604,0.766234,0.885714,0.280000,0.564600,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,memory_object,0.666667,1.000000,0.371219,0.000000,0.766234,0.885714,0.180000,0.477059,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,job,0.111111,0.337500,0.092805,0.000000,0.766234,0.000000,0.040000,0.149827,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,context_segment,0.333333,0.750000,0.371219,0.000000,0.000000,0.000000,0.120000,0.148183,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,cache_page,0.222222,0.750000,0.371219,0.000000,0.000000,0.000000,0.100000,0.134850,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,model,0.111111,0.750000,0.092805,0.000000,0.000000,0.000000,0.050000,0.109754,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,request,0.000000,0.337500,0.092805,0.000000,0.000000,0.000000,0.030000,0.034546,durable workspace,agent_trajectory_dag
+code-agent loop with tool outputs and durable workspace,kernel,0.000000,0.337500,0.092805,0.000000,0.000000,0.000000,0.080000,-0.015454,durable workspace,agent_trajectory_dag
+multi-agent branch/merge run,agent_trajectory_dag,1.000000,1.000000,0.338019,1.000000,0.643651,0.812190,0.280000,0.594135,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,memory_object,0.666667,1.000000,0.338019,0.000000,0.643651,0.812190,0.180000,0.444135,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,context_segment,0.333333,0.750000,0.338019,0.000000,0.000000,0.000000,0.120000,0.143203,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,job,0.111111,0.337500,0.084505,0.000000,0.643651,0.000000,0.040000,0.133872,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,cache_page,0.222222,0.750000,0.338019,0.000000,0.000000,0.000000,0.100000,0.129869,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,model,0.111111,0.750000,0.084505,0.000000,0.000000,0.000000,0.050000,0.108509,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,request,0.000000,0.337500,0.084505,0.000000,0.000000,0.000000,0.030000,0.033301,verifier state,agent_trajectory_dag
+multi-agent branch/merge run,kernel,0.000000,0.337500,0.084505,0.000000,0.000000,0.000000,0.080000,-0.016699,verifier state,agent_trajectory_dag
+single-turn chat control,model,1.000000,1.000000,0.024470,0.000000,0.000000,0.000000,0.050000,0.403670,prefix cache,model
+single-turn chat control,cache_page,1.000000,1.000000,0.097879,0.000000,0.000000,0.000000,0.100000,0.364682,prefix cache,model
+single-turn chat control,context_segment,1.000000,1.000000,0.097879,0.000000,0.000000,0.000000,0.120000,0.344682,prefix cache,model
+single-turn chat control,memory_object,1.000000,1.000000,0.097879,0.000000,0.000000,0.000000,0.180000,0.284682,prefix cache,model
+single-turn chat control,request,0.500000,0.450000,0.024470,0.000000,0.000000,0.000000,0.030000,0.191170,prefix cache,model
+single-turn chat control,agent_trajectory_dag,1.000000,1.000000,0.097879,0.000000,0.000000,0.000000,0.280000,0.184682,prefix cache,model
+single-turn chat control,job,0.500000,0.450000,0.024470,0.000000,0.000000,0.000000,0.040000,0.181170,prefix cache,model
+single-turn chat control,kernel,0.500000,0.450000,0.024470,0.000000,0.000000,0.000000,0.080000,0.141170,prefix cache,model
+verification-heavy agent,agent_trajectory_dag,1.000000,1.000000,0.303104,0.925573,0.431298,0.744427,0.280000,0.540054,verifier state,agent_trajectory_dag
+verification-heavy agent,memory_object,0.666667,1.000000,0.303104,0.000000,0.431298,0.744427,0.180000,0.401218,verifier state,agent_trajectory_dag
+verification-heavy agent,context_segment,0.333333,0.750000,0.303104,0.000000,0.000000,0.000000,0.120000,0.137966,verifier state,agent_trajectory_dag
+verification-heavy agent,cache_page,0.222222,0.750000,0.303104,0.000000,0.000000,0.000000,0.100000,0.124632,verifier state,agent_trajectory_dag
+verification-heavy agent,model,0.111111,0.750000,0.075776,0.000000,0.000000,0.000000,0.050000,0.107200,verifier state,agent_trajectory_dag
+verification-heavy agent,job,0.111111,0.337500,0.075776,0.000000,0.431298,0.000000,0.040000,0.107080,verifier state,agent_trajectory_dag
+verification-heavy agent,request,0.000000,0.337500,0.075776,0.000000,0.000000,0.000000,0.030000,0.031991,verifier state,agent_trajectory_dag
+verification-heavy agent,kernel,0.000000,0.337500,0.075776,0.000000,0.000000,0.000000,0.080000,-0.018009,verifier state,agent_trajectory_dag

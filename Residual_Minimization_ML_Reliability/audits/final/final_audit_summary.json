@@ -1,0 +1,147 @@
+{
+  "run_id": "run-2026-05-14T030813Z",
+  "milestone_status_distribution": {
+    "validated": 10,
+    "not-started": 2
+  },
+  "plan_milestone_state": {
+    "M-1": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 8
+    },
+    "M-2": {
+      "status": "not-started",
+      "confidence": "provisional",
+      "evidence_count": 0,
+      "note": "No direct ledger event; disclosed as not separately validated."
+    },
+    "M-3": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 8
+    },
+    "M-4": {
+      "status": "not-started",
+      "confidence": "provisional",
+      "evidence_count": 0,
+      "note": "No direct ledger event; disclosed as partly absorbed but not standalone validated."
+    },
+    "M-5": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 10
+    },
+    "M-6": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 6,
+      "finding": "FA-V1-001"
+    },
+    "M-7": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 3
+    },
+    "M-8": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 11
+    },
+    "M-9": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 7
+    },
+    "M-10": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 15
+    },
+    "M-11": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 21
+    },
+    "M-12": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 7
+    }
+  },
+  "residual_debt": [
+    {
+      "milestone": "M-2",
+      "kind": "not-started",
+      "narrative": "No standalone continuous norm-mismatch theorem was validated; related weak-topology and trace-leakage work only partly cover adjacent mechanisms."
+    },
+    {
+      "milestone": "M-4",
+      "kind": "not-started",
+      "narrative": "No standalone conservation-law or shock-selection campaign was completed; Burgers/admissibility analysis partly absorbs the area but does not validate the original milestone."
+    },
+    {
+      "milestone": "M-6",
+      "kind": "missing_evidence_artifact",
+      "narrative": "The latest validated M-6 event references missing reports/final/final_report.md; later synthesis artifacts preserve the claim."
+    },
+    {
+      "milestone": "CAT-18",
+      "kind": "deferred",
+      "narrative": "Inverse PDE/source-sensor variant remains deferred."
+    },
+    {
+      "milestone": "CAT-20",
+      "kind": "deferred",
+      "narrative": "Long-horizon rollout surrogate variant remains deferred."
+    }
+  ],
+  "future_work": [
+    {
+      "anchored_to": "M-2",
+      "proposal": "Prove a standalone continuous noncoercive residual theorem with a corrected norm/certificate, or retire the original M-2 label through a ledger correction."
+    },
+    {
+      "anchored_to": "M-4",
+      "proposal": "Complete a scalar conservation-law entropy/shock-selection proof or toy campaign, or retire the standalone M-4 milestone label."
+    },
+    {
+      "anchored_to": "M-6",
+      "proposal": "Repair the ledger artifact pointer from reports/final/final_report.md to the actual final report or emit an archive/correction event."
+    },
+    {
+      "anchored_to": "CAT-18",
+      "proposal": "Decide whether inverse PDE/source-sensor nullspaces warrant a standalone proof or toy."
+    },
+    {
+      "anchored_to": "CAT-20",
+      "proposal": "Build a finite-dimensional rollout toy with a multi-step stability or invariant certificate if the application risk remains important."
+    }
+  ],
+  "findings": {
+    "CRITICAL": 0,
+    "MODERATE": 1,
+    "MINOR": 0
+  },
+  "reconciliation_events_emitted": 0,
+  "lessons_emitted": [
+    "final-audit-disclosed-residual-debt",
+    "ledger-artifact-pointer-repair"
+  ],
+  "promise_check_status": "green",
+  "wall_cap_exceeded": false,
+  "figure_coverage": {
+    "figures_present": 18,
+    "figures_in_ledger": 13,
+    "milestones_with_figures": 7,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": [
+      "reports/cycles/report_cycles_1-3.pdf",
+      "reports/cycles/report_cycles_7-9.pdf",
+      "reports/cycles/report_cycles_10-12.pdf",
+      "reports/cycles/report_cycles_13-15.pdf",
+      "reports/cycles/report_cycles_16-17.pdf"
+    ]
+  }
+}

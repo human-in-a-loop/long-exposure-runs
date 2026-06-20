@@ -1,0 +1,222 @@
+gate_name,required_field,purpose,must_be_derived_from
+root_enrollment,artifact_id,stable evidence artifact identifier,artifact producer
+root_enrollment,evidence_label,must be production_target for production replay candidates,operator source classification
+root_enrollment,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+root_enrollment,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+root_enrollment,claim_id,links evidence to a specific architecture claim,claim registry
+root_enrollment,gate_name,must equal the expected gate,validator expected value
+root_enrollment,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+root_enrollment,source_system,names producing system or tool,operator evidence generator
+root_enrollment,producer_id,"person, service, or system identity creating the artifact",operator custody log
+root_enrollment,created_at,freshness and order check,artifact metadata
+root_enrollment,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+root_enrollment,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+root_enrollment,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+root_enrollment,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+root_enrollment,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+root_enrollment,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+root_enrollment,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+attestation_envelope,artifact_id,stable evidence artifact identifier,artifact producer
+attestation_envelope,evidence_label,must be production_target for production replay candidates,operator source classification
+attestation_envelope,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+attestation_envelope,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+attestation_envelope,claim_id,links evidence to a specific architecture claim,claim registry
+attestation_envelope,gate_name,must equal the expected gate,validator expected value
+attestation_envelope,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+attestation_envelope,source_system,names producing system or tool,operator evidence generator
+attestation_envelope,producer_id,"person, service, or system identity creating the artifact",operator custody log
+attestation_envelope,created_at,freshness and order check,artifact metadata
+attestation_envelope,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+attestation_envelope,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+attestation_envelope,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+attestation_envelope,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+attestation_envelope,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+attestation_envelope,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+attestation_envelope,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+trust_policy,artifact_id,stable evidence artifact identifier,artifact producer
+trust_policy,evidence_label,must be production_target for production replay candidates,operator source classification
+trust_policy,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+trust_policy,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+trust_policy,claim_id,links evidence to a specific architecture claim,claim registry
+trust_policy,gate_name,must equal the expected gate,validator expected value
+trust_policy,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+trust_policy,source_system,names producing system or tool,operator evidence generator
+trust_policy,producer_id,"person, service, or system identity creating the artifact",operator custody log
+trust_policy,created_at,freshness and order check,artifact metadata
+trust_policy,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+trust_policy,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+trust_policy,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+trust_policy,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+trust_policy,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+trust_policy,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+trust_policy,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+intake_custody,artifact_id,stable evidence artifact identifier,artifact producer
+intake_custody,evidence_label,must be production_target for production replay candidates,operator source classification
+intake_custody,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+intake_custody,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+intake_custody,claim_id,links evidence to a specific architecture claim,claim registry
+intake_custody,gate_name,must equal the expected gate,validator expected value
+intake_custody,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+intake_custody,source_system,names producing system or tool,operator evidence generator
+intake_custody,producer_id,"person, service, or system identity creating the artifact",operator custody log
+intake_custody,created_at,freshness and order check,artifact metadata
+intake_custody,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+intake_custody,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+intake_custody,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+intake_custody,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+intake_custody,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+intake_custody,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+intake_custody,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+adapter_conformance,artifact_id,stable evidence artifact identifier,artifact producer
+adapter_conformance,evidence_label,must be production_target for production replay candidates,operator source classification
+adapter_conformance,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+adapter_conformance,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+adapter_conformance,claim_id,links evidence to a specific architecture claim,claim registry
+adapter_conformance,gate_name,must equal the expected gate,validator expected value
+adapter_conformance,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+adapter_conformance,source_system,names producing system or tool,operator evidence generator
+adapter_conformance,producer_id,"person, service, or system identity creating the artifact",operator custody log
+adapter_conformance,created_at,freshness and order check,artifact metadata
+adapter_conformance,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+adapter_conformance,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+adapter_conformance,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+adapter_conformance,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+adapter_conformance,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+adapter_conformance,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+adapter_conformance,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+timebase_integrity,artifact_id,stable evidence artifact identifier,artifact producer
+timebase_integrity,evidence_label,must be production_target for production replay candidates,operator source classification
+timebase_integrity,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+timebase_integrity,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+timebase_integrity,claim_id,links evidence to a specific architecture claim,claim registry
+timebase_integrity,gate_name,must equal the expected gate,validator expected value
+timebase_integrity,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+timebase_integrity,source_system,names producing system or tool,operator evidence generator
+timebase_integrity,producer_id,"person, service, or system identity creating the artifact",operator custody log
+timebase_integrity,created_at,freshness and order check,artifact metadata
+timebase_integrity,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+timebase_integrity,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+timebase_integrity,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+timebase_integrity,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+timebase_integrity,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+timebase_integrity,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+timebase_integrity,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+redaction_integrity,artifact_id,stable evidence artifact identifier,artifact producer
+redaction_integrity,evidence_label,must be production_target for production replay candidates,operator source classification
+redaction_integrity,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+redaction_integrity,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+redaction_integrity,claim_id,links evidence to a specific architecture claim,claim registry
+redaction_integrity,gate_name,must equal the expected gate,validator expected value
+redaction_integrity,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+redaction_integrity,source_system,names producing system or tool,operator evidence generator
+redaction_integrity,producer_id,"person, service, or system identity creating the artifact",operator custody log
+redaction_integrity,created_at,freshness and order check,artifact metadata
+redaction_integrity,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+redaction_integrity,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+redaction_integrity,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+redaction_integrity,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+redaction_integrity,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+redaction_integrity,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+redaction_integrity,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+evidence_gatechain,artifact_id,stable evidence artifact identifier,artifact producer
+evidence_gatechain,evidence_label,must be production_target for production replay candidates,operator source classification
+evidence_gatechain,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+evidence_gatechain,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+evidence_gatechain,claim_id,links evidence to a specific architecture claim,claim registry
+evidence_gatechain,gate_name,must equal the expected gate,validator expected value
+evidence_gatechain,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+evidence_gatechain,source_system,names producing system or tool,operator evidence generator
+evidence_gatechain,producer_id,"person, service, or system identity creating the artifact",operator custody log
+evidence_gatechain,created_at,freshness and order check,artifact metadata
+evidence_gatechain,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+evidence_gatechain,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+evidence_gatechain,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+evidence_gatechain,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+evidence_gatechain,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+evidence_gatechain,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+evidence_gatechain,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+uncertainty_qualification,artifact_id,stable evidence artifact identifier,artifact producer
+uncertainty_qualification,evidence_label,must be production_target for production replay candidates,operator source classification
+uncertainty_qualification,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+uncertainty_qualification,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+uncertainty_qualification,claim_id,links evidence to a specific architecture claim,claim registry
+uncertainty_qualification,gate_name,must equal the expected gate,validator expected value
+uncertainty_qualification,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+uncertainty_qualification,source_system,names producing system or tool,operator evidence generator
+uncertainty_qualification,producer_id,"person, service, or system identity creating the artifact",operator custody log
+uncertainty_qualification,created_at,freshness and order check,artifact metadata
+uncertainty_qualification,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+uncertainty_qualification,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+uncertainty_qualification,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+uncertainty_qualification,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+uncertainty_qualification,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+uncertainty_qualification,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+uncertainty_qualification,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+causal_attribution,artifact_id,stable evidence artifact identifier,artifact producer
+causal_attribution,evidence_label,must be production_target for production replay candidates,operator source classification
+causal_attribution,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+causal_attribution,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+causal_attribution,claim_id,links evidence to a specific architecture claim,claim registry
+causal_attribution,gate_name,must equal the expected gate,validator expected value
+causal_attribution,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+causal_attribution,source_system,names producing system or tool,operator evidence generator
+causal_attribution,producer_id,"person, service, or system identity creating the artifact",operator custody log
+causal_attribution,created_at,freshness and order check,artifact metadata
+causal_attribution,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+causal_attribution,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+causal_attribution,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+causal_attribution,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+causal_attribution,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+causal_attribution,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+causal_attribution,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+dc001_dc002_threshold_replay,artifact_id,stable evidence artifact identifier,artifact producer
+dc001_dc002_threshold_replay,evidence_label,must be production_target for production replay candidates,operator source classification
+dc001_dc002_threshold_replay,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+dc001_dc002_threshold_replay,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+dc001_dc002_threshold_replay,claim_id,links evidence to a specific architecture claim,claim registry
+dc001_dc002_threshold_replay,gate_name,must equal the expected gate,validator expected value
+dc001_dc002_threshold_replay,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+dc001_dc002_threshold_replay,source_system,names producing system or tool,operator evidence generator
+dc001_dc002_threshold_replay,producer_id,"person, service, or system identity creating the artifact",operator custody log
+dc001_dc002_threshold_replay,created_at,freshness and order check,artifact metadata
+dc001_dc002_threshold_replay,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+dc001_dc002_threshold_replay,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+dc001_dc002_threshold_replay,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+dc001_dc002_threshold_replay,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+dc001_dc002_threshold_replay,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+dc001_dc002_threshold_replay,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+dc001_dc002_threshold_replay,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+planner_readiness_boundary,artifact_id,stable evidence artifact identifier,artifact producer
+planner_readiness_boundary,evidence_label,must be production_target for production replay candidates,operator source classification
+planner_readiness_boundary,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+planner_readiness_boundary,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+planner_readiness_boundary,claim_id,links evidence to a specific architecture claim,claim registry
+planner_readiness_boundary,gate_name,must equal the expected gate,validator expected value
+planner_readiness_boundary,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+planner_readiness_boundary,source_system,names producing system or tool,operator evidence generator
+planner_readiness_boundary,producer_id,"person, service, or system identity creating the artifact",operator custody log
+planner_readiness_boundary,created_at,freshness and order check,artifact metadata
+planner_readiness_boundary,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+planner_readiness_boundary,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+planner_readiness_boundary,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+planner_readiness_boundary,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+planner_readiness_boundary,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+planner_readiness_boundary,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+planner_readiness_boundary,measurement_window_end,end of covered measurement interval,collector/timebase evidence
+final_handoff_traceability,artifact_id,stable evidence artifact identifier,artifact producer
+final_handoff_traceability,evidence_label,must be production_target for production replay candidates,operator source classification
+final_handoff_traceability,bundle_id,links evidence to manifest bundle,intake manifest or custody record
+final_handoff_traceability,measurement_run_id,links all gates to the same measurement run,collector/intake join key
+final_handoff_traceability,claim_id,links evidence to a specific architecture claim,claim registry
+final_handoff_traceability,gate_name,must equal the expected gate,validator expected value
+final_handoff_traceability,gate_status,must be pass/admissible for replay prerequisite,gate-specific evaluator output
+final_handoff_traceability,source_system,names producing system or tool,operator evidence generator
+final_handoff_traceability,producer_id,"person, service, or system identity creating the artifact",operator custody log
+final_handoff_traceability,created_at,freshness and order check,artifact metadata
+final_handoff_traceability,valid_from,lower evidence validity bound,artifact metadata or upstream evaluator
+final_handoff_traceability,valid_until,upper evidence validity bound,artifact metadata or upstream evaluator
+final_handoff_traceability,payload_digest,binds raw gate payload or evaluated report,independently computed digest
+final_handoff_traceability,upstream_artifact_digests,binds upstream dependency artifacts,computed from upstream evidence files
+final_handoff_traceability,identity_bindings,gate-specific IDs that must match manifest and upstream artifacts,independent gate evidence
+final_handoff_traceability,measurement_window_start,start of covered measurement interval,collector/timebase evidence
+final_handoff_traceability,measurement_window_end,end of covered measurement interval,collector/timebase evidence

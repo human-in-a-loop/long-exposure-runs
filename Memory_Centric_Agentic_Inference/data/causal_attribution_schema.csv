@@ -1,0 +1,17 @@
+field_name,required,purpose
+control_arm_present,true,true only when an Option A control arm/window exists for the same claim and interval family
+pre_treatment_covariates_declared,true,"true only when workload, tenant, topology, model, cache, security, and scheduler covariates are declared before treatment"
+comparison_method,true,"randomized, blocked, matched, or diff_in_diff comparison design"
+workload_mix_smd,true,standardized mean difference for workload class mix; <=0.10 required
+object_size_smd,true,standardized mean difference for object size distribution; <=0.10 required
+tenant_concurrency_smd,true,standardized mean difference for tenant concurrency; <=0.10 required
+topology_match,true,"true only when accelerator, host, CXL/pooled-memory, and network topology buckets match"
+model_version_match,true,"true only when model, tokenizer, runtime, and serving policy versions match"
+cache_warmness_smd,true,standardized mean difference for cache warmness/prefix residency; <=0.10 required
+security_deny_rate_delta,true,absolute treatment-control security deny-rate delta; <=0.02 required
+time_window_drift_fraction,true,time-of-day and load drift fraction across control/treatment windows; <=0.10 required
+scheduler_load_smd,true,standardized mean difference for queue/scheduler load; <=0.10 required
+positivity_overlap_fraction,true,fraction of covariate space represented in both arms; >=0.80 required
+post_treatment_covariate_used,true,must be false; post-treatment adjustment can mask causal mechanisms
+randomization_unit,true,"tenant, run, object, shard, or blocked time window unit used for assignment"
+blocking_keys,true,pre-treatment keys used for blocking or matching

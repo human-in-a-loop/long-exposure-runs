@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Arabidopsis thaliana",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 99,
+    "family": "Brassicaceae",
+    "familyKey": 3112,
+    "genus": "Arabidopsis",
+    "genusKey": 3052435,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Brassicales",
+    "orderKey": 7225535,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Arabidopsis thaliana (L.) Heynh.",
+    "species": "Arabidopsis thaliana",
+    "speciesKey": 3052436,
+    "status": "ACCEPTED",
+    "usageKey": 3052436
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Arabidopsis thaliana"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "619b47f19a6c99ddbe96ffbf4add8a67f7f6d5798342350759cee88df62de188",
+  "used_insecure_tls_fallback": false
+}

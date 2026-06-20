@@ -1,0 +1,9 @@
+case,amplitude,target_amplitude,eigen_residual_l2_sq,boundary_penalty,objective_without_normalization,physical_l2_error,l2_norm_sq,normalization_certificate,classification
+amplitude_null_family,0.0,0.7978845608028654,0.0,0.0,0.0,1.0,0.0,1.0,normalization_failure
+amplitude_null_family,0.1,0.7978845608028654,0.0,0.0,0.0,0.87466858626845,0.015707963267948967,0.9688308135741293,normalization_failure
+amplitude_null_family,0.25,0.7978845608028654,0.0,0.0,0.0,0.6866714656711249,0.09817477042468103,0.8132887446985767,normalization_failure
+amplitude_null_family,0.5,0.7978845608028654,0.0,0.0,0.0,0.3733429313422499,0.39269908169872414,0.36881440536957294,normalization_failure
+amplitude_null_family,0.7978845608028654,0.7978845608028654,0.0,0.0,0.0,0.0,1.0,0.0,normalization_failure
+amplitude_null_family,0.9,0.7978845608028654,0.0,0.0,0.0,0.1279827235839502,1.2723450247038663,0.07417181248094958,normalization_failure
+amplitude_null_family,1.0,0.7978845608028654,0.0,0.0,0.0,0.2533141373155002,1.5707963267948966,0.3258084466825463,normalization_failure
+amplitude_null_family,1.25,0.7978845608028654,0.0,0.0,0.0,0.5666426716443752,2.454369260617026,2.115189946227715,normalization_failure

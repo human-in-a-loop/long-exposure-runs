@@ -1,0 +1,7 @@
+case_id,case,expected,actual,pass,evidence_label
+SC-001,no sharing -> zero cross-tenant leakage,0,0.0,true,synthetic
+SC-002,no provenance-required objects -> provenance risk zero,0,0.0,true,synthetic
+SC-003,cache salt mismatch -> reuse forbidden,invalid,invalid,true,synthetic
+SC-004,source version changed -> semantic/retrieved reuse invalid,invalid,invalid,true,synthetic
+SC-005,verifier tamper -> replay invalid,invalid,invalid,true,synthetic
+SC-006,durable horizon expired -> retention violation,violation,violation,true,synthetic

@@ -1,0 +1,81 @@
+[
+  {
+    "source_group": "chemodiversity_ethnobotany_sources",
+    "license": [
+      "CC0",
+      "source license unclear; mirror CC0 dedication only for mirror contributions"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 257781
+  },
+  {
+    "source_group": "convergence_sources",
+    "license": [
+      "CC-BY-4.0"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 209297
+  },
+  {
+    "source_group": "domestication_sources",
+    "license": [
+      "Article copyright Elsevier; factual taxon list extracted",
+      "CC-BY (DOI per accession)",
+      "CC-BY (FAO open data)"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 190
+  },
+  {
+    "source_group": "paleobotany_sources",
+    "license": [
+      "CC-BY-4.0",
+      "cite-only (literature reference; hypothesis paraphrased only, no proprietary text reproduced beyond fair-use quote)"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 83
+  },
+  {
+    "source_group": "reticulation_sources",
+    "license": [
+      "Article/supplement copyright by PNAS; factual extracted rows only",
+      "Not stated on probed pages; citation-required database use",
+      "Not stated on probed pages; cite Kew Plant DNA C-values Database"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 28
+  },
+  {
+    "source_group": "taxonomy_backbone",
+    "license": [
+      "GBIF API terms/citation guidelines; Open Tree of Life license/citation guidance; Royal Botanic Gardens, Kew POWO website terms; API sampled conservatively; WFO Plant List 2025-12; Zenodo DOI 10.5281/zenodo.18007552; see metadata.json/license",
+      "WFO Plant List 2025-12; Zenodo DOI 10.5281/zenodo.18007552; see metadata.json/license"
+    ],
+    "access_dates": [
+      "2026-05-17"
+    ],
+    "row_count": 173644
+  },
+  {
+    "source_group": "wikidata_commons",
+    "license": [
+      "CC BY 2.0",
+      "CC BY 2.5 au",
+      "CC BY 3.0"
+    ],
+    "access_dates": [
+      "2026-05-17T17:36:08.295266+00:00"
+    ],
+    "row_count": 160
+  }
+]

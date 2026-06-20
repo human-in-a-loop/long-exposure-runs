@@ -1,0 +1,6 @@
+stage,paper_object,lemma_location,kernel_condition_role,feeds,sign_information
+1,"C_{gamma1,gamma2}",Lemma 3.3 step 1,source graph is mapped onto folded quotients,surjective folded morphisms r: C -> W_r,none
+2,W_r,Lemma 3.3 step 1,every W_r path spelling ker(F_{2g}->Gamma) is closed,admissible quotient family R,admissibility only
+3,E_emb_n(W_r),Lemma 3.3 steps 2-3,factor C -> W_r -> X_phi and count injective embeddings,"polynomials p_r(n), summed p_{gamma1,gamma2}(n)",not exposed by kernel closure
+4,"Q_{gamma1,gamma2}(t)",Lemma 3.3 step 4,all admissible W_r contributions are absorbed into numerator polynomial,"Q_{gamma1,gamma2}(1/n)/Q_id(1/n)","possible evaluated signs, but no paper theorem groups them"
+5,Corollary 3.4 p(1/n)/Q_id(1/n),Corollary 3.4,applies after inserting gamma_i^k_i into Lemma 3.3,weighted surface numerator with Selberg/transform weights,only transform and evaluated Q_i signs remain

@@ -1,0 +1,59 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Rhopalocarpus alternifolius (Baker) Capuron",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Rhopalocarpus</i> <i>alternifolius</i></span> <span class=\"wfo-name-authors\" >(Baker) Capuron</span></span>",
+      "full_name_plain": "Rhopalocarpus alternifolius (Baker) Capuron",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Malvales/Sphaerosepalaceae/Rhopalocarpus/alternifolius",
+      "wfo_id": "wfo-0000627675"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Rhopalocarpus'",
+      "Word is found in index and so is part of name: 'alternifolius'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'alternifolius'.",
+      "Word contains non alpha chars and so is start of author string: '(Baker)'.",
+      "There are two name parts. This may be an autonym with species authors included. Checking for second occurrence of 'alternifolius'",
+      "Authors string looks like this: '(Baker) Capuron'",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Rhopalocarpus alternifolius' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Found candidate (wfo-0000627675) with matching author string so it becomes the match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "(Baker) Capuron",
+      "canonical_form": "Rhopalocarpus alternifolius",
+      "rank": "species"
+    },
+    "searchString": "Rhopalocarpus alternifolius (Baker) Capuron"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Rhopalocarpus alternifolius (Baker) Capuron"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "47498339b2d171e096d4a70c6de01171bd8d4e34148f3de033ba2320235cef51",
+  "used_insecure_tls_fallback": true
+}

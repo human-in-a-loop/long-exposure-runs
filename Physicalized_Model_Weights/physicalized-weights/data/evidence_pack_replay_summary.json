@@ -1,0 +1,32 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "figure_caption": "Evidence-pack replay outcomes showing that package integrity, provenance, measured-source eligibility, ingestion admissibility, and threshold crossing are conjunctive gates before any actual reopen candidate can exist.",
+  "final_package_decision_counts": {
+    "package_invalid": 2,
+    "synthetic_counterfactual_crossed": 1,
+    "threshold_evaluable_not_crossed": 1,
+    "valid_but_insufficient": 1
+  },
+  "milestone_id": "M-EVIDENCEPACK-1",
+  "pack_count": 5,
+  "package_integrity_counts": {
+    "invalid_package": 2,
+    "valid_package": 3
+  },
+  "required_actual_reopen_conjunction": [
+    "valid_package",
+    "hash_match",
+    "schema_compatible",
+    "known_threshold_scenario",
+    "valid_trace",
+    "admissible_ingestion_path",
+    "measured_terms",
+    "production_or_shadow_or_canary_source",
+    "provenance_attestation",
+    "threshold_crossed"
+  ],
+  "schema_version": 1,
+  "status": "validated",
+  "synthetic_or_proxy_actual_reopen_candidates": [],
+  "threshold_not_evaluated_count": 2
+}

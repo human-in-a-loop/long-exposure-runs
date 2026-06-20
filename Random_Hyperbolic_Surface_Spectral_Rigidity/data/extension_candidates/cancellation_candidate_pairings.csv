@@ -1,0 +1,2 @@
+weight_scheme,structure_key,n_power,coefficient_order,L_values,positive_terms,negative_terms,positive_abs_variation,negative_abs_variation,combined_signed_sum,combined_abs_variation,combined_cancellation_ratio,persists_L3_L4_L5,notes
+none,no opposite-sign structural pairings found,,,,0,0,0,0,0,0,,no,all tested structural cells were one-sided in coefficient sign

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img">
+<defs>
+<style><![CDATA[
+text{font-family:Inter,Arial,sans-serif;fill:#17201b} .title{font-size:26px;font-weight:800}.label{font-size:15px;font-weight:700}.small{font-size:12px}.tiny{font-size:10px}.muted{fill:#5f6f67}.box{fill:#f7faf8;stroke:#b8c8bf;stroke-width:1.2}.green{fill:#dff2df;stroke:#6aa56a}.amber{fill:#fff1cf;stroke:#c28b23}.red{fill:#ffe0dd;stroke:#c75b4e}.blue{fill:#dfeefd;stroke:#5b89c7}.violet{fill:#eee4ff;stroke:#8b70bf}.gray{fill:#edf0ef;stroke:#8c9892}.line{stroke:#698075;stroke-width:2;fill:none}]]></style>
+</defs>
+<rect width="900" height="520" fill="#fbfdfb"/>
+<text x="34" y="42" class="title">Final status by biological theme</text>
+<rect x="36" y="82" width="828" height="58" rx="7" class="amber"/>
+<text x="54" y="106" class="label">Track 1 · Reticulation and polyploidy</text>
+<text x="54" y="128" class="small">sidecar evidence only — No established reticulation hotspot, hybridization, or polyploid recovery claim</text>
+<rect x="36" y="150" width="828" height="58" rx="7" class="red"/>
+<text x="54" y="174" class="label">Track 2 · Ecological anachronisms</text>
+<text x="54" y="196" class="small">not supported or data-limited — No new anachronism, ghost-partner, or ecological-interaction claim</text>
+<rect x="36" y="218" width="828" height="58" rx="7" class="amber"/>
+<text x="54" y="242" class="label">Track 3 · Convergent traits</text>
+<text x="54" y="264" class="small">confound-limited — No convergence or adaptive-origin claim</text>
+<rect x="36" y="286" width="828" height="58" rx="7" class="gray"/>
+<text x="54" y="310" class="label">Track 4 · Crop wild relatives and climate</text>
+<text x="54" y="332" class="small">data-limited — No crop-substitution recommendation or climate-adaptation claim</text>
+<rect x="36" y="354" width="828" height="58" rx="7" class="violet"/>
+<text x="54" y="378" class="label">Track 5 · Chemodiversity</text>
+<text x="54" y="400" class="small">source-biased — No new phytochemical, bioactivity, or screening-priority claim</text>
+<rect x="36" y="422" width="828" height="58" rx="7" class="gray"/>
+<text x="54" y="446" class="label">Track 6 · Botanical model benchmark</text>
+<text x="54" y="468" class="small">untested under local/open constraints — No model error-rate, leaderboard, toxicity-look-alike, or vendor-comparison claim</text>
+</svg>

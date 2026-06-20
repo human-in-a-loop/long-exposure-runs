@@ -1,0 +1,24 @@
+field_name,policy_dimension,required,admissibility_rule,production_limitation
+trust_root_type,trust_root,true,"KMS, HSM, hardware attestation, or operator CA; fixture HMAC and unsupported placeholders fail closed",policy fixture only; not production trust evidence
+trust_root_supported,trust_root,true,declares whether the root class is production-supported,policy fixture only; not production trust evidence
+key_non_exportable,key_custody,true,production signing key material must be non-exportable,policy fixture only; not production trust evidence
+access_control_defined,key_custody,true,operator access control and signer authorization must be named,policy fixture only; not production trust evidence
+rotation_interval_days,key_custody,true,key rotation interval must be non-empty and positive,policy fixture only; not production trust evidence
+revocation_path_defined,key_lifecycle,true,revocation distribution and enforcement path must be defined,policy fixture only; not production trust evidence
+collector_registered,collector_identity,true,collector must be registered to the operator trust domain,policy fixture only; not production trust evidence
+collector_software_identity_bound,collector_identity,true,collector software identity must be bound to attestation,policy fixture only; not production trust evidence
+collector_firmware_identity_bound,collector_identity,true,hardware or firmware identity must be bound when used,policy fixture only; not production trust evidence
+topology_binding_defined,collector_identity,true,collector identity must bind to topology or deployment target,policy fixture only; not production trust evidence
+manifest_digest_binding,telemetry_binding,true,manifest digest binding from attestation envelope is required,policy fixture only; not production trust evidence
+payload_digest_set_binding,telemetry_binding,true,payload digest-set binding from attestation envelope is required,policy fixture only; not production trust evidence
+adapter_conformance_digest_binding,telemetry_binding,true,adapter conformance digest binding is required,policy fixture only; not production trust evidence
+schema_version_binding,telemetry_binding,true,schema version binding is required,policy fixture only; not production trust evidence
+bundle_id_registry_defined,replay_protection,true,bundle ID registry must exist,policy fixture only; not production trust evidence
+nonce_or_monotonic_sequence_defined,replay_protection,true,nonce or monotonic sequence policy must exist,policy fixture only; not production trust evidence
+tenant_isolation_defined,tenant_security,true,tenant isolation boundary must be declared,policy fixture only; not production trust evidence
+security_context_source_defined,tenant_security,true,security context source must be declared,policy fixture only; not production trust evidence
+retention_authorization_defined,tenant_security,true,retention authorization must be declared,policy fixture only; not production trust evidence
+append_only_audit_log,auditability,true,append-only audit log must capture signing and verification,policy fixture only; not production trust evidence
+verifier_identity_defined,auditability,true,verifier identity must be recorded,policy fixture only; not production trust evidence
+incident_response_owner,auditability,true,incident response owner must be named,policy fixture only; not production trust evidence
+production_limitation,boundary,true,policy admissibility does not grant production calibration or claim credit,policy fixture only; not production trust evidence

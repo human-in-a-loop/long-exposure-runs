@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-TOOLCHAIN-1",
+  "status": "validated",
+  "compiled_verilator_available": false,
+  "compiled_verilator_status": "blocked_environment",
+  "compiled_verilator_missing_tools": [
+    "make",
+    "cxx_compiler"
+  ],
+  "compiled_verilator_equivalence_passed": null,
+  "verilator_lint_passed": true,
+  "yosys_eval_passed": true,
+  "yosys_synthesis_passed": true,
+  "graphviz_artifact_checked": true,
+  "hdl_source_sha256": "0e8c8bf40b62aa9a97a203a7bdc879aa788c91b6a2ecd34522cf2ae1f03d1017",
+  "prototype_generator_sha256": "d4b132ee4d7a5faf0f5f2fac7288320b408198d5ffbdd6f2b26a3a9c35361562",
+  "yosys_eval_script_sha256": "187c42ce320440a5939b623f29aff95fe4b790cf1fa83e7b22e4432ca98ef6c9",
+  "yosys_script_sha256": "26fe8543ae545ada43b6b1644ff8f70c375e2406ce2fe34d689fcb97eb8f4fd8",
+  "verilator_testbench_sha256": "2cac60d5d77ef7ac2993958e3203c3acdfaae18ccc4bfa4153fa70b432ba8ad5",
+  "prototype_closure_script_sha256": "c559460536078a9fa6c4cee561d10ab0c0eb9556d81b3c5c0e8fec18d4720688",
+  "source_hashes": {
+    "hdl_source_sha256": "0e8c8bf40b62aa9a97a203a7bdc879aa788c91b6a2ecd34522cf2ae1f03d1017",
+    "prototype_generator_sha256": "d4b132ee4d7a5faf0f5f2fac7288320b408198d5ffbdd6f2b26a3a9c35361562",
+    "yosys_eval_script_sha256": "187c42ce320440a5939b623f29aff95fe4b790cf1fa83e7b22e4432ca98ef6c9",
+    "yosys_script_sha256": "26fe8543ae545ada43b6b1644ff8f70c375e2406ce2fe34d689fcb97eb8f4fd8",
+    "verilator_testbench_sha256": "2cac60d5d77ef7ac2993958e3203c3acdfaae18ccc4bfa4153fa70b432ba8ad5",
+    "prototype_closure_script_sha256": "c559460536078a9fa6c4cee561d10ab0c0eb9556d81b3c5c0e8fec18d4720688"
+  },
+  "current_superiority_claim_count": 0,
+  "actual_reopen_candidate_count": 0,
+  "new_reopen_gate_count": 0,
+  "prototype_claim_reopened": false,
+  "performance_claim_reopened": false,
+  "figure_caption": "local HDL/toolchain capability and verification coverage for the safety-filter prototype, distinguishing passed checks from environment-blocked compiled simulation."
+}

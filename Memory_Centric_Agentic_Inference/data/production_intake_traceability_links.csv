@@ -1,0 +1,5 @@
+trace_link_id,source_artifact,cited_artifact,downstream_use
+intake-to-adapter-conformance,data/production_intake_valid_bundle_manifest.csv,data/adapter_conformance_results.csv,operator bundle must point at adapter conformance report before ingestion
+intake-to-production-ingestion,data/production_intake_admission_results.csv,data/production_dc12_ingestion_results.csv,structural admission precedes but does not satisfy production ingestion gates
+intake-to-final-readiness,data/production_intake_downstream_boundary.csv,data/final_claim_readiness_matrix.csv,claim readiness remains blocked without trusted production_target telemetry
+intake-to-handoff,data/production_intake_traceability_links.csv,data/handoff_claim_traceability.csv,handoff can cite bundle admission reports without treating them as calibrated evidence

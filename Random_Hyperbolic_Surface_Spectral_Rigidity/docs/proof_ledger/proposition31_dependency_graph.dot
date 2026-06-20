@@ -1,0 +1,44 @@
+digraph Proposition31InternalFlow {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    labelloc="t",
+    label="Proposition 3.1 Internal Dependency Graph",
+    fontsize=20
+  ];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#334155", fontname="Helvetica", fontsize=11];
+  edge [color="#475569", fontname="Helvetica", fontsize=10];
+
+  trace_formula [label="Twisted Selberg trace formula (2.2)\nCentered statistic -> geodesic sum S_n"];
+  variance [label="Variance expansion (3.13)\nn^{-2} E S_n^2"];
+  two_trace [label="Two-trace statistics\nE[tr rho(gamma1) tr rho(gamma2)]"];
+  graph_model [label="C_{gamma1,gamma2}\nTwo labeled cycles -> folded quotients W_r"];
+  mpvh [label="Imported MPvH embedding expansion\nE_n^emb(W_r) rational in n + error"];
+  nau [label="Nau boundedness input\nkills t^{-1}, t^{-2} terms"];
+  lemma33 [label="Lemma 3.3\nQ_pair(1/n)/Q_id(1/n) + O((Cq)^{Cq} n^{-q})"];
+  support [label="Fourier support + length-word bound (3.19)\n|gamma^k| <= C Lambda0^{-1/2} q"];
+  cor34 [label="Corollary 3.4\nE S_n^2 = p(1/n)/Q_id(1/n) + error\ndeg p <= C Lambda0^{-1/2} q"];
+  uniform [label="Uniform spectral bound (3.14)/(3.21)\nn^{-2} E S_n^2 <= C Lambda0^2 ||htilde||^2"];
+  sample [label="Integer-point control (3.22)\nn^{-2}|p(1/n)| <= C Lambda0^2 ||htilde||^2"];
+  markov [label="Lemma 3.5 Markov brothers\nP=x^2 p, ||P'|| <= C q^{2kappa} sup |P(1/n)|"];
+  taylor [label="Taylor near 0\nn^{-2}|p(1/n)| <= C Lambda0^2 q^{2kappa} n^{-1} ||htilde||^2"];
+  smalln [label="Small-n fallback\nn <= 2C q^kappa handled by uniform bound"];
+  prop31 [label="Proposition 3.1\nVariance <= C Lambda0^2 q^{2kappa} n^{-1} ||htilde||^2", fillcolor="#ecfdf5", color="#047857"];
+
+  trace_formula -> variance;
+  variance -> two_trace;
+  two_trace -> graph_model;
+  graph_model -> mpvh;
+  mpvh -> lemma33;
+  nau -> lemma33;
+  lemma33 -> cor34;
+  support -> cor34;
+  cor34 -> sample;
+  uniform -> sample;
+  sample -> markov;
+  markov -> taylor [label="dominant q^{2kappa} loss"];
+  taylor -> prop31;
+  uniform -> smalln;
+  smalln -> prop31;
+  cor34 -> prop31 [label="polynomial approximation error"];
+}

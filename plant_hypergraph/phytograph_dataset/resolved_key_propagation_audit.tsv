@@ -1,0 +1,15 @@
+source_group	edge_type	resolved_rows	propagated_rows	missing_rows
+chemodiversity_ethnobotany_sources	ethnobotanical_use_assertion	9657	9657	0
+chemodiversity_ethnobotany_sources	phytochemical_assertion	13875	13875	0
+convergence_sources	fruit_morphology	21218	21218	0
+convergence_sources	life_form	17310	17310	0
+convergence_sources	trait_syndrome	22973	22973	0
+domestication_sources	crop_pedigree	2	2	0
+domestication_sources	cultivation_or_domestication	2	2	0
+domestication_sources	vavilov_center_hyperedge	2	2	0
+paleobotany_sources	anachronism_candidate_edge	6	6	0
+reticulation_sources	chromosome_count_assertion	2	2	0
+reticulation_sources	reticulate_inheritance_evidence	1	1	0
+taxonomy_backbone	synonym_cluster	113582	113582	0
+taxonomy_backbone	taxonomic_parentage	60000	60000	0
+wikidata_commons	image_evidence	10	10	0

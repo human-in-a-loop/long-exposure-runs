@@ -1,0 +1,6 @@
+item,classification,claim_status,decision,rationale
+fixed_k_expectation,proved_fixed_k_expectation,theorem_template,,Freely reducing words contribute n fixed points and nontrivial reduced fixed-k words have O_k(1) expected fixed points.
+tree_moment_regeneration,proved_tree_benchmark,exact_computation,,Dynamic programming and explicit free-reduction enumeration agree through k=10.
+centered_variance,numerical_variance_evidence,empirical,,3 of 3 tested even moments have fitted variance slope below -0.5.
+hyperbolic_transfer,hyperbolic_transfer_not_claimed,nonclaim,,"The model uses a free-group random permutation law and adjacency spectrum, not a surface-group cover or hyperbolic Laplacian."
+branch_decision,schreier_trace_benchmark_package,decision,advance_schreier_benchmark_program,Expectation theorem template plus exact tree baseline and reproducible variance evidence justify preserving M30 as a standalone benchmark.

@@ -1,0 +1,7 @@
+track	source_artifact	source_rows	atlas_projected_rows	taxon_pages_with_rows	row_class_values	provenance_field_present	caveat_field_present	prediction_vs_evidence_field_present	missing_data_indicator_present	barrier3_status	blocking_issue
+Track 1	tracks/track1/outputs/tci_per_taxon.tsv	60000	60000	60000	data_limited;medium	True	True	True	True	ready	
+Track 2	tracks/track2/data/ghost_partner_predictions.tsv	31	6	6	candidate_pending_validation;data_limited;insufficient_support;pending	True	True	True	True	ready	
+Track 3	tracks/track3/data/convergence_predictions.tsv	16	50	50	data_limited_canonical_trait;data_limited_not_prediction;diagnostic_bucket_excluded;diagnostic_not_prediction;observed_evidence_not_prediction;observed_trait_evidence_summary;pending;pending_convergent_trait_hypothesis	True	True	True	True	ready_with_nonblocking_warning	
+Track 4	tracks/track4/data/crop_substitution_candidates.tsv	3	6	5	pending_data_limited	True	True	True	True	ready_data_limited	
+Track 5	tracks/track5/data/phytochemistry_predictions.tsv	1405	1405	65	pending	True	True	True	True	ready_with_source_dominance_warning	
+Track 6	tracks/track6/data/probe_results.tsv	840	244	48	control_fail_expected;control_pass_expected;diagnostic_only	True	True	True	True	ready_with_nonblocking_warning	

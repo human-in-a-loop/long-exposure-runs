@@ -1,0 +1,77 @@
+taxon_id,accepted_name,rank,parent_taxon_id,family_id,genus_id,is_synthetic,source_layer
+taxon:F01,Synthaceae 1,family,,taxon:F01,,true,taxonomy
+taxon:G001,Genus001,genus,taxon:F01,taxon:F01,taxon:G001,true,taxonomy
+taxon:S0001,Genus001 species01,species,taxon:G001,taxon:F01,taxon:G001,true,taxonomy
+taxon:S0002,Genus001 species02,species,taxon:G001,taxon:F01,taxon:G001,true,taxonomy
+taxon:S0003,Genus001 species03,species,taxon:G001,taxon:F01,taxon:G001,true,taxonomy
+taxon:S0004,Genus001 species04,species,taxon:G001,taxon:F01,taxon:G001,true,taxonomy
+taxon:S0005,Genus001 species05,species,taxon:F01,taxon:F01,,true,taxonomy
+taxon:G002,Genus002,genus,taxon:F01,taxon:F01,taxon:G002,true,taxonomy
+taxon:S0006,Genus002 species01,species,taxon:G002,taxon:F01,taxon:G002,true,taxonomy
+taxon:S0007,Genus002 species02,species,taxon:G002,taxon:F01,taxon:G002,true,taxonomy
+taxon:S0008,Genus002 species03,species,taxon:G002,taxon:F01,taxon:G002,true,taxonomy
+taxon:S0009,Genus002 species04,species,taxon:F01,taxon:F01,,true,taxonomy
+taxon:S0010,Genus002 species05,species,taxon:G002,taxon:F01,taxon:G002,true,taxonomy
+taxon:G003,Genus003,genus,taxon:F01,taxon:F01,taxon:G003,true,taxonomy
+taxon:S0011,Genus003 species01,species,taxon:G003,taxon:F01,taxon:G003,true,taxonomy
+taxon:S0012,Genus003 species02,species,taxon:G003,taxon:F01,taxon:G003,true,taxonomy
+taxon:S0013,Genus003 species03,species,taxon:F01,taxon:F01,,true,taxonomy
+taxon:S0014,Genus003 species04,species,taxon:G003,taxon:F01,taxon:G003,true,taxonomy
+taxon:S0015,Genus003 species05,species,taxon:G003,taxon:F01,taxon:G003,true,taxonomy
+taxon:F02,Synthaceae 2,family,,taxon:F02,,true,taxonomy
+taxon:G004,Genus004,genus,taxon:F02,taxon:F02,taxon:G004,true,taxonomy
+taxon:S0016,Genus004 species01,species,taxon:G004,taxon:F02,taxon:G004,true,taxonomy
+taxon:S0017,Genus004 species02,species,taxon:G004,taxon:F02,taxon:G004,true,taxonomy
+taxon:S0018,Genus004 species03,species,taxon:G004,taxon:F02,taxon:G004,true,taxonomy
+taxon:S0019,Genus004 species04,species,taxon:F02,taxon:F02,,true,taxonomy
+taxon:S0020,Genus004 species05,species,taxon:G004,taxon:F02,taxon:G004,true,taxonomy
+taxon:G005,Genus005,genus,taxon:F02,taxon:F02,taxon:G005,true,taxonomy
+taxon:S0021,Genus005 species01,species,taxon:G005,taxon:F02,taxon:G005,true,taxonomy
+taxon:S0022,Genus005 species02,species,taxon:G005,taxon:F02,taxon:G005,true,taxonomy
+taxon:S0023,Genus005 species03,species,taxon:G005,taxon:F02,taxon:G005,true,taxonomy
+taxon:S0024,Genus005 species04,species,taxon:F02,taxon:F02,,true,taxonomy
+taxon:S0025,Genus005 species05,species,taxon:G005,taxon:F02,taxon:G005,true,taxonomy
+taxon:G006,Genus006,genus,taxon:F02,taxon:F02,taxon:G006,true,taxonomy
+taxon:S0026,Genus006 species01,species,taxon:F02,taxon:F02,,true,taxonomy
+taxon:S0027,Genus006 species02,species,taxon:G006,taxon:F02,taxon:G006,true,taxonomy
+taxon:S0028,Genus006 species03,species,taxon:F02,taxon:F02,,true,taxonomy
+taxon:S0029,Genus006 species04,species,taxon:F02,taxon:F02,,true,taxonomy
+taxon:S0030,Genus006 species05,species,taxon:G006,taxon:F02,taxon:G006,true,taxonomy
+taxon:F03,Synthaceae 3,family,,taxon:F03,,true,taxonomy
+taxon:G007,Genus007,genus,taxon:F03,taxon:F03,taxon:G007,true,taxonomy
+taxon:S0031,Genus007 species01,species,taxon:G007,taxon:F03,taxon:G007,true,taxonomy
+taxon:S0032,Genus007 species02,species,taxon:G007,taxon:F03,taxon:G007,true,taxonomy
+taxon:S0033,Genus007 species03,species,taxon:G007,taxon:F03,taxon:G007,true,taxonomy
+taxon:S0034,Genus007 species04,species,taxon:F03,taxon:F03,,true,taxonomy
+taxon:S0035,Genus007 species05,species,taxon:G007,taxon:F03,taxon:G007,true,taxonomy
+taxon:G008,Genus008,genus,taxon:F03,taxon:F03,taxon:G008,true,taxonomy
+taxon:S0036,Genus008 species01,species,taxon:G008,taxon:F03,taxon:G008,true,taxonomy
+taxon:S0037,Genus008 species02,species,taxon:G008,taxon:F03,taxon:G008,true,taxonomy
+taxon:S0038,Genus008 species03,species,taxon:G008,taxon:F03,taxon:G008,true,taxonomy
+taxon:S0039,Genus008 species04,species,taxon:G008,taxon:F03,taxon:G008,true,taxonomy
+taxon:S0040,Genus008 species05,species,taxon:F03,taxon:F03,,true,taxonomy
+taxon:G009,Genus009,genus,taxon:F03,taxon:F03,taxon:G009,true,taxonomy
+taxon:S0041,Genus009 species01,species,taxon:G009,taxon:F03,taxon:G009,true,taxonomy
+taxon:S0042,Genus009 species02,species,taxon:G009,taxon:F03,taxon:G009,true,taxonomy
+taxon:S0043,Genus009 species03,species,taxon:G009,taxon:F03,taxon:G009,true,taxonomy
+taxon:S0044,Genus009 species04,species,taxon:F03,taxon:F03,,true,taxonomy
+taxon:S0045,Genus009 species05,species,taxon:G009,taxon:F03,taxon:G009,true,taxonomy
+taxon:F04,Synthaceae 4,family,,taxon:F04,,true,taxonomy
+taxon:G010,Genus010,genus,taxon:F04,taxon:F04,taxon:G010,true,taxonomy
+taxon:S0046,Genus010 species01,species,taxon:G010,taxon:F04,taxon:G010,true,taxonomy
+taxon:S0047,Genus010 species02,species,taxon:G010,taxon:F04,taxon:G010,true,taxonomy
+taxon:S0048,Genus010 species03,species,taxon:G010,taxon:F04,taxon:G010,true,taxonomy
+taxon:S0049,Genus010 species04,species,taxon:G010,taxon:F04,taxon:G010,true,taxonomy
+taxon:S0050,Genus010 species05,species,taxon:F04,taxon:F04,,true,taxonomy
+taxon:G011,Genus011,genus,taxon:F04,taxon:F04,taxon:G011,true,taxonomy
+taxon:S0051,Genus011 species01,species,taxon:G011,taxon:F04,taxon:G011,true,taxonomy
+taxon:S0052,Genus011 species02,species,taxon:G011,taxon:F04,taxon:G011,true,taxonomy
+taxon:S0053,Genus011 species03,species,taxon:G011,taxon:F04,taxon:G011,true,taxonomy
+taxon:S0054,Genus011 species04,species,taxon:G011,taxon:F04,taxon:G011,true,taxonomy
+taxon:S0055,Genus011 species05,species,taxon:G011,taxon:F04,taxon:G011,true,taxonomy
+taxon:G012,Genus012,genus,taxon:F04,taxon:F04,taxon:G012,true,taxonomy
+taxon:S0056,Genus012 species01,species,taxon:G012,taxon:F04,taxon:G012,true,taxonomy
+taxon:S0057,Genus012 species02,species,taxon:G012,taxon:F04,taxon:G012,true,taxonomy
+taxon:S0058,Genus012 species03,species,taxon:G012,taxon:F04,taxon:G012,true,taxonomy
+taxon:S0059,Genus012 species04,species,taxon:G012,taxon:F04,taxon:G012,true,taxonomy
+taxon:S0060,Genus012 species05,species,taxon:F04,taxon:F04,,true,taxonomy

@@ -1,0 +1,56 @@
+[
+  {
+    "event_id": "evt_0001",
+    "event_type": "observation",
+    "sequence": 1,
+    "payload": {
+      "source_id": "synthetic_customer_file",
+      "trust_tier": "synthetic",
+      "content_hash": "c667bf2cecdd0e55",
+      "result_status": "observed"
+    }
+  },
+  {
+    "event_id": "evt_0002",
+    "event_type": "tool_call",
+    "sequence": 2,
+    "payload": {
+      "tool_name": "read_resource",
+      "resource_ids": [
+        "restricted_record"
+      ],
+      "access_scope": "unallowed",
+      "result_status": "denied",
+      "content_hash": null
+    }
+  },
+  {
+    "event_id": "evt_0003",
+    "event_type": "state_update",
+    "sequence": 3,
+    "payload": {
+      "target_state_key": "customer_status.approved_summary",
+      "old_hash": null,
+      "new_hash": "bd49afaa355d02d4",
+      "actor": "scripted_agent",
+      "causal_tool_call": null,
+      "result_status": "denied",
+      "protected": true
+    }
+  },
+  {
+    "event_id": "evt_0004",
+    "event_type": "final_answer",
+    "sequence": 4,
+    "payload": {
+      "resources_used": [
+        "synthetic_customer_file"
+      ],
+      "actions_performed": [
+        "read_resource",
+        "write_state"
+      ],
+      "approval_status": "approved"
+    }
+  }
+]

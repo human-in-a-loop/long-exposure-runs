@@ -1,0 +1,11 @@
+failure_mode,count
+collector_identity_mismatch,1
+digest_mismatch,1
+downstream_artifact_without_upstream_dependency,1
+evidence_window_outside_measurement_window,1
+missing_evidence_path,2
+missing_required_payload_field,1
+non_production_evidence_label,1
+nonexistent_evidence_file,1
+root_identity_mismatch,1
+topology_model_workload_mismatch,1

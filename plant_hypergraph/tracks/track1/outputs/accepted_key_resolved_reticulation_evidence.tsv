@@ -1,0 +1,4 @@
+edge_type	raw_scientific_name	accepted_taxon_key	pending_crosswalk	match_status	source_id	allowed_evidence_scope	canonical_node_ids_json
+chromosome_count_assertion	Arabidopsis thaliana	wfo:wfo-0000541830-2025-12	False	accepted_exact	ccdb	supports reported chromosome count only; does not support uniform species ploidy or a polyploidization event	"[""2n=10"", ""ccdb"", ""wfo:wfo-0000541830-2025-12""]"
+chromosome_count_assertion	Arachis hypogaea	wfo:wfo-0000174378-2025-12	False	accepted_exact	ccdb	supports reported chromosome count only; does not support uniform species ploidy or a polyploidization event	"[""2n=40"", ""ccdb"", ""wfo:wfo-0000174378-2025-12""]"
+ploidy_state_assertion	Arabidopsis thaliana	wfo:wfo-0000541830-2025-12	False	accepted_exact	plant_dna_cvalues	supports caveated ploidy-context evidence only; does not establish event timing or progenitors	"[""diploid"", ""wfo:wfo-0000541830-2025-12"", ""wood_2009_polyploid_speciation""]"

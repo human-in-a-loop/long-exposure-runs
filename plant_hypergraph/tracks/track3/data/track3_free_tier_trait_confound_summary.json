@@ -1,0 +1,28 @@
+{
+  "canonical_traits_evaluated": [
+    "c4_photosynthesis",
+    "cam_photosynthesis",
+    "succulence",
+    "fleshy_fruit",
+    "drupe",
+    "samara",
+    "capsule",
+    "achene",
+    "follicle",
+    "aril",
+    "elaiosome",
+    "myrmecochory",
+    "ant_domatia",
+    "carnivory",
+    "parasitism"
+  ],
+  "capsule_status": "data_limited_pending_prior",
+  "controlled_convergence_ready_traits": [],
+  "drupe_status": "data_limited_pending_prior",
+  "h3_decision": "confound_limited",
+  "h3_decision_rationale": "No canonical trait satisfies all controlled-readiness gates; CP-clearing traits remain limited by accepted-key projection loss and one-source dominance in the frozen free-tier substrate.",
+  "ledger_policy": "prediction_ledger.tsv and speculation_ledger.tsv unchanged",
+  "matrix_rows": 3069,
+  "milestone": "_plan/track3-free-tier-trait-confound-matrix",
+  "run_id": "run-phytograph-cycle30-track3-free-tier-trait-confound-matrix"
+}

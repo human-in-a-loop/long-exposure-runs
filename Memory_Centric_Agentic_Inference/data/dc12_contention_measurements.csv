@@ -1,0 +1,4 @@
+measurement_id,phase,access_pattern,worker_count,buffer_size_bytes,working_set_bytes,operation_count,bytes_touched,wall_time_s,ops_per_second,latency_p50_us,latency_p95_us,latency_p99_us,contention_proxy_p95_over_1w,contention_proxy_p99_over_1w,residency_retained_bytes,power_source,evidence_label
+DC002-contention-1w,contention,mixed_random_read_write,1,8388608,8388608,3500,224000,0.051524145,67929.317,0.806,1.351,7.363,1.0,1.0,8388608,unavailable,host_local_proxy
+DC002-contention-2w,contention,mixed_random_read_write,2,8388608,8388608,7000,448000,0.07132971,98135.826,0.843,1.606,8.499,1.1887,1.1543,8388608,unavailable,host_local_proxy
+DC002-contention-4w,contention,mixed_random_read_write,4,8388608,8388608,14000,896000,0.174619586,80174.282,0.82,2.481,11.971,1.8364,1.6258,8388608,unavailable,host_local_proxy

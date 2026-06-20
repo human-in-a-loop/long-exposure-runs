@@ -1,0 +1,81 @@
+fixture_case_id,check_id,collector_category,passed,blocks_calibration,fail_closed_consequence,blocked_reason
+valid-adapter-candidate,PF-001,interval alignment and noise-floor metadata,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-002,accelerator energy/power counters,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-003,host energy/power counters,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-004,source/destination tier byte counters,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-005,CXL or pooled-memory latency p50/p95/p99,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-006,queue depth and tenant concurrency,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-007,workload/object classification,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-008,reuse decision and architecture option,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-009,security/provenance/retention/verifier gates,true,true,synthetic candidate only,
+valid-adapter-candidate,PF-010,interval alignment and noise-floor metadata,true,true,synthetic candidate only,
+invalid-missing-stream,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-stream,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_stream_class:source/destination tier byte counters
+invalid-missing-interval,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-missing-interval,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_join_key:interval_id
+invalid-clock-mismatch,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-clock-mismatch,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,clock_alignment_failed
+invalid-missing-security-context,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-missing-security-context,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,missing_join_key:security_context_id
+invalid-stale-security,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-stale-security,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,stale_security_context
+invalid-untrusted-provenance,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-untrusted-provenance,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,untrusted_collector_provenance
+invalid-evidence-target,PF-001,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-002,accelerator energy/power counters,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-003,host energy/power counters,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-004,source/destination tier byte counters,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-005,CXL or pooled-memory latency p50/p95/p99,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-006,queue depth and tenant concurrency,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-007,workload/object classification,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-008,reuse decision and architecture option,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-009,security/provenance/retention/verifier gates,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target
+invalid-evidence-target,PF-010,interval alignment and noise-floor metadata,false,true,adapter row rejected before production ingestion,fixture_attempted_production_target

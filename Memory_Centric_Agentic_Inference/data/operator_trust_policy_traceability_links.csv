@@ -1,0 +1,5 @@
+trace_link_id,source_artifact,cited_artifact,downstream_use
+trust-policy-to-attestation-envelope,data/operator_attestation_replacement_map.csv,data/production_attestation_results.csv,mechanical test signatures remain insufficient until a real trust policy and real deployment evidence exist
+trust-policy-to-intake-custody,data/operator_trust_policy_results.csv,data/production_intake_chain_of_custody_requirements.csv,"policy requirements compose with manifest, checksum, schema, join, noise, provenance, and security custody gates"
+trust-policy-to-deployment-preflight,data/operator_trust_policy_boundary.csv,data/production_telemetry_preflight_checks.csv,admissible policy profiles still cannot bypass production telemetry preflight and calibration gates
+trust-policy-to-final-readiness,data/operator_trust_policy_traceability_links.csv,data/final_claim_readiness_matrix.csv,final claim readiness remains blocked without production_target evidence and downstream security/noise/threshold validation

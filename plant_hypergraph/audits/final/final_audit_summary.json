@@ -1,0 +1,183 @@
+{
+  "run_id": "run-phytograph-cycle1-delta-final-audit",
+  "milestone_status_distribution": {
+    "validated": 10,
+    "in-progress": 1,
+    "not-started": 0,
+    "action_required": 0,
+    "deferred": 0,
+    "reopened": 0,
+    "superseded": 0,
+    "invalidated": 0
+  },
+  "plan_milestone_state": {
+    "_plan/final-free-tier-closure-synthesis": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 5,
+      "latest_evidence": [
+        "promise_ledger.jsonl:225",
+        "promise_ledger.jsonl:226",
+        "reports/reopen/final_free_tier_closure_synthesis.md",
+        "data/reopen/final_free_tier_track_status.tsv",
+        "reports/reopen/figures/final_free_tier_track_status.png"
+      ]
+    },
+    "_plan/taxonomy-results-site": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 4,
+      "latest_evidence": [
+        "promise_ledger.jsonl:231",
+        "taxonomy_results_site/",
+        "taxonomy_results_site/data/site_summary.json",
+        "reports/taxonomy_results_site_qa.md"
+      ]
+    },
+    "_plan/taxonomy-results-site-closure": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:232",
+        "reports/taxonomy_results_site_closure_note.md"
+      ]
+    },
+    "_plan/final-campaign-handoff-manifest": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 3,
+      "latest_evidence": [
+        "promise_ledger.jsonl:233",
+        "promise_ledger.jsonl:234",
+        "reports/final_campaign_handoff_manifest.md"
+      ]
+    },
+    "_run/report_cycles_33-35": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:227",
+        "reports/cycles/report_cycles_33-35.md"
+      ]
+    },
+    "_run/report_cycles_38-40": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:235",
+        "reports/cycles/report_cycles_38-40.md"
+      ]
+    },
+    "_run/report_cycles_41-43": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:237",
+        "reports/cycles/report_cycles_41-43.md"
+      ]
+    },
+    "_run/report_cycles_44-46": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:239",
+        "reports/cycles/report_cycles_44-46.md"
+      ]
+    },
+    "_run/report_cycles_47-49": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:240",
+        "reports/cycles/report_cycles_47-49.md"
+      ]
+    },
+    "_run/report_cycles_50-52": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 2,
+      "latest_evidence": [
+        "promise_ledger.jsonl:242",
+        "reports/cycles/report_cycles_50-52.md"
+      ]
+    },
+    "_manager/validator-warnings": {
+      "status": "in-progress",
+      "confidence": "medium",
+      "evidence_count": 4,
+      "latest_evidence": [
+        "promise_ledger.jsonl:228-230",
+        "promise_ledger.jsonl:236",
+        "promise_ledger.jsonl:238",
+        "promise_ledger.jsonl:241"
+      ],
+      "watch_only": true
+    }
+  },
+  "residual_debt": [
+    {
+      "milestone": "_manager/validator-warnings",
+      "kind": "in-progress-at-end",
+      "narrative": "Inherited validator warnings remain watch-only; required validators exited 0 during the delta test pass."
+    },
+    {
+      "milestone": "baseline-plan-ledger-consistency",
+      "kind": "inherited-baseline-debt",
+      "narrative": "The prior baseline plan-ledger consistency issue was not reopened by delta artifacts and is not counted as a new finding."
+    },
+    {
+      "milestone": "report-mtime-drift-24-32",
+      "kind": "timestamp-drift",
+      "narrative": "Reports 24-32 have post-baseline mtimes but were inspected and preserve no-promotion, header-only ledger boundaries."
+    },
+    {
+      "milestone": "_plan/taxonomy-results-site-closure",
+      "kind": "timestamp-drift",
+      "narrative": "Closure-note mtime is later than its ledger event timestamp; content and tests support maintenance-boundary closure only."
+    },
+    {
+      "milestone": "session-transcript-coverage",
+      "kind": "record-gap",
+      "narrative": "Full native transcripts for some session IDs were not fetched; local artifacts, reports, and ledger events were sufficient for delta verification."
+    }
+  ],
+  "future_work": [
+    {
+      "anchored_to": "_manager/validator-warnings",
+      "proposal": "Continue monitoring inherited validator warnings and reopen only if a validator exits nonzero or a warning points to a current delta artifact."
+    },
+    {
+      "anchored_to": "baseline-plan-ledger-consistency",
+      "proposal": "If the campaign is reopened, resolve exact active plan-ID coverage as maintenance before adding new scientific work."
+    },
+    {
+      "anchored_to": "session-transcript-coverage",
+      "proposal": "Export relevant session transcripts if future public audit requirements demand provenance beyond local artifacts and ledger records."
+    }
+  ],
+  "findings": {
+    "CRITICAL": 0,
+    "MODERATE": 0,
+    "MINOR": 0
+  },
+  "reconciliation_events_emitted": 0,
+  "lessons_emitted": [],
+  "promise_check_status": "green",
+  "wall_cap_exceeded": false,
+  "figure_coverage": {
+    "figures_present": 10,
+    "figures_in_ledger": 10,
+    "milestones_with_figures": 2,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": [
+      "reports/reopen/figures/reopen_branch_outcomes.png"
+    ]
+  }
+}

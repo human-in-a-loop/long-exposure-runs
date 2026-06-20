@@ -1,0 +1,8 @@
+failure_category,invalid_envelope_count,fail_closed
+signature,1,true
+key,3,true
+digest,2,true
+identity,2,true
+expiry,1,true
+replay,1,true
+boundary,1,true

@@ -1,0 +1,6 @@
+telemetry_id,required_production_telemetry,schema_fields,covered_by_schema,deployment_specific,rank,instrumentation_plan
+accelerator_power_counters,accelerator/host power counters,joules_measured; power_counter_source; energy_noise_floor_j,true,true,1,collect joined target telemetry before promoting CL-012
+tier_specific_bytes,"bytes by source tier, destination tier, object class",source_tier; destination_tier; bytes_moved; resident_bytes,true,true,2,collect joined target telemetry before promoting CL-012
+cxl_pooled_memory_latency,CXL or pooled-memory p50/p95/p99 under target topology,latency_p50_us; latency_p95_us; latency_p99_us; hardware_topology_id,true,true,3,collect joined target telemetry before promoting CL-012
+tenant_concurrency,tenant concurrency and queue depth,tenant_count; queue_depth,true,true,4,collect joined target telemetry before promoting CL-012
+workload_object_labels,workload_class and object_class labels,workload_class; object_class; reuse_decision,true,true,5,collect joined target telemetry before promoting CL-012

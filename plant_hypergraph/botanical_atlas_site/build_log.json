@@ -1,0 +1,116 @@
+{
+  "atlas_build_id": "cb5ca85a58db",
+  "pages_written": 60000,
+  "search_index_rows": 60000,
+  "elapsed_seconds": 62.6,
+  "instruments_detected": {
+    "1": {
+      "present": true,
+      "paths": [
+        "tracks/track1/outputs/tci_per_taxon.tsv",
+        "tracks/track1/outputs/tci_hotspots_genus.tsv"
+      ],
+      "expected": [
+        "tracks/track1/outputs/tci_per_taxon.tsv",
+        "tracks/track1/outputs/tci_hotspots_genus.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose Track 1 TCI instrument rows as data-limited instrument results, not validated reticulation claims.",
+      "sibling_clone": "M3.T1 (sibling fan-out clone)"
+    },
+    "2": {
+      "present": true,
+      "paths": [
+        "tracks/track2/data/ghost_partner_candidate_scores.tsv",
+        "tracks/track2/data/ghost_partner_predictions.tsv"
+      ],
+      "expected": [
+        "tracks/track2/data/ghost_partner_candidate_scores.tsv",
+        "tracks/track2/data/ghost_partner_predictions.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose accepted-key resolved candidate-prioritization rows as predictions awaiting validation.",
+      "sibling_clone": "M3.T2 (sibling fan-out clone)"
+    },
+    "3": {
+      "present": true,
+      "paths": [
+        "tracks/track3/data/convergence_pressure_scores.tsv",
+        "tracks/track3/data/convergence_predictions.tsv"
+      ],
+      "expected": [
+        "tracks/track3/data/convergence_pressure_scores.tsv",
+        "tracks/track3/data/convergence_predictions.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose Track 3 pending convergence-prior rows on carrier pages as hypotheses awaiting validation.",
+      "sibling_clone": "M3.T3 (sibling fan-out clone)"
+    },
+    "4": {
+      "present": true,
+      "paths": [
+        "tracks/track4/data/crop_substitution_candidates.tsv"
+      ],
+      "expected": [
+        "tracks/track4/data/crop_substitution_candidates.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose data-limited crop-substitution candidate rows on crop and candidate taxon pages.",
+      "sibling_clone": "M3.T4 (sibling fan-out clone)"
+    },
+    "5": {
+      "present": true,
+      "paths": [
+        "tracks/track5/data/phytochemistry_predictions.tsv"
+      ],
+      "expected": [
+        "tracks/track5/data/phytochemistry_predictions.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose pending screening-prior phytochemistry rows with source-dominance caveats.",
+      "sibling_clone": "M3.T5 (sibling fan-out clone)"
+    },
+    "6": {
+      "present": true,
+      "paths": [
+        "tracks/track6/data/probe_results.tsv",
+        "tracks/track6/data/offline_probe_question_bank.tsv"
+      ],
+      "expected": [
+        "tracks/track6/data/probe_results.tsv",
+        "tracks/track6/data/offline_probe_question_bank.tsv"
+      ],
+      "mode": "prediction_adapter",
+      "reason": "Expose deterministic offline probe result rows joined to accepted-key question-bank rows.",
+      "sibling_clone": "M3.T6 (sibling fan-out clone)"
+    }
+  },
+  "per_track_coverage": {
+    "1": {
+      "predicted": 60000
+    },
+    "2": {
+      "data-limited": 59994,
+      "predicted": 6
+    },
+    "3": {
+      "data-limited": 56748,
+      "enriched": 3198,
+      "predicted": 50,
+      "observed": 4
+    },
+    "4": {
+      "data-limited": 59995,
+      "predicted": 5
+    },
+    "5": {
+      "data-limited": 58680,
+      "enriched": 1255,
+      "predicted": 65
+    },
+    "6": {
+      "data-limited": 59952,
+      "predicted": 48
+    }
+  }
+}

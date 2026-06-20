@@ -1,0 +1,26 @@
+L,variant,n_power,canonical_key,pair_classes,V,C,length_sums,rank_proxy,coeff_order_1,base_order1_av,poly_length_order1_av_at_sigma,exp_length_order1_av_at_beta,folded_complexity_order1_av_at_tau,notes
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a7;4b8;5a1;6b2;7a5;8b6,2,9,10,10,rank_two_noncyclic,-16,128,4.9349541047e-09,1.44045023641e-05,5e-09,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a5;4b7;5a1;6b2;7b6,2,8,9,9,rank_two_noncyclic,-12,96,9.6e-09,5.35094754499e-05,8.71146492203e-09,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a7;4b6;5a1;6b2;7a5,2,8,9,9,rank_two_noncyclic,-12,96,9.6e-09,5.35094754499e-05,8.71146492203e-09,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a5;4b6;5a1;6b2,2,7,8,8,rank_two_noncyclic,-9,72,2.06493983337e-08,0.000198775625187,1.67638063431e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a1;4b6;5b2;6b5,2,7,8,8,rank_two_noncyclic,-8,64,1.83550207411e-08,0.00017668944461,1.49011611938e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a6;4b2;5a1;6a5,2,7,8,8,rank_two_noncyclic,-8,64,1.83550207411e-08,0.00017668944461,1.49011611938e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a1;4b5;5b2,2,6,7,7,rank_two_noncyclic,-6,48,4.47034835815e-08,0.000656361411153,3.2524973542e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a5;4b2;5a1,2,6,7,7,rank_two_noncyclic,-6,48,4.47034835815e-08,0.000656361411153,3.2524973542e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a1;0b3;1a0;2b0;3b5;4b2;5b4,2,6,7,7,rank_two_noncyclic,-4,32,2.98023223877e-08,0.000437574274102,2.16833156947e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b2;1a0;2b0;3a5;4a1;5a4,2,6,7,7,rank_two_noncyclic,-4,32,2.98023223877e-08,0.000437574274102,2.16833156947e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b4;1a0;2b0;3a1;4b2,2,5,6,6,rank_two_noncyclic,-4,32,1.13284261589e-07,0.00216731956771,7.44217725956e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a1;0b3;1a0;2b0;3b4;4b2,2,5,6,6,rank_two_noncyclic,-3,24,8.49631961914e-08,0.00162548967578,5.58163294467e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b2;1a0;2b0;3a4;4a1,2,5,6,6,rank_two_noncyclic,-3,24,8.49631961914e-08,0.00162548967578,5.58163294467e-08,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a1;0b3;1a0;2b0;3b2,2,4,5,5,rank_two_noncyclic,-2,16,2.64610747007e-07,0.00536740204644,1.6e-07,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a3;0b2;1a0;2b0;3a1,2,4,5,5,rank_two_noncyclic,-2,16,2.64610747007e-07,0.00536740204644,1.6e-07,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a1;0b2;1a0;2b0,2,3,4,4,rank_two_noncyclic,-1,8,8.192e-07,0.0132924581854,4.76837158203e-07,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a0;0b0,2,1,2,2,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a0;0b1;1b0,2,2,3,3,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a0;0b2;1b0;2b1,2,3,4,4,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a0;0b2;1b0;2b3;3b1,2,4,5,5,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a0;0b2;1b0;2b4;3b1;4b3,2,5,6,6,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a1;0b0;1a0,2,2,3,3,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a2;0b0;1a0;2a1,2,3,4,4,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a2;0b0;1a0;2a3;3a1,2,4,5,5,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder
+5,rank_two_noncyclic_remainder,1,0a2;0b0;1a0;2a4;3a1;4a3,2,5,6,6,rank_two_noncyclic,0,0,0,0,0,dominant-profile contribution uses L=5 unweighted d=1 rank-two remainder

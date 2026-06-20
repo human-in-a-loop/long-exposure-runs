@@ -1,0 +1,5 @@
+metric,median_value,unit,iterations,source_type
+python_int8_dot_product,1.191298,us/request,20000,local_measured
+fallback_dispatch_branch,0.102549,us/request,20000,local_measured
+dot_plus_dispatch,1.240755,us/request,20000,local_measured
+csv_json_audit_logging,8.830143,us/request,2000,local_measured

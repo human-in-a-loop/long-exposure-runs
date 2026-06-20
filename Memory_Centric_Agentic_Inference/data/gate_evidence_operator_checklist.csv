@@ -1,0 +1,79 @@
+gate_order,gate_name,check_order,operator_action,check
+1,root_enrollment,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+1,root_enrollment,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+1,root_enrollment,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+1,root_enrollment,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+1,root_enrollment,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+1,root_enrollment,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+2,attestation_envelope,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+2,attestation_envelope,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+2,attestation_envelope,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+2,attestation_envelope,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+2,attestation_envelope,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+2,attestation_envelope,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+3,trust_policy,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+3,trust_policy,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+3,trust_policy,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+3,trust_policy,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+3,trust_policy,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+3,trust_policy,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+4,intake_custody,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+4,intake_custody,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+4,intake_custody,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+4,intake_custody,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+4,intake_custody,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+4,intake_custody,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+5,adapter_conformance,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+5,adapter_conformance,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+5,adapter_conformance,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+5,adapter_conformance,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+5,adapter_conformance,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+5,adapter_conformance,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+6,timebase_integrity,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+6,timebase_integrity,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+6,timebase_integrity,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+6,timebase_integrity,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+6,timebase_integrity,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+6,timebase_integrity,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+7,redaction_integrity,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+7,redaction_integrity,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+7,redaction_integrity,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+7,redaction_integrity,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+7,redaction_integrity,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+7,redaction_integrity,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+8,evidence_gatechain,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+8,evidence_gatechain,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+8,evidence_gatechain,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+8,evidence_gatechain,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+8,evidence_gatechain,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+8,evidence_gatechain,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+9,uncertainty_qualification,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+9,uncertainty_qualification,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+9,uncertainty_qualification,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+9,uncertainty_qualification,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+9,uncertainty_qualification,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+9,uncertainty_qualification,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+10,causal_attribution,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+10,causal_attribution,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+10,causal_attribution,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+10,causal_attribution,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+10,causal_attribution,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+10,causal_attribution,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+11,dc001_dc002_threshold_replay,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+11,dc001_dc002_threshold_replay,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+11,dc001_dc002_threshold_replay,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+11,dc001_dc002_threshold_replay,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+11,dc001_dc002_threshold_replay,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+11,dc001_dc002_threshold_replay,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+12,planner_readiness_boundary,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+12,planner_readiness_boundary,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+12,planner_readiness_boundary,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+12,planner_readiness_boundary,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+12,planner_readiness_boundary,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+12,planner_readiness_boundary,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."
+13,final_handoff_traceability,1,produce_artifact,"Generate the gate-specific evidence file from the named source, not from manifest booleans."
+13,final_handoff_traceability,2,compute_digest,Compute sha256 over artifact bytes and copy only the digest into the manifest.
+13,final_handoff_traceability,3,bind_identity,"Verify bundle, measurement, collector, topology, workload/model, claim, and operator IDs match upstream evidence."
+13,final_handoff_traceability,4,bind_time_window,Verify artifact validity covers the measurement window and is not stale at replay time.
+13,final_handoff_traceability,5,bind_dependency,Record upstream artifact digest links before downstream gates are marked pass.
+13,final_handoff_traceability,6,preserve_boundary,"Treat evidence_artifact_complete as replay input readiness only; do not mark production_calibrated, production_ready, or claim_credit_allowed."

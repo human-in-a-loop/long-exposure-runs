@@ -1,0 +1,53 @@
+digraph theorem2_dependency_graph {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.45", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#334155", fontname="Helvetica", fontsize=10];
+  edge [color="#475569", fontname="Helvetica", fontsize=9];
+
+  theorem2 [label="Theorem 2\n||u_j||_inf <= C Lambda^{3/2} n^{-alpha}"];
+  pretrace [label="Lemma 2.2 / (2.5)\nTwisted pre-trace formula"];
+  testfn [label="§2.4 test functions\nf_Lambda0 and h_Lambda"];
+  uniform24 [label="Lemma 2.4\npointwise spectral sum <= Lambda0 ||htilde||"];
+  centered [label="Centered local mass\nidentity/local Weyl term subtracted"];
+  vn [label="V_n (4.2)\nfourth power of centered local mass"];
+  sterm [label="S (4.1)\nprimitive-power diagonal term"];
+  prop41 [label="Proposition 4.1\nE int a(V_n-S)^2 <= Lambda0^8 q^{4kappa} n^{-2}"];
+  expansion410 [label="Expansion (4.10)\neight kernel factors"];
+  uniform411 [label="§4.2.1 uniform bound\n(4.10) <= Lambda0^8 ||htilde||^8"];
+  prop42 [label="Proposition 4.2\npolynomial approximation p(1/n)/(n^2 Q_id)"];
+  support [label="Support + length-word\n|gamma_l| <= C Lambda0^{-1/2} q"];
+  eightword [label="Eight-word common fixed points\nC_{gamma1,...,gamma8}"];
+  mp23 [label="MP23 rank-two fixed-point input\nn^{-2} after diagonal removal"];
+  markov [label="§4.2.3 Markov step\nsecond derivative -> q^{4kappa}"];
+  smooth45 [label="Smooth rewrite (4.5)\nC^{2kappa+11} norm, Lambda0^{-2} n^{-2}"];
+  cheb [label="Chebyshev + fiber/window union\nprobability 1 - n^{-1/10}"];
+  localmass [label="Local mass bound\nint a|u_j|^2 <= Lambda0 n^{-alpha0}"];
+  sbound [label="Deterministic S bound\n|S|^{1/4} <= Lambda0 n^{-alpha0}"];
+  sobolev [label="Sobolev + elliptic estimate\n||u||_inf^2 <= Lambda0^2 local mass"];
+
+  pretrace -> centered;
+  testfn -> centered;
+  testfn -> uniform24;
+  uniform24 -> uniform411;
+  centered -> vn;
+  vn -> prop41;
+  sterm -> prop41 [label="subtract diagonal"];
+  pretrace -> expansion410;
+  vn -> expansion410;
+  sterm -> expansion410 [label="remove primitive-power four-tuples"];
+  expansion410 -> uniform411;
+  expansion410 -> prop42;
+  support -> prop42;
+  eightword -> prop42;
+  mp23 -> eightword;
+  prop42 -> markov;
+  uniform411 -> markov [label="sample control"];
+  markov -> prop41;
+  prop41 -> smooth45;
+  smooth45 -> cheb;
+  testfn -> cheb [label="short spectral windows"];
+  cheb -> localmass;
+  sbound -> localmass;
+  sterm -> sbound;
+  localmass -> sobolev;
+  sobolev -> theorem2;
+}

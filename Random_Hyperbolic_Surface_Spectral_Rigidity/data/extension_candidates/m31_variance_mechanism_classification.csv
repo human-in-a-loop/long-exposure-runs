@@ -1,0 +1,6 @@
+item,classification,claim_status,decision,rationale
+paired_word_expansion,derived_finite_pair_expansion,theorem_template,,Variance expands as n^-2 times a finite sum of fixed-word covariances over length-k word pairs.
+small_k_pair_templates,m4_style_order_certification,checked_k_2_4_6,,Reduced pair classes are aggregated by multiplicity and checked through same/distinct-basepoint labelled constraint exponents.
+m30_slope_reinterpretation,finite_size_crossover_consistent_with_n_minus_2,empirical_reinterpretation,,"M30 slopes are compared to n^-1, n^-2, and mixed fits; best least-squares models on the small grid are a*n^-1+b*n^-2."
+hyperbolic_transfer,hyperbolic_transfer_not_claimed,scope_firewall,,The argument is for the free two-permutation Schreier benchmark and does not supply a surface-group quotient-family theorem.
+branch_decision,schreier_variance_mechanism_package,decision,advance_schreier_variance_theorem,"All checked k=2,4,6 pair classes have M4-compatible covariance templates of order O(1) before the outer n^-2 normalization."

@@ -1,0 +1,7 @@
+category	staged_rows	joined_rows	unjoined_rows	shortfall
+crop_pedigree	43	2	41	focal accepted-key gaps
+vavilov_center_hyperedge	43	2	41	focal accepted-key gaps
+cultivation_or_domestication	104	2	102	focal accepted-key gaps
+crop_wild_relative_pairs	69	3	66	crop and/or wild ancestor accepted-key gaps
+heldout_validation_seed	22	2	20	held-out focal accepted-key gaps
+climate_envelope	375	36	339	all rows data-limited until occurrence coordinates and bioclim values are extracted

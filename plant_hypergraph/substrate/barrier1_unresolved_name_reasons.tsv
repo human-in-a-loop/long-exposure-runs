@@ -1,0 +1,9 @@
+source_group	ambiguity_reason	rows
+chemodiversity_ethnobotany_sources	no exact WFO accepted-name or synonym-cluster match	207695
+chemodiversity_ethnobotany_sources	missing raw scientific name	28733
+convergence_sources	no exact WFO accepted-name or synonym-cluster match	359044
+domestication_sources	no exact WFO accepted-name or synonym-cluster match	184
+paleobotany_sources	no exact WFO accepted-name or synonym-cluster match	77
+reticulation_sources	no exact WFO accepted-name or synonym-cluster match	25
+taxonomy_backbone	missing raw scientific name	62
+wikidata_commons	no exact WFO accepted-name or synonym-cluster match	150

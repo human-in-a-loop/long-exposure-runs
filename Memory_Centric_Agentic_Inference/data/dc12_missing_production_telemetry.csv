@@ -1,0 +1,6 @@
+telemetry_id,required_production_telemetry,why_missing_blocks_calibration,present_in_local_proxy,linked_measurement_requirement,evidence_label
+accelerator_power_counters,accelerator/host power counters,needed to convert time/bytes proxy into measured joules,false,found,production_gap
+tier_specific_bytes,"bytes by source tier, destination tier, object class","needed to distinguish HBM, DRAM, CXL, NVMe, and remote movement",false,found,production_gap
+cxl_pooled_memory_latency,CXL or pooled-memory p50/p95/p99 under target topology,needed to replace local DRAM/cache contention proxy,false,required,production_gap
+tenant_concurrency,tenant concurrency and queue depth,needed to measure isolation and contention under production sharing,false,found,production_gap
+workload_object_labels,workload_class and object_class labels,needed to join telemetry to memory-centric planner decisions,false,required,production_gap

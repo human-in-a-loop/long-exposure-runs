@@ -1,0 +1,15 @@
+state_order,state_id,required,description,source_artifact,blocks_if_missing
+1,raw_bundle_seen,true,A candidate telemetry bundle exists and has a stable path identity.,future production bundle,true
+2,attestation_mechanically_valid,true,Test or production envelope signature and digest bindings mechanically verify.,data/production_attestation_results.csv,true
+3,trust_policy_admissible,true,Operator trust policy is complete enough to be admissible.,data/operator_trust_policy_results.csv,true
+4,intake_structurally_admissible,true,Bundle manifest passes structural intake custody checks.,data/production_intake_admission_results.csv,true
+5,adapter_conformant,true,Collector/backend profile passes portability conformance.,data/adapter_conformance_results.csv,true
+6,adapter_normalized,true,Adapter-shaped telemetry has normalized canonical fields.,data/telemetry_adapter_normalized_rows.csv,true
+7,production_ingestion_accepted,true,Production telemetry ingestion accepts the row as eligible evidence.,data/production_dc12_ingestion_results.csv,true
+8,security_provenance_passed,true,"Security, provenance, retention, and verifier gates allow credit accounting.",data/production_dc12_ingestion_results.csv,true
+9,noise_floor_passed,true,Measurement exceeds declared noise floor.,data/production_dc12_ingestion_results.csv,true
+10,threshold_replay_passed,true,DC-001/DC-002 threshold replay crosses a configured threshold.,data/production_dc12_threshold_replay.csv,true
+11,planner_update_eligible,true,Planner/runtime update may consider the measurement without granting final claim credit.,data/final_claim_readiness_matrix.csv,true
+12,final_readiness_update_eligible,true,Final readiness matrix may update only after all prior production gates pass.,data/final_claim_readiness_matrix.csv,true
+13,handoff_traceable,true,"Claim traceability links evidence, narrative, validation, figures, and limitations.",data/handoff_claim_traceability.csv,true
+14,production_claim_credit_allowed,true,Claim credit may be granted only for real production_target evidence after all gates pass.,future production bundle,true

@@ -1,0 +1,9 @@
+{
+  "intended_endpoint": "https://paleobiodb.org/data1.2/occs/list.csv",
+  "intended_queries": [
+    "base_name=Mammalia&interval=Cenozoic&show=class,coords,strat,refattr&limit=10000",
+    "base_name=Magnoliophyta&interval=Cenozoic&show=class,coords,strat,refattr&limit=10000"
+  ],
+  "actual_access": "BLOCKED: sandbox has no network access. Staged from literature-curated reference list.",
+  "remediation_for_barrier_1": "Re-ingest from PBDB API when network is available. Canonical key matching will deduplicate against staged proxy rows."
+}

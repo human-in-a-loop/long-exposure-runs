@@ -1,0 +1,407 @@
+{
+  "figure_coverage": {
+    "figures_in_ledger": 105,
+    "figures_present": 104,
+    "milestones_with_figures": 38,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": []
+  },
+  "findings": {
+    "CRITICAL": 1,
+    "MINOR": 0,
+    "MODERATE": 1
+  },
+  "future_work": [
+    {
+      "anchored_to": "M6-final-synthesis",
+      "proposal": "Restore or regenerate a final report artifact matching reports/final/final_report.* and update the final artifact index so the M6 plan success criteria are directly satisfied."
+    },
+    {
+      "anchored_to": "M6-final-synthesis",
+      "proposal": "Correct the latest M6 ledger artifact references to point at existing final package artifacts, then rerun promise_check and artifact-reference checks to close the evidence-hygiene gap."
+    }
+  ],
+  "lessons_emitted": [
+    "final-slice-parser-boundaries",
+    "current-stage-file-gate-ordering",
+    "success-criteria-glob-vs-specific-artifacts"
+  ],
+  "milestone_status_distribution": {
+    "in-progress": 1,
+    "validated": 76
+  },
+  "plan_milestone_state": {
+    "M1-paper-map": {
+      "artifact_ref_count": 4,
+      "confidence": "provisional",
+      "evidence_count": 4,
+      "latest_agent": "worker",
+      "latest_cycle": 1,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M10-restricted-quotient-aggregate": {
+      "artifact_ref_count": 7,
+      "confidence": "provisional",
+      "evidence_count": 7,
+      "latest_agent": "worker",
+      "latest_cycle": 21,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M11-trace-like-weighted-quotient-class": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "auditor",
+      "latest_cycle": 22,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M12-restricted-aggregate-theorem-template": {
+      "artifact_ref_count": 7,
+      "confidence": "provisional",
+      "evidence_count": 7,
+      "latest_agent": "worker",
+      "latest_cycle": 23,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M13-cancellation-mechanism-diagnostics": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 24,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M14-external-decay-thresholds": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 25,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M15-kim-tao-bridge-requirement": {
+      "artifact_ref_count": 7,
+      "confidence": "provisional",
+      "evidence_count": 7,
+      "latest_agent": "worker",
+      "latest_cycle": 26,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M16-local-spectral-window-corollaries": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "auditor",
+      "latest_cycle": 27,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M17-local-window-variance-input": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 28,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M18-test-function-localization-feasibility": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "auditor",
+      "latest_cycle": 29,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M19-smoothed-window-paley-wiener-lemma": {
+      "artifact_ref_count": 10,
+      "confidence": "provisional",
+      "evidence_count": 10,
+      "latest_agent": "worker",
+      "latest_cycle": 30,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M2-proof-ledger": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "auditor",
+      "latest_cycle": 5,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M20-long-support-trace-variance-requirement": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "auditor",
+      "latest_cycle": 31,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M21-trace-side-long-support-variance-template": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "worker",
+      "latest_cycle": 32,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M22-trace-corollary34-uniform-coefficient-variation-target": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "worker",
+      "latest_cycle": 33,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M23-localized-trace-numerator-quotient-family-model": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 34,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M24-localized-transform-geodesic-weight-decay-obstruction": {
+      "artifact_ref_count": 8,
+      "confidence": "provisional",
+      "evidence_count": 8,
+      "latest_agent": "auditor",
+      "latest_cycle": 35,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M25-local-window-route-synthesis-and-branch-decision": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "auditor",
+      "latest_cycle": 36,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M26-post-local-extension-reprioritization": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 37,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M27-multiplicity-and-cluster-corollaries-from-rigidity": {
+      "artifact_ref_count": 6,
+      "confidence": "provisional",
+      "evidence_count": 6,
+      "latest_agent": "auditor",
+      "latest_cycle": 38,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M28-theorem2-lp-mass-distribution-corollaries": {
+      "artifact_ref_count": 7,
+      "confidence": "provisional",
+      "evidence_count": 7,
+      "latest_agent": "auditor",
+      "latest_cycle": 39,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M29-pretrace-local-mass-intermediate-from-theorem2-proof": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "worker",
+      "latest_cycle": 40,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M3-computational-probes": {
+      "artifact_ref_count": 4,
+      "confidence": "provisional",
+      "evidence_count": 4,
+      "latest_agent": "worker",
+      "latest_cycle": 11,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M30-schreier-benchmark-theoremization": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "auditor",
+      "latest_cycle": 41,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M31-schreier-variance-mechanism-theoremization": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "auditor",
+      "latest_cycle": 42,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M32-schreier-fixed-pair-covariance-lemma": {
+      "artifact_ref_count": 9,
+      "confidence": "provisional",
+      "evidence_count": 9,
+      "latest_agent": "auditor",
+      "latest_cycle": 43,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M33-schreier-benchmark-package-synthesis": {
+      "artifact_ref_count": 12,
+      "confidence": "provisional",
+      "evidence_count": 12,
+      "latest_agent": "worker",
+      "latest_cycle": 44,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M34-finite-nonshrinking-spectral-statistics": {
+      "artifact_ref_count": 10,
+      "confidence": "provisional",
+      "evidence_count": 10,
+      "latest_agent": "auditor",
+      "latest_cycle": 45,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M35-surface-corollary34-numerator-obstruction": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "auditor",
+      "latest_cycle": 46,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M36-direct-small-x-surface-numerator-target": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "worker",
+      "latest_cycle": 47,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M37-signed-pointwise-cancellation-surface-aggregate": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "worker",
+      "latest_cycle": 48,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M38-surface-native-grouping-problem": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "worker",
+      "latest_cycle": 49,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M39-surface-relation-kernel-spc-probe": {
+      "artifact_ref_count": 11,
+      "confidence": "provisional",
+      "evidence_count": 11,
+      "latest_agent": "worker",
+      "latest_cycle": 50,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M4-formal-certification": {
+      "artifact_ref_count": 6,
+      "confidence": "provisional",
+      "evidence_count": 6,
+      "latest_agent": "worker",
+      "latest_cycle": 12,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M5-extension-candidates": {
+      "artifact_ref_count": 5,
+      "confidence": "provisional",
+      "evidence_count": 5,
+      "latest_agent": "worker",
+      "latest_cycle": 16,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M6-final-synthesis": {
+      "artifact_ref_count": 5,
+      "confidence": "provisional",
+      "evidence_count": 4,
+      "latest_agent": "auditor",
+      "latest_cycle": 17,
+      "missing_artifact_refs": [
+        "reports/final/final_report.md"
+      ],
+      "status": "validated"
+    },
+    "M7-product-ratio-bounds": {
+      "artifact_ref_count": 5,
+      "confidence": "provisional",
+      "evidence_count": 5,
+      "latest_agent": "worker",
+      "latest_cycle": 18,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M8-quotient-family-bridge": {
+      "artifact_ref_count": 5,
+      "confidence": "provisional",
+      "evidence_count": 5,
+      "latest_agent": "auditor",
+      "latest_cycle": 19,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    },
+    "M9-aggregate-product-ratio-obstruction": {
+      "artifact_ref_count": 6,
+      "confidence": "provisional",
+      "evidence_count": 6,
+      "latest_agent": "worker",
+      "latest_cycle": 20,
+      "missing_artifact_refs": [],
+      "status": "validated"
+    }
+  },
+  "promise_check_status": "green",
+  "reconciliation_events_emitted": 0,
+  "residual_debt": [
+    {
+      "kind": "latest_event_missing_artifact_reference",
+      "milestone": "M6-final-synthesis",
+      "narrative": "M6-final-synthesis latest ledger event references missing artifact path(s): ['reports/final/final_report.md']. Existing artifacts still provide partial support.",
+      "severity": "MODERATE"
+    },
+    {
+      "kind": "success_criteria_artifact_missing",
+      "milestone": "M36-direct-small-x-surface-numerator-target",
+      "narrative": "Plan success criteria references missing artifact `p(1/n)/Q_id(1/n)` for terminal milestone M36-direct-small-x-surface-numerator-target.",
+      "severity": "CRITICAL"
+    }
+  ],
+  "run_id": "run-2026-05-15T153635Z",
+  "wall_cap_exceeded": false
+}

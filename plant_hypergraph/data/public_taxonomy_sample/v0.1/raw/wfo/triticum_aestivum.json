@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Triticum aestivum",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Triticum</i> <i>aestivum</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+      "full_name_plain": "Triticum aestivum L.",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Poales/Poaceae/Triticum/aestivum",
+      "wfo_id": "wfo-0000905667"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Triticum'",
+      "Word is found in index and so is part of name: 'aestivum'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'aestivum'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Triticum aestivum' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000905667) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Triticum aestivum",
+      "rank": "species"
+    },
+    "searchString": "Triticum aestivum"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Triticum aestivum"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "aa9d971b860b3bfa23efd3bd0a84d17ba057aea824cd503258e8ba6ca8a41918",
+  "used_insecure_tls_fallback": true
+}

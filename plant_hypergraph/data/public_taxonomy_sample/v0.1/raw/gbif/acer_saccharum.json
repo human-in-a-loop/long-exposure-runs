@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Acer saccharum",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 100,
+    "family": "Sapindaceae",
+    "familyKey": 6657,
+    "genus": "Acer",
+    "genusKey": 3189834,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Sapindales",
+    "orderKey": 933,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Acer saccharum Marshall",
+    "species": "Acer saccharum",
+    "speciesKey": 3189859,
+    "status": "ACCEPTED",
+    "usageKey": 3189859
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Acer saccharum"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "aec5b437ed52413e0afbc221e47285a9cfe23c2431d66f264ee7d48d71bb8834",
+  "used_insecure_tls_fallback": false
+}

@@ -1,0 +1,302 @@
+{
+  "access_date": "2026-05-17",
+  "created_at": "2026-05-17T00:54:18Z",
+  "examples": [
+    "Quercus robur",
+    "Rosa canina",
+    "Rhopalocarpus alternifolius (Baker) Capuron"
+  ],
+  "probes": [
+    {
+      "documentation_refs": [
+        "[1]",
+        "[2]"
+      ],
+      "endpoint": "https://list.worldfloraonline.org/matching_rest.php",
+      "records": [
+        {
+          "failure_reason": "TLS verification failed locally; retried with verify=False",
+          "http_status": 200,
+          "input_name": "Quercus robur",
+          "ok": true,
+          "response_sha256": "60b540af1bf237743bfe6b0fe1adc67a98825fbe48f28a6c8e72a52e2c25f6c8",
+          "selected_fields": {
+            "candidate_count": 2,
+            "first_candidate_name": "Quercus robur L.",
+            "first_candidate_wfo_id": "wfo-0000292858",
+            "full_name_plain": null,
+            "method": null,
+            "placement": null,
+            "wfo_id": null
+          },
+          "used_insecure_tls_fallback": true
+        },
+        {
+          "failure_reason": "ReadTimeout: The read operation timed out",
+          "http_status": null,
+          "input_name": "Rosa canina",
+          "ok": false,
+          "response_sha256": null,
+          "selected_fields": {
+            "candidate_count": 0,
+            "first_candidate_name": null,
+            "first_candidate_wfo_id": null,
+            "full_name_plain": null,
+            "method": null,
+            "placement": null,
+            "wfo_id": null
+          },
+          "used_insecure_tls_fallback": false
+        },
+        {
+          "failure_reason": "TLS verification failed locally; retried with verify=False",
+          "http_status": 200,
+          "input_name": "Rhopalocarpus alternifolius (Baker) Capuron",
+          "ok": true,
+          "response_sha256": "0fef22e4b7b32f6953164f2a05cb6ca4766a2b331b79704907cee35278c95ac7",
+          "selected_fields": {
+            "candidate_count": 0,
+            "first_candidate_name": null,
+            "first_candidate_wfo_id": null,
+            "full_name_plain": "Rhopalocarpus alternifolius (Baker) Capuron",
+            "method": null,
+            "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Malvales/Sphaerosepalaceae/Rhopalocarpus/alternifolius",
+            "wfo_id": "wfo-0000627675"
+          },
+          "used_insecure_tls_fallback": true
+        }
+      ],
+      "source": "WFO Plant List"
+    },
+    {
+      "documentation_refs": [
+        "[6]",
+        "[7]",
+        "[8]",
+        "[10]",
+        "[11]"
+      ],
+      "occurrence_endpoint": "https://api.gbif.org/v1/occurrence/search",
+      "occurrence_records": [
+        {
+          "failure_reason": null,
+          "http_status": 200,
+          "input_name": "Quercus robur",
+          "ok": true,
+          "response_sha256": "183c94f7c55e4cd5b6f203a88a294192d53df7418999a9e7a53898771f2be7e1",
+          "selected_fields": {
+            "basisOfRecord": "HUMAN_OBSERVATION",
+            "count": 1505807,
+            "countryCode": "FI",
+            "datasetKey": "df12ca07-f133-4550-ab3b-fde13f0e76ba",
+            "gbifID": "5936513633",
+            "license": "http://creativecommons.org/licenses/by/4.0/legalcode",
+            "species": "Quercus robur"
+          }
+        },
+        {
+          "failure_reason": null,
+          "http_status": 200,
+          "input_name": "Rosa canina",
+          "ok": true,
+          "response_sha256": "8bf5fe15348089d58a63c1bffaa80a4b863649cc3206b18755af8ff92d0e80c0",
+          "selected_fields": {
+            "basisOfRecord": "HUMAN_OBSERVATION",
+            "count": 377574,
+            "countryCode": "DE",
+            "datasetKey": "6ac3f774-d9fb-4796-b3e9-92bf6c81c084",
+            "gbifID": "5937963184",
+            "license": "http://creativecommons.org/licenses/by/4.0/legalcode",
+            "species": "Rosa canina"
+          }
+        }
+      ],
+      "source": "GBIF",
+      "species_endpoint": "https://api.gbif.org/v1/species/match",
+      "species_records": [
+        {
+          "failure_reason": null,
+          "http_status": 200,
+          "input_name": "Quercus robur",
+          "ok": true,
+          "response_sha256": "7b4a00c90025eddefc7e9e31e3fd0482302889c4a9e9cb62c25e9d7a04ab9e02",
+          "selected_fields": {
+            "acceptedUsageKey": null,
+            "canonicalName": "Quercus robur",
+            "confidence": 99,
+            "matchType": "EXACT",
+            "rank": "SPECIES",
+            "scientificName": "Quercus robur L.",
+            "status": "ACCEPTED",
+            "usageKey": 2878688
+          }
+        },
+        {
+          "failure_reason": null,
+          "http_status": 200,
+          "input_name": "Rosa canina",
+          "ok": true,
+          "response_sha256": "1ed22fafa96f2f15cc4c8d3f0689ab4df9ac4f30fa54a75aa35a535cb931e003",
+          "selected_fields": {
+            "acceptedUsageKey": null,
+            "canonicalName": "Rosa canina",
+            "confidence": 99,
+            "matchType": "EXACT",
+            "rank": "SPECIES",
+            "scientificName": "Rosa canina L.",
+            "status": "ACCEPTED",
+            "usageKey": 3002461
+          }
+        }
+      ]
+    },
+    {
+      "documentation_refs": [
+        "[12]",
+        "[13]",
+        "[14]",
+        "[15]"
+      ],
+      "endpoint": "https://api.opentreeoflife.org/v3/tnrs/match_names",
+      "failure_reason": null,
+      "http_status": 200,
+      "ok": true,
+      "records": [
+        {
+          "input_name": "Quercus robur",
+          "selected_fields": {
+            "is_synonym": false,
+            "matched_name": "Quercus robur",
+            "ott_id": 239659,
+            "rank": "species",
+            "score": 1.0,
+            "tax_sources": [
+              "ncbi:38942",
+              "gbif:2878688",
+              "irmng:11400298",
+              "irmng:10249585"
+            ],
+            "taxon_name": "Quercus robur"
+          }
+        },
+        {
+          "input_name": "Rosa canina",
+          "selected_fields": {
+            "is_synonym": false,
+            "matched_name": "Rosa canina",
+            "ott_id": 333885,
+            "rank": "species",
+            "score": 1.0,
+            "tax_sources": [
+              "ncbi:74635",
+              "gbif:3002461",
+              "irmng:10187848",
+              "irmng:11165374",
+              "irmng:10191309",
+              "irmng:10583886",
+              "irmng:10182801",
+              "irmng:10188358",
+              "irmng:10897732",
+              "irmng:10188439",
+              "irmng:11266044",
+              "irmng:10186247",
+              "irmng:10196616",
+              "irmng:10187887",
+              "irmng:10181494",
+              "irmng:10181496",
+              "irmng:10184751",
+              "irmng:10189661",
+              "irmng:11234115",
+              "irmng:10183317",
+              "irmng:10186709",
+              "irmng:10186708",
+              "irmng:10188016",
+              "irmng:11233533",
+              "irmng:10429706",
+              "irmng:10584697",
+              "irmng:10181738",
+              "irmng:11118653",
+              "irmng:10583131",
+              "irmng:11305296",
+              "irmng:10191027",
+              "irmng:10851149",
+              "irmng:10425748",
+              "irmng:10183065",
+              "irmng:10187709",
+              "irmng:10857986",
+              "irmng:10187609",
+              "irmng:11118652",
+              "irmng:10183323",
+              "irmng:11035792",
+              "irmng:10584642",
+              "irmng:11385382",
+              "irmng:10586301",
+              "irmng:10797418",
+              "irmng:11427663",
+              "irmng:10766056",
+              "irmng:11420079",
+              "irmng:10191075",
+              "irmng:10188222",
+              "irmng:10187069",
+              "irmng:10718709",
+              "irmng:11311153",
+              "irmng:10182820",
+              "irmng:10182786",
+              "irmng:11036337",
+              "irmng:10583354",
+              "irmng:10176659",
+              "irmng:10191863",
+              "irmng:10186251",
+              "irmng:10716833",
+              "irmng:10191044",
+              "irmng:11373441",
+              "irmng:10185084",
+              "irmng:11078169",
+              "irmng:11160918",
+              "irmng:10184511",
+              "irmng:10956609",
+              "irmng:11288755",
+              "irmng:11427893",
+              "irmng:10585831",
+              "irmng:10425141",
+              "irmng:11134661",
+              "irmng:10191303",
+              "irmng:11234668",
+              "irmng:10187726",
+              "irmng:10192476",
+              "irmng:11160422",
+              "irmng:10190043",
+              "irmng:11254716",
+              "irmng:11434680",
+              "irmng:10188245",
+              "irmng:10186799",
+              "irmng:10182295",
+              "irmng:10182294",
+              "irmng:10192368"
+            ],
+            "taxon_name": "Rosa canina"
+          }
+        }
+      ],
+      "response_sha256": "5941835546b20d0908e720fbbb967277152f48019843be52f5554dcca91f3b06",
+      "source": "Open Tree of Life",
+      "taxonomy_metadata": {
+        "author": "open tree of life project",
+        "name": "ott",
+        "source": "ott3.7draft3",
+        "version": "3.7",
+        "weburl": "https://tree.opentreeoflife.org/about/taxonomy-version/ott3.7"
+      }
+    }
+  ],
+  "script": "scripts/probe_public_sources.py",
+  "summary": {
+    "all_sources_reached": true,
+    "note": "Failures are recorded per endpoint; the script exits zero if JSON output was written.",
+    "source_reached": {
+      "GBIF": true,
+      "Open Tree of Life": true,
+      "WFO Plant List": true
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Pinus</i> <i>sylvestris</i></span> <span class=\"wfo-name-authors\" >Thunb.</span></span>",
+        "full_name_plain": "Pinus sylvestris Thunb.",
+        "placement": "Code/Plantae/Pteridobiotina/Pinophyta/Pinopsida/Pinidae/Pinales/Pinaceae/Pinus/thunbergii$Pinus/sylvestris",
+        "wfo_id": "wfo-0000481646"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Pinus</i> <i>sylvestris</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+        "full_name_plain": "Pinus sylvestris L.",
+        "placement": "Code/Plantae/Pteridobiotina/Pinophyta/Pinopsida/Pinidae/Pinales/Pinaceae/Pinus/sylvestris",
+        "wfo_id": "wfo-0000481648"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Pinus sylvestris",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Pinus'",
+      "Word is found in index and so is part of name: 'sylvestris'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'sylvestris'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Pinus sylvestris' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Pinus sylvestris",
+      "rank": "species"
+    },
+    "searchString": "Pinus sylvestris"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Pinus sylvestris"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "06888e7694cdd0056dfa22d9fbd4a2a21caee2316fa9ad02720afafef8c65d9f",
+  "used_insecure_tls_fallback": true
+}

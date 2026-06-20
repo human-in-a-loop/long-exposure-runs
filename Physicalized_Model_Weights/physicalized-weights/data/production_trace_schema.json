@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-TRACE-1",
+  "description": "Production serving trace schema for evidence that could challenge the Phase 2 downgraded safety/filter claim.",
+  "privacy_disallowed_columns": [
+    "prompt",
+    "raw_prompt",
+    "raw_text",
+    "user_id",
+    "raw_user_id",
+    "tenant_id",
+    "tenant_name",
+    "api_key",
+    "email",
+    "ip_address",
+    "content"
+  ],
+  "reopen_requirements": {
+    "nonzero_requests": true,
+    "nonzero_accepted_fast_path_requests": true,
+    "consistent_policy_window": true,
+    "accepted_fast_path_requires_audit_and_passing_gates": true,
+    "required_energy_status": "measured",
+    "required_baseline_fields": [
+      "software_baseline_latency_ns",
+      "accelerator_baseline_latency_ns",
+      "accelerator_energy_proxy_or_measured_pj"
+    ],
+    "required_audit_fields": [
+      "audit_logged",
+      "audit_latency_ns"
+    ]
+  },
+  "columns": [
+    {"name": "timestamp_ns", "required": true, "type": "integer", "unit": "nanoseconds_since_trace_start", "min": 0, "privacy_class": "operational_timing"},
+    {"name": "scenario_id", "required": true, "type": "string", "unit": "category", "privacy_class": "non_sensitive_category"},
+    {"name": "policy_version_hash", "required": true, "type": "string", "unit": "hash", "pattern": "hash:", "privacy_class": "hashed_policy_version"},
+    {"name": "request_class", "required": true, "type": "category", "allowed": ["standard", "near_threshold", "adversarial", "audit_heavy", "control"], "unit": "category", "privacy_class": "non_sensitive_category"},
+    {"name": "feature_vector_hash", "required": true, "type": "string", "unit": "hash", "pattern": "hash:", "privacy_class": "hashed_feature_vector"},
+    {"name": "feature_length", "required": true, "type": "integer", "unit": "features", "min": 0, "privacy_class": "aggregate_count"},
+    {"name": "route_decision", "required": true, "type": "category", "allowed": ["physicalized_fast_path", "programmable_fallback", "fail_closed_block", "monitor_escalate"], "unit": "category", "privacy_class": "operational_route"},
+    {"name": "fallback_taken", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "operational_route"},
+    {"name": "near_threshold", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "aggregate_flag"},
+    {"name": "audit_logged", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "audit_flag"},
+    {"name": "health_gate_passed", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "operational_health"},
+    {"name": "drift_gate_passed", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "operational_health"},
+    {"name": "feature_extract_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min_exclusive": 0, "privacy_class": "operational_timing"},
+    {"name": "route_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min_exclusive": 0, "privacy_class": "operational_timing"},
+    {"name": "audit_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min": 0, "privacy_class": "operational_timing"},
+    {"name": "software_baseline_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min_exclusive": 0, "privacy_class": "baseline_timing"},
+    {"name": "accelerator_baseline_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min_exclusive": 0, "privacy_class": "baseline_timing"},
+    {"name": "hybrid_fast_path_latency_ns", "required": true, "type": "float", "unit": "nanoseconds_per_request", "min_exclusive": 0, "privacy_class": "hybrid_timing"},
+    {"name": "accelerator_energy_proxy_or_measured_pj", "required": true, "type": "float", "unit": "picojoules_per_request", "min_exclusive": 0, "privacy_class": "baseline_energy"},
+    {"name": "accelerator_energy_status", "required": true, "type": "category", "allowed": ["measured", "proxy", "missing"], "unit": "status", "privacy_class": "measurement_status"},
+    {"name": "hybrid_energy_proxy_or_measured_pj", "required": true, "type": "float", "unit": "picojoules_per_request", "min_exclusive": 0, "privacy_class": "hybrid_energy"},
+    {"name": "hybrid_energy_status", "required": true, "type": "category", "allowed": ["measured", "proxy", "missing"], "unit": "status", "privacy_class": "measurement_status"},
+    {"name": "utilization_fraction", "required": true, "type": "float", "unit": "fraction", "min": 0, "max": 1, "privacy_class": "aggregate_utilization"},
+    {"name": "update_event", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "policy_event"},
+    {"name": "rollback_event", "required": true, "type": "boolean", "unit": "boolean", "privacy_class": "policy_event"},
+    {"name": "measurement_environment", "required": true, "type": "category", "allowed": ["production", "shadow_production", "staging", "synthetic"], "unit": "category", "privacy_class": "environment_label"}
+  ]
+}

@@ -1,0 +1,78 @@
+workload_class,object_class,architecture_option,risk_class,synthetic_risk_score,mitigation_overhead_proxy,expected_security_loss_proxy,retained_value_proxy,security_adjusted_value_proxy,reversal_due_to_security,claim_type,evidence_label
+RAG,weights,B_memory_object_aware_runtime,leakage,1.485,0.31,0.668,10.8,9.822,false,simulated,synthetic
+batch summarization/offline inference control,weights,A_conventional_request_model_kv_serving,leakage,1.1,0.23,0.495,-2.0,-2.725,false,simulated,synthetic
+code-agent loop,weights,C_trajectory_dag_memory_fabric,leakage,1.925,0.437,0.866,31.8,30.497,false,simulated,synthetic
+multi-agent branch/merge,weights,C_trajectory_dag_memory_fabric,leakage,1.925,0.437,0.866,50.0,48.697,false,simulated,synthetic
+single-turn chat control,weights,A_conventional_request_model_kv_serving,leakage,1.1,0.23,0.495,-2.0,-2.725,false,simulated,synthetic
+verification-heavy,weights,C_trajectory_dag_memory_fabric,leakage,1.925,0.437,0.866,33.8,32.497,false,simulated,synthetic
+RAG,KV cache,B_memory_object_aware_runtime,leakage,2.97,0.419,1.337,10.8,9.045,false,simulated,synthetic
+RAG,KV cache,B_memory_object_aware_runtime,cross-tenant aliasing,2.97,0.419,1.337,10.8,9.045,false,simulated,synthetic
+batch summarization/offline inference control,KV cache,A_conventional_request_model_kv_serving,leakage,2.2,0.31,0.99,-2.0,-3.3,false,simulated,synthetic
+batch summarization/offline inference control,KV cache,A_conventional_request_model_kv_serving,cross-tenant aliasing,2.2,0.31,0.99,-2.0,-3.3,false,simulated,synthetic
+code-agent loop,KV cache,C_trajectory_dag_memory_fabric,leakage,3.85,0.589,1.733,31.8,29.478,false,simulated,synthetic
+code-agent loop,KV cache,C_trajectory_dag_memory_fabric,cross-tenant aliasing,3.85,0.589,1.733,31.8,29.478,false,simulated,synthetic
+multi-agent branch/merge,KV cache,C_trajectory_dag_memory_fabric,leakage,3.85,0.589,1.733,50.0,47.678,false,simulated,synthetic
+multi-agent branch/merge,KV cache,C_trajectory_dag_memory_fabric,cross-tenant aliasing,3.85,0.589,1.733,50.0,47.678,false,simulated,synthetic
+single-turn chat control,KV cache,A_conventional_request_model_kv_serving,leakage,2.2,0.31,0.99,-2.0,-3.3,false,simulated,synthetic
+single-turn chat control,KV cache,A_conventional_request_model_kv_serving,cross-tenant aliasing,2.2,0.31,0.99,-2.0,-3.3,false,simulated,synthetic
+verification-heavy,KV cache,C_trajectory_dag_memory_fabric,leakage,3.85,0.589,1.733,33.8,31.478,false,simulated,synthetic
+verification-heavy,KV cache,C_trajectory_dag_memory_fabric,cross-tenant aliasing,3.85,0.589,1.733,33.8,31.478,false,simulated,synthetic
+RAG,prefix cache,B_memory_object_aware_runtime,leakage,4.455,0.527,2.005,10.8,8.268,false,simulated,synthetic
+RAG,prefix cache,B_memory_object_aware_runtime,cross-tenant aliasing,4.455,0.527,2.005,10.8,8.268,false,simulated,synthetic
+RAG,prefix cache,B_memory_object_aware_runtime,stale reuse,2.835,1.269,0.709,10.8,8.822,false,simulated,synthetic
+code-agent loop,prefix cache,C_trajectory_dag_memory_fabric,leakage,5.775,0.741,2.599,31.8,28.46,false,simulated,synthetic
+code-agent loop,prefix cache,C_trajectory_dag_memory_fabric,cross-tenant aliasing,5.775,0.741,2.599,31.8,28.46,false,simulated,synthetic
+code-agent loop,prefix cache,C_trajectory_dag_memory_fabric,stale reuse,3.675,1.786,0.919,31.8,29.095,false,simulated,synthetic
+multi-agent branch/merge,prefix cache,C_trajectory_dag_memory_fabric,leakage,5.775,0.741,2.599,50.0,46.66,false,simulated,synthetic
+multi-agent branch/merge,prefix cache,C_trajectory_dag_memory_fabric,cross-tenant aliasing,5.775,0.741,2.599,50.0,46.66,false,simulated,synthetic
+multi-agent branch/merge,prefix cache,C_trajectory_dag_memory_fabric,stale reuse,3.675,1.786,0.919,50.0,47.295,false,simulated,synthetic
+single-turn chat control,prefix cache,A_conventional_request_model_kv_serving,leakage,3.3,0.39,1.485,-2.0,-3.875,false,simulated,synthetic
+single-turn chat control,prefix cache,A_conventional_request_model_kv_serving,cross-tenant aliasing,3.3,0.39,1.485,-2.0,-3.875,false,simulated,synthetic
+single-turn chat control,prefix cache,A_conventional_request_model_kv_serving,stale reuse,2.1,0.94,0.525,-2.0,-3.465,false,simulated,synthetic
+RAG,retrieved context,B_memory_object_aware_runtime,stale reuse,3.78,1.377,0.945,10.8,8.478,false,simulated,synthetic
+RAG,retrieved context,B_memory_object_aware_runtime,provenance forgery,4.536,1.377,1.134,10.8,8.289,false,simulated,synthetic
+RAG,retrieved context,B_memory_object_aware_runtime,cache poisoning,7.128,1.377,3.208,10.8,6.215,false,simulated,synthetic
+RAG,tool output,B_memory_object_aware_runtime,provenance forgery,4.536,1.377,1.134,10.8,8.289,false,simulated,synthetic
+RAG,tool output,B_memory_object_aware_runtime,replay ambiguity,3.78,1.985,0.945,10.8,7.87,false,simulated,synthetic
+RAG,tool output,B_memory_object_aware_runtime,unsafe summary-pointer recovery,3.78,1.85,0.945,10.8,8.005,false,simulated,synthetic
+code-agent loop,tool output,C_trajectory_dag_memory_fabric,provenance forgery,5.88,1.938,1.47,31.8,28.392,false,simulated,synthetic
+code-agent loop,tool output,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,31.8,27.782,false,simulated,synthetic
+code-agent loop,tool output,C_trajectory_dag_memory_fabric,unsafe summary-pointer recovery,4.9,2.603,1.225,31.8,27.972,false,simulated,synthetic
+multi-agent branch/merge,tool output,C_trajectory_dag_memory_fabric,provenance forgery,5.88,1.938,1.47,50.0,46.592,false,simulated,synthetic
+multi-agent branch/merge,tool output,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,50.0,45.982,false,simulated,synthetic
+multi-agent branch/merge,tool output,C_trajectory_dag_memory_fabric,unsafe summary-pointer recovery,4.9,2.603,1.225,50.0,46.172,false,simulated,synthetic
+verification-heavy,tool output,C_trajectory_dag_memory_fabric,provenance forgery,5.88,1.938,1.47,33.8,30.392,false,simulated,synthetic
+verification-heavy,tool output,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,33.8,29.782,false,simulated,synthetic
+verification-heavy,tool output,C_trajectory_dag_memory_fabric,unsafe summary-pointer recovery,4.9,2.603,1.225,33.8,29.972,false,simulated,synthetic
+batch summarization/offline inference control,intermediate scratch,A_conventional_request_model_kv_serving,leakage,1.1,0.23,0.495,-2.0,-2.725,false,simulated,synthetic
+single-turn chat control,intermediate scratch,A_conventional_request_model_kv_serving,leakage,1.1,0.23,0.495,-2.0,-2.725,false,simulated,synthetic
+code-agent loop,branch state,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,31.8,27.782,false,simulated,synthetic
+code-agent loop,branch state,C_trajectory_dag_memory_fabric,cross-tenant aliasing,7.7,0.893,3.465,31.8,27.442,false,simulated,synthetic
+multi-agent branch/merge,branch state,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,50.0,45.982,false,simulated,synthetic
+multi-agent branch/merge,branch state,C_trajectory_dag_memory_fabric,cross-tenant aliasing,7.7,0.893,3.465,50.0,45.642,false,simulated,synthetic
+verification-heavy,branch state,C_trajectory_dag_memory_fabric,replay ambiguity,4.9,2.793,1.225,33.8,29.782,false,simulated,synthetic
+verification-heavy,branch state,C_trajectory_dag_memory_fabric,cross-tenant aliasing,7.7,0.893,3.465,33.8,29.442,false,simulated,synthetic
+code-agent loop,verifier state,C_trajectory_dag_memory_fabric,verifier tampering,11.55,2.945,5.198,31.8,23.657,false,simulated,synthetic
+code-agent loop,verifier state,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,31.8,27.324,false,simulated,synthetic
+multi-agent branch/merge,verifier state,C_trajectory_dag_memory_fabric,verifier tampering,11.55,2.945,5.198,50.0,41.857,false,simulated,synthetic
+multi-agent branch/merge,verifier state,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,50.0,45.524,false,simulated,synthetic
+verification-heavy,verifier state,C_trajectory_dag_memory_fabric,verifier tampering,11.55,2.945,5.198,33.8,25.657,false,simulated,synthetic
+verification-heavy,verifier state,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,33.8,29.324,false,simulated,synthetic
+code-agent loop,trajectory log,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,31.8,27.324,false,simulated,synthetic
+code-agent loop,trajectory log,C_trajectory_dag_memory_fabric,provenance forgery,7.35,2.09,1.837,31.8,27.873,false,simulated,synthetic
+code-agent loop,trajectory log,C_trajectory_dag_memory_fabric,deletion/audit conflict,9.625,2.47,2.406,31.8,26.924,false,simulated,synthetic
+multi-agent branch/merge,trajectory log,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,50.0,45.524,false,simulated,synthetic
+multi-agent branch/merge,trajectory log,C_trajectory_dag_memory_fabric,provenance forgery,7.35,2.09,1.837,50.0,46.073,false,simulated,synthetic
+multi-agent branch/merge,trajectory log,C_trajectory_dag_memory_fabric,deletion/audit conflict,9.625,2.47,2.406,50.0,45.124,false,simulated,synthetic
+verification-heavy,trajectory log,C_trajectory_dag_memory_fabric,replay ambiguity,6.125,2.945,1.531,33.8,29.324,false,simulated,synthetic
+verification-heavy,trajectory log,C_trajectory_dag_memory_fabric,provenance forgery,7.35,2.09,1.837,33.8,29.873,false,simulated,synthetic
+verification-heavy,trajectory log,C_trajectory_dag_memory_fabric,deletion/audit conflict,9.625,2.47,2.406,33.8,28.924,false,simulated,synthetic
+code-agent loop,durable workspace,C_trajectory_dag_memory_fabric,retention overrun,9.625,2.47,4.331,31.8,24.999,false,simulated,synthetic
+code-agent loop,durable workspace,C_trajectory_dag_memory_fabric,deletion/audit conflict,9.625,2.47,2.406,31.8,26.924,false,simulated,synthetic
+code-agent loop,durable workspace,C_trajectory_dag_memory_fabric,unsafe summary-pointer recovery,6.125,2.755,1.531,31.8,27.514,false,simulated,synthetic
+multi-agent branch/merge,durable workspace,C_trajectory_dag_memory_fabric,retention overrun,9.625,2.47,4.331,50.0,43.199,false,simulated,synthetic
+multi-agent branch/merge,durable workspace,C_trajectory_dag_memory_fabric,deletion/audit conflict,9.625,2.47,2.406,50.0,45.124,false,simulated,synthetic
+multi-agent branch/merge,durable workspace,C_trajectory_dag_memory_fabric,unsafe summary-pointer recovery,6.125,2.755,1.531,50.0,45.714,false,simulated,synthetic
+RAG,semantic cache entry,B_memory_object_aware_runtime,stale reuse,4.725,1.485,1.181,10.8,8.134,false,simulated,synthetic
+RAG,semantic cache entry,B_memory_object_aware_runtime,cache poisoning,8.91,1.485,4.01,10.8,5.305,false,simulated,synthetic
+RAG,semantic cache entry,B_memory_object_aware_runtime,cross-tenant aliasing,7.425,0.743,3.341,10.8,6.717,false,simulated,synthetic

@@ -1,0 +1,7 @@
+workload_class,branch_forks,branch_merges,branch_discards,max_dag_width,max_dag_depth,mean_verifier_delay,verifier_results,merge_rate,discard_rate,evidence_label
+batch summarization/offline inference control,0,0,0,0,0,0,0,0,0,synthetic
+RAG,0,0,0,0,0,0,0,0,0,synthetic
+code-agent loop,2,1,1,2,2,5.5,2,0.5,0.5,synthetic
+single-turn chat control,0,0,0,0,0,0,0,0,0,synthetic
+multi-agent branch/merge,4,2,2,4,4,6.0,3,0.5,0.5,synthetic
+verification-heavy,3,2,1,3,3,5.75,4,0.667,0.333,synthetic

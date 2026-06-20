@@ -1,0 +1,6 @@
+lifecycle_phase,required_control,pass_condition,fail_closed_reason
+provision,root generated inside KMS/HSM or attested hardware root,key material non-exportable and operator access control defined,exportable_production_key
+activate,"collector identity, topology, schema, and telemetry digest bindings registered",collector identity and telemetry bundle bindings are present,unbound_collector_identity
+rotate,rotation interval and signer transition policy,rotation_interval_days is positive,missing_rotation_policy
+revoke,revocation publication and verifier enforcement,revocation_path_defined=true,missing_revocation_path
+audit,append-only signing and verification log,"audit log, verifier identity, and incident owner are defined",missing_audit_log

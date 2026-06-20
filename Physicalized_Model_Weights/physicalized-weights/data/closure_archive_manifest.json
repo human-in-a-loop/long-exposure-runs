@@ -1,0 +1,649 @@
+{
+  "artifacts_by_milestone": {
+    "M-ACQUIRE-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/evidence_acquisition_readiness_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ACQUIRE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_acquisition_readiness.py",
+        "sha256": "3cf452853643f44486f4ea5548ac2a96cba50b4af43c2bcb730fcf7b6d051ad0",
+        "size_bytes": "1641"
+      }
+    ],
+    "M-ARCH-1": [
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/hybrid_safety_filter_architecture.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ARCH-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "19b6258d0c2e7194f81e3435f691b47ad673d1e39a6878fe94bc02b3d1e362cf",
+        "size_bytes": "11391"
+      },
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/hybrid_arch_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ARCH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/fallback_policy_sim.py",
+        "sha256": "ab48ac7870f20b3cd1600a223764f22531e8fc44cfe2e0e477370c0f9579228f",
+        "size_bytes": "11623"
+      }
+    ],
+    "M-CAL-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/calibrated_breakeven_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CAL-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/calibrated_breakeven.py",
+        "sha256": "50399b1c18b2933ce4476273be1367905385262291a55f324606b63ef19136cf",
+        "size_bytes": "2437"
+      }
+    ],
+    "M-CLOSURE-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/campaign_closure_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "d25eb5d79b1b4ec0e3bd5893ad0689505872f56cc13512516d71a13b424a45cb",
+        "size_bytes": "2615"
+      },
+      {
+        "artifact_class": "evidence_data",
+        "artifact_path": "physicalized-weights/data/campaign_closure_claim_disposition.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "3e5c9f7c9093368a561f3c9c421d4fb8a206f5277be9cd6e9a1311e1368f7c93",
+        "size_bytes": "2772"
+      },
+      {
+        "artifact_class": "manifest",
+        "artifact_path": "physicalized-weights/data/campaign_closure_manifest.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "ea1850f228d64193d4531b98c98c2ed993672cf40d944af94597d7eca12e1d10",
+        "size_bytes": "5117"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/campaign_closure_report.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "41576f1b6d60443150c52d8df653511d5de29686223aafbb5c414e9a3cca36ff",
+        "size_bytes": "6116"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/campaign_executive_summary.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "41d306bb2872ccf07a0808e4a410743b8390aeae7f7b05b047b661eccb566311",
+        "size_bytes": "1717"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/campaign_closure_evidence_flow.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-CLOSURE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_closure_report.py",
+        "sha256": "e5c96e8b850b0bf6d27100fa88bb42ab718e8b13de0adfb8a0630c551a6f0e4e",
+        "size_bytes": "4432"
+      }
+    ],
+    "M-DEFER-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/campaign_deferral_watchlist_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-DEFER-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_deferral_watchlist.py",
+        "sha256": "5240066e4def5cb86149a20be6a6b1b4a6b24adeea3249089dc2a575525687a9",
+        "size_bytes": "3493"
+      },
+      {
+        "artifact_class": "evidence_data",
+        "artifact_path": "physicalized-weights/data/campaign_deferral_watchlist_results.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-DEFER-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_deferral_watchlist.py",
+        "sha256": "3ee5e4201f6beb70657692b4654324c31f7d801f386996cf0f09f13efca3455b",
+        "size_bytes": "6852"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/campaign_deferral_watchlist.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-DEFER-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "59cfc99e0294c403b7f4c1939fd3ff89348d1b5d7ed76ad5caa4cfa847ec8c77",
+        "size_bytes": "3389"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/campaign_deferral_watchlist.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-DEFER-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_campaign_deferral_watchlist.py",
+        "sha256": "23db03dd5a47c888deb752b3b07c7aeee375add8b982fb8811da8b33f94b16ba",
+        "size_bytes": "3782"
+      }
+    ],
+    "M-DRYRUN-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/evidence_pack_dryrun_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-DRYRUN-1",
+        "notes": "dry-run fixture summary; non-production control artifact",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_pack_template_dryrun.py",
+        "sha256": "19d3436f5d11ab0caf407ebd9bc5b32b78bb6e05aa68fdd97c838008c69a2fe8",
+        "size_bytes": "2250"
+      }
+    ],
+    "M-EVIDENCEPACK-1": [
+      {
+        "artifact_class": "schema",
+        "artifact_path": "physicalized-weights/data/evidence_pack_manifest_schema.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-EVIDENCEPACK-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_pack_replay.py",
+        "sha256": "bb14c90a17456147d3641b010cdead00d1a805db4eff1bde898aaa0ef82e2d78",
+        "size_bytes": "1149"
+      },
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/evidence_pack_replay_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-EVIDENCEPACK-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_pack_replay.py",
+        "sha256": "5486804032fadf489cbe4707a986a33818b54f0053831d8c98612ab6310a4b59",
+        "size_bytes": "1066"
+      }
+    ],
+    "M-FINAL-1": [
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/final_synthesis.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-FINAL-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_final_synthesis.py",
+        "sha256": "4e0b55d569e05b66d4942764242090ddd1a239b7d2a5084908e84687d34d918d",
+        "size_bytes": "19095"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/reproducibility.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-FINAL-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_final_synthesis.py",
+        "sha256": "7bbc0be0ef2896c06992be2f40fe4bb92a3e286b316e24af560b9f11735365ff",
+        "size_bytes": "8385"
+      }
+    ],
+    "M-INTAKE-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/evidence_pack_intake_rehearsal_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-INTAKE-1",
+        "notes": "rehearsal fixture summary; non-production control artifact",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_pack_intake_rehearsal.py",
+        "sha256": "04aee29e4590c2089c8c4fdda9ec9bc31a0cc0d8970325dbde970fb49e79e3b4",
+        "size_bytes": "1657"
+      }
+    ],
+    "M-LIFECYCLE-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/evidence_package_lifecycle_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-LIFECYCLE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/evidence_package_lifecycle.py",
+        "sha256": "fd459b71dca6f7f2370d99ee5eb5fc932ab5bb4eabc7cc9a741c7ffebbc9fc39",
+        "size_bytes": "2870"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/evidence_package_lifecycle_state_machine.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-LIFECYCLE-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "c65824476032a40a1c9eb65f3650d9c852984d2366716d612f6e1026e6b1762d",
+        "size_bytes": "3297"
+      }
+    ],
+    "M-MODEL-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/breakeven_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-MODEL-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/breakeven_model.py",
+        "sha256": "a32d851d578f3d501597673b858535b305cb4cd99dcadc71f97cbdc19c1a2932",
+        "size_bytes": "25328"
+      }
+    ],
+    "M-PHASE3-SYNTH-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/phase3_reopen_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE3-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase3_reopen_synthesis.py",
+        "sha256": "b0ef34f926993bb44672b705bfdfdc46fad06cf69876f9804da6df68c9bb4582",
+        "size_bytes": "1780"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/phase3_reopen_pathway_summary.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE3-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "1ccddf63d4df66f38bfb40d5e9aedab2e691b4ed6a692a46009cab852e2c709e",
+        "size_bytes": "4979"
+      }
+    ],
+    "M-PHASE4-SYNTH-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/phase4_reopen_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE4-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase4_reopen_synthesis.py",
+        "sha256": "862b1849d70dced71fd2213dc13b7eeffeaddce65a12307fa774ab8cb4059abd",
+        "size_bytes": "2650"
+      },
+      {
+        "artifact_class": "evidence_data",
+        "artifact_path": "physicalized-weights/data/phase4_reopen_claim_matrix.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE4-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase4_reopen_synthesis.py",
+        "sha256": "f0b57bb1e06b28949ff1d0fe9cf2186bd4f5b27b9f1399532f7b70420ea9020e",
+        "size_bytes": "3703"
+      },
+      {
+        "artifact_class": "manifest",
+        "artifact_path": "physicalized-weights/data/phase4_reopen_manifest.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE4-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase4_reopen_synthesis.py",
+        "sha256": "9da79bf4902926552c9f6a628267a401965b09a6b5106c77ce5845c6b4cfbbd7",
+        "size_bytes": "6250"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/phase4_reopen_lifecycle_synthesis.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE4-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "3f11d3854d8010bfd78fcb7d74055a0f3b2376f370fdcc8e58653cc5e67a7930",
+        "size_bytes": "5189"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/phase4_reopen_lifecycle_flow.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PHASE4-SYNTH-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase4_reopen_synthesis.py",
+        "sha256": "0347bcd5f02eed9ec2a365de2a6c0daabd4fae5f9ca78b8cc9405c844c842aa3",
+        "size_bytes": "4391"
+      }
+    ],
+    "M-PIPELINE-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/reopen_pipeline_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PIPELINE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/reopen_pipeline_demo.py",
+        "sha256": "4c129122d2206892d69e64e0b03652f86df37c9c70911fa32b53726cc4447b14",
+        "size_bytes": "865"
+      }
+    ],
+    "M-PROTO-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/prototype_verification_closure.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PROTO-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/verify_prototype_closure.py",
+        "sha256": "2eeed47545b50c113dc207f76350af3266eb61f1081a1ae87f04578655a76413",
+        "size_bytes": "3821"
+      },
+      {
+        "artifact_class": "evidence_data",
+        "artifact_path": "physicalized-weights/data/hdl_sim_results.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PROTO-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/hdl/run_yosys_eval.py",
+        "sha256": "0246f1f8e588f5da280310464c6cc4f75704a940e1ca609f1c99628f1ff2a3c3",
+        "size_bytes": "598"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/prototype_verification_closure.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PROTO-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "718b13a04425dc1a243af55dd4171a578aea9c749d198b8d06445c84266a17d0",
+        "size_bytes": "2964"
+      },
+      {
+        "artifact_class": "hdl_source",
+        "artifact_path": "physicalized-weights/hdl/safety_filter_core.sv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PROTO-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "0e8c8bf40b62aa9a97a203a7bdc879aa788c91b6a2ecd34522cf2ae1f03d1017",
+        "size_bytes": "1607"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/safety_filter_core_netlist.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-PROTO-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "979ad443f5bed269061c54aef14dbfab3e7db5ad45b429b78877b007a2b8f9dc",
+        "size_bytes": "335518"
+      }
+    ],
+    "M-REOPEN-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/reopen_thresholds_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-REOPEN-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/reopen_thresholds.py",
+        "sha256": "f1d29788c312c44c36dea201456466a07dc2ffe802a62334e9692245c5541908",
+        "size_bytes": "3213"
+      }
+    ],
+    "M-ROBUST-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/target_robustness_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ROBUST-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/target_robustness_stress.py",
+        "sha256": "b0b3eeb0219ad118016a71dec6856fe020ccc606d8ec9571ce5bb430ee2558bd",
+        "size_bytes": "1700"
+      },
+      {
+        "artifact_class": "evidence_data",
+        "artifact_path": "physicalized-weights/data/target_robustness_results.csv",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ROBUST-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/target_robustness_stress.py",
+        "sha256": "f74d157ffc5feb213362fd1a53c9197726934b25918880fe4b7026da4da67be3",
+        "size_bytes": "9745"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/target_robustness_stress_test.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ROBUST-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "264f678af44cf740a9c215302b9cd15f7dc3d819e8ac7c240963f329043bd045",
+        "size_bytes": "2438"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/target_robustness_frontier.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-ROBUST-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/target_robustness_stress.py",
+        "sha256": "33c14e536f673d7b05c6b5821faf0b2a37d71db0081d374f90655722e2ab7573",
+        "size_bytes": "4441"
+      }
+    ],
+    "M-SWBASE-2": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/stronger_baseline_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SWBASE-2",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/stronger_baseline_model.py",
+        "sha256": "025bbe6014dfbfa539b2a01a705c85964e24cd6ce47ebd4155bfad1e11e9c597",
+        "size_bytes": "2561"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/stronger_baseline_comparison.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SWBASE-2",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "debcd9f4b89e9b4041188d459f45f564528b2c3b4ed8292574731e0ecad7a452",
+        "size_bytes": "3517"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/stronger_baseline_workload_comparison.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SWBASE-2",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/stronger_baseline_model.py",
+        "sha256": "5145fa6409f292928f7f9c230bfd4e35d8b6e1ba7a16a0ef8d722954056e51c3",
+        "size_bytes": "5232"
+      }
+    ],
+    "M-SYNTH-2": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/phase2_synthesis_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SYNTH-2",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+        "sha256": "eeadcb2bdd6ff1b95a3444fa243f50b00acf4fbdcabb9df6236121891b44aa50",
+        "size_bytes": "1535"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/phase2_synthesis_downgrade.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SYNTH-2",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "58841894327d6b459492ef2cce2b8dcdec1c867b3d469828460b2eaa8f83659a",
+        "size_bytes": "5103"
+      },
+      {
+        "artifact_class": "figure",
+        "artifact_path": "physicalized-weights/data/phase2_evidence_map.png",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-SYNTH-2",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+        "sha256": "fb97b283a3a482eaa54836949943b62541bf9a456c75a10bc2e272b005286d77",
+        "size_bytes": "4166"
+      }
+    ],
+    "M-TARGET-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/target_scores_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-TARGET-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/target_scoring.py",
+        "sha256": "f25a6dbeacb06419b03236e6592ea9c2a35c4b5a91546ac7c75dc06bec3776cd",
+        "size_bytes": "14604"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/target_ranking.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-TARGET-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "cd8f4d42ae5ed92bd0160887267e60728dbaa8b910a8f3fe4560f8563c2fed69",
+        "size_bytes": "9092"
+      }
+    ],
+    "M-TAX-1": [
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/taxonomy_and_null.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-TAX-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "de468fb925faed43941c23aa4ee2c1d3141bd8d71b78a79f2b7e20a38ce01f21",
+        "size_bytes": "8891"
+      }
+    ],
+    "M-TRACE-1": [
+      {
+        "artifact_class": "schema",
+        "artifact_path": "physicalized-weights/data/production_trace_schema.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-TRACE-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/production_trace_validator.py",
+        "sha256": "0ec4f128b708467ec96440302551d2519c8dde9c079183b1971e6f9b64cfac43",
+        "size_bytes": "5056"
+      }
+    ],
+    "M-UNCERTAINTY-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/reopen_uncertainty_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-UNCERTAINTY-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/reopen_uncertainty_protocol.py",
+        "sha256": "a3f0f7ca9b1c4d9aa5175ce6d1ae94c66df6190d6f801145fdad9bcd83f09144",
+        "size_bytes": "1655"
+      },
+      {
+        "artifact_class": "report",
+        "artifact_path": "physicalized-weights/docs/measured_reopen_uncertainty_protocol.md",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-UNCERTAINTY-1",
+        "notes": "",
+        "regeneration_command": "",
+        "sha256": "1764e1f318bdc7e1b098a948994c2ade91f53b90e5ab6e1089adceddb9c7339a",
+        "size_bytes": "3008"
+      }
+    ],
+    "M-WORKLOAD-1": [
+      {
+        "artifact_class": "summary_data",
+        "artifact_path": "physicalized-weights/data/workload_summary.json",
+        "canonical": "true",
+        "exists": "true",
+        "milestone_id": "M-WORKLOAD-1",
+        "notes": "",
+        "regeneration_command": "python3 physicalized-weights/scripts/workload_trace_generator.py",
+        "sha256": "48b9b318d651cd3427bfe5eb074426f14a5df47bba8e4b74a4720a9466eff31f",
+        "size_bytes": "10784"
+      }
+    ]
+  },
+  "manifest_kind": "closure_archive_index",
+  "milestone_id": "M-ARCHIVE-1",
+  "schema_version": 1
+}

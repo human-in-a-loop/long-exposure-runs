@@ -1,0 +1,11 @@
+replacement_field,fixture_mechanism,production_replacement,required_gate,upstream_dependency,input_present
+attestation_type,hmac_sha256_test_fixture,operator_kms_or_hsm_signature,trust_root_type in KMS/HSM/operator_ca/hardware_attestation,M-ATTEST-1,true
+key_id,test-key-active-a,operator managed non-exportable key identifier,key lifecycle controls pass,M-TRUSTPOL-1,true
+signature,fixture HMAC over canonical fields,production signature or hardware attestation evidence,mechanical verification plus admissible trust policy,M-ATTEST-1,true
+collector_id,intake-fixture-collector-v1,registered collector identity bound to software/firmware/topology,collector identity controls pass,M-PRODDEPLOY-1,true
+manifest_digest,test fixture digest,digest over production intake manifest,manifest_sections_complete in custody gate,M-INTAKE-1,true
+payload_digest_set_digest,test fixture payload digest set,digest over production payload checksums,checksums_present in custody gate,M-INTAKE-1,true
+adapter_conformance_digest,digest over conformance fixture,digest over accepted adapter conformance report,adapter conformance accepted before intake,M-PORT-1,true
+bundle_id,intake-bundle-001,production bundle ID with replay registry and nonce/sequence,bundle ID registry and sequence controls pass,M-TRUSTPOL-1,true
+tenant_security_context,fixture declarations,tenant isolation and security context source,tenant/security preflight and retention authorization pass,M-SECOPS-1,true
+production_limitation,test_attestation_fixture,production_target evidence only after downstream ingestion gates,policy admissibility alone grants no calibration,M-FINALPKG-1,true

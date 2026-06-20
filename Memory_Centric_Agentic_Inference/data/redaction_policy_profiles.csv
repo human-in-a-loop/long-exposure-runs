@@ -1,0 +1,8 @@
+policy_profile_id,description,expected_redaction_admissible,privacy_leakage_expected,replay_loss_expected
+profile-minimal-safe-replayable,stable pseudonyms for run/bundle/collector/tenant/object/security/clock; threshold labels bucketed,true,false,false
+profile-empty-redaction-policy,policy omits required handling,false,false,true
+profile-all-fields-raw,no redaction; raw sensitive identifiers exported,false,true,false
+profile-all-fields-suppressed,all potentially sensitive fields removed,false,false,true
+profile-overcoarsened-topology,"topology only region-wide, below threshold replay granularity",false,false,true
+profile-unstable-pseudonyms,pseudonyms rotate inside a replay interval,false,false,true
+profile-colliding-pseudonyms,irreversible many-to-one pseudonym collision,false,false,true

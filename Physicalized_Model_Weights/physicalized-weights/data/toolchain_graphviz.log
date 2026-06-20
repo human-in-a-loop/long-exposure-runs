@@ -1,0 +1,1 @@
+$ dot -Tpng physicalized-weights/data/safety_filter_core_netlist.dot -o physicalized-weights/data/safety_filter_core_netlist.png

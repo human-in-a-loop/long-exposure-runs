@@ -1,0 +1,7 @@
+case,theta_star,theta,x0,state_residual_l2_sq,state_data_error,parameter_abs_error,fisher_information,excited_x0,excited_fisher_information_at_theta_star,classification
+zero_trajectory_unidentified_parameter,-1.0,-4.0,0.0,0.0,0.0,3.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability
+zero_trajectory_unidentified_parameter,-1.0,-2.0,0.0,0.0,0.0,1.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability
+zero_trajectory_unidentified_parameter,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability
+zero_trajectory_unidentified_parameter,-1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability
+zero_trajectory_unidentified_parameter,-1.0,2.0,0.0,0.0,0.0,3.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability
+zero_trajectory_unidentified_parameter,-1.0,4.0,0.0,0.0,0.0,5.0,0.0,1.0,0.08083089595423305,parameter_nonidentifiability

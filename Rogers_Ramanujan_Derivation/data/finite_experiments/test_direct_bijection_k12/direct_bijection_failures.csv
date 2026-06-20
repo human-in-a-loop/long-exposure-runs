@@ -1,0 +1,13 @@
+alpha,candidate,first_bad_weight,reason,signature,examples
+0,length_and_shifted_runner_counts,1,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"(1, '1 0 0 0 0')",gap=1
+0,length_beta_runner_counts,2,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"(1, '0 0 1 0 0')",gap=2
+0,shifted_runner_counts_and_quotient_sum,1,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"('1 0 0 0 0', 0)",gap=1
+0,beta_runner_counts_and_quotient_sum,2,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"('0 0 1 0 0', 0)",gap=2
+0,standard_beta_nearest_allowed_slide,2,nearest_allowed_runner_slide_changes_weight_or_has_no_target,beta_set=2 -> 1,gap=2;image_weight=1
+0,shifted_beta_nearest_allowed_slide,2,nearest_allowed_runner_slide_changes_weight_or_has_no_target,shifted_beta=1 -> 1,gap=2;image_weight=1
+1,length_and_shifted_runner_counts,4,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"(1, '0 0 0 0 1')",gap=4
+1,length_beta_runner_counts,4,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"(1, '0 0 0 0 1')",gap=4
+1,shifted_runner_counts_and_quotient_sum,4,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"('0 0 0 0 1', 0)",gap=4
+1,beta_runner_counts_and_quotient_sum,4,gap_signature_missing_on_residue_side;residue_signature_missing_on_gap_side,"('0 0 0 0 1', 0)",gap=4
+1,standard_beta_nearest_allowed_slide,4,nearest_allowed_runner_slide_changes_weight_or_has_no_target,beta_set=4 -> 3,gap=4;image_weight=3
+1,shifted_beta_nearest_allowed_slide,4,nearest_allowed_runner_slide_changes_weight_or_has_no_target,shifted_beta=4 -> 3,gap=4;image_weight=3

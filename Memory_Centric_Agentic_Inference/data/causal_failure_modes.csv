@@ -1,0 +1,15 @@
+causal_status,blocked_reason,case_count,fail_closed
+causally_confounded,cache_warmness_imbalance,1,true
+causally_confounded,model_version_mismatch,1,true
+causally_confounded,object_size_distribution_shift,1,true
+causally_confounded,scheduler_load_imbalance,1,true
+causally_confounded,security_deny_rate_shift,1,true
+causally_confounded,tenant_concurrency_imbalance,1,true
+causally_confounded,time_window_drift,1,true
+causally_confounded,topology_mismatch,1,true
+causally_confounded,workload_mix_mismatch,1,true
+causally_unidentified,fixture_attempted_production_calibration,1,true
+causally_unidentified,insufficient_overlap_positivity,1,true
+causally_unidentified,missing_option_a_control,1,true
+causally_unidentified,missing_pre_treatment_covariate_contract,1,true
+causally_unidentified,post_treatment_covariate_leakage,1,true

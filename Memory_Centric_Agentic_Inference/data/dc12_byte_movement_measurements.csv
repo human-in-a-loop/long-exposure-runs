@@ -1,0 +1,13 @@
+measurement_id,phase,access_pattern,buffer_size_bytes,working_set_bytes,iteration_count,bytes_touched,wall_time_s,throughput_mb_s,latency_p50_us,latency_p95_us,latency_p99_us,worker_count,residency_retained_bytes,power_source,energy_proxy_byte_seconds,checksum,evidence_label
+DC001-sequential_copy-1048576,byte_movement,sequential_copy,1048576,1048576,8,16777216,0.00844338,1894.976,144.184,7273.115,7273.115,1,2097152,unavailable,141656.41,130,host_local_proxy
+DC001-sequential_read-1048576,byte_movement,sequential_read,1048576,1048576,8,8388608,0.000126038,63472.917,11.232,43.888,43.888,1,2097152,unavailable,1057.283,0,host_local_proxy
+DC001-sequential_write-1048576,byte_movement,sequential_write,1048576,1048576,8,8388608,0.066128406,120.977,8430.509,14054.085,14054.085,1,2097152,unavailable,554725.276,0,host_local_proxy
+DC001-sequential_copy-4194304,byte_movement,sequential_copy,4194304,4194304,8,67108864,0.015166096,4219.939,1815.362,3044.975,3044.975,1,8388608,unavailable,1017779.479,130,host_local_proxy
+DC001-sequential_read-4194304,byte_movement,sequential_read,4194304,4194304,8,33554432,0.000857668,37310.477,52.847,434.24,434.24,1,8388608,unavailable,28778.561,0,host_local_proxy
+DC001-sequential_write-4194304,byte_movement,sequential_write,4194304,4194304,8,33554432,0.322337595,99.275,42058.108,58136.768,58136.768,1,8388608,unavailable,10815854.911,0,host_local_proxy
+DC001-sequential_copy-16777216,byte_movement,sequential_copy,16777216,16777216,2,67108864,0.013748546,4655.038,6781.675,6966.871,6966.871,1,33554432,unavailable,922649.305,156,host_local_proxy
+DC001-sequential_read-16777216,byte_movement,sequential_read,16777216,16777216,2,33554432,0.002586593,12371.486,1072.91,1513.683,1513.683,1,33554432,unavailable,86791.659,0,host_local_proxy
+DC001-sequential_write-16777216,byte_movement,sequential_write,16777216,16777216,2,33554432,0.153661906,208.249,76190.068,77471.838,77471.838,1,33554432,unavailable,5156037.976,1,host_local_proxy
+DC001-random_access-262144,random_access,random_read_byte,262144,262144,4096,4096,0.001545474,2.528,0.325,0.528,1.063,1,262144,unavailable,6.33,31,host_local_proxy
+DC001-random_access-1048576,random_access,random_read_byte,1048576,1048576,4096,4096,0.003124888,1.25,0.367,0.664,0.953,1,1048576,unavailable,12.8,45,host_local_proxy
+DC001-random_access-4194304,random_access,random_read_byte,4194304,4194304,4096,4096,0.011141748,0.351,0.444,0.802,1.066,1,4194304,unavailable,45.637,190,host_local_proxy

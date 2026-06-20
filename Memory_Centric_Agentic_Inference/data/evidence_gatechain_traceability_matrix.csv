@@ -1,0 +1,6 @@
+trace_link_id,source_artifact,target_state,required_identifier,covered
+gatechain-to-attestation,data/production_attestation_results.csv,attestation_mechanically_valid,bundle_id,true
+gatechain-to-intake,data/production_intake_admission_results.csv,intake_structurally_admissible,bundle_id;schema_version,true
+gatechain-to-adapter-conformance,data/adapter_conformance_results.csv,adapter_conformant,measurement_run_id,true
+gatechain-to-production-ingestion,data/production_dc12_ingestion_results.csv,production_ingestion_accepted,measurement_run_id;schema_version,true
+gatechain-to-final-readiness-handoff,data/final_claim_readiness_matrix.csv;data/handoff_claim_traceability.csv,final_readiness_update_eligible;handoff_traceable,claim_id,true

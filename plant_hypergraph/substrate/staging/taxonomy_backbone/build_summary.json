@@ -1,0 +1,53 @@
+{
+  "access_date": "2026-05-17",
+  "artifacts": [
+    "INGEST_AUDIT.md",
+    "accepted_taxa.csv",
+    "accepted_taxa.parquet",
+    "build_summary.json",
+    "common_names.csv",
+    "common_names.parquet",
+    "gbif_taxa.csv",
+    "gbif_taxa.parquet",
+    "opentree_taxa.csv",
+    "opentree_taxa.parquet",
+    "powo_taxa.csv",
+    "powo_taxa.parquet",
+    "raw_manifest.tsv",
+    "source_crosswalk.csv",
+    "source_crosswalk.parquet",
+    "source_row_counts.png",
+    "synonym_clusters.csv",
+    "synonym_clusters.parquet",
+    "taxonomic_conflicts.csv",
+    "taxonomic_conflicts.parquet",
+    "wfo_taxa.csv",
+    "wfo_taxa.parquet"
+  ],
+  "conflict_categories": {
+    "accepted_name_disagreement": 62,
+    "matched_name_rank_agreement": 443,
+    "wfo_only_not_attempted": 59495
+  },
+  "conflict_category_markdown": "- `accepted_name_disagreement`: 62\n- `matched_name_rank_agreement`: 443\n- `wfo_only_not_attempted`: 59495",
+  "created": "2026-05-17T17:31:55+00:00",
+  "crosswalk_attempt_limit": 500,
+  "crosswalk_rows_with_external_id": 505,
+  "ingest_clone_id": "fork-e34b5b2c1c6c-clone-0",
+  "row_counts": {
+    "accepted_taxa": 60000,
+    "common_names": 0,
+    "gbif_taxa": 505,
+    "opentree_taxa": 436,
+    "powo_taxa": 477,
+    "source_crosswalk": 60000,
+    "synonym_clusters": 113582,
+    "taxonomic_conflicts": 62,
+    "wfo_taxa": 60000
+  },
+  "validation": {
+    "taxonomy_backbone_checks": "passed: accepted_taxa=60000 source_crosswalk=60000 synonym_clusters=113582 taxonomic_conflicts=62",
+    "test_public_taxonomy_sample": "passed: 6 tests",
+    "test_taxonomy_backbone": "passed: 5 tests"
+  }
+}

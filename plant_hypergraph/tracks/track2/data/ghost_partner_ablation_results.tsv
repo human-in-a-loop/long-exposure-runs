@@ -1,0 +1,7 @@
+ablation	candidate_rows	mean_score	top_score	pending_validation_count	data_limited_count	insufficient_support_count	heldout_rows_retained	heldout_validation_ready	mean_score_delta_vs_baseline	interpretation
+baseline	31	0.627	0.8	1	25	5	13	1	0.0	fixed M3.T2 component score
+remove_singleton_source_rows	0	0.0	0.0	0	0	0	0	0	-0.627	all candidate rows removed by ablation
+remove_paleobotany_extinct_support	31	0.281	0.35	0	25	6	13	0	-0.347	tests whether extinct-fauna/paleo-context support is load-bearing
+remove_modern_failure_component	31	0.55	0.55	0	25	6	13	0	-0.077	tests whether validation readiness survives without modern dispersal-failure evidence
+exclude_living_megafauna_compatible	30	0.627	0.8	1	24	5	12	1	-0.001	tests living-megafauna ambiguity control
+source_count_candidate_class_normalized	31	0.347	0.7	0	25	6	13	0	-0.28	source-count and candidate-class-size normalized sensitivity check

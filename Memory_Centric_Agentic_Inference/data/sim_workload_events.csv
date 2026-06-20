@@ -1,0 +1,216 @@
+run_id,workload_class,time_step,event_type,object_class,object_id,size_units,reuse_probability,branch_fanout,branch_survival,verifier_delay,durability_horizon,correctness_sensitive,recompute_cost,loss_cost
+run-2026-05-11T121649Z,single-turn chat control,0,materialize,weights,sin-wei-0,11520.0,0.1,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,1,materialize,KV cache,sin-kv_-0,3932.16,0.05,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,2,materialize,prefix cache,sin-pre-0,768.0,0.1,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,single-turn chat control,3,materialize,weights,sin-wei-1,12000.0,0.12,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,4,materialize,KV cache,sin-kv_-1,4096.0,0.07,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,5,materialize,prefix cache,sin-pre-1,800.0,0.12,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,single-turn chat control,6,materialize,weights,sin-wei-2,12480.0,0.1,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,7,materialize,KV cache,sin-kv_-2,4259.84,0.05,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,8,materialize,prefix cache,sin-pre-2,832.0,0.1,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,single-turn chat control,9,materialize,weights,sin-wei-3,11520.0,0.12,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,10,materialize,KV cache,sin-kv_-3,3932.16,0.07,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,11,materialize,prefix cache,sin-pre-3,768.0,0.12,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,single-turn chat control,12,materialize,weights,sin-wei-4,12000.0,0.1,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,13,materialize,KV cache,sin-kv_-4,4096.0,0.05,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,14,materialize,prefix cache,sin-pre-4,800.0,0.1,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,single-turn chat control,15,materialize,weights,sin-wei-5,12480.0,0.12,1,0.0,0,0,0,1.5,0
+run-2026-05-11T121649Z,single-turn chat control,16,materialize,KV cache,sin-kv_-5,4259.84,0.07,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,single-turn chat control,17,materialize,prefix cache,sin-pre-5,832.0,0.12,1,0.0,0,0,0,1.2,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,18,materialize,weights,bat-wei-0,11520.0,0.1,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,19,materialize,KV cache,bat-kv_-0,4992.0,0.03,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,20,materialize,intermediate scratch,bat-int-0,2112.0,0.02,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,21,materialize,weights,bat-wei-1,12000.0,0.12,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,22,materialize,KV cache,bat-kv_-1,5200.0,0.05,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,23,materialize,intermediate scratch,bat-int-1,2200.0,0.04,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,24,materialize,weights,bat-wei-2,12480.0,0.1,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,25,materialize,KV cache,bat-kv_-2,5408.0,0.03,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,26,materialize,intermediate scratch,bat-int-2,2288.0,0.02,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,27,materialize,weights,bat-wei-3,11520.0,0.12,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,28,materialize,KV cache,bat-kv_-3,4992.0,0.05,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,29,materialize,intermediate scratch,bat-int-3,2112.0,0.04,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,30,materialize,weights,bat-wei-4,12000.0,0.1,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,31,materialize,KV cache,bat-kv_-4,5200.0,0.03,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,32,materialize,intermediate scratch,bat-int-4,2200.0,0.02,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,33,materialize,weights,bat-wei-5,12480.0,0.12,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,34,materialize,KV cache,bat-kv_-5,5408.0,0.05,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,35,materialize,intermediate scratch,bat-int-5,2288.0,0.04,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,36,materialize,weights,bat-wei-6,11520.0,0.1,1,0.0,0,0,0,1.0,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,37,materialize,KV cache,bat-kv_-6,4992.0,0.03,1,0.0,0,0,0,0.8,0
+run-2026-05-11T121649Z,batch summarization/offline inference control,38,materialize,intermediate scratch,bat-int-6,2112.0,0.02,1,0.0,0,0,0,0.6,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,39,materialize,weights,rag-wei-0,11520.0,0.12,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,40,materialize,KV cache,rag-kv_-0,3072.0,0.12,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,41,materialize,retrieved context,rag-ret-0,2400.0,0.5,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,42,materialize,semantic cache entry,rag-sem-0,864.0,0.55,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,43,materialize,weights,rag-wei-1,12000.0,0.14,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,44,materialize,KV cache,rag-kv_-1,3200.0,0.14,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,45,materialize,retrieved context,rag-ret-1,2500.0,0.52,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,46,materialize,semantic cache entry,rag-sem-1,900.0,0.57,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,47,materialize,weights,rag-wei-2,12480.0,0.12,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,48,materialize,KV cache,rag-kv_-2,3328.0,0.12,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,49,materialize,retrieved context,rag-ret-2,2600.0,0.5,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,50,materialize,semantic cache entry,rag-sem-2,936.0,0.55,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,51,materialize,weights,rag-wei-3,11520.0,0.14,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,52,materialize,KV cache,rag-kv_-3,3072.0,0.14,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,53,materialize,retrieved context,rag-ret-3,2400.0,0.52,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,54,materialize,semantic cache entry,rag-sem-3,864.0,0.57,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,55,materialize,weights,rag-wei-4,12000.0,0.12,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,56,materialize,KV cache,rag-kv_-4,3200.0,0.12,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,57,materialize,retrieved context,rag-ret-4,2500.0,0.5,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,58,materialize,semantic cache entry,rag-sem-4,900.0,0.55,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,59,materialize,weights,rag-wei-5,12480.0,0.14,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,60,materialize,KV cache,rag-kv_-5,3328.0,0.14,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,61,materialize,retrieved context,rag-ret-5,2600.0,0.52,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,62,materialize,semantic cache entry,rag-sem-5,936.0,0.57,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,63,materialize,weights,rag-wei-6,11520.0,0.12,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,64,materialize,KV cache,rag-kv_-6,3072.0,0.12,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,65,materialize,retrieved context,rag-ret-6,2400.0,0.5,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,66,materialize,semantic cache entry,rag-sem-6,864.0,0.55,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,67,materialize,weights,rag-wei-7,12000.0,0.14,1,0.0,0,1,0,1.0,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,68,materialize,KV cache,rag-kv_-7,3200.0,0.14,1,0.0,0,1,0,1.3,0
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,69,materialize,retrieved context,rag-ret-7,2500.0,0.52,1,0.0,0,3,1,9.0,10
+run-2026-05-11T121649Z,RAG with retrieved-context reuse,70,materialize,semantic cache entry,rag-sem-7,900.0,0.57,1,0.0,0,4,1,7.0,8
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,71,materialize,weights,cod-wei-0,11520.0,0.15,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,72,materialize,KV cache,cod-kv_-0,4032.0,0.2,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,73,materialize,tool output,cod-too-0,4992.0,0.62,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,74,materialize,branch state,cod-bra-0,2880.0,0.38,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,75,materialize,trajectory log,cod-tra-0,1728.0,0.5,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,76,materialize,durable workspace,cod-dur-0,4416.0,0.7,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,77,materialize,weights,cod-wei-1,12000.0,0.17,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,78,materialize,KV cache,cod-kv_-1,4200.0,0.22,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,79,materialize,tool output,cod-too-1,5200.0,0.64,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,80,materialize,branch state,cod-bra-1,3000.0,0.4,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,81,materialize,trajectory log,cod-tra-1,1800.0,0.52,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,82,materialize,durable workspace,cod-dur-1,4600.0,0.72,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,83,materialize,weights,cod-wei-2,12480.0,0.15,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,84,materialize,KV cache,cod-kv_-2,4368.0,0.2,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,85,materialize,tool output,cod-too-2,5408.0,0.62,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,86,materialize,branch state,cod-bra-2,3120.0,0.38,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,87,materialize,trajectory log,cod-tra-2,1872.0,0.5,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,88,materialize,durable workspace,cod-dur-2,4784.0,0.7,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,89,materialize,weights,cod-wei-3,11520.0,0.17,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,90,materialize,KV cache,cod-kv_-3,4032.0,0.22,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,91,materialize,tool output,cod-too-3,4992.0,0.64,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,92,materialize,branch state,cod-bra-3,2880.0,0.4,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,93,materialize,trajectory log,cod-tra-3,1728.0,0.52,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,94,materialize,durable workspace,cod-dur-3,4416.0,0.72,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,95,materialize,weights,cod-wei-4,12000.0,0.15,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,96,materialize,KV cache,cod-kv_-4,4200.0,0.2,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,97,materialize,tool output,cod-too-4,5200.0,0.62,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,98,materialize,branch state,cod-bra-4,3000.0,0.38,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,99,materialize,trajectory log,cod-tra-4,1800.0,0.5,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,100,materialize,durable workspace,cod-dur-4,4600.0,0.7,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,101,materialize,weights,cod-wei-5,12480.0,0.17,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,102,materialize,KV cache,cod-kv_-5,4368.0,0.22,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,103,materialize,tool output,cod-too-5,5408.0,0.64,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,104,materialize,branch state,cod-bra-5,3120.0,0.4,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,105,materialize,trajectory log,cod-tra-5,1872.0,0.52,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,106,materialize,durable workspace,cod-dur-5,4784.0,0.72,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,107,materialize,weights,cod-wei-6,11520.0,0.15,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,108,materialize,KV cache,cod-kv_-6,4032.0,0.2,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,109,materialize,tool output,cod-too-6,4992.0,0.62,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,110,materialize,branch state,cod-bra-6,2880.0,0.38,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,111,materialize,trajectory log,cod-tra-6,1728.0,0.5,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,112,materialize,durable workspace,cod-dur-6,4416.0,0.7,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,113,materialize,weights,cod-wei-7,12000.0,0.17,1,0.0,0,3,0,1.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,114,materialize,KV cache,cod-kv_-7,4200.0,0.22,2,0.35,1,3,0,2.0,0
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,115,materialize,tool output,cod-too-7,5200.0,0.64,2,0.45,2,10,1,18.0,45
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,116,materialize,branch state,cod-bra-7,3000.0,0.4,2,0.45,2,5,1,12.0,28
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,117,materialize,trajectory log,cod-tra-7,1800.0,0.52,1,0.25,1,10,1,10.0,35
+run-2026-05-11T121649Z,code-agent loop with tool outputs and durable workspace,118,materialize,durable workspace,cod-dur-7,4600.0,0.72,1,0.1,0,12,1,16.0,55
+run-2026-05-11T121649Z,verification-heavy agent,119,materialize,weights,ver-wei-0,11520.0,0.15,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,120,materialize,KV cache,ver-kv_-0,3456.0,0.2,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,121,materialize,branch state,ver-bra-0,3072.0,0.42,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,122,materialize,verifier state,ver-ver-0,3456.0,0.58,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,123,materialize,tool output,ver-too-0,2112.0,0.45,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,124,materialize,trajectory log,ver-tra-0,1536.0,0.46,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,125,materialize,weights,ver-wei-1,12000.0,0.17,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,126,materialize,KV cache,ver-kv_-1,3600.0,0.22,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,127,materialize,branch state,ver-bra-1,3200.0,0.44,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,128,materialize,verifier state,ver-ver-1,3600.0,0.6,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,129,materialize,tool output,ver-too-1,2200.0,0.47,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,130,materialize,trajectory log,ver-tra-1,1600.0,0.48,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,131,materialize,weights,ver-wei-2,12480.0,0.15,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,132,materialize,KV cache,ver-kv_-2,3744.0,0.2,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,133,materialize,branch state,ver-bra-2,3328.0,0.42,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,134,materialize,verifier state,ver-ver-2,3744.0,0.58,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,135,materialize,tool output,ver-too-2,2288.0,0.45,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,136,materialize,trajectory log,ver-tra-2,1664.0,0.46,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,137,materialize,weights,ver-wei-3,11520.0,0.17,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,138,materialize,KV cache,ver-kv_-3,3456.0,0.22,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,139,materialize,branch state,ver-bra-3,3072.0,0.44,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,140,materialize,verifier state,ver-ver-3,3456.0,0.6,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,141,materialize,tool output,ver-too-3,2112.0,0.47,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,142,materialize,trajectory log,ver-tra-3,1536.0,0.48,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,143,materialize,weights,ver-wei-4,12000.0,0.15,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,144,materialize,KV cache,ver-kv_-4,3600.0,0.2,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,145,materialize,branch state,ver-bra-4,3200.0,0.42,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,146,materialize,verifier state,ver-ver-4,3600.0,0.58,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,147,materialize,tool output,ver-too-4,2200.0,0.45,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,148,materialize,trajectory log,ver-tra-4,1600.0,0.46,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,149,materialize,weights,ver-wei-5,12480.0,0.17,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,150,materialize,KV cache,ver-kv_-5,3744.0,0.22,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,151,materialize,branch state,ver-bra-5,3328.0,0.44,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,152,materialize,verifier state,ver-ver-5,3744.0,0.6,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,153,materialize,tool output,ver-too-5,2288.0,0.47,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,154,materialize,trajectory log,ver-tra-5,1664.0,0.48,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,155,materialize,weights,ver-wei-6,11520.0,0.15,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,156,materialize,KV cache,ver-kv_-6,3456.0,0.2,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,157,materialize,branch state,ver-bra-6,3072.0,0.42,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,158,materialize,verifier state,ver-ver-6,3456.0,0.58,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,159,materialize,tool output,ver-too-6,2112.0,0.45,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,160,materialize,trajectory log,ver-tra-6,1536.0,0.46,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,verification-heavy agent,161,materialize,weights,ver-wei-7,12000.0,0.17,1,0.0,0,2,0,1.0,0
+run-2026-05-11T121649Z,verification-heavy agent,162,materialize,KV cache,ver-kv_-7,3600.0,0.22,3,0.45,2,2,0,2.0,0
+run-2026-05-11T121649Z,verification-heavy agent,163,materialize,branch state,ver-bra-7,3200.0,0.44,3,0.55,4,5,1,13.0,30
+run-2026-05-11T121649Z,verification-heavy agent,164,materialize,verifier state,ver-ver-7,3600.0,0.6,3,0.6,5,6,1,20.0,65
+run-2026-05-11T121649Z,verification-heavy agent,165,materialize,tool output,ver-too-7,2200.0,0.47,2,0.5,4,4,1,14.0,32
+run-2026-05-11T121649Z,verification-heavy agent,166,materialize,trajectory log,ver-tra-7,1600.0,0.48,1,0.3,3,8,1,9.0,28
+run-2026-05-11T121649Z,multi-agent branch/merge run,167,materialize,weights,mul-wei-0,11520.0,0.15,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,168,materialize,KV cache,mul-kv_-0,4800.0,0.25,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,169,materialize,branch state,mul-bra-0,6720.0,0.52,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,170,materialize,verifier state,mul-ver-0,2400.0,0.45,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,171,materialize,tool output,mul-too-0,2496.0,0.46,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,172,materialize,trajectory log,mul-tra-0,2304.0,0.55,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,173,materialize,weights,mul-wei-1,12000.0,0.17,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,174,materialize,KV cache,mul-kv_-1,5000.0,0.27,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,175,materialize,branch state,mul-bra-1,7000.0,0.54,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,176,materialize,verifier state,mul-ver-1,2500.0,0.47,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,177,materialize,tool output,mul-too-1,2600.0,0.48,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,178,materialize,trajectory log,mul-tra-1,2400.0,0.57,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,179,materialize,weights,mul-wei-2,12480.0,0.15,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,180,materialize,KV cache,mul-kv_-2,5200.0,0.25,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,181,materialize,branch state,mul-bra-2,7280.0,0.52,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,182,materialize,verifier state,mul-ver-2,2600.0,0.45,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,183,materialize,tool output,mul-too-2,2704.0,0.46,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,184,materialize,trajectory log,mul-tra-2,2496.0,0.55,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,185,materialize,weights,mul-wei-3,11520.0,0.17,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,186,materialize,KV cache,mul-kv_-3,4800.0,0.27,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,187,materialize,branch state,mul-bra-3,6720.0,0.54,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,188,materialize,verifier state,mul-ver-3,2400.0,0.47,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,189,materialize,tool output,mul-too-3,2496.0,0.48,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,190,materialize,trajectory log,mul-tra-3,2304.0,0.57,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,191,materialize,weights,mul-wei-4,12000.0,0.15,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,192,materialize,KV cache,mul-kv_-4,5000.0,0.25,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,193,materialize,branch state,mul-bra-4,7000.0,0.52,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,194,materialize,verifier state,mul-ver-4,2500.0,0.45,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,195,materialize,tool output,mul-too-4,2600.0,0.46,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,196,materialize,trajectory log,mul-tra-4,2400.0,0.55,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,197,materialize,weights,mul-wei-5,12480.0,0.17,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,198,materialize,KV cache,mul-kv_-5,5200.0,0.27,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,199,materialize,branch state,mul-bra-5,7280.0,0.54,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,200,materialize,verifier state,mul-ver-5,2600.0,0.47,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,201,materialize,tool output,mul-too-5,2704.0,0.48,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,202,materialize,trajectory log,mul-tra-5,2496.0,0.57,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,203,materialize,weights,mul-wei-6,11520.0,0.15,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,204,materialize,KV cache,mul-kv_-6,4800.0,0.25,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,205,materialize,branch state,mul-bra-6,6720.0,0.52,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,206,materialize,verifier state,mul-ver-6,2400.0,0.45,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,207,materialize,tool output,mul-too-6,2496.0,0.46,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,208,materialize,trajectory log,mul-tra-6,2304.0,0.55,1,0.35,2,9,1,11.0,34
+run-2026-05-11T121649Z,multi-agent branch/merge run,209,materialize,weights,mul-wei-7,12000.0,0.17,1,0.0,0,4,0,1.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,210,materialize,KV cache,mul-kv_-7,5000.0,0.27,4,0.55,3,4,0,2.0,0
+run-2026-05-11T121649Z,multi-agent branch/merge run,211,materialize,branch state,mul-bra-7,7000.0,0.54,4,0.65,3,6,1,18.0,40
+run-2026-05-11T121649Z,multi-agent branch/merge run,212,materialize,verifier state,mul-ver-7,2500.0,0.47,3,0.55,4,6,1,16.0,50
+run-2026-05-11T121649Z,multi-agent branch/merge run,213,materialize,tool output,mul-too-7,2600.0,0.48,2,0.4,2,6,1,13.0,26
+run-2026-05-11T121649Z,multi-agent branch/merge run,214,materialize,trajectory log,mul-tra-7,2400.0,0.57,1,0.35,2,9,1,11.0,34

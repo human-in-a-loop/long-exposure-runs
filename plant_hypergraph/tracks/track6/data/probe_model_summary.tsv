@@ -1,0 +1,5 @@
+model_id	result_role	questions	passed	missing_responses	pass_rate
+empty_response_control	negative_control	210	0	210	0.0
+forbidden_overclaim_control	negative_control	210	0	0	0.0
+rubric_minimal_scoped_control	positive_control	210	210	0	1.0
+verbatim_expected_answer_diagnostic	scorer_limitation_probe	210	90	0	0.42857142857142855

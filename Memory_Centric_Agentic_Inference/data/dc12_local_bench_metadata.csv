@@ -1,0 +1,12 @@
+measurement_id,metadata_key,metadata_value,evidence_label
+DC12-LOCAL-PROXY,environment_id,ubuntu-desktop-1-x86_64,host_local_proxy
+DC12-LOCAL-PROXY,python_version,3.12.3,host_local_proxy
+DC12-LOCAL-PROXY,platform,Linux-6.17.0-1013-gcp-x86_64-with-glibc2.39,host_local_proxy
+DC12-LOCAL-PROXY,processor,x86_64,host_local_proxy
+DC12-LOCAL-PROXY,cpu_count,2,host_local_proxy
+DC12-LOCAL-PROXY,benchmark_seed,12012,host_local_proxy
+DC12-LOCAL-PROXY,buffer_sizes_bytes,1048576;4194304;16777216,host_local_proxy
+DC12-LOCAL-PROXY,random_working_sets_bytes,262144;1048576;4194304,host_local_proxy
+DC12-LOCAL-PROXY,worker_counts,1;2;4,host_local_proxy
+DC12-LOCAL-PROXY,power_source,unavailable,host_local_proxy
+DC12-LOCAL-PROXY,external_validity,host_local_proxy_not_gpu_hbm_cxl_or_datacenter_calibration,host_local_proxy

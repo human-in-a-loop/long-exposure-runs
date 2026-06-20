@@ -1,0 +1,5 @@
+claim_id,update_status,production_calibrated,basis,negative_control_result,affected_rows,evidence_label
+CL-012,proxy_only,false,host-local byte/time proxy; direct power counters unavailable,below-noise-or-missing-power does not promote CL-012,12,host_local_proxy
+CL-004,proxy_threshold_overlay,false,0 DC-002 rows crossed; 48 did not cross under local contention proxy,control workloads remain Option A,48,host_local_proxy
+CL-005,proxy_threshold_overlay,false,trajectory/DAG option updates are allowed only when existing retained-value thresholds are crossed,host-local proxy is not treated as CXL production evidence,0,host_local_proxy
+SECURITY-GATE-ENERGY-001,validated_negative_control,false,denied_reuse rows=75 denied_safe_reuse_credit=0.0,security-denied reuse receives zero reuse/energy credit,75,synthetic_enforcement_plus_host_local_proxy

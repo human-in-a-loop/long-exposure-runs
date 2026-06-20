@@ -1,0 +1,29 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "ambiguous_text_warning_count": 7,
+  "artifact_count_checked": 17,
+  "canonical_json_summaries": [
+    "physicalized-weights/data/phase2_synthesis_summary.json",
+    "physicalized-weights/data/phase3_reopen_summary.json",
+    "physicalized-weights/data/phase4_reopen_summary.json",
+    "physicalized-weights/data/target_robustness_summary.json",
+    "physicalized-weights/data/campaign_deferral_watchlist_summary.json",
+    "physicalized-weights/data/campaign_closure_summary.json",
+    "physicalized-weights/data/closure_archive_summary.json",
+    "physicalized-weights/data/toolchain_condition_summary.json"
+  ],
+  "consistent_count": 23,
+  "contradiction_count": 0,
+  "current_artifacts_reopen": false,
+  "current_superiority_claim_count": 0,
+  "field_absent_not_applicable_count": 19,
+  "figure_caption": "consistency coverage of endpoint invariants across canonical campaign summaries and reports.",
+  "introduced_new_gate": false,
+  "json_artifact_count_checked": 8,
+  "markdown_artifact_count_checked": 9,
+  "milestone_id": "M-INVARIANT-1",
+  "missing_required_endpoint_field_count": 0,
+  "new_reopen_gate_count": 0,
+  "schema_version": 1,
+  "status": "validated"
+}

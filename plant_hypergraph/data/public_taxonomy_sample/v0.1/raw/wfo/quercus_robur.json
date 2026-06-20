@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Quercus</i> <i>robur</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+        "full_name_plain": "Quercus robur L.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Fagales/Fagaceae/Quercus/Quercus/Quercus/robur",
+        "wfo_id": "wfo-0000292858"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Quercus</i> <i>robur</i></span> <span class=\"wfo-name-authors\" >Asso</span></span>",
+        "full_name_plain": "Quercus robur Asso",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Fagales/Fagaceae/Quercus/Quercus/Quercus/robur/brutia$Quercus/robur",
+        "wfo_id": "wfo-0001275587"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Quercus robur",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Quercus'",
+      "Word is found in index and so is part of name: 'robur'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'robur'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Quercus robur' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Quercus robur",
+      "rank": "species"
+    },
+    "searchString": "Quercus robur"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Quercus robur"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "1fbe7da9d768341a111139aa7c45d465c0627bf098547352ab70aa38f11ab8ff",
+  "used_insecure_tls_fallback": true
+}

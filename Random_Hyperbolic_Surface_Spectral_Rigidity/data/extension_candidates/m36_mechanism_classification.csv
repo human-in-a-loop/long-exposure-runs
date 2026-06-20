@@ -1,0 +1,17 @@
+mechanism,classification,proof_status,paper_proved_input,requires_new_surface_group_input,uses_only_schreier_or_independent_permutation_evidence,Lambda0_power,claims_proved_exponent_improvement,claims_local_statistics,claims_variance_law,claims_shrinking_window_theorem,note
+markov_baseline,paper_proved_baseline,theorem_level_existing,True,False,False,20,False,False,False,False,
+direct_small_x_pointwise,conditional_surface_theorem_target,conditional,False,True,False,20,False,False,False,False,
+direct_small_x_strong,conditional_surface_theorem_target,conditional,False,True,False,20,False,False,False,False,
+direct_small_x_with_denominator_loss,conditional_but_denominator_sensitive,conditional,False,True,False,20,False,False,False,False,
+coefficient_variation_control,conditional_stronger_structured_target,conditional,False,True,False,20,False,False,False,False,
+signed_cancellation_control,conditional_comparable_to_direct_input,conditional,False,True,False,20,False,False,False,False,
+stronger_lemma33_input,conditional_stronger_input,conditional,False,True,False,20,False,False,False,False,
+schreier_toy_transfer,blocked_toy_only_insufficient,blocked,False,True,True,20,False,False,False,False,
+special_point:x=0,vacuous_without_neighborhood_control,diagnostic,False,False,False,20,False,False,False,False,P(0)=0 does not control p(1/n)/Q_id(1/n).
+special_point:x=1/n,actual_target_point,diagnostic,True,False,False,20,False,False,False,False,Direct theorem must evaluate the ratio at the Lemma 3.3 sample point.
+special_point:n=Cq^kappa,range_boundary,diagnostic,True,False,False,20,False,False,False,False,Compatible if kappa is chosen at least as large as the Lemma 3.3 constant exponent.
+special_point:q->infinity,growing_degree_and_family,diagnostic,False,False,False,20,False,False,False,False,deg p=O(Lambda0^(-1/2)q) and quotient complexity grow.
+special_point:fixed_Lambda0,isolates_trace_q_loss,diagnostic,False,False,False,20,False,False,False,False,Energy factor is inert and q-exponent savings are visible.
+special_point:high_Lambda0,retains_Lambda0_20_factor,diagnostic,False,False,False,20,False,False,False,False,M36 keeps Lambda0^20 and proves no high-energy improvement.
+special_point:Q_id(1/n)=0,excluded_in_paper_range_but_obstructive_outside,diagnostic,False,False,False,20,False,False,False,False,The ratio is meaningless at a zero.
+special_point:Q_id(1/n) near-zero,denominator_loss_model,diagnostic,False,False,False,20,False,False,False,False,A loss D can erase direct numerator savings.

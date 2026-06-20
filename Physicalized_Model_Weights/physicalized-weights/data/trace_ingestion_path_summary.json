@@ -1,0 +1,44 @@
+{
+  "actual_reopened_count": 0,
+  "blocked_convenient_sources": [
+    "synthetic_fixture_only",
+    "sampled_production_logs_without_baselines",
+    "accelerator_vendor_benchmark_only",
+    "privacy_risk_raw_logs",
+    "simulated_scaled_workload"
+  ],
+  "can_evaluate_m_reopen_1": [
+    "shadow_production_dual_run",
+    "canary_ab_dual_instrumented"
+  ],
+  "can_pass_m_trace_1": [
+    "shadow_production_dual_run",
+    "canary_ab_dual_instrumented"
+  ],
+  "classification_counts": {
+    "inadmissible": 1,
+    "reopen_candidate_path": 2,
+    "threshold_evaluable_if_measured": 1,
+    "valid_but_insufficient": 4
+  },
+  "figure_caption": "admissibility and evidence coverage of candidate production-trace ingestion paths, separating privacy failures, missing-baseline failures, proxy-only evidence, and threshold-evaluable measured paths.",
+  "milestone_id": "M-INGEST-1",
+  "path_count": 8,
+  "privacy_disallowed_columns": [
+    "prompt",
+    "raw_prompt",
+    "raw_text",
+    "user_id",
+    "raw_user_id",
+    "tenant_id",
+    "tenant_name",
+    "api_key",
+    "email",
+    "ip_address",
+    "content"
+  ],
+  "reopen_candidate_path_count": 2,
+  "schema_version": 1,
+  "status": "validated",
+  "trace_contract": "Only M-TRACE-1 valid_reopen_candidate traces with measured accelerator and hybrid energy can instantiate the threshold."
+}

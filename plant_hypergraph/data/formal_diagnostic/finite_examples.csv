@@ -1,0 +1,9 @@
+example_id,edge_family,k,introduced_pairs,licensed_pairs,unlicensed_pairs,unlicensed_pair_ratio,semantic_claim
+arity_0_empty_context,regional_checklist_context,0,0,0,0,0.000000,empty context carries no taxon-taxon claim
+arity_1_singleton_context,regional_checklist_context,1,0,0,0,0.000000,singleton context carries no taxon-taxon claim
+arity_2_pairwise_trait_safe,trait_syndrome,2,1,1,0,0.000000,pairwise equivalence only when the task asks for shared trait-state membership
+arity_3_context_only,regional_checklist_context,3,3,0,3,1.000000,shared checklist context is not mutual biological or taxonomic similarity
+arity_5_context_only,regional_checklist_context,5,10,0,10,1.000000,larger context hyperedges create many unlicensed taxon-taxon adjacencies
+regional_context_example,regional_checklist_context,5,10,0,10,1.000000,"regional checklist membership supports source-scoped context, not global similarity"
+reticulate_role_example,reticulate_or_hybrid_signal,3,3,2,1,0.333333,child-to-source-lineage near-miss is role-licensed; source-source similarity is not
+trait_convergence_trap,trait_syndrome,3,3,0,3,1.000000,shared convergent trait state must not become taxonomic closeness

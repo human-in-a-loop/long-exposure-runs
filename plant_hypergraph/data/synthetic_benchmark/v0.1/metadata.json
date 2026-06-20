@@ -1,0 +1,43 @@
+{
+  "counts": {
+    "examples": 103,
+    "hyperedge_incidence_rows": 1081,
+    "names": 138,
+    "reticulate_cases": 7,
+    "species": 60,
+    "taxa": 76,
+    "trait_convergence_taxa": 12
+  },
+  "created": "2026-05-17T01:15:00Z",
+  "file_hashes_sha256": {
+    "composition.png": "33a5b4ffdf5346259945e2d8098963a4c92dc2c05ad8ebcc31961ca650c514f2",
+    "examples.csv": "8472e3be9a64bcdc0a0209f997f96ca6862c19193b78e320c3d8734de08f714d",
+    "hyperedges.csv": "df9fe325ebe3eb14c7f60ed6675c0f1b676f890a61e4ac9b2c67101fa44d11a1",
+    "names.csv": "e1670c99831b8599a38afd5e06b73929ef31f35f56cd6669b1b4a8b8c8239f7f",
+    "splits.csv": "c439cfaf4b6778409bed351a15335d37663953d3ff3932cfac1daafbeb5cef73",
+    "taxa.csv": "88ced6982c612698cd94ac8c16980429feace8a3e0716c22e4003ea75ca5593d"
+  },
+  "generator": "scripts/generate_synthetic_benchmark.py",
+  "parameters": {
+    "genera_per_family": 3,
+    "missing_rank_rate": 0.18,
+    "n_families": 4,
+    "occurrence_noise_rate": 0.12,
+    "reticulation_rate": 0.12,
+    "species_per_genus": 5,
+    "synonym_rate": 0.45,
+    "trait_convergence_rate": 0.16
+  },
+  "required_edge_families": [
+    "taxonomic_parentage",
+    "synonym_cluster",
+    "trait_syndrome",
+    "regional_checklist_context",
+    "occurrence_provenance",
+    "reticulate_or_hybrid_signal",
+    "missing_rank_bridge"
+  ],
+  "schema_version": "synthetic_benchmark_v0.1",
+  "seed": 20260517,
+  "synthetic_status_disclaimer": "All traits, geography, occurrence noise, missing ranks, and reticulate/hybrid-like signals are synthetic benchmark mechanisms and do not imply biological novelty."
+}

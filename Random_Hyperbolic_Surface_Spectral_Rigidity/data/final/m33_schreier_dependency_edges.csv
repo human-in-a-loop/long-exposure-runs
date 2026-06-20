@@ -1,0 +1,11 @@
+source,target,relation
+M4 labelled-template expectation identity,M30 fixed-k expectation,computes fixed-word expectation order
+M30 tree-word separation,M30 fixed-k expectation,identifies m_k
+M30 trace word expansion,M31 variance expansion,expands trace into fixed-point counts
+M31 deterministic covariance separation,M31 variance expansion,removes identity-word covariance terms
+M4 labelled-template expectation identity,M32 fixed-pair covariance,gives quotient-template exponent
+M32 exponent lemma,M32 fixed-pair covariance,bounds every nontrivial fixed pair by O(1)
+M31 variance expansion,M33 fixed-k variance theorem,supplies n^-2 finite pair sum
+M32 fixed-pair covariance,M33 fixed-k variance theorem,bounds all nonidentity covariance terms
+M30 fixed-k expectation,M33 theorem package,expectation theorem
+M33 no-transfer firewall,M33 theorem package,scope boundary

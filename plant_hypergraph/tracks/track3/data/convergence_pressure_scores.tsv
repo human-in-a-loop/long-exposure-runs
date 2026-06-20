@@ -1,0 +1,17 @@
+trait	n_carriers	n_families	H_family	CP_N1	CP_N2	CP_min	clears_bar	data_limited	excluded_from_canonical
+drupe	187	32	2.672601	5.647328	6.640375	5.647328	True	no	False
+capsule	544	48	2.401305	4.831440	6.523124	4.831440	True	no	False
+succulence	3	2	0.636514	-0.086450	0.380119	-0.086450	False	no	False
+cam_photosynthesis	11	4	1.033562	-0.507934	-0.087326	-0.507934	False	no	False
+achene	200	11	1.188062	-5.559571	-4.709591	-5.559571	False	no	False
+fleshy_fruit	717	42	1.641399	-5.850457	-4.056085	-5.850457	False	no	False
+samara	94	3	0.728367	-5.929682	-5.466532	-5.929682	False	no	False
+c4_photosynthesis	158	4	0.890490	-7.066116	-6.120633	-7.066116	False	no	False
+follicle	312	12	1.140066	-7.496875	-6.672832	-7.496875	False	no	False
+elaiosome	93	4	0.222116	-9.142060	-8.026788	-9.142060	False	no	False
+myrmecochory	289	14	0.811207	-10.328344	-9.655196	-10.328344	False	no	False
+aril	473	2	0.015133	-22.940141	-22.675391	-22.940141	False	no	False
+ant_domatia	0	0					False	yes	False
+carnivory	0	0					False	yes	False
+parasitism	0	0					False	yes	False
+_other	3253	100	2.155876		0.000000		False	no	True

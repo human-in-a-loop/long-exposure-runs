@@ -1,0 +1,39 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "all_successful_intakes_preserved": true,
+  "blocked_before_replay_count": 6,
+  "blocked_cases": [
+    "stale_hash_after_handoff",
+    "trace_file_alias_after_handoff",
+    "manifest_trace_source_mismatch",
+    "threshold_mapping_changed_after_dryrun",
+    "attestation_changed_after_hash",
+    "raw_content_added_after_dryrun"
+  ],
+  "case_count": 9,
+  "current_artifacts_reopen": false,
+  "figure_caption": "Intake rehearsal from operator dry-run templates to evidence-pack replay, showing preserved hashes/manifests for valid synthetic-safe packages and blocked handoff mutations before any current artifact can reopen.",
+  "intake_status_counts": {
+    "intake_attestation_blocked": 1,
+    "intake_hash_blocked": 1,
+    "intake_manifest_blocked": 2,
+    "intake_passed": 3,
+    "intake_privacy_blocked": 1,
+    "intake_threshold_blocked": 1
+  },
+  "interpretation": "The intake rehearsal preserves the handoff for filled shadow/canary packages and a synthetic counterfactual control, then blocks stale hashes, manifest mutations, threshold remapping, attestation changes, and post-dry-run privacy columns before replay. It remains synthetic-safe and creates no actual reopen candidate.",
+  "milestone_id": "M-INTAKE-1",
+  "replay_status_counts": {
+    "not_run": 6,
+    "synthetic_counterfactual_crossed": 1,
+    "threshold_evaluable_not_crossed": 2
+  },
+  "schema_version": 1,
+  "status": "validated",
+  "successful_intake_cases": [
+    "shadow_synthetic_filled_non_crossing",
+    "canary_synthetic_filled_non_crossing",
+    "synthetic_counterfactual_crossing_non_actual"
+  ],
+  "successful_intake_count": 3
+}

@@ -1,0 +1,113 @@
+{
+  "edge_rows": 420545,
+  "level_counts": {
+    "diaspore_fleshiness": {
+      "genus": 1,
+      "species": 4109,
+      "subspecies": 15,
+      "variety": 1
+    },
+    "dispersal_appendage": {
+      "genus": 22,
+      "species": 3295,
+      "subspecies": 37,
+      "unresolved": 2,
+      "variety": 61
+    },
+    "dispersal_syndrome": {
+      "genus": 1071,
+      "species": 14711,
+      "subspecies": 1026,
+      "unresolved": 49,
+      "variety": 483
+    },
+    "dispersers": {
+      "genus": 920,
+      "species": 11564,
+      "subspecies": 742,
+      "unresolved": 45,
+      "variety": 381
+    },
+    "fruit_dehiscence": {
+      "genus": 34,
+      "species": 39851,
+      "subspecies": 1279,
+      "unresolved": 60,
+      "variety": 477
+    },
+    "fruit_fleshiness": {
+      "genus": 36,
+      "species": 31909,
+      "subspecies": 386,
+      "unresolved": 9,
+      "variety": 235
+    },
+    "fruit_type": {
+      "genus": 39,
+      "species": 53211,
+      "subspecies": 2561,
+      "unresolved": 96,
+      "variety": 1137
+    },
+    "life_history": {
+      "genus": 135,
+      "species": 75160,
+      "subspecies": 7117,
+      "unresolved": 176,
+      "variety": 2888
+    },
+    "photosynthetic_pathway": {
+      "genus": 743,
+      "species": 12616,
+      "subspecies": 1024,
+      "unresolved": 54,
+      "variety": 550
+    },
+    "plant_growth_form": {
+      "genus": 1073,
+      "species": 95671,
+      "subspecies": 8698,
+      "unresolved": 232,
+      "variety": 3671
+    },
+    "plant_succulence": {
+      "genus": 8,
+      "species": 66,
+      "subspecies": 4,
+      "unresolved": 2,
+      "variety": 4
+    },
+    "seed_shape": {
+      "genus": 5,
+      "species": 9709,
+      "subspecies": 908,
+      "unresolved": 14,
+      "variety": 242
+    },
+    "woodiness": {
+      "genus": 18,
+      "species": 4040,
+      "subspecies": 34,
+      "unresolved": 1,
+      "variety": 9
+    }
+  },
+  "list_counts": {
+    "diaspore_fleshiness": 4126,
+    "dispersal_appendage": 3425,
+    "dispersal_syndrome": 19206,
+    "dispersers": 16283,
+    "fruit_dehiscence": 42367,
+    "fruit_fleshiness": 32578,
+    "fruit_type": 57356,
+    "life_history": 89164,
+    "photosynthetic_pathway": 15003,
+    "plant_growth_form": 123510,
+    "plant_succulence": 84,
+    "seed_shape": 13341,
+    "woodiness": 4102
+  },
+  "node_rows": 32793,
+  "raw_rows": 394940,
+  "rejected_rows": 23
+}

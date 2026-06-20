@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "created": "2026-05-17T17:00:00Z",
+    "source_urls": {
+      "anthropic": "https://www.anthropic.com/pricing",
+      "openai": "https://openai.com/api/pricing/",
+      "google": "https://ai.google.dev/pricing"
+    },
+    "access_date": "2026-05-17",
+    "convention": "USD per 1,000,000 tokens; values rounded up to be conservative; over-estimation is safe and under-estimation defeats the cap",
+    "notes": "Pricing snapshot. Edit when providers update. Unknown models fall back to per-provider default."
+  },
+  "anthropic": {
+    "claude-opus-4-7":          {"input_per_mtok": 15.00, "output_per_mtok": 75.00},
+    "claude-sonnet-4-6":        {"input_per_mtok":  3.00, "output_per_mtok": 15.00},
+    "claude-haiku-4-5-20251001":{"input_per_mtok":  1.00, "output_per_mtok":  5.00},
+    "_default":                 {"input_per_mtok": 15.00, "output_per_mtok": 75.00}
+  },
+  "openai": {
+    "gpt-4o":                   {"input_per_mtok":  5.00, "output_per_mtok": 20.00},
+    "gpt-4o-mini":              {"input_per_mtok":  0.60, "output_per_mtok":  2.40},
+    "gpt-5-nano":               {"input_per_mtok":  0.20, "output_per_mtok":  0.80},
+    "_default":                 {"input_per_mtok":  5.00, "output_per_mtok": 20.00}
+  },
+  "google": {
+    "gemini-2.5-pro":           {"input_per_mtok":  3.50, "output_per_mtok": 10.50},
+    "gemini-2.5-flash":         {"input_per_mtok":  0.30, "output_per_mtok":  2.50},
+    "_default":                 {"input_per_mtok":  3.50, "output_per_mtok": 10.50}
+  },
+  "stub": {
+    "stub-echo":                {"input_per_mtok":  0.00, "output_per_mtok":  0.00},
+    "stub-priced":              {"input_per_mtok":  1.00, "output_per_mtok":  2.00},
+    "_default":                 {"input_per_mtok":  0.00, "output_per_mtok":  0.00}
+  }
+}

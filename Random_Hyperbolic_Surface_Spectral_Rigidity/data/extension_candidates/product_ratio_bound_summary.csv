@@ -1,0 +1,56 @@
+family,quantity,order,slope_estimate,max_observed,envelope_power,max_envelope_ratio,notes
+single_label_cycle_profile,ordinary_coefficient,1,0,0,2,0,fixed-order Bell-partition envelope
+single_label_cycle_profile,derivative_at_zero,1,0,0,2,0,same envelope up to the fixed factor order!
+single_label_cycle_profile,log_coefficient,1,0,0,2,0,power-sum envelope from support size and max index
+single_label_cycle_profile,ordinary_coefficient,2,0,0,4,0,fixed-order Bell-partition envelope
+single_label_cycle_profile,derivative_at_zero,2,0,0,4,0,same envelope up to the fixed factor order!
+single_label_cycle_profile,log_coefficient,2,0,0,3,0,power-sum envelope from support size and max index
+single_label_cycle_profile,ordinary_coefficient,4,0,0,8,0,fixed-order Bell-partition envelope
+single_label_cycle_profile,derivative_at_zero,4,0,0,8,0,same envelope up to the fixed factor order!
+single_label_cycle_profile,log_coefficient,4,0,0,5,0,power-sum envelope from support size and max index
+single_label_cycle_profile,ordinary_coefficient,8,0,0,16,0,fixed-order Bell-partition envelope
+single_label_cycle_profile,derivative_at_zero,8,0,0,16,0,same envelope up to the fixed factor order!
+single_label_path_profile,ordinary_coefficient,1,1,40,2,1,fixed-order Bell-partition envelope
+single_label_path_profile,derivative_at_zero,1,1,40,2,1,same envelope up to the fixed factor order!
+single_label_path_profile,log_coefficient,1,1,40,2,1,power-sum envelope from support size and max index
+single_label_path_profile,ordinary_coefficient,2,0,0,4,0,fixed-order Bell-partition envelope
+single_label_path_profile,derivative_at_zero,2,0,0,4,0,same envelope up to the fixed factor order!
+single_label_path_profile,log_coefficient,2,2,800,3,0.5,power-sum envelope from support size and max index
+single_label_path_profile,ordinary_coefficient,4,0,0,8,0,fixed-order Bell-partition envelope
+single_label_path_profile,derivative_at_zero,4,0,0,8,0,same envelope up to the fixed factor order!
+single_label_path_profile,log_coefficient,4,4,640000,5,0.25,power-sum envelope from support size and max index
+single_label_path_profile,ordinary_coefficient,8,0,0,16,0,fixed-order Bell-partition envelope
+single_label_path_profile,derivative_at_zero,8,0,0,16,0,same envelope up to the fixed factor order!
+rank2_balanced_profile,ordinary_coefficient,1,2.28748,1521,2,0.950625,fixed-order Bell-partition envelope
+rank2_balanced_profile,derivative_at_zero,1,2.28748,1521,2,0.950625,same envelope up to the fixed factor order!
+rank2_balanced_profile,log_coefficient,1,2.28748,1521,2,0.950625,power-sum envelope from support size and max index
+rank2_balanced_profile,ordinary_coefficient,2,4.80985,1096641,4,0.428375390625,fixed-order Bell-partition envelope
+rank2_balanced_profile,derivative_at_zero,2,4.80985,2193282,4,0.85675078125,same envelope up to the fixed factor order!
+rank2_balanced_profile,log_coefficient,2,3.35054,60079.5,3,0.9387421875,power-sum envelope from support size and max index
+rank2_balanced_profile,ordinary_coefficient,4,9.48482,159366366081,8,0.0243173776369,fixed-order Bell-partition envelope
+rank2_balanced_profile,derivative_at_zero,4,9.48482,3.82479278594e+12,8,0.583617063285,same envelope up to the fixed factor order!
+rank2_balanced_profile,log_coefficient,4,5.5348,139414479.75,5,1.36146952881,power-sum envelope from support size and max index
+rank2_balanced_profile,ordinary_coefficient,8,16.502,1.21230086216e+20,16,1.52587890625e-05,fixed-order Bell-partition envelope
+rank2_balanced_profile,derivative_at_zero,8,16.502,4.88799707624e+24,16,0.615234375,same envelope up to the fixed factor order!
+rank2_deficit_k3,ordinary_coefficient,1,2.61434,1366,2,0.85375,fixed-order Bell-partition envelope
+rank2_deficit_k3,derivative_at_zero,1,2.61434,1366,2,0.85375,same envelope up to the fixed factor order!
+rank2_deficit_k3,log_coefficient,1,2.61434,1366,2,0.85375,power-sum envelope from support size and max index
+rank2_deficit_k3,ordinary_coefficient,2,5.1173,878905,4,0.343322265625,fixed-order Bell-partition envelope
+rank2_deficit_k3,derivative_at_zero,2,5.1173,1757810,4,0.68664453125,same envelope up to the fixed factor order!
+rank2_deficit_k3,log_coefficient,2,3.89846,54073,3,0.844890625,power-sum envelope from support size and max index
+rank2_deficit_k3,ordinary_coefficient,4,9.28044,99310586701,8,0.01953125,fixed-order Bell-partition envelope
+rank2_deficit_k3,derivative_at_zero,4,9.28044,2.38345408082e+12,8,0.46875,same envelope up to the fixed factor order!
+rank2_deficit_k3,log_coefficient,4,6.31927,121372455.5,5,1.18527788574,power-sum envelope from support size and max index
+rank2_deficit_k3,ordinary_coefficient,8,15.3653,3.88468932933e+19,16,0.000137329101562,fixed-order Bell-partition envelope
+rank2_deficit_k3,derivative_at_zero,8,15.3653,1.56630673758e+24,16,5.537109375,same envelope up to the fixed factor order!
+rank4_delocalization_toy_s4,ordinary_coefficient,1,2.46401,8970,2,5.60625,fixed-order Bell-partition envelope
+rank4_delocalization_toy_s4,derivative_at_zero,1,2.46401,8970,2,5.60625,same envelope up to the fixed factor order!
+rank4_delocalization_toy_s4,log_coefficient,1,2.46401,8970,2,5.60625,power-sum envelope from support size and max index
+rank4_delocalization_toy_s4,ordinary_coefficient,2,4.9801,39644865,4,15.4862753906,fixed-order Bell-partition envelope
+rank4_delocalization_toy_s4,derivative_at_zero,2,4.9801,79289730,4,30.9725507812,same envelope up to the fixed factor order!
+rank4_delocalization_toy_s4,log_coefficient,2,3.5488,585585,3,9.149765625,power-sum envelope from support size and max index
+rank4_delocalization_toy_s4,ordinary_coefficient,4,10.3574,2.46786530978e+14,8,37.6566361965,fixed-order Bell-partition envelope
+rank4_delocalization_toy_s4,derivative_at_zero,4,10.3574,5.92287674346e+15,8,903.759268717,same envelope up to the fixed factor order!
+rank4_delocalization_toy_s4,log_coefficient,4,5.85559,4526543911.5,5,44.2045303857,power-sum envelope from support size and max index
+rank4_delocalization_toy_s4,ordinary_coefficient,8,20.299,6.79605383342e+26,16,15.8232958834,fixed-order Bell-partition envelope
+rank4_delocalization_toy_s4,derivative_at_zero,8,20.299,2.74016890564e+31,16,637995.290019,same envelope up to the fixed factor order!

@@ -1,0 +1,13 @@
+failure_type,alpha,N,k_or_d,value,detail
+finite_offset_window_not_closed,0,1,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,0,2,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,0,3,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,0,4,5,1,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,0,5,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,0,6,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,1,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,2,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,3,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,4,5,-1,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,5,5,0,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"
+finite_offset_window_not_closed,1,6,5,-1,"one-step diagonal update for d=WMax requires T_{N-1}(WMax+1), outside the tracked finite window"

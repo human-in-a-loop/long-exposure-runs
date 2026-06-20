@@ -1,0 +1,26 @@
+{
+  "created_at_utc": "REPLACE_BEFORE_COLLECTION_UTC_TIMESTAMP",
+  "dryrun_notice": "Template only. This file is not measured evidence and cannot satisfy measured_terms or threshold_crossed.",
+  "evidence_source_type": "shadow_production",
+  "ingestion_path_id": "shadow_production_dual_run",
+  "measurement_status": "measured",
+  "operator_replace_before_collection": [
+    "pack_id",
+    "created_at_utc",
+    "trace_file",
+    "trace_sha256",
+    "provenance_attestation",
+    "privacy_attestation",
+    "threshold_scenario_id",
+    "pipeline_expected_status"
+  ],
+  "pack_id": "shadow_or_canary_pack_id_REPLACE_BEFORE_COLLECTION",
+  "pipeline_expected_status": "threshold_evaluable_not_crossed",
+  "privacy_attestation": false,
+  "provenance_attestation": false,
+  "schema_version": 1,
+  "threshold_scenario_id": "high_volume_stable_moderation",
+  "trace_file": "physicalized-weights/data/operator_trace_template.csv",
+  "trace_schema_version": 1,
+  "trace_sha256": "d93381955812059288c5dfabef6327820d8672057900961bf1005753131587c8"
+}

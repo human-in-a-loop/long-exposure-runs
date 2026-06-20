@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Picea abies",
+    "class": "Pinopsida",
+    "classKey": 194,
+    "confidence": 99,
+    "family": "Pinaceae",
+    "familyKey": 3925,
+    "genus": "Picea",
+    "genusKey": 7606064,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Pinales",
+    "orderKey": 640,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Picea abies (L.) H.Karst.",
+    "species": "Picea abies",
+    "speciesKey": 5284884,
+    "status": "ACCEPTED",
+    "usageKey": 5284884
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Picea abies"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "98d360f04e15d4ca47b335ba36cb66b41c6cc037e47477fe4834e9a0271d4fd4",
+  "used_insecure_tls_fallback": false
+}

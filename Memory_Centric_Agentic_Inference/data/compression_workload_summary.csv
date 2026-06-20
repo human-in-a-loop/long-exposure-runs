@@ -1,0 +1,7 @@
+workload_class,object_classes_evaluated,best_strategy_counts,ordinary_control_boundary,rag_provenance_boundary,agentic_replay_boundary,evidence_label
+RAG,6,lossless_compress=3; summary_plus_pointer=3,false,true,false,synthetic
+batch summarization/offline inference control,3,keep_hot=2; lossless_compress=1,true,false,false,synthetic
+code-agent loop,8,lossless_compress=3; summary_plus_pointer=5,false,false,true,synthetic
+multi-agent branch/merge,8,lossless_compress=3; summary_plus_pointer=5,false,false,true,synthetic
+single-turn chat control,4,keep_hot=3; lossless_compress=1,true,false,false,synthetic
+verification-heavy,6,lossless_compress=2; summary_plus_pointer=4,false,false,true,synthetic

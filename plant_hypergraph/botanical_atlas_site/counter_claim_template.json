@@ -1,0 +1,15 @@
+{
+  "schema": "phytograph.counter_claim.v1",
+  "fields": {
+    "accepted_taxon_key": "string, required",
+    "target_edge_id": "string, required (substrate edge_id, instrument prediction id, or page header edge_id)",
+    "target_kind": "enum: observed_row | enriched_row | predicted_row | header_row",
+    "reviewer_id": "string, required (orcid: or email:)",
+    "comment": "string, 1..5000 chars, required",
+    "iso_timestamp": "filled by CLI",
+    "atlas_build_id": "string, filled by CLI"
+  },
+  "append_only": true,
+  "ledger_event_emitted": true,
+  "cli": "tools/file_counter_claim.py"
+}

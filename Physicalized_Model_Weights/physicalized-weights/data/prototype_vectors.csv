@@ -1,0 +1,17 @@
+case_id,features,score,decision,margin,confidence
+all_zero_bias_allow,0 0 0 0 0 0 0 0,-10,allow,74,74
+nominal_block_high_margin,8 -4 5 6 -3 2 4 -1,261,block,197,197
+nominal_allow_high_margin,-4 6 -3 0 8 -2 -5 3,-250,allow,314,314
+max_signed_features,127 127 127 127 127 127 127 127,1895,block,1831,1831
+min_signed_features,-128 -128 -128 -128 -128 -128 -128 -128,-1930,allow,1994,1994
+threshold_equal,6 0 1 0 0 0 0 1,64,block,0,0
+near_threshold_allow,6 0 0 0 0 1 0 1,63,allow,1,1
+near_threshold_block,6 0 0 0 0 0 1 1,65,block,1,1
+stale_version_high_confidence,8 -4 5 6 -3 2 4 -1,261,block,197,197
+failed_health_high_confidence,8 -4 5 6 -3 2 4 -1,261,block,197,197
+drift_alarm_high_confidence,8 -4 5 6 -3 2 4 -1,261,block,197,197
+host_forced_fallback,8 -4 5 6 -3 2 4 -1,261,block,197,197
+audit_logging_failure,8 -4 5 6 -3 2 4 -1,261,block,197,197
+fallback_unavailable_valid_fast_path,8 -4 5 6 -3 2 4 -1,261,block,197,197
+classifier_and_fallback_unavailable,0 0 0 0 0 0 0 0,-10,allow,74,74
+monitor_mode_unavailable,0 0 0 0 0 0 0 0,-10,allow,74,74

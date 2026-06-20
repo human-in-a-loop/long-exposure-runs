@@ -1,0 +1,1482 @@
+                                               EIGENVALUE RIGIDITY OF HYPERBOLIC SURFACES IN THE
+                                                             RANDOM COVER MODEL
+
+                                                                           ELENA KIM AND ZHONGKAI TAO
+arXiv:2603.01127v2 [math.SP] 26 Mar 2026
+
+
+
+
+                                                  Abstract. Let X be a compact connected orientable hyperbolic surface and let Xn be
+                                                  a degree n random cover. We show that, with high probability, the distribution of eigen-
+                                                  values of the Laplacian on Xn converges to the spectral measure of the hyperbolic plane
+                                                  with polynomially decaying error. This is analogous to the eigenvalue rigidity property for
+                                                  graphs [HY24] and improves the logarithmic bound of [Mon22]. We also obtain a polyno-
+                                                  mial improvement on the L8 bound of the eigenfunctions. Our proof relies on the Selberg
+                                                  trace formula and a variant of the polynomial method.
+
+
+
+                                                                                    1. Introduction
+
+                                              Let X be a compact orientable hyperbolic surface and λj pXq be its Laplacian eigenvalues.
+                                           Following recent developments of random regular graphs (see also [Rud23; Nau26]), it is
+                                           reasonable to conjecture that the eigenvalue spacing of a random hyperbolic surface with
+                                           large genus follows that of GOE matrices. Although this conjecture remains out of reach,
+                                           there has been a recent breakthrough for random d-regular graphs by Huang, McKenzie,
+                                           and Yau [HMY24], in which they prove that the eigenvalue distribution at the edge of the
+                                           spectrum converges to the Tracy–Widom distribution. One important step in their proof
+                                           is optimal rigidity, which states that with high probability, the j-th eigenvalue λj pGq of a
+                                           random regular graph G of size N is close to the expected position λj prescribed by the
+                                           spectrum of the regular tree (i.e., the position prescribed by the Kesten–McKay law). In
+                                           particular,
+                                                                   |λj pGq ´ λj | À N ´2{3`ε pmintj, N ´ j ` 1uq´1{3 .                          (1.1)
+                                           The bound (1.1) is expected to be optimal (up to N ε ) as the size of the right-hand side
+                                           (the oscillation) is of the same size as the eigenvalue spacing.
+                                              The purpose of this note is to study the eigenvalue rigidity property for random hyper-
+                                           bolic surfaces. In this paper, we consider the random cover model. More precisely, we
+                                           take degree n covers of the closed hyperbolic surface X uniformly at random. Using the
+                                           formulas from [AM23] and [HMT25b], the method used to prove Theorem 1 applies to the
+                                           Weil–Petersson model. This will be discussed in a future paper.
+                                                                                              1
+2                                 ELENA KIM AND ZHONGKAI TAO
+
+  We are not able to prove optimal rigidity as in (1.1). But we are able to show a polynomial
+bound. This improves earlier work of Monk [Mon22], who proved a logarithmic bound under
+the (weaker) assumption of Benjamini–Schramm convergence. The following is the main
+result of our paper.
+Theorem 1. Let X be a compact connected orientable hyperbolic surface of genus g ě 2.
+For any ε ą 0, there exist α “ αpg, εq ą 0 and C “ CpX, εq ą 0 such that the following
+is true. Let Xn be a degree n cover of X taken uniformly at random and let λj pXn q be the
+j-th Laplacian eigenvalue on Xn . Then with probability 1 ´ n´1{10 , for every Λ P r1{4, 8q
+and every λj pXn q P r1{4, Λs, we have
+                           |λj pXn q ´ λj | ď CΛ1{2`ε n´α ,    n P N,                    (1.2)
+where λj ě 1{4 is defined by
+                           ż ?λj ´1{4
+                                                               j
+                                        r tanh pπrq dr “             .                   (1.3)
+                              0                            np2g ´ 2q
+Moreover, we have the following Weyl law for NXn pΛq :“ #tj : λj pXn q ď Λu:
+                       ż ?Λ´1{4
+   NXn pΛq “ p2g ´ 2qn          r tanhpπrqdr ` OX,ε pn1´α Λ1{2`ε q, Λ P r1{4, 8q.        (1.4)
+                          0
+
+   Since the λj ’s are evenly distributed in r1{4, 8q according to the spectral measure of the
+hyperbolic plane H, (1.2) shows that the eigenvalues λj pXn q are also evenly distributed up
+to an Opn´α Λ1{2`ε q-oscillation. In particular, the multiplicity of eigenvalues is bounded
+by Cn1´α Λ1{2`ε for a typical random cover, see [GLMST21; Mon22; LM24; HWZ25] for
+related results.
+   We note that Hide, Macera, and Thomas [HMT25a, Theorem 1.1] show that there exists
+b, c ą 0 depending only on the genus of X such that a uniformly random degree n cover
+Xn of X has
+                                               1
+                                   λnew
+                                    1 pXn q ě    ´ cn´b ,                             (1.5)
+                                               4
+with probability tending to 1 as n Ñ 8. Here, λnew1 pXn q denotes the smallest eigenvalue
+of Xn that is not an eigenvalue of X, accounting for multiplicities. Moreover, from (1.4),
+it is easy to see that there are at most Cn1´α eigenvalues of ∆Xn below 1{4. Therefore,
+the new eigenvalues of Xn below 1{4 also satisfy (1.2) with α replaced by minp2α{3, bq and
+probability tending to 1 as n Ñ 8.
+  Theorem 1 can be thought as an analogue of the spectral graph theory result of Huang and
+Yau [HY24, Theorem 1.2], which shows the rigidity estimate as in (1.1) with a polynomial
+bound.
+                  SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                           3
+
+  In [HY24, Theorem 1.4], Huang and Yau also prove an eigenvector estimate for a random
+regular graph G of size N :
+                                               plog N qC
+                                  }uj }8 ď C      ?      }uj }2 .                      (1.6)
+                                                    N
+In the Weil–Petersson model, Gilmore, Le Masson, Sahlsten, and Thomas [GLMST21]
+proved a logarithmic improvement for eigenfunctions. They conjectured that an analogous
+bound to (1.6) is true.
+  We obtain the following estimate on eigenfunctions with polynomially improved bounds.
+
+Theorem 2. Let X be a compact connected orientable hyperbolic surface of genus g ě 2.
+There exist α “ αpgq ą 0 and C “ CpXq ą 0 such that the following is true. Let Xn
+be a degree n cover of X taken uniformly at random and let uj be the j-th normalized
+eigenfunction of ∆Xn :
+                           ∆Xn uj “ λj pXn quj ,      }uj }L2 pXn q “ 1.
+
+Then with probability 1 ´ n´1{10 , for every Λ ě 1{4 and every λj pXn q ď Λ, we have
+
+                             }uj }L8 pXn q ď CΛ3{2 n´α }uj }L2 pXn q .                 (1.7)
+
+Remark 1.1. We do not optimize the exponent in (1.7). However, by interpolating with
+the “trivial” estimate (see [Don01]):
+
+                               }uj }L8 pXn q ď CΛ1{4 }uj }L2 pXn q ,
+
+we have (similar to (1.2)) that for any ϵ ą 0, there exists αpg, ϵq ą 0 and CpX, ϵq ą 0 such
+that
+                       }uj }L8 pXn q ď CpX, ϵqΛ1{4`ϵ n´αpg,ϵq }uj }L2 pXn q .          (1.8)
+
+  The estimate (1.7) shows that with high probability, the eigenfunctions are delocalized.
+We note that Theorem 1 does not describe how the eigenvalues oscillate at finer scales
+as in [Rud23; Nau26]. Rudnick and Naud showed that in the Weil–Petersson model and
+random cover model, respectively, the number variance of the eigenvalues in the large genus
+and small window limit converges to that of the GOE eigenvalues. With the polynomial
+method, one can take the size of the window L´1 to depend on the degree of the cover:
+L “ nα . Indeed, this idea is reminiscent in the proof of Theorem 2, in which there is a
+term (4.1) that describes the local oscillation of eigenfunctions away from the local Weyl
+law.
+4                              ELENA KIM AND ZHONGKAI TAO
+
+1.1. Previous work. We briefly review prior results on the low energy spectral theory
+(i.e., the restriction to bounded eigenvalues) of random hyperbolic surfaces. Most of such
+work focused on the spectral gap. The spectral gap appears when studying the error term
+for counting closed geodesics of bounded length, the error term for the hyperbolic lattice
+counting problem, and the error term for the rate of mixing of the geodesic flow. The
+spectral gap on hyperbolic surfaces can be thought of as an analog of the Alon–Boppana
+bound on graphs. For additional context on spectral gaps, see the survey [MN26].
+   In [Hub74], Huber proved that for any sequence of compact hyperbolic surfaces Xn with
+genera gpXn q tending to infinity, lim supiÑ8 λ1 pXn q ď 41 . More recently, in [MNP22],
+Magee, Naud, and Puder studied covers of compact hyperbolic surfaces. They showed
+that for all ε ą 0, with high probability, a degree n covering surface Xn of X has no
+                          3
+new eigenvalues below 16    ´ ε. In [MPvH25] Magee, Puder, and van Handel improved
+ 3     1
+16
+    to 4 . Hide, Macera, and Thomas [HMT25a] used [MPvH25] to obtain a spectral gap
+result with polynomial error. Specifically, they showed λ1 pXn q ě 41 ´ Opn´b q for uniformly
+random degree n covers Xn of a closed hyperbolic surface X. The work of [MNP22] was
+generalized to surfaces with variable negative curvature in [HMN25] by Hide, Moy, and
+Naud. In the even more general case of covers of closed Riemannian surfaces with Anosov
+geodesic flow, Moy [Moy26] proved the existence of a spectral gap for Pollicott–Ruelle
+resonances. In constant curvature, a spectral gap for the Laplacian implies a spectral gap
+for the Pollicott–Ruelle spectrum. However, this correspondence does not hold in variable
+curvature.
+   Much recent progress has also been made in the regime of spectral gaps for covers of
+finite-area noncompact hyperbolic surfaces X. Hide and Magee studied this model in
+[HM23]. They showed for any ε ą 0, with high probability, a uniformly random degree n
+cover of X has no new eigenvalues below 41 ´ ε. In [Hid23], Hide strengthened the work of
+                                log log nq2
+[HM23] to replace ε with c ploglog log n
+                                            . In [Moy25], Moy studied spectral gaps in the case
+of covers of noncompact, geometrically finite surfaces with pinched sectional curvature.
+In [BMP25], Ballmann, Mondal, and Polymerakis studied random covers of a complete
+connected Riemannian manifold with Ricci curvature bounded from below, under certain
+conditions of the fundamental group.
+   Additionally, we discuss prior work on spectral gaps for Weil–Petersson random hy-
+perbolic surfaces. In this regime, Wu and Xue [WX22] and Lipnowski and Wright [LW24]
+                                            3
+showed that with high probability, λ1 pXq ě 16 ´op1q. The series of works [AM23], [AM24a],
+[AM24b], [AM25] by Anantharaman and Monk concluded that for all ε ą 0, λ1 pXq ě 14 ´ ε
+for a Weil–Petersson random hyperbolic surface with high probability. Recently, Hide,
+Macera, and Thomas [HMT25b] used the polynomial method developed in [CGVTvH26;
+                   SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                              5
+
+MPvH25] to give a polynomial error term in the result of Anantharaman and Monk. Specif-
+ically, they show that there exists a constant c ą 0 such that a genus g closed hyperbolic
+surface satisfies λ1 pXq ě 14 ´ Op g1c q with high probability. In [HWX26], He, Wu, and Xue
+show a uniform spectral gap for hyperbolic surfaces with genus g and n “ Opg α q cusps
+for α P r0, 12 q. For the Brooks–Markover model, Shen and Wu [SW25] proved the nearly
+optimal spectral gap 1{4 ´ n´1{221 using the polynomial method.
+  There has also been work studying fluctuations of eigenvalues in short energy windows.
+In [Rud23], Rudnick studied the variance of the spectral statistics in the Weil–Petersson
+model. Taking the large genus limit, then the short window limit, the variance converges
+to that of GOE statistics. See also Rudnick and Wigman [RW25]. Fluctuation in the
+random covers model were studied by Naud [Nau26] and Maoz [Mao23]. These results
+were generalized to random covers of negatively curved surfaces by Moy [Moy24].
+   In the regime of eigenfunctions, Le Masson and Sahlsten [LMS17] proved a quantum
+ergodicity statement under Benjamini–Schramm convergence. See also [LMS24] for the
+case of Eisenstein series and Hippi [Hip25] for a quantum mixing result. Gilmore, Le
+Masson, Sahlsten, and Thomas [GLMST21] proved a logarithmically improved L2 Ñ Lp
+eigenfunction estimate for Weil–Petersson random hyperbolic surfaces. Thomas [Tho22]
+proved eigenfunction delocalization for Weil–Petersson random hyperbolic surfaces with
+large genus.
+   For compact arithmetic surfaces, strong bounds on eigenfunctions were obtained by
+Iwaniec and Sarnak [IS95] in the spectral aspect, and by Hu and Saha [Sah20; HS20]
+in the depth aspect. See also Ki [Ki23], Assing and Toma [AT25], and Fischer [Fis26] for
+recent developments on non-compact arithmetic surfaces.
+
+1.2. Proof idea. The proofs of Theorem 1 and Theorem 2 follow from the same main
+ideas. Due to the similarities, we outline only the proof of Theorem 1. The main difference
+between the arguments is that Theorem 1 relies on the Selberg trace formula (2.2), while
+Theorem 2 relies on the Selberg pre-trace formula (2.5).
+  In §2.4 and §3.1, we construct a test function hΛ ˝ fΛ0 that approximates the indicator
+function of an interval of eigenvalues up to scale Λq ´1 that cuts near Λ ě 1{4. The function
+hΛ ˝fΛ0 is sufficiently nice so that we can apply the Selberg trace formula and the polynomial
+method. For our purpose, q will be taken to be q “ Λ1{2´ε nc for some 0 ă c ă 1. Then
+with some work involving Chebyshev’s inequality in §3.1, we reduce the proof of Theorem 1
+to following statement of Proposition 3.1:
+  ˆ                                                                                ˙2
+     1 ´              ´a              ¯¯ VolpX q ż 8
+                                                  n                                       q 2κ
+E      tr phΛ ˝ fΛ0 q     ∆Xn ´ 1{4 ´                   phΛ ˝ fΛ0 q prqr tanhpπrqdr À Λ20      .
+     n                                        2πn     0                                    n
+6                               ELENA KIM AND ZHONGKAI TAO
+
+We prove Proposition 3.1 in §3.2. The starting point of the proof of Proposition 3.1 is the
+twisted Selberg trace formula for a random cover Xn Ñ X:
+            ˜c              ¸
+                                n VolpXq 8
+                                           ż
+       ÿ                  1
+         ϕ̂    λj pXn q ´     “                ϕ̂prqr tanh pπrq dr
+       j
+                          4         2π      0
+                                           8                                           (1.9)
+                                     ÿ ÿ           ℓγ pXq                         k
+                                `                    ´         ¯ ϕpkℓγ pXqq trpρpγ qq,
+                                                       kℓγ pXq
+                                   γPPpXq k“1 2 sinh      2
+
+where ρ is a permutation representation of the fundamental group of X that encodes the
+cover Xn Ñ X. For the complete statement of the formula, see Lemma 2.1. From the trace
+formula (1.9), we see that, in order to prove Proposition 3.1, it suffices to show
+                 ¨                                                              ˛2
+                             8                                                         2κ
+                   1 ÿ ÿ             ℓγ pXq                 _                k ‚    2q
+   EX p1{nq :“ E ˝                     ´       ¯ phΛ ˝ fΛ0 q pkℓγ pXqq trpρpγ qq À Λ0     .
+                   n γPPpXq k“1 2 sinh kℓγ pXq                                        n
+                                             2
+                                                                                   (1.10)
+The main technical ideas in the proof of (1.10) come from the generalized polynomial
+method of [MPvH25]. For more on the polynomial method, see [vHan25]. Roughly speak-
+ing, we treat the expectation EX p1{nq in (1.10) as a polynomial of 1{n and use Markov
+brothers’ inequality (3.20) to prove a bound on the derivative of this polynomial. More
+specifically, our proof uses the following three steps.
+    (1) In §3.2.1, we use the spectral side of the Selberg trace formula (1.9) to show
+
+                                         EX p1{nq À Λ20 .                                   (1.11)
+
+    (2) In §3.2.2, we estimate Ertrpρpγ1k1 qqtrpρpγ2k2 qqs to prove that for n ě q κ for some
+        κ ą 2, n2 EX p1{nq is well-approximated by a polynomial pp1{nq with deg ppxq À q.
+    (3) Finally, in §3.2.3, we apply the Markov brothers’ inequality (3.20) to conclude
+                                                  ˇ          ˇ
+                                                  ˇ 1        ˇ
+                    sup |px2 ppxqq1 | À q 2κ sup ˇˇ 2 pp1{nqˇˇ À Λ20 q 2κ , n ą q κ
+                   r0, 1κ s                  nąq κ n
+                    2q
+
+
+        and
+                                                                        2κ
+                           1           1              2              2q
+              EX p1{nq «      pp1{nq À    sup     |px   ppxqq 1
+                                                                | À Λ0     ,   n ą 2q κ .
+                           n2          n r0, 1κ s                      n
+                                                 2q
+
+
+        This implies (1.10) for n ą 2q κ . On the other hand, the case for n ď 2q κ follows
+        from (1.11).
+                  SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                               7
+
+Notation. We say A À B or A “ OpBq if there exists a constant C ą 0 such that A ď CB.
+To emphasize the dependence of the constant on a parameter α, we write Àα or Oα p¨q. In
+this paper, the constant C usually depends on the hyperbolic surface X, but does not
+depend on the degree of the cover, n P N. The value of C may vary from line to line. We
+use trA for the trace of a matrix or a linear map A. We do not use the normalized trace in
+this paper.
+  For f P S pRq, we define its Fourier transform by
+                                          ż
+                                  ˆ
+                                  f pξq “ f pxqe´ixξ dx
+                                                    R
+
+and its inverse Fourier transform by
+                                                        ż
+                                               1
+                                      fˇpxq “               f pξqeixξ dξ.
+                                              2π        R
+
+Acknowledgments. We would like to thank Semyon Dyatlov (supported by NSF grant
+DMS-2400090), Yulin Gong, Davide Macera, Michael Magee, Julien Moy, Doron Puder,
+Qiuyu Ren, Nikhil Srivastava, Yuhao Xue, and all the participants of the discrete analysis
+seminar at Berkeley for many interesting discussions. We thank Y. Gong for suggesting that
+our work could be used to prove a Weyl law and for proposing that we prove an eigenfunction
+estimate. Additionally, the arguments (1.8) and (3.4) are due to Y. Gong. EK is supported
+by NSF GRFP under grant No. 1745302. EK is grateful for the hospitality of the Institut
+des Hautes Études Scientifiques, where some of this collaboration was conducted.
+
+                                          2. Preliminaries
+
+  We recall the necessary preliminaries in this section.
+
+2.1. Surface group. Fix X “ ΓzH to be a closed orientable surface of genus g. Then Γ
+is a surface group with 2g generators:
+                   Γ “ xa1 , a2 , . . . , a2g´1 , a2g |ra1 , a2 s ¨ ¨ ¨ ra2g´1 , a2g s “ 1y.
+
+  We now define the degree n covers of X. Set
+                                         Xg,n :“ HompΓ, Sn q.
+This set is finite and endowed with the uniform probability measure. Let φn : Γ Ñ Sn be
+a permutation representation, where Sn is the symmetric group on rns :“ t1, . . . , nu. The
+action of Γ on H ˆ rns is given by
+                                      γ ¨ pz, iq “ pγz, φn pγqpiqq.
+8                                 ELENA KIM AND ZHONGKAI TAO
+
+Then
+                                      Xn :“ Γzφn pH ˆ rnsq
+is a degree n covering surface.
+  Now define Vn :“ ℓ2 prnsq. Denote by stdn the standard representation of the symmetric
+group Sn of permutation matrices. Note that stdn acts on Vn . We compose φn and stdn to
+obtain a representation of Γ on Vn :
+                              ρφn :“ stdn ˝φn : Γ Ñ EndpVn q.                              (2.1)
+Oftentimes, we will drop the φn subscript and use ρ “ ρφn .
+
+2.2. Selberg Trace Formula. First recall that every closed oriented geodesic γ in X
+determines a nontrivial conjugacy class rγ̃s Ă Γ.
+Notation 1. By abuse of notation, we use γ to denote both the geodesic and the element
+of the conjugacy class rγ̃s with the shortest representing word in the generators.
+
+  We have the following twisted Selberg trace formula, a important tool in the proof of
+Theorem 1. For completeness, we include a proof here.
+Lemma 2.1. Suppose φn : Γ Ñ Sn is a permutation representation with ρ “ ρφn . Let X
+be a compact hyperbolic surface and Xρ “ Γzρ pH ˆ rnsq a degree n covering surface. Let
+tλρj u be the eigenvalues of Xρ . Then for any even function ϕ P Cc8 pRq,
+                    ˜c        ¸
+                                  n VolpXq 8
+                                             ż
+             ÿ          ρ   1
+                 ϕ̂   λj ´      “                ϕ̂prqr tanh pπrq dr
+              j
+                            4         2π      0
+                                             8                                           (2.2)
+                                       ÿ ÿ           ℓγ pXq                         k
+                                  `                    ´         ¯ ϕpkℓγ pXqq trpρpγ qq,
+                                                         kℓγ pXq
+                                     γPPpXq k“1 2 sinh      2
+
+where PpXq denotes the set of primitive oriented closed geodesics on X, ϕ̂ denotes the
+Fourier transform of ϕ, and ℓγ pXq denotes the length of the closed geodesic γ on X.
+
+Proof. We recall the standard Selberg trace formula on Xρ (see, for example, [Bor16, The-
+orem 3.4]):
+                    ˜c        ¸
+                                  VolpXρ q 8
+                                          ż
+             ÿ          ρ   1
+                 ϕ̂    λj ´     “              ϕ̂prqr tanh pπrq dr
+              j
+                            4       2π      0
+                                                 8
+                                           ÿ     ÿ         ℓδ pXρ q
+                                     `                       ´           ¯ ϕpmℓδ pXρ qq.
+                                                               mℓδ pXρ q
+                                         δPPpXρ q m“1 2 sinh      2
+                  SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                             9
+
+  Let π : Xρ Ñ X be the natural covering map. It suffices to show that for all γ P PpXq.
+and k P N,
+                            ÿ
+                                   ℓδ pXρ q “ ℓγ pXq trpρpγ k qq.
+                             δ m Pπ ´1 pγ k q,
+                                δPPpXρ q
+
+If γ P PpXq, δ P PpXρ q and πpδ m q “ γ k , then m divides k. Suppose δ starts at a point y0
+with πpy0 q “ x0 . Then δ goes through k{m copies of H since Xρ is the quotient of n copies
+of H by the action of Γ encoded by ρ. Therefore, the number of such δ’s corresponds to
+the number of period k{m orbits in the action φn pγq P Sn acting on n points. We have
+
+      #tlength k{m orbits in the action φn pγq P Sn u “ #tδ P PpXρ q | πpδ m q “ γ k u.
+
+Therefore,
+                                                       ÿ            ÿ        k
+                     trpρpγ k qq “ #Fixpφn pγ k qq “
+                                                       m|k k{m orbits in the
+                                                                             m
+                                                           action φn pγq P Sn
+                                                       ÿ       ÿ   ℓδ pXρ q
+                                                  “
+                                                                    ℓ pXq
+                                                       m|k δPPpX q, γ
+                                                                    ρ
+                                                           πpδ m q“γ k
+                                                           ÿ        ℓδ pXρ q
+                                                  “                          ,
+                                                                    ℓγ pXq
+                                                       δ m Pπ ´1 pγ q
+                                                                  k
+
+
+
+which completes the proof.                                                                  □
+
+   The work on spectral gaps in [MNP22] looked at a similar Selberg trace formula, subtract-
+ing the eigenvalues from the base surface X. As we are studying the eigenvalue counting
+function instead of the first new eigenvalue on Xρ , we don’t need to subtract the eigenvalues
+from the base surface.
+
+2.3. Pre-trace formula. In this section, we recall the twisted Selberg pre-trace formula,
+which we later use to prove Theorem 2. Using the notation from §2.1, let φn : Γ Ñ Sn be a
+permutation representation, let ρ “ stdn ˝ φn , and let Xρ “ Γzρ pH ˆ rnsq be the associated
+degree n cover.
+
+Notation 2. The coordinates on Xρ are pz, iq P H ˆ rns. Let 14 ` ptρj q2 be the eigenvalues
+of X ρ with L2 normalized eigenfunctions uρj pz, iq.
+
+  We have the following twisted pre-trace formula.
+10                                 ELENA KIM AND ZHONGKAI TAO
+
+Lemma 2.2. Suppose ϕpxq P Cc8 pRq is an even function, let
+                 ż8
+               1          ϕ1 psq
+    kptq :“ ´ ?      ?                ds, t ě 0, Kpz, wq :“ kpdH pz, wqq,                 (2.3)
+               2π t   cosh s ´ cosh t
+where dH pz, wq is the hyperbolic distance on H. Then
+                        ÿ ρ ρ                           ÿ
+                           ϕ̂ptℓ quℓ pz, iquρℓ pw, jq “   ρij pγqKpz, γwq.                (2.4)
+                          ℓ                                   γPΓ
+
+                   a
+Proof. Consider ϕ̂p ∆Xn ´ 1{4q on Γzρ pH ˆ rnsq. We will show that its Schwartz kernel is
+equal
+   a to both sides of (2.4). The left-hand side follows from theaspectral decomposition of
+ϕ̂p ∆Xn ´ 1{4q. On the other hand, the Schwartz kernel of ϕ̂p ∆H2 ´ 1{4q on H is given
+by Kpz, wq (see [Ber16, §3.5]). Kpz, wq descends to the quotient Γzρ pH ˆ rnsq as
+                                     ÿ
+                                        ρpγqKpz, γwq.                                   □
+                                            γPΓ
+
+
+     In particular, we have
+                              ÿ                             ÿ
+                                  ϕ̂ptρℓ q|uρℓ pz, iq|2 “         ρii pγqKpz, γzq.
+                              ℓ                             γPΓ
+
+
+     We split the right-hand side into two terms (see [Ber16, (3.24) and proof of Theorem 5.6])
+                                        1 8
+               ÿ ρ ρ                     ż                       ÿ
+                                    2
+                  ϕ̂ptℓ q|uℓ pz, iq| “      ϕ̂prqr tanh πrdr `          ρii pγqKpz, γzq.  (2.5)
+               ℓ
+                                       2π 0                    γPΓztidu
+
+
+  Equation (2.5) is the version of the twisted pre-trace formula that we will use. In its
+applications, we use the following notation.
+
+Notation 3. Set k “ kϕ and K “ Kϕ to be the k and K which come from ϕ as in (2.3).
+
+2.4. Test function. For our application of the Selberg trace formula (2.2) and the pre-
+trace formula (2.5), we want to use a ϕ̂ that approximates an interval of eigenvalues and is
+suited to the polynomial method. We now construct such a ϕ̂.
+   We begin with the function f : R Y iR Ñ R from [HMT25b, §2]. Specifically, f has the
+following properties:
+      (1) f is smooth.
+      (2) f is non-negative on R Y iR.
+      (3) fˇ is smooth, even, non-negative, and supported in r´1, 1s. Therefore, f is strictly
+          increasing on t P r0, 8q ÞÑ f ptiq, f p0q ą 0, and 0 ď f pr0, 8qq ď f p0q.
+                    SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                    11
+
+   (4) From the smoothness of fˇ, we know
+                                |f pxq| ď CN p1 ` |x|q´N ,              xPR                        (2.6)
+       for any N P N.
+   (5) Since                                     ż
+                                       2
+                                   f p0q “            ´ξ 2 fˇpξqdξ ă 0,
+                                                 R
+        there exists c0 P p0, 1{2q such that
+          ´Cx ď f 1 pxq ď ´c0 x,       0 ă f p4c0 q ď f pxq ď f p0q ´ c0 x2 ,    x P r0, 4c0 s,
+                                                                                                   (2.7)
+                                                             f pxq ď f p4c0 q,   x ą 4c0 .
+  We will use a rescaled version of f :
+                                                     ´1{2
+                            fΛ0 pxq :“ f pc0 Λ0
+                                          xq, Λ0 P r1{4, 8q.
+               b                                                       b
+Note that fΛ0 p ∆Xn ´ 14 q is a bounded operator. The spectrum of fΛ0 p ∆Xn ´ 41 q is
+contained in r0, fΛ0 p 2i qs, where rfΛ0 p0q, fΛ0 p 2i qs corresponds to the eigenvalues of ∆Xn below
+1
+4
+  and fΛ0 pr0, 8qq corresponds to the eigenvalues of ∆Xn above 14 .
+   When we apply (2.2), we will set ϕ̂pxq “ h ˝ fΛ0 pxq, where hpxq is a polynomial of degree
+q such that hpxq “ xh̃pxq. We use the notation
+                                       }h̃} :“         sup       |h̃pxq|.                          (2.8)
+                                                 xPr0,f pi{2qs
+
+For later use in the proof of Theorem 1, we prove the following lemma.
+Lemma 2.3. We have
+         1 ˇˇ           a          ˇ 1ˇ        a          ˇ
+            ˇtrh ˝ fΛ0 p ∆Xn ´ 1{4qˇ À ˇtrfΛ0 p ∆Xn ´ 1{4qˇ }h̃} À Λ0 }h̃}.                        (2.9)
+                                   ˇ    ˇ                 ˇ
+         n                            n
+Proof.
+     a Since hpxq “ xh̃pxq, we have h ˝ fΛ0 “ fΛ0 ¨ ph̃ ˝ fΛ0 q. Since the norm of h̃ ˝
+fΛ0 p ∆Xn ´ 1{4q is bounded by }h̃}, it suffices to show
+                             1 ˇˇ       a             ˇ
+                                ˇtrfΛ0 p ∆Xn ´ 1{4qˇ À Λ0 .
+                                                      ˇ
+                             n
+  Due to the twisted Selberg trace formula (2.2), it suffices to show that
+                              ż8
+                                  fΛ0 prqr tanh pπrq dr À Λ0                                      (2.10)
+                                   0
+and
+                             8
+                   1 ÿ ÿ             ℓγ pXq
+                                       ´       ¯ fˇΛ0 pkℓγ pXqq trpρpγ k qq À Λ1{2
+                                                                               0 .                (2.11)
+                   n γPPpXq k“1 2 sinh kℓγ pXq
+                                             2
+12                                   ELENA KIM AND ZHONGKAI TAO
+
+We note that (2.10) follows from the rapid decay of f in (2.6) and (2.11) follows from
+                                                1{2
+                                     |fˇΛ0 | À Λ0 ,    supp fˇΛ0 Ă r´c0 Λ0
+                                                                            ´1{2         ´1{2
+                  trpρpγ k qq ď n,                                                 , c0 Λ0      s.   (2.12)
+                                                                                                         □
+
+     We now prove the analogous version of Lemma 2.3 for Theorem 2.
+
+Lemma 2.4. Uniformly for pz, iq P Xn ,
+                        ˇ                            ˇ
+                        ˇÿ                           ˇ
+                                       ρ   ρ        2ˇ
+                        ˇ ph ˝ fΛ0 ptℓ qq|uℓ pz, iq| ˇ À Λ0 }h̃}.                                    (2.13)
+                        ˇ
+                        ˇ ℓ                          ˇ
+
+
+Proof. Since h ˝ fΛ0 “ f ¨ ph̃ ˝ fΛ0 q, we have
+                    ˇ                                 ˇ
+                    ˇÿ                                ˇ       ÿ
+                                    ρ      ρ         2ˇ              ρ    ρ
+                             f                   iq|  ˇ ď }h̃} fΛ0 ptℓ q|uℓ pz, iq|2 .
+                    ˇ
+                    ˇ   ph ˝     pt
+                               Λ0 ℓ   qq|u ℓ pz,
+                    ˇ ℓ                               ˇ       ℓ
+
+
+By the pre-trace formula (2.5) (using Notation 3),
+
+                                  1 8
+       ÿ                            ż                         ÿ
+                ρ    ρ        2
+          fΛ0 ptℓ q|uℓ pz, iq| ď       fΛ0 prqr tanh πrdr `          |KfΛ_ pz, γzq|.                 (2.14)
+        ℓ
+                                 2π  0                      γPΓztidu
+                                                                          0
+
+
+
+
+The first term on the right-hand side is bounded by Λ0 , as was shown in (2.10). For the
+second term, we note that by (2.12) and (2.3),
+                                                              ´1{2
+                                        supp kfΛ_ Ă r0, c0 Λ0        s.                              (2.15)
+                                                  0
+
+
+Using dH pz, γzq ě ℓγ pXq, we have
+
+                                               ˇfˇ psqˇ
+                            ż8                 ˇ 1    ˇ
+                                                Λ0
+                                                                 ds À sup ˇfˇΛ1 0 psqˇ À Λ0 .
+                                                                                   ˇ ˇ
+         |KfΛ_ pz, γzq| ď              a
+              0
+                             dH pz,γzq  cosh s ´ cosh dH pz, γzq            ´1{2
+                                                                     r0,c0 Λ0    s
+
+
+Moreover, using (2.15), there are only finitely many terms in the sum on the right-hand
+side of (2.14).                                                                       □
+
+
+                                      3. Proof of Theorem 1
+
+     In this section, we prove Theorem 1 following the outline in §1.2.
+                           SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                                      13
+
+3.1. Proof of Theorem 1. Recall the definition of fΛ0 from §2.4 and that h is a polynomial
+of degree q such that hpxq “ xh̃pxq. Using the notation (2.8), we denote
+                                                               ÿ
+                                                  }h̃}C κ “            }Bxj h̃}.
+                                                              0ďjďκ
+
+
+Proposition 3.1. There exist κ “ κpgq ą 2 and C “ CpXq ą 0 such that, for any
+Λ0 P rC, 8q, we have
+    ˆ                                                                                                    ˙2
+                                                                                                                     Λ20 q 2κ
+                                                                ż8
+        1 ´             ´a         ¯¯ VolpX q
+                                            n
+E         tr ph ˝ fΛ0 q   ∆Xn ´ 1{4 ´                                   ph ˝ fΛ0 q prqr tanhpπrqdr            ďC              }h̃}2 .
+        n                               2πn                        0                                                    n
+                                                                                                                         (3.1)
+
+Remark 3.2. The estimate (3.1) can be formulated differently, see (3.3) and (3.5) below.
+
+  We delay the proof of Proposition 3.1 to §3.2. We now prove Theorem 1 assuming
+Proposition 3.1.
+
+
+Proof of Theorem 1. We first rephrase (3.1) in a slightly different form. Let hpxq “ xh̃pxq
+be a polynomial of degree q. By (2.12) we have
+
+                                                                        ´1{2         ´1{2
+                                       suppph ˝ fΛ0 q_ Ă r´c0 qΛ0              , c0 qΛ0     s.                           (3.2)
+                     ´                ¯2
+                            c0 q
+For C ď Λ0 ď             min ℓγ pXq
+                                           and K ě 0, by Proposition 3.1 we have
+
+            ˆ                                                            ż8                                   ˙2
+                1 ´             ´a          ¯¯ VolpX q
+                                                     n
+        E         tr ph ˝ fΛ0 q    ∆Xn ´ 1{4 ´                                 ph ˝ fΛ0 q prqr tanhpπrqdr
+                n                                2πn                       0
+                                                                                                                         (3.3)
+                                                                                               q 2pκ`2`Kq
+                                                                                          ď CK            }h̃}2 .
+                                                                                                   nΛK0
+
+                                                                                                              ´                ¯2
+                                                                                                                     c0 q
+On the other hand, using the Selberg trace formula (2.2) and (3.2), for Λ0 ą                                      min ℓγ pXq
+we have
+
+      1 ´             ´a          ¯¯ VolpX q ż 8
+                                              n
+        tr ph ˝ fΛ0 q    ∆Xn ´ 1{4 “                ph ˝ fΛ0 q prqr tanhpπrqdr.                                          (3.4)
+      n                                   2πn    0
+
+
+Therefore, (3.3) holds for all Λ0 P r1{4, 8q.
+14                                   ELENA KIM AND ZHONGKAI TAO
+
+  Let h̃pxq be a polynomial of degree q ´ 1. We write h̃pxq “ q´1
+                                                                  ř                    ´1
+                                                                    j“0 aj Tj p2f pi{2q x ´ 1q,
+where Tj is the j-th Chebyshev polynomial as in [CGVTvH26, (4.1)]. Then we have
+     ˆ                                  ¯¯ VolpX q ż 8                               ˙2
+        1 ´             ´a
+                                                 n
+   E      tr ph ˝ fΛ0 q    ∆Xn ´ 1{4 ´                 ph ˝ fΛ0 q prqr tanhpπrqdr
+        n                                    2πn    0
+             ˜q´1                    ¸2
+        CK ÿ                                                                              (3.5)
+    ď             pj ` 1qκ`2`K |aj |
+       nΛK 0  j“0
+           CK
+       ď       }h̃}2C κ`3`K ,
+           nΛK
+             0
+
+where the first step is due to the Minkowski inequality and (3.3), and the second step is due
+to [CGVTvH26, Corollary 4.5]. By approximating smooth functions by polynomials, we
+note that (3.5) works for general smooth functions hpxq “ xh̃pxq, h̃pxq P C 8 pr0, f pi{2qsq.
+                 1
+  Let α0 “ 3pκ`3`Kq   where K “ t κ`5
+                                    2ε
+                                       u ` 1. Let Λ ě 1{4 and ε ą 0. We take Λ0 “ Λ for
+Λ ě C and Λ0 “ C for Λ P r1{4, Cs. By [DZ16, Lemma 3.3], we can take a smooth cutoff
+hΛ,ε pxq such that
+                              "              a
+                                1, x P rfΛ0 p a Λ ´ 1{4q, f pi{2qs,
+                   hΛ,ε pxq “                                                     (3.6)
+                                0, x P r0, fΛ0 p Λ ` Λ1{2`ε n´α0 ´ 1{4qs
+and moreover,
+                                                       pjq
+     0 ď hΛ,ε pxq ď 1,      hΛ,ε pxq “ xh̃Λ,ε pxq,   |h̃Λ,ε pxq| ď Cj Λjp1{2´εq njα0 ,   x P r0, f pi{2qs,
+                                                                                                        (3.7)
+where the last estimate is due to (2.7) and the mean value theorem:
+             a                 b
+        fΛ0 p Λ ´ 1{4q ´ fΛ0 p Λ ` Λ1{2`ε n´α0 ´ 1{4q
+                                ˆ       b                                       ˙
+             ´1 ´1{2
+                     a             ´1{2                           ´1{2
+                                                                       a
+         ě C Λ0        Λ ´ 1{4 Λ0        Λ`Λ   1{2`ε n 0 ´ 1{4 ´ Λ0
+                                                      ´α                Λ ´ 1{4
+
+             ě C ´1 Λ´1{2`ε n´α0 .
+
+     Applying (3.5) with K “ t κ`5  2ε
+                                       u ` 1, we have
+        ˆ                                     ¯¯ VolpX q ż 8                               ˙2
+          1 ´                  ´a
+                                                         n
+      E     tr phΛ,ε ˝ fΛ0 q      ∆Xn ´ 1{4 ´                phΛ,ε ˝ fΛ0 q prqr tanhpπrqdr
+          n                                          2πn   0
+           C                       C 2pκ`3`Kqp1{2´εq 2pκ`3`Kqα0
+      ď      K
+               }h̃Λ,ε }2C κ`3`K ď      Λ              n         ď CΛ´2 n´1{3 ,
+         nΛ0                      nΛK0
+
+where the second to last step follows from (3.7).
+                   SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                              15
+
+  By Chebyshev’s inequality, there is a set of degree n covers Ωn pX, Λ, εq Ă Xg,n with
+probability (where C1 ą 0 will be determined later in (3.12))
+
+                              PpΩn pX, Λ, εqq ě 1 ´ pC1 Λq´2 n´1{9 ,                       (3.8)
+
+such that for Xn P Ωn pX, Λ, εq,
+  ˇ                               ¯¯ VolpX q ż 8                                      ˇ
+  ˇ1 ´               ´a
+                                                 n                                    ˇ
+  ˇ tr phΛ,ε ˝ fΛ0 q
+  ˇn                    ∆Xn ´ 1{4 ´                     phΛ,ε ˝ fΛ0 q prqr tanhpπrqdrˇˇ À n´1{9 .
+                                           2πn       0
+                                                                                            (3.9)
+By (3.9), we have
+
+                      VolpXn q 8
+                              ż
+        1
+          NX pΛq ď                phΛ,ε ˝ fΛ0 q prqr tanhpπrqdr ` Cn´1{9
+        n n             2πn     0
+                              ż?           ´α
+                                        Λ`Λ1{2`ε n   0 ´1{4
+
+                   ď p2g ´ 2q                                 r tanhpπrqdr ` Cn´1{9       (3.10)
+                                    0
+                                   ż ?Λ´1{4
+                   ď p2g ´ 2q                 r tanhpπrqdr ` CΛ1{2`ε n´α0 ` Cn´1{9 .
+                                    0
+
+In particular, we know (1.4) for Λ ď 1{4 ` n´α0 . On the other hand, for Λ ě 1{4 ` n´α0 ,
+by (3.9) we have
+
+                   VolpXn q 8 `
+                           ż
+      1                                                ˘
+        NXn pΛq ě               hΛ´Λ1{2`ε n´α0 ,ε ˝ fΛ0 prqr tanhpπrqdr ´ Cn´1{9
+      n              2πn    0
+                           ż?          ´α
+                                    Λ´Λ1{2`ε n    0 ´1{4
+
+                 ě p2g ´ 2q                                r tanhpπrqdr ´ Cn´1{9          (3.11)
+                               0
+                              ż ?Λ´1{4
+                 ě p2g ´ 2q                r tanhpπrqdr ´ CΛ1{2`ε n´α0 ´ Cn´1{9 .
+                               0
+
+Combining (3.10) and (3.11), we conclude (1.4) for Xn P Ωn pX, Λ, εq. Now we take Λpjq :“
+C2j for j ě 1, and Λp0q “ C. Let
+                                                                 Z                        ^
+                    ´0.01     1{2                                    0.01 Λpj ` 1q ´ Λpjq
+Λpj, ℓq :“ Λpjq ` ℓn      Λpjq P rΛpjq, Λpj ` 1qs, 0 ď ℓ ď Lj :“ n                          ,
+                                                                              Λpjq1{2
+
+and
+                                                   Lj
+                                                 8 č
+                                                 č
+                              Ωn pX, εq :“                 Ωn pX, Λpj, ℓq, εq.
+                                                 j“0 ℓ“0
+16                                ELENA KIM AND ZHONGKAI TAO
+
+Taking C1 in (3.8) sufficiently large, we have
+                                                Lj
+                                              8 ÿ
+                                              ÿ
+                         PpΩn pX, εqq ě 1 ´          pC1 Λpj, ℓqq´2 n´1{9
+                                              j“0 ℓ“0
+                                              8
+                                              ÿ                                                (3.12)
+                                      ě1´         pC1 Λpjqq´2 Cn0.01 2j{2 n´1{9
+                                              j“0
+
+                                      ě 1 ´ n´1{10 .
+
+Now (1.4) holds for all Λpj, ℓq and Xn P Ωn pX, εq. It follows that (1.4) holds for all Λ, and
+the estimate (1.2) is a direct corollary of (1.4).                                           □
+
+     The remainder of this section is dedicated to proving Proposition 3.1.
+
+3.2. Proof of Proposition 3.1. By (2.2), we need to study
+      ˆ                                ¯¯ VolpX q ż 8                                     ˙2
+        1 ´             ´a
+                                                      n
+    E     tr ph ˝ fΛ0 q     ∆Xn ´ 1{4 ´                       ph ˝ fΛ0 q prqr tanhpπrqdr
+        n                                       2πn       0
+         ¨                                                                  ˛2
+                      8
+            1 ÿ ÿ             ℓγ pXq
+    “ E˝                        ´       ¯ ph ˝ fΛ0 q_ pkℓγ pXqq trpρpγ k qq‚
+            n γPPpXq k“1 2 sinh kℓγ pXq
+                                    2
+                            ˜                                                                  (3.13)
+                        8
+        1     ÿ        ÿ                ℓ pXqℓ pXq
+    “ 2                              ´ γ1 ¯ γ2 ´                 ¯ ph ˝ fΛ0 q_ pk1 ℓγ1 pXqq
+       n γ ,γ PPpXq k ,k “1 4 sinh 1 ℓγ1 pXq sinh k2 ℓγ2 pXq
+                                      k
+            1 2       1 2                 2                 2
+                                                                                        ¸
+                                   ¨ph ˝ fΛ0 q_ pk2 ℓγ2 pXqqErtrpρpγ1k1 qq trpρpγ2k2 qqs .
+
+
+3.2.1. Uniform bound. We first claim
+
+                                          (3.13) À Λ20 }h̃}2 .                                 (3.14)
+
+Using the spectral side of (3.13), we have
+           ˆ                              ¯¯ VolpXq ż 8                              ˙2
+             1 ´             ´a
+(3.13) “ E     tr ph ˝ fΛ0 q    ∆Xn ´ 1{4 ´              ph ˝ fΛ0 q prqr tanhpπrqdr
+             n                                   2π    0
+            ˆ
+              1 ´             ´a           ¯¯˙2      ˆ
+                                                       VolpXq 8
+                                                              ż                               ˙2
+       ď 2E     tr ph ˝ fΛ0 q    ∆Xn ´ 1{4      ` 2E               ph ˝ fΛ0 q prqr tanhpπrqdr
+              n                                          2π    0
+
+         À Λ20 }h̃}2 .
+                      SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                           17
+
+The final inequality follows from the fact that the first term is bounded by Lemma 2.3 and
+the second term is uniformly bounded by
+                     ˆ                                 ˙2
+                       VolpXq 8
+                                ż
+                                    fΛ0 prqr tanhpπrqdr }h̃}2 À Λ20 }h̃}2 .
+                          2π      0
+
+
+3.2.2. Polynomial expansion. In [MPvH25, §4], the authors examined Ertrpρpγ1k1 qs. We
+adapt the arguments from [MPvH25, §4] to study
+                                          Ertrpρpγ1k1 qq trpρpγ2k2 qqs.
+Lemma 3.3. There exists C “ Cpgq ą 2 such that for n´1 P r0, pCqq´C s and γ1 , γ2 P Γztidu
+with |γ1 | ` |γ2 | ď q,
+                                                Qγ1 ,γ2 p1{nq    `          ˘
+                      Ertrpρpγ1 qqtrpρpγ2 qqs “               ` O pCqqCq n´q ,
+                                                 Qid p1{nq
+where Qγ1 ,γ2 , Qid are polynomials with degpQγ1 ,γ2 q ď 9qp4g ` 1q, degpQid q ď 9qp4g ` 1q ` 1
+and Qid p1{nq P rC ´1 , Cs for n ě q C .
+
+Proof. 1. Recall that Xg,n :“ HompΓ, Sn q and Γ is a surface group with 2g generators:
+Γ “ xa1 , a2 , . . . , a2g´1 , a2g |ra1 , a2 s ¨ ¨ ¨ ra2g´1 , a2g s “ 1y.
+  Let γ1 “ aαi11 aαi22 ¨ ¨ ¨ aαimm , γ2 “ aβj11 aβj22 ¨ ¨ ¨ aβjll P Γ, where ik , jk P r2gs and αk , βk P t´1, 1u.
+We assume that the above expressions of γ1 , γ2 in terms of the generators are cyclically
+reduced. We no longer assume that the corresponding closed geodesics are primitive; they
+may be powers of primitive geodesics. Let the word length of these expressions be |γ1 |, |γ2 |
+with |γ1 | ` |γ2 | ď q.
+   We define the graph Cγ1 ,γ2 to be the graph of two disjoint cycles of length m and l, where
+the cycle of length m has directed edges labeled by aαi11 , aαi22 , . . . , aαimm and the cycle of length
+l has edges labeled by aβj11 , aβj22 , . . . , aβjll . Specifically, the cycle of length l has an edge labeled
+by αk from the k-th to the pk ` 1q-th vertex when αk “ 1 and from the pk ` 1q-th to the
+k-th vertex when αk “ ´1. The cycle of length m is labeled using the same method.
+  The paper [MPvH25] uses Cγ , a graph consisting of a single loop, in lieu of Cγ1 ,γ2 . Our
+use of Cγ1 ,γ2 is what permits the study of Ertrpρpγ1k1 qq trpρpγ2k2 qqs instead of Ertrpρpγ1k1 qs.
+  Let R denote the collection of surjective labeled-graph morphisms
+                                               r : Cγ1 ,γ2 ↠ Wr
+such that
+    (1) Wr is folded, i.e., every vertex has at most one incoming a-labeled edge and at most
+        one outgoing a-labeled edge for each a P ta1 , . . . , a2g u.
+18                                ELENA KIM AND ZHONGKAI TAO
+
+      (2) Every path in Wr that spells out an element of the free group F2g in the kernel of
+          F2g Ñ Γ is closed.
+     Note that #R ď p|γ1 | ` |γ2 |q!.
+     2. Let ϕ P Xg,n . We denote the Schreier graph by
+
+                             Xϕ :“ Schreierptϕpa1 q, . . . , ϕpa2g qu, rnsq.
+
+This is the graph on n vertices labeled 1, . . . , n, where there is a directed edge from i to j
+exactly when there exists f P ta1 , . . . , a2g u such that ϕpf qris “ j. Such an edge is labeled
+by f .
+  By construction, it is clear that any morphism of folded labeled graphs Cγ1 ,γ2 Ñ Xϕ
+factors uniquely as a surjective morphism followed by an injective one, namely Cγ1 ,γ2 ↠
+Wr ãÑ Xϕ for unique r P R.
+   For ϕ P Xg,n , let Fixpϕpγqq denote the number of fixed elements of rns under the action
+of ϕpγq. Therefore,
+                                   1     ÿ
+       Ertrpρpγ1 qqtrpρpγ2 qqs “               rFixpϕpγ1 qqFixpϕpγ2 qqs
+                                 #Xg,n ϕPX
+                                           g,n
+
+                                   1     ÿ
+                               “               r# of morphisms Cγ1 ,γ2 Ñ Xϕ s
+                                 #Xg,n ϕPX
+                                           g,n
+
+                                   1 ÿ ÿ
+                               “                  r# of injective morphisms Wr ãÑ Xϕ s.
+                                 #Xg,n rPR ϕPX
+                                                  g,n
+
+
+
+     Otherwise put, for
+
+                   Eemb
+                    n pWr q :“ EϕPXg,n r# of injective morphisms Wr ãÑ Xϕ s,
+                                                          ÿ
+                              Ertrpρpγ1 qqtrpρpγ2 qqs “         Eemb
+                                                                 n pWr q.
+                                                          rPR
+
+
+                         n pWr q, closely following the arguments of [MPvH25, §4.4].
+     3. We now estimate Eemb
+  Let ζps; Sn q be the Witten zeta function of Sn . Its definition is given on [MPvH25,
+pg. 18]. It is known that ζps; Sn q Ñ 2 as n Ñ 8. From [MP23, (1.3)], we have that
+#Xg,n “ p#Sn q2g´1 ζp2g ´ 2, Sn q.
+     It is shown on [MPvH25, pg. 26] that for |γ1 | ` |γ2 | ď q and n ě 28q 2 ,
+                                             ˜                              ¸
+                     emb             2          pr pnq         `    Cq ´q
+                                                                          ˘
+                    En pWr q “                           ` O pCqq n            .
+                               ζp2g ´ 2, Sn q pnq1`4g
+                                                    9q
+                      SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                             19
+
+Here pnq9q “ npn´1q ¨ ¨ ¨ pn´9q`1q is the falling Pochhammer symbol and pr is a polynomial
+in n with degppr q ď 9qp4g ` 1q ` 2. As noted above, [MPvH25] uses Cγ instead of Cγ1 ,γ2 .
+However, their proofs hold as written when Cγ is replaced by Cγ1 ,γ2 .
+  Since #R ď p|γ1 | ` |γ2 |q!, we conclude
+                                                            ˜                               ¸
+                                         2                      pγ1 ,γ2 pnq    `          ˘
+         Ertrpρpγ1 qqtrpρpγ2 qqs “                                          ` O pCqqCq n´q ,             (3.15)
+                                   ζp2g ´ 2, Sn q                pnq1`4g
+                                                                      9q
+
+where pγ1 ,γ2 is a polynomial in n with degppγ1 ,γ2 q ď 9qp4g ` 1q ` 2.
+  4. It remains to transform (3.15) into a rational function in 1{n with the same error
+term.
+  Let
+                                                     9q´1
+                                                     ź
+                                         gq ptq :“         p1 ´ ktq1`4g .
+                                                     k“0
+           ´1
+For t :“ n      and a polynomial Pγ1 ,γ2 ptq of degree at most degppγ1 ,γ2 q,
+   pγ1 ,γ2 pnq   9qp1`4gq`2´degppγ1 ,γ2 q Pγ1 ,γ2 ptq    Qγ1 ,γ2 ptq ` a´1 pγ1 , γ2 qt´1 ` a´2 pγ1 , γ2 qt´2
+               “t                                     “:                                                     .
+    pnq1`4g
+         9q
+                                           t2 gq ptq                            gq ptq
+
+  Note that for t P r0, pCqq´C s, C ą 2, we have C ´1 ď gq ptq ď C. By [Nau26, Proposition
+3.1], we have
+                           Ertrpρpγ1 qqtrpρpγ2 qqs Àq 1, n Ñ 8.                     (3.16)
+Therefore, a´1 pγ1 , γ2 q “ a´2 pγ1 , γ2 q “ 0 and
+                                                                  “         ‰
+                           Qγ1 ,γ2 ptq “ Op1q,       for t “ n´1 P 0, pCqq´C .                           (3.17)
+
+  Also note that degpQγ1 ,γ2 q ď 9qp4g ` 1q.
+  From [MPvH25, (4.19)], for a polynomial Qid ptq with degpQid q ď 9qp4g ` 1q ` 1,
+                        2          gq p1{nq `       `             ˘˘
+                                “             1 ` O pCqqCq n´q´1 .
+                 ζp2g ´ 2, Sn q    Qid p1{nq
+  Therefore,
+                                                     ˆ                               ˙
+        1                                   2          Qγ1 ,γ2 p1{nq    `    Cq ´q
+                                                                                   ˘
+          Ertrpρpγ1 qqtrpρpγ2 qqs “                                  ` O pCqq n
+        n                           ζp2g ´ 2, Sn q      gq p1{nq
+                                    Qγ1 ,γ2 p1{nq `        `             ˘˘    `       ˘
+                                  “                 1 ` O pCqqCq n´q´1 ` O pCqqCq n´q
+                                     Qid p1{nq
+                                    Qγ1 ,γ2 p1{nq      `             ˘
+                                  “               ` O pCqqCq n´q ,
+                                     Qid p1{nq
+which completes the proof.                                                                                       □
+20                                      ELENA KIM AND ZHONGKAI TAO
+
+     We conclude this subsection with the following corollary of Lemma 3.3.
+
+Corollary 3.4. Suppose hpxq “ xh̃pxq is a polynomial of degree q. There exist κ “ κpgq ą 2
+and C “ CpXq ą 2 such that the following holds. For n ě q κ and Λ0 ě C,
+                 ¨                                                             ˛2
+                           8
+                     ÿ ÿ           ℓγpXq
+               E˝                    ´         ¯ ph ˝ fΛ0 q_ pkℓγ pXqqtrρpγ k q‚
+                                       kℓγ pXq
+                   γPPpXq k“1 2 sinh      2
+
+                      pp1{nq        ´                      ¯
+                  “            ` O Λ0 pCqqκq n´q }h̃}2 ,
+                     Qid p1{nq
+                                                             ´1{2
+where p is a polynomial of degree at most CΛ0                       q and Qid p1{nq P rC ´1 , Cs for n ě q κ .
+
+Proof. Let
+                              8
+                      ÿ       ÿ                 ℓγ1 pXqℓγ2 pXq
+      ppxq :“                               ´
+                                              k1 ℓγ1 pXq
+                                                         ¯      ´
+                                                                  k2 ℓγ2 pXq
+                                                                             ¯
+                γ1 ,γ2 PPpXq k1 ,k2 “1 4 sinh      2
+                                                           sinh        2                                   (3.18)
+                                    ¨ ph ˝ fΛ0 q_ pk1 ℓγ1 pXqqph ˝ fΛ0 q_ pk2 ℓγ2 pXqqQγ k1 ,γ k2 pxq.
+                                                                                             1   2
+
+
+
+  Recall Notation 1. From [MNP22, Lemma 2.3], we have the following relationship be-
+tween length of geodesics and word length:
+
+                                                |γ| ď K1 ℓγ pXq ` K2 ,                                     (3.19)
+
+where K1 , K2 ą 0 depend only on X and the choice of generators. Therefore, since suppph˝
+               ´1{2       ´1{2                        ´1{2
+fΛ0 q_ Ă r´c0 Λ0 q, c0 Λ0 qs, we know |γ k | ď Cc0 Λ0 q for nonzero terms in the sum
+                                                            ´1{2
+(3.18). Therefore, ppxq is a polynomial of degree at most CΛ0 q.
+                                                                    ´1{2
+     By taking Λ0 ą 4C 2 we may assume |γ k | ď CΛ0                        q ď q{2. Moreover,
+                8
+      ÿ         ÿ               ℓγ1 pXqℓγ2 pXq
+                              ´          ¯      ´            ¯ |ph ˝ fΛ0 q_ pk1 ℓγ1 pXqqph ˝ fΛ0 q_ pk2 ℓγ2 pXqq|
+                              k1 ℓγ1 pXq          k2 ℓγ2 pXq
+γ1 ,γ2 PPpXq k1 ,k2 “1 4 sinh      2
+                                           sinh        2
+
+ ÀX #tpγ, kq P PpXq ˆ N : kℓγ pXq ď qu2 ¨ sup |ph ˝ fΛ0 q_ ptq|2
+                                                         r0,qs
+        2q        2
+ ÀX e Λ0 }h̃} .
+
+Therefore, the error term in Lemma 3.3 remains of the same form up to a factor of Λ0 and
+a change of the constant C. Note that the constant κ in the exponent does not depend on
+X, only g.                                                                             □
+                    SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                     21
+
+3.2.3. Markov brothers’ inequality. Finally, we finish the proof of Proposition 3.1 via the
+following elaboration of the Markov brothers’ inequality [MPvH25, Lemma 2.1].
+
+Lemma 3.5. For every real polynomial P of degree at most q and every k P N,
+                                                       ˇ ˆ ˙ˇ
+                               pkq     22k`1 q 4k      ˇ  1 ˇˇ
+                      sup |P ptq| ď               sup ˇˇP      ,                                   (3.20)
+                    tPr0, 12 s        p2k ´ 1q!! něq2     n ˇ
+                              2q
+
+
+where p2k ´ 1q!! :“ p2k ´ 1qp2k ´ 3q ¨ ¨ ¨ 3 ¨ 1.
+
+  Now recall that in §3.2.1, we showed
+           ¨                                                             ˛2
+                     8
+      1 ˝      ÿ    ÿ        ℓγpXq
+       2
+         E                     ´         ¯ ph ˝ fΛ0 q_ pkℓγ pXqqtrρpγ k q‚ À Λ20 }h̃}2 .           (3.21)
+      n      γPPpXq k“1 2 sinh
+                                 kℓγ pXq
+                                        2
+
+From Corollary 3.4 and (3.21), we know
+                                   1
+                                     2
+                                       |pp1{nq| À Λ20 }h̃}2 ,      n ě Cq κ .                      (3.22)
+                                   n
+  We use the notation
+                                            }f }ra,bs :“ sup |f pxq|.
+                                                       xPra,bs
+
+  From Corollary 3.4, Lemma 3.5, and (3.22), we know that
+                                                              1
+                    }px2 ppxqq1 }r0, 1 κ s À q 2κ sup           2
+                                                                  |pp1{nq| À q 2κ Λ20 }h̃}2 .
+                                      2Cq
+                                                     něCq κ   n
+
+  Taking the Taylor expansion, we have
+             ˇ              ˇ                          2κ 2
+             ˇ 1 pp1{nq ˇ 1 2
+             ˇ              ˇ À }px ppxqq1 } 1 À q Λ0 }h̃}2 ,                        n ě 2Cq κ .
+             ˇ n2 Qid p1{nq ˇ n             r0, 2Cqκ s
+                                                        n
+                            q 2κ Λ2
+In other words, (3.13) À n 0 }h̃}2 for n ě 2Cq κ . This shows (3.1) for n ě 2Cq κ . On the
+other hand, for n ď 2Cq κ , (3.1) follows from (3.14). This finishes the proof of Proposi-
+tion 3.1.
+
+
+                                      4. Proof of Theorem 2
+
+  In this section, we prove Theorem 2. When the proof follows exactly as the proof of
+Theorem 1, we omit details and refer the reader to the proof of Theorem 1. As before, we
+take the same function fΛ0 from §2.4 and let hpxq “ xh̃pxq be a polynomial of degree q.
+22                                      ELENA KIM AND ZHONGKAI TAO
+
+4.1. Proof of Theorem 2. Before the proof, we introduce some notations. Let Γ0 be the
+set of primitive elements in Γztidu. For pz, iq P H ˆ rns, we define
+                                                                4
+                                       1        ÿ           ÿź
+                  Sph ˝ fΛ0 qpz, iq :“                             ρii pγ kℓ qKph˝fΛ0 q_ pz, γ kℓ zq              (4.1)
+                                       2 k ,k ,k ,k PZzt0u γPΓ ℓ“1
+                                             1   2   3   4        0
+
+
+and
+                               ˜                                           ż8                            ¸4
+                                ÿ                                      1
+      Vn ph ˝ fΛ0 qpz, iq :“          h ˝ fΛ0 ptρℓ q|uρℓ pz, iq|2 ´             h ˝ fΛ0 prqr tanh πrdr        .   (4.2)
+                                  ℓ
+                                                                      2π   0
+
+The factor 1{2 in (4.1) is due to double counting. Using (2.5), we see that Vn ph ˝ fΛ0 q
+can be written as a sum over k1 , . . . , k4 P Zzt0u and γ1 , . . . , γ4 P Γ0 , while Sph ˝ fΛ0 q is a
+diagonal sum over k1 , . . . , k4 P Zzt0u and γ P Γ0 .
+  Let d Volpzq “ y ´2 dxdy be the hyperbolic volume form on H. We will prove Theorem 2
+assuming the following proposition, which functions like Proposition 3.1 in the proof of
+Theorem 1.
+
+Proposition 4.1. There    ş exist κ “ κpgq ą 2 and C “ CpXq ą 0 such that, for any
+         8
+apzq P Cc pH, Rě0 q with H apzqd Volpzq “ 1, Λ0 P rC, 8q and i P rns, we have
+         „ż                                                         ȷ
+                                                           2            Λ8 q 4κ
+       E     apzq pVn ph ˝ fΛ0 qpz, iq ´ Sph ˝ fΛ0 qpz, iqq d Volpzq ď C 0 2 }h̃}8 . (4.3)
+           H                                                             n
+Moreover, a similar estimate holds if one replaces Vn ph ˝ fΛ0 qpz, iq with a multilinear ex-
+pression in four different polynomials h1 , h2 , h3 , h4 :
+              Vn ph1 ˝ fΛ0 , h2 ˝ fΛ0 , h3 ˝ fΛ0 , h4 ˝ fΛ0 qpz, iq
+                       ˜                                                                   ¸
+                    4                                          ż8
+                   ź     ÿ                                   1                                                    (4.4)
+              :“             hm ˝ fΛ0 ptρℓ q|uρℓ pz, iq|2 ´         hm ˝ fΛ0 prqr tanh πrdr ,
+                  m“1     ℓ
+                                                            2π 0
+and similarly for Sph1 ˝ fΛ0 , h2 ˝ fΛ0 , h3 ˝ fΛ0 , h4 ˝ fΛ0 qpz, iq.
+
+     We delay the proof of Proposition 4.1 to §4.2.
+     Similarly to (3.5), we can rewrite (4.3) as
+           „ż                                                         ȷ
+                                                             2                           C
+        E      apzq pVn ph ˝ fΛ0 qpz, iq ´ Sph ˝ fΛ0 qpz, iqq d Volpzq ď                       }h̃}8C 2κ`11       (4.5)
+              H                                                                         Λ20 n2
+for any smooth function hpxq “ xh̃pxq, h̃pxq P C 8 pr0, f pi{2qsq.
+                                           1
+Proof of Theorem 2. Let Λ ě 0 and α0 “ 16p2κ`11q . We set Λ0 “ Λ when Λ ě C and Λ0 “ C
+when Λ P r0, Cs. Let F Ă H be a fundamental domain of X, z0 P F , and R ą diampF q.
+                            SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                    23
+
+Note that Bpz0 , Rq ˆ rns covers Xn “ Γzρ pH ˆ rnsq under the quotient.  ş We fix a cutoff
+                 8
+function apzq P Cc pH, Rě0 q such that apzq ą 0 for z P Bpz0 , R ` 2q and H apzqd Volpzq “ 1.
+  Similar to (3.6), we take hΛ pxq P C 8 pr0, f pi{2qsq so that
+                       $              a                               a
+                       & 1, x P rfΛ0 p a Λ ` p1 ` Λqn´α0 ´ 1{4q, fΛ0 p Λ ´ 1{4qs,
+              hΛ pxq “   0, x P r0, fΛa
+                                      0p   Λ ` 2p1 ` Λqn´α0 ´ 1{4qs,                                       (4.6)
+                       %
+                         0, x P rfΛ0 p Λ ´ p1 ` Λqn´α0 ´ 1{4q, f pi{2qs.
+
+and moreover,
+                                                               pjq
+       0 ď hΛ pxq ď 1,             hΛ pxq “ xh̃Λ pxq,        |h̃Λ pxq| ď Cj njα0 ,     x P r0, f pi{2qs,   (4.7)
+
+  Let C1 ą 0 be a large constant to be determined later. By Chebyshev’s inequality and
+(4.5), for a fixed i P rns, with probability 1 ´ pC1 Λ0 q´2 n´5{4 , we have
+                   ż
+                           apzqpVn phΛ ˝ fΛ0 qpz, iq ´ SphΛ ˝ fΛ0 qpz, iqq2 d Volpzq À n´1{4 .             (4.8)
+                       H
+
+
+Thus, with probability 1 ´ pC1 Λ0 q´2 n´1{4 , (4.8) holds for all i P rns.
+   By a similar argument as in the proof of Theorem 1, this implies that by choosing C1 ą 0
+large enough, with probability 1 ´ n´1{10 , for all i P rns and a family of Λpℓq ě 0 such that
+                                    ď
+                                         rΛpℓq, Λpℓq ` p1 ` Λpℓqqn´α0 s “ r0, 8q,
+                                     ℓ
+
+
+we have
+                           ÿ                   ż
+                                                   apzq|uρj pz, iq|2 d Volpzq
+      λj pXn qPrΛpℓq,Λpℓq`p1`Λpℓqqn´α0 s H
+            ¨      ¨                                                            ˛8          ˛1{8
+             ż
+          À ˝ apzq ˝
+                                                   ÿ
+                                                                      |uρj pz, iq|2 ‚ d Volpzq‚            (4.9)
+                   H             λj pXn qPrΛpℓq,Λpℓq`p1`Λpℓqqn´α0 s
+              ż8
+          À        hΛpℓq ˝ fΛ0 pℓq prqr tanh πrdr ` sup |SphΛpℓq ˝ fΛ0 pℓq qpz, iq|1{4 ` n´1{32 .
+               0                                             zPH
+
+
+We note that
+                                         ż8
+                                              hΛ ˝ fΛ0 prqr tanh πrdr À Λ0 n´α0
+                                          0
+24                                              ELENA KIM AND ZHONGKAI TAO
+
+and
+                                              ÿ           4
+                                                         ÿź
+     |SphΛ ˝ fΛ0 qpz, iq| À                                           |KphΛ ˝fΛ0 q_ pz, γ kℓ zq|
+                                     k1 ,k2 ,k3 ,k4 PZzt0u γPΓ0 ℓ“1
+                                     ˆż                           ˙4           ÿ             4
+                                                                                            ÿź              `                  ˘
+                                À             hΛ ˝ fΛ0 prq|r|dr                                          exp ´dH pz, γ kℓ zq{2
+                                          R                             k1 ,k2 ,k3 ,k4 PZzt0u γPΓ0 ℓ“1
+
+                                À Λ40 n´4α0 .
+
+Therefore, by (4.9) we have for any λj pXn q ď Λ0 and any i P rns,
+                           ż
+                              apzq|uρj pz, iq|2 d Volpzq À Λ0 n´α0 .
+                                               H
+
+Finally, we use the Sobolev embedding ([Eva98, §5.6]) and elliptic estimate ([Eva98, §6.3])
+
+              }uρj pz, iq}2L8 pBpz0 ,Rqq ÀR }uρj pz, iq}2H 2 pBpz0 ,R`1{2qq
+                                                ÀR }uρj pz, iq}2L2 pBpz0 ,R`1qq ` }∆H uρj pz, iq}2L2 pBpz0 ,R`1qq
+                                                       ż
+                                                ÀR Λ0 apzq|uρj pz, iq|2 d Volpzq À Λ30 n´α0 .
+                                                    2
+                                                            H
+
+Since Bpz0 , Rqˆrns covers Xn “ Γzρ pHˆrnsq, we conclude the theorem with α “ α0 {2. □
+
+
+4.2. Proof of Proposition 4.1. To prove Theorem 2, it remains to show Proposition 4.1.
+For the simplicity of notations, we only discuss the case of a single polynomial hpxq “ xh̃pxq.
+The case with four different polynomials hℓ pxq “ xh̃ℓ pxq, ℓ “ 1, 2, 3, 4 follows from the same
+proof.
+  We follow the same general proof strategy as that of Proposition 3.1. Using (2.5), we
+consider the following quantity:
+     „ż                                                         ȷ
+                                                       2
+   E     apzq pVn ph ˝ fΛ0 qpz, iq ´ Sph ˝ fΛ0 pz, iqqq d Volpzq
+       H
+           ÿ             ÿ
+                                     «
+                                       8
+                                       ź
+                                                  ff ż
+                                                            8
+                                                            ź                                (4.10)
+   “                               E     ρii pγℓ q     apzq    Kph˝fΛ0 q_ pz, γℓ zqd Volpzq,
+                          r 4 pγ5 ,γ6 ,γ7 ,γ8 qPΓ
+                                                r4    ℓ“1                 H       ℓ“1
+        pγ1 ,γ2 ,γ3 ,γ4 qPΓ
+
+
+where
+
+      r4 :“ pΓztiduq4 ztpγ k1 , γ k2 , γ k3 , γ k4 q P pΓztiduq4 : γ P Γztidu, k1 , k2 , k3 , k4 P Zzt0uu.
+      Γ
+                        SPECTRAL RIGIDITY OF RANDOM HYPERBOLIC SURFACE                                                                  25
+
+4.2.1. Uniform bound. First we claim that
+
+                                                           (4.10) À Λ80 }h̃}8 .                                                  (4.11)
+
+To see this, we use the left-hand side of (4.10):
+
+                    (4.10) ď 2 sup pVn ph ˝ fΛ0 qpz, iqq2 ` 2 sup pSph ˝ fΛ0 pz, iqqq2
+                                       zPH                                               zPH
+
+                               À Λ80 }h̃}8 ,
+
+where in the last inequality, we use Lemma 2.4 and (2.10) for the first term, and use
+                                                                4 ż8
+                                             ÿ                 ÿź                                Λ0 }h̃}
+      |Sph ˝ fΛ0 qpz, iq| À                                                             a                             ds
+                                    k1 ,k2 ,k3 ,k4 PZzt0u γPΓ0 ℓ“1        dH pz,γ kℓ zq  cosh s ´ cosh dH pz, γ kℓ zq
+                                                           ÿ              4
+                                                                         ÿź             `                 ˘
+                                À Λ40 }h̃}4                                          exp ´dH pz, γ kℓ zq{2 À Λ40 }h̃}4
+                                                k1 ,k2 ,k3 ,k4 PZzt0u γPΓ0 ℓ“1
+
+
+for the second term.
+
+
+4.2.2. Polynomial expansion. Now we prove the following polynomial approximation for
+(4.10).
+
+Proposition 4.2. Suppose hpxq “ xh̃pxq is a polynomial of degree q. There exist κ “
+κpgq ą 2 and C “ CpXq ą 2 such that for n ě q κ , Λ0 ě C, and fixed i P rns,
+
+                                                  pp1{nq
+                               (4.10) “                      ` OpΛ80 pCqqκq n´q´2 }h̃}8 q,                                       (4.12)
+                                              n2 Q  id p1{nq
+                                                                                  ´1{2
+where ppxq is a polynomial of degree at most CΛ0                                          q ` C and Qid p1{nq P rC ´1 , Cs for
+n ě qκ.
+
+Proof. Recall that
+                                                               «                  ff ż
+                      ÿ                    ÿ                    ź8                                8
+                                                                                                  ź
+   (4.10) “                                                E          ρii pγℓ q           apzq          Kph˝fΛ0 q_ pz, γℓ zqd Volpzq.
+                                r 4 pγ5 ,γ6 ,γ7 ,γ8 qPΓ
+                                                      r4        ℓ“1                  H            ℓ“1
+              pγ1 ,γ2 ,γ3 ,γ4 qPΓ
+                                                                                                                                 (4.13)
+  By (2.15), we have
+                                                                                         ´1{2
+                                             supp kph˝fΛ0 q_ Ă r0, c0 Λ0                        qs,                              (4.14)
+26                                ELENA KIM AND ZHONGKAI TAO
+
+and moreover,
+                                                               ˇ                   ˇ
+                                             ż8                ˇpph ˝ fΛ0 q_ q1 psqˇ
+                  |Kph˝fΛ0 q_ pz, γzq| ď             a                           ds
+                                              dH pz,γzq cosh s ´ cosh dH pz, γzq
+                                                      ˇ                  ˇ
+                                         À       sup ˇpph ˝ fΛ0 q_ q1 psqˇ À Λ0 }h̃}.
+                                                   ´1{2
+                                             r0,c0 Λ0     qs
+
+Using dH pz, γzq ě ℓγ pXq and (3.19), the terms on the right-hand side of (4.13) are zero
+                                                ´1{2
+unless the word lengths of γℓ satisfy |γℓ | ď CΛ0 q for ℓ “ 1, 2, . . . , 8. We may assume
+|γℓ | ď q{8 by taking Λ0 ě 64C 2 .
+  Thus, arguing as in Corollary 3.4, it suffices prove the following analogous statement to
+Lemma 3.3: for 8ℓ“1 |γℓ | ď q such that there exist two elements in pγ1 , . . . , γ4 q that are
+                   ř
+
+not of the form pγ k1 , γ k2 q, we have
+           «              ff
+              8                     n 8
+            ź                   1 ÿź                  Qγ ,γ p1{nq
+         E       ρii pγℓ q “ E             ρii pγℓ q “ 2 1 2        ` OppCqqκq n´q´2 q.  (4.15)
+             ℓ“1
+                               n   i“1 ℓ“1
+                                                      n Q  id p1{nq
+for polynomials Qγ1 ,γ2 , Qid with degree ď 9pq ` 1qp4g ` 1q ` 1 and Qid p1{nq P rC ´1 , Cs
+for n ě q κ . Note that ni“1 8ℓ“1 ρii pγℓ q counts the number of common fixed points of
+                                 ř ś
+
+ρpγℓ q, ℓ “ 1, . . . , 8. The expansion (4.15) follows from the argument of Lemma 3.3, with
+the following change. We replace the graph Cγ1 ,γ2 with Cγ1 ,γ2 ,...,γ8 , the quotient of 8 loops
+where the first vertices of each loop are identified. Our proof then follows exactly as that
+of Lemma 3.3, except for (3.16). For the replacement of (3.16), let us say without loss of
+generality, xγ1 , γ2 y generates a free group of rank 2. We then use
+                      «              ff
+                         8                 n
+                        ź               1 ÿ                   1 “            ‰   1
+                  E         ρii pγℓ q ď E ρii pγ1 qρii pγ2 q “ E fixxγ1 ,γ2 y Àq 2 ,
+                        ℓ“1
+                                        n i“1                 n                 n
+where fixxγ1 ,γ2 y denotes the number of common fixed points of γ1 and γ2 and the last
+inequality follows from [MP23, Theorem 1.3].                                        □
+
+4.2.3. Markov brothers’ inequality. By Proposition 4.2 and (4.11), we know for n ě Cq κ ,
+                                   ˇ       ˇ
+                                   ˇ1      ˇ
+                                   ˇ pp1{nqˇ À Λ80 }h̃}8 .
+                                   ˇ n2    ˇ
+By the Markov brothers’ inequality (3.20), we have
+               pp1{nq       1      2                       q 4κ Λ80
+                          À    }px   ppxqq 2
+                                             }      1
+                                              r0, 2Cqκ s À          }h̃}8 ,      for n ě 2Cq κ .
+             n2 Qid p1{nq   n2                                n2
+Thus we conclude (4.3) for n ě 2Cq κ . On the other hand, (4.3) follows from (4.11) when
+n ď 2Cq κ . This completes the proof of Proposition 4.1.
+                                           REFERENCES                                             27
+
+                                          References
+[AM23]     N. Anantharaman and L. Monk, “Friedman-Ramanujan functions in random hyperbolic
+           geometry and application to spectral gaps”, arXiv:2304.02678 (2023).
+[AM24a]    N. Anantharaman and L. Monk, “A Moebius inversion formula to discard tangled hyper-
+           bolic surfaces”, arXiv:2401.01601 (2024).
+[AM24b]    N. Anantharaman and L. Monk, “Spectral gap of random hyperbolic surfaces”, arXiv:2403.12576
+           (2024).
+[AM25]     N. Anantharaman and L. Monk, “Friedman-Ramanujan functions in random hyperbolic
+           geometry and application to spectral gaps II”, arXiv:2502.12268 (2025).
+[AT25]     E. Assing and R. Toma, “The orbit method in number theory through the sup-norm problem
+           for GLp2q”, arXiv:2503.06224 (2025).
+[Ber16]    N. Bergeron, The spectrum of hyperbolic surfaces, Universitext, Translated by Brumley,
+           Springer, Cham; EDP Sciences, Les Ulis, 2016.
+[BMP25]    W. Ballmann, S. Mondal, and P. Polymerakis, “On the spectral stability of finite coverings”,
+           arXiv:2507.17466 (2025).
+[Bor16]    D. Borthwick, Spectral theory of infinite-area hyperbolic surfaces, Second, vol. 318, Progress
+           in Mathematics, Birkhäuser/Springer, 2016.
+[CGVTvH26] C.-F. Chen, J. Garza-Vargas, J. A. Tropp, and R. van Handel, “A new approach to strong
+           convergence”, Ann. of Math. (2) 203 (2026), no. 2.
+[Don01]    H. Donnelly, “Bounds for eigenfunctions of the Laplacian on compact Riemannian mani-
+           folds”, J. Funct. Anal. 187 (2001), no. 1, 247–261.
+[DZ16]     S. Dyatlov and J. Zahl, “Spectral gaps, additive energy, and a fractal uncertainty principle”,
+           Geom. Funct. Anal. 26 (2016), 1011–1094.
+[Eva98]    L. C. Evans, Partial differential equations, vol. 19, Graduate Studies in Mathematics, Amer-
+           ican Mathematical Society, Providence, RI, 1998, xviii+662.
+[Fis26]    M. Fischer, “L4 -norms of automorphic forms in the depth aspect”, arXiv:2602.19646 (2026).
+[GLMST21]  C. Gilmore, E. Le Masson, T. Sahlsten, and J. Thomas, “Short geodesic loops and Lp norms
+           of eigenfunctions on large genus random surfaces”, Geom. Funct. Anal. 31 (2021), no. 1,
+           62–110.
+[Hid23]    W. Hide, “Effective lower bounds for spectra of random covers and random unitary bun-
+           dles”, arXiv:2305.04584 (2023).
+[Hip25]    K. Hippi, “Quantum Mixing and Benjamini-Schramm Convergence of Hyperbolic Surfaces”,
+           arXiv:2512.15504 (2025).
+[HM23]     W. Hide and M. Magee, “Near optimal spectral gaps for hyperbolic surfaces”, Ann. Math.
+           198 (2023), no. 2, 791–824.
+[HMN25]    W. Hide, J. Moy, and F. Naud, “On the spectral gap of negatively curved surface covers”,
+           Int. Math. Res. Not. IMRN (2025), no. 24, Paper No. rnaf357.
+[HMT25a]   W. Hide, D. Macera, and J. Thomas, “Spectral gap with polynomial rate for random
+           covering surfaces”, arXiv:2505.08479 (2025).
+[HMT25b]   W. Hide, D. Macera, and J. Thomas, “Spectral gap with polynomial rate for Weil-Petersson
+           random surfaces”, arXiv:2508.14874 (2025).
+[HMY24]    J. Huang, T. McKenzie, and H.-T. Yau, “Ramanujan Property and edge universality of
+           random regular graphs”, arXiv:2412.20263 (2024).
+28                                      REFERENCES
+
+[HS20]     Y. Hu and A. Saha, “Sup-norms of eigenfunctions in the level aspect for compact arithmetic
+           surfaces, II: newforms and subconvexity”, Compos. Math. 156 (2020), no. 11, 2368–2398.
+[Hub74]    H. Huber, “Über den ersten eigenwert des Laplace operators auf kompakten Riemannschen
+           flächen”, Comment. Math. Helv. 49 (1974), 251–259.
+[HWX26]    Y. He, Y. Wu, and Y. Xue, “Uniform spectral gaps for random hyperbolic surfaces with
+           not many cusps”, arXiv:2602.08352 (2026).
+[HWZ25]    X. He, Y. Wu, and H. Zhang, “Short geodesics and multiplicities of eigenvalues of hyperbolic
+           surfaces”, arXiv:2507.10988 (2025).
+[HY24]     J. Huang and H.-T. Yau, “Spectrum of random d-regular graphs up to the edge”, Comm.
+           Pure Appl. Math. 77 (2024), no. 3, 1635–1723.
+[IS95]     H. Iwaniec and P. Sarnak, “L8 norms of eigenfunctions of arithmetic surfaces”, Ann. of
+           Math. (2) 141 (1995), no. 2, 301–320.
+[Ki23]     H. Ki, “L4 -norms and sign changes of Maass forms”, arXiv:2302.02625 (2023).
+[LM24]     C. Letrouit and S. Machado, “Maximal multiplicity of Laplacian eigenvalues in negatively
+           curved surfaces”, Geom. Funct. Anal. 34 (2024), no. 5, 1609–1645.
+[LMS17]    E. Le Masson and T. Sahlsten, “Quantum ergodicity and Benjamini–Schramm convergence
+           of hyperbolic surfaces”, Duke Math. J. 166 (2017), no. 18, 3425–3460.
+[LMS24]    E. Le Masson and T. Sahlsten, “Quantum ergodicity for Eisenstein series on hyperbolic
+           surfaces of large genus”, Math. Ann. 389 (2024), no. 1, 845–898.
+[LW24]     M. Lipnowski and A. Wright, “Towards optimal spectral gaps in large genus”, Ann. Probab.
+           52 (2024), no. 2, 545–575.
+[Mao23]    Y. Maoz, “Smooth linear eigenvalue statistics on random covers of compact hyperbolic
+           surfaces – A central limit theorem and almost sure RMT statistics”, arXiv:2310.18663
+           (2023).
+[MN26]     L. Monk and F. Naud, “Spectral Gaps on Large Hyperbolic Surfaces”, arXiv:2601.13988
+           (2026).
+[MNP22]    M. Magee, F. Naud, and D. Puder, “A random cover of a compact hyperbolic surface has
+           relative spectral gap 3/16 - ε”, Geom. Funct. Anal. 31 (2022), no. 3, 595–661.
+[Mon22]    L. Monk, “Benjamini-Schramm convergence and spectra of random hyperbolic surfaces of
+           high genus”, Anal. PDE 15 (2022), no. 3, 727–752.
+[Moy24]    J. Moy, “Spectral statistics of the Laplacian on random covers of a closed negatively curved
+           surface”, arXiv:2408.02808 (2024).
+[Moy25]    J. Moy, “Spectral gap of random covers of negatively curved noncompact surfaces”, arXiv:2505.07056
+           (2025).
+[Moy26]    J. Moy, “Spectral gap for Pollicott-Ruelle resonances on random coverings of Anosov sur-
+           faces”, arXiv:2602.03726 (2026).
+[MP23]     M. Magee and D. Puder, “The asymptotic statistics of random covering surfaces”, Forum
+           Math. Pi 11 (2023), Paper No. e15.
+[MPvH25]   M. Magee, D. Puder, and R. van Handel, “Strong convergence of uniformly random per-
+           mutation representations of surface groups”, arXiv:2504.08988 (2025).
+[Nau26]    F. Naud, “Random covers of compact surfaces and smooth linear spectral statistics”, Ann.
+           Henri Poincaré 27 (2026), no. 1, 347–373.
+[Rud23]    Z. Rudnick, “GOE statistics on the moduli space of surfaces of large genus”, Geom. Funct.
+           Anal. 33 (2023), no. 6, 1581–1607.
+                                          REFERENCES                                                29
+
+[RW25]       Z. Rudnick and I. Wigman, “Almost sure GOE fluctuations of energy levels for hyperbolic
+             surfaces of high genus”, Ann. Henri Poincaré 26 (2025), no. 6, 2279–2291.
+[Sah20]      A. Saha, “Sup-norms of eigenfunctions in the level aspect for compact arithmetic surfaces”,
+             Math. Ann. 376 (2020), no. 1-2, 609–644.
+[SW25]       Y. Shen and Y. Wu, “Nearly optimal spectral gaps for random Belyi surfaces”, arXiv:2511.02517
+             (2025).
+[Tho22]      J. Thomas, “Delocalisation of eigenfunctions on large genus random surfaces”, Israel J.
+             Math. 250 (2022), no. 1, 53–83.
+[vHan25]     R. van Handel, “Strong convergence: a short survey”, arXiv:2510.12520 (2025).
+[WX22]       Y. Wu and Y. Xue, “Random hyperbolic surfaces of large genus have first eigenvalues
+                            3
+             greater than 16  ´ ϵ”, Geom. Funct. Anal. 32 (2022), no. 2, 340–410.
+
+  (Elena Kim) Massachusetts Institute of Technology, Department of Mathematics, Cam-
+bridge, MA 02142, USA
+  Email address: elenakim@mit.edu
+
+  (Zhongkai Tao) Institut des Hautes Études Scientifiques, 91440 Bures-sur-Yvette, France
+  Email address: ztao@ihes.fr
+

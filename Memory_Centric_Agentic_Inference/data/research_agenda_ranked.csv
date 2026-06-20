@@ -1,0 +1,11 @@
+rank,question_or_experiment,expected_evidence_type,dependency,risk_retired,why_it_matters
+1,Trace-calibrated object lifetime study,measured,M-TAX-1; M-LIFE-1,whether object lifetimes are long/branch-conditioned in real agents,converts symbolic lifetimes into empirical distributions
+2,Coordination-overhead benchmark for object vs DAG scheduling,prototype,M-SCHED-1; M-ARCH-1,whether metadata overhead erases retained value,sets the practical boundary between options B and C
+3,Retention-value policy sweep with calibrated tier costs,measured+simulated,M-COST-1; M-SIM-1,whether synthetic tier ratios changed conclusions,turns current score proxies into defensible cost/latency/energy claims
+4,RAG semantic-cache correctness and invalidation experiment,prototype,M-TAX-1; M-SIM-1,whether object reuse creates stale or wrong outputs,tests the main failure mode of option B
+5,Verification-state pinning experiment for code agents,prototype,M-SIM-1; M-SCHED-1,whether verifier traces reduce repeated validation and missed counterexamples,tests a concrete non-KV strengthened mechanism
+6,Durable workspace compaction and replay benchmark,prototype,M-LIFE-1; M-ARCH-1,whether summaries with raw pointers preserve reproducibility,separates useful durable memory from uncontrolled log growth
+7,Branch/merge scheduler stress test,simulated+prototype,M-LIFE-1; M-SCHED-1,whether branch survival and merge probabilities justify DAG visibility,validates the trajectory fabric only where branch futures matter
+8,Compiler annotation pass for memory objects,prototype,M-TAX-1; M-ARCH-1,whether planners can emit reliable lifetime/reuse/provenance metadata,defines the compiler/runtime contract for memory-centric inference
+9,Compression boundary study for KV/tool/trajectory state,measured,M-COST-1; M-ARCH-1,whether compression loses correctness-critical provenance,maps compression to object classes instead of byte streams
+10,Multi-tenant queueing and preemption model,derived+simulated,M-SCHED-1; M-ARCH-1,whether cluster scheduling interactions change option choice,adds the deferred systems layer after memory boundaries are explicit

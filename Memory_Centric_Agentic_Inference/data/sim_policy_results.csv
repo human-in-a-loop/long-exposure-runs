@@ -1,0 +1,25 @@
+policy,workload_class,total_score,retained_value_score,movement_score,energy_proxy_score,dollar_proxy_score,correctness_risk_score,evictions,recomputations,tier_transfers,dominant_object_class,winning_policy_for_workload,memory_centric_thesis
+hbm_first_baseline,single-turn chat control,-37.584926,1.97064,9.732096,12.946582,16.705528,0.0,0,0,0,prefix cache,hbm_first_baseline,weakened
+reuse_aware_tiering,single-turn chat control,-96.41757,0.587813,88.799478,3.662937,2.988781,0.0,18,18,0,prefix cache,hbm_first_baseline,weakened
+branch_verifier_durable_aware,single-turn chat control,-99.992013,0.528456,92.014387,3.79555,3.096987,0.0,18,18,0,prefix cache,hbm_first_baseline,weakened
+cost_proxy_balanced,single-turn chat control,-85.732188,0.700152,79.06775,3.261508,2.661234,0.0,18,18,0,prefix cache,hbm_first_baseline,weakened
+hbm_first_baseline,batch summarization/offline inference control,-131.654879,0.919827,26.517289,46.605519,59.275725,0.0,7,7,0,intermediate scratch,hbm_first_baseline,weakened
+reuse_aware_tiering,batch summarization/offline inference control,-147.860896,0.285526,120.821184,14.601027,11.913738,0.0,21,21,0,intermediate scratch,hbm_first_baseline,weakened
+branch_verifier_durable_aware,batch summarization/offline inference control,-152.222479,0.259628,124.355376,15.028128,12.262231,0.0,21,21,0,intermediate scratch,hbm_first_baseline,weakened
+cost_proxy_balanced,batch summarization/offline inference control,-131.676168,0.371956,107.690832,13.014247,10.619001,0.0,21,21,0,intermediate scratch,hbm_first_baseline,weakened
+hbm_first_baseline,RAG with retrieved-context reuse,-141.054133,47.80288,34.864506,11.011441,50.319307,47.672256,16,16,0,KV cache,reuse_aware_tiering,ambiguous
+reuse_aware_tiering,RAG with retrieved-context reuse,-58.23097,104.051024,110.24246,4.193004,14.510993,16.373504,16,16,16,semantic cache entry,reuse_aware_tiering,ambiguous
+branch_verifier_durable_aware,RAG with retrieved-context reuse,-146.987753,70.85264,128.927925,4.673648,15.92626,34.32488,16,16,16,semantic cache entry,reuse_aware_tiering,ambiguous
+cost_proxy_balanced,RAG with retrieved-context reuse,-72.490744,91.9472,104.073651,3.466593,10.800501,23.02616,16,16,16,semantic cache entry,reuse_aware_tiering,ambiguous
+hbm_first_baseline,code-agent loop with tool outputs and durable workspace,-1135.161731,298.024704,187.718441,95.964517,101.061621,847.57248,32,32,0,KV cache,branch_verifier_durable_aware,strengthened
+reuse_aware_tiering,code-agent loop with tool outputs and durable workspace,580.864173,1072.50224,141.367392,57.946317,57.326758,190.27776,16,16,32,durable workspace,branch_verifier_durable_aware,strengthened
+branch_verifier_durable_aware,code-agent loop with tool outputs and durable workspace,887.3095,1208.68324,143.17164,46.406927,40.068814,71.9536,16,16,32,durable workspace,branch_verifier_durable_aware,strengthened
+cost_proxy_balanced,code-agent loop with tool outputs and durable workspace,531.665941,1031.15208,144.633071,41.958586,34.547962,224.9388,16,16,32,durable workspace,branch_verifier_durable_aware,strengthened
+hbm_first_baseline,verification-heavy agent,-1114.18162,318.52288,166.314308,72.067287,39.017945,980.026112,32,32,0,KV cache,branch_verifier_durable_aware,strengthened
+reuse_aware_tiering,verification-heavy agent,552.682837,1100.917696,150.559423,39.647183,19.145789,284.468288,16,16,32,verifier state,branch_verifier_durable_aware,strengthened
+branch_verifier_durable_aware,verification-heavy agent,1089.084755,1350.91672,132.024004,35.625779,16.462902,63.2208,16,16,32,verifier state,branch_verifier_durable_aware,strengthened
+cost_proxy_balanced,verification-heavy agent,404.272432,1022.21984,154.79749,29.999128,12.235229,354.06072,16,16,32,verifier state,branch_verifier_durable_aware,strengthened
+hbm_first_baseline,multi-agent branch/merge run,-1236.110738,290.588672,205.026024,192.412577,70.904201,876.018304,32,32,0,KV cache,branch_verifier_durable_aware,strengthened
+reuse_aware_tiering,multi-agent branch/merge run,315.703047,991.837824,165.86602,137.230033,48.485827,267.277696,8,8,40,verifier state,branch_verifier_durable_aware,strengthened
+branch_verifier_durable_aware,multi-agent branch/merge run,852.183411,1227.95908,160.705342,103.700554,33.882853,60.8584,16,16,32,verifier state,branch_verifier_durable_aware,strengthened
+cost_proxy_balanced,multi-agent branch/merge run,251.669601,943.25016,174.727346,107.900244,33.588329,308.97344,8,8,40,trajectory log,branch_verifier_durable_aware,strengthened

@@ -1,0 +1,52 @@
+{
+  "current_hybrid_wins": 0,
+  "evidence_status": "modeled_proxy_not_measured_production",
+  "figure_caption": "per-scenario reduction or baseline-degradation threshold required to overturn the stronger programmable baseline, with unreopenable zero-volume/all-fallback regimes separated.",
+  "finite_threshold_count": 8,
+  "high_volume_stable_moderation": {
+    "best_baseline_daily_cost_pj_equivalent": 8178811874.414918,
+    "current_best_baseline": "programmable_accelerator",
+    "current_winner": "programmable_accelerator",
+    "evidence_status": "modeled_proxy_not_measured_production",
+    "hybrid_daily_cost_pj_equivalent": 9650260720.03919,
+    "hybrid_margin_to_best_baseline_pj_equivalent_per_day": 1471448845.624272,
+    "maximum_audit_control_multiplier_for_reopen": "not_derivable_no_hybrid_audit_excess",
+    "maximum_fallback_frequency_for_reopen": "not_finite_requires_negative_fallback",
+    "minimum_utilization_for_reopen": "not_finite_fixed_cost_elimination_insufficient",
+    "reopen_class": "finite_threshold",
+    "required_accepted_fast_path_multiplier_to_tie": "not_finite_exceeds_fallback_pool",
+    "required_best_baseline_daily_degradation_to_tie_pj_equivalent_per_day": 1471448845.624272,
+    "required_hybrid_daily_reduction_to_tie_pj_equivalent_per_day": 1471448845.624272,
+    "required_hybrid_percent_reduction_to_tie": 0.152478,
+    "scenario_id": "high_volume_stable_moderation",
+    "threshold_unit": "pJ_equivalent/day for daily costs; fraction for percent/fallback/utilization; multiplier for multiplier fields",
+    "trace_contract_requirement": "valid_reopen_candidate from M-TRACE-1 with measured hybrid and accelerator energy, measured baselines, nonzero accepted fast-path volume, audit logging, health/drift gates, and production or shadow-production environment"
+  },
+  "max_required_hybrid_reduction_pj_equivalent_per_day": 42000000001283.336,
+  "milestone_id": "M-REOPEN-1",
+  "reopen_class_counts": {
+    "finite_threshold": 8,
+    "unreopenable_all_fallback": 1,
+    "unreopenable_zero_volume": 1
+  },
+  "scenario_count": 10,
+  "schema_version": 1,
+  "special_case_conclusions": {
+    "failed_health_drift_audit_gates": "blocked; no accepted fast-path credit",
+    "fallback_all_control": "unreopenable_all_fallback",
+    "missing_accelerator_baseline": "blocked; best programmable baseline cannot be formed",
+    "proxy_only_trace": "blocked; proxy energy cannot satisfy M-TRACE-1 measured-energy requirement",
+    "zero_invocation_control": "unreopenable_zero_volume"
+  },
+  "status": "validated",
+  "threshold_inequality": "measured_hybrid_total < measured_best_programmable_baseline under identical accepted-volume, fallback, audit, update, utilization, latency, and energy accounting",
+  "trace_contract": "Only M-TRACE-1 valid_reopen_candidate traces with measured accelerator and hybrid energy can instantiate the threshold.",
+  "unit_metadata": {
+    "daily_cost": "pJ_equivalent/day",
+    "fallback_frequency": "fraction of raw requests",
+    "multiplier": "unitless multiplier",
+    "note": "Current rows are modeled/proxy thresholds, not measured production reopen evidence.",
+    "percent_reduction": "fraction",
+    "utilization": "fraction"
+  }
+}

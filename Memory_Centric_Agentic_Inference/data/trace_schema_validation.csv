@@ -1,0 +1,11 @@
+check_name,status,detail,evidence_label
+positive_trace:required_columns,pass,all required columns present,synthetic
+positive_trace:event_type_count,pass,19,synthetic
+positive_trace:event_order_and_references,pass,no critical violations,synthetic
+controls_dag_collapsed,pass,"{'batch summarization/offline inference control': '0', 'single-turn chat control': '0'}",synthetic
+rag_reuse_without_trajectory,pass,KV cache; prefix cache; retrieved context; semantic cache entry; tool output; weights,synthetic
+agentic_non_kv_state_present,pass,code-agent loop:classes=8 share=0.4603 | verification-heavy:classes=6 share=0.4567 | multi-agent branch/merge:classes=8 share=0.5465,synthetic
+invalid_fixtures:required_columns,pass,all required columns present,synthetic
+invalid_fixtures:event_type_count,fail,7,synthetic
+invalid_fixtures:event_order_and_references,fail,row_2:object_event_before_birth:object_access:missing-object | row_3:object_event_before_birth:object_evict:late-birth | row_3:evict_before_birth:late-birth | row_5:object_event_after_evict:object_access:late-birth | row_6:branch_close_without_fork:branch-without-fork | row_7:verifier_result_without_start:verifier-without-start | row_8:object_event_before_birth:workspace_write:workspace-no-horizon | row_8:workspace_write_missing_durability_horizon | row_9:object_event_before_birth:semantic_cache_lookup:semantic-no-prov | row_9:semantic_cache_missing_provenance | row_9:semantic_cache_missing_invalidation_signal,synthetic
+invalid_fixtures:intended_failures,pass,row_2:object_event_before_birth:object_access:missing-object | row_3:object_event_before_birth:object_evict:late-birth | row_3:evict_before_birth:late-birth | row_5:object_event_after_evict:object_access:late-birth | row_6:branch_close_without_fork:branch-without-fork | row_7:verifier_result_without_start:verifier-without-start | row_8:object_event_before_birth:workspace_write:workspace-no-horizon | row_8:workspace_write_missing_durability_horizon | row_9:object_event_before_birth:semantic_cache_lookup:semantic-no-prov | row_9:semantic_cache_missing_provenance | row_9:semantic_cache_missing_invalidation_signal,synthetic

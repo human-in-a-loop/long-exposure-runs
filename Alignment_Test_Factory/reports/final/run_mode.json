@@ -1,0 +1,11 @@
+{
+  "agent": "final_reporter",
+  "mode": "delta",
+  "detection_source": "legacy_size",
+  "canonical_path": "<RUN_WORKSPACE>/reports/final/final_report.md",
+  "commit_marker": "<RUN_WORKSPACE>/reports/final/final_report.committed",
+  "baseline_boundary_ts": null,
+  "total_report_tokens": 20704,
+  "budget_tokens": 20704,
+  "stages": 3
+}

@@ -1,0 +1,235 @@
+family,L,template_count,weight_l1,coefficient_order,aggregate_coefficient,per_template_bound_proxy,aggregate_bound_proxy,notes
+single_template_path,2,1,1,1,-2,4,4,one tame path profile; direct per-template control
+polynomial_count_path,2,4,4,1,-8,4,16,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,2,4,4,1,-8,4,16,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,2,2,2,1,0,4,8,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,2,4,1,1,-2,4,4,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,2,4,1,1,-2,4,4,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,3,1,1,1,-3,9,9,one tame path profile; direct per-template control
+polynomial_count_path,3,9,9,1,-27,9,81,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,3,8,8,1,-24,9,72,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,3,2,2,1,0,9,18,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,3,8,1,1,-3,9,9,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,3,8,8/9,1,-8/3,9,8,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,4,1,1,1,-4,16,16,one tame path profile; direct per-template control
+polynomial_count_path,4,16,16,1,-64,16,256,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,4,16,16,1,-64,16,256,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,4,2,2,1,0,16,32,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,4,16,1,1,-4,16,16,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,4,16,1,1,-4,16,16,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,5,1,1,1,-5,25,25,one tame path profile; direct per-template control
+polynomial_count_path,5,25,25,1,-125,25,625,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,5,32,32,1,-160,25,800,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,5,2,2,1,0,25,50,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,5,32,1,1,-5,25,25,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,5,32,32/25,1,-32/5,25,32,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,6,1,1,1,-6,36,36,one tame path profile; direct per-template control
+polynomial_count_path,6,36,36,1,-216,36,1296,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,6,64,64,1,-384,36,2304,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,6,2,2,1,0,36,72,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,6,64,1,1,-6,36,36,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,6,64,16/9,1,-32/3,36,64,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,7,1,1,1,-7,49,49,one tame path profile; direct per-template control
+polynomial_count_path,7,49,49,1,-343,49,2401,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,7,128,128,1,-896,49,6272,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,7,2,2,1,0,49,98,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,7,128,1,1,-7,49,49,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,7,128,128/49,1,-128/7,49,128,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,8,1,1,1,-8,64,64,one tame path profile; direct per-template control
+polynomial_count_path,8,64,64,1,-512,64,4096,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,8,256,256,1,-2048,64,16384,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,8,2,2,1,0,64,128,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,8,256,1,1,-8,64,64,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,8,256,4,1,-32,64,256,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,9,1,1,1,-9,81,81,one tame path profile; direct per-template control
+polynomial_count_path,9,81,81,1,-729,81,6561,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,9,512,512,1,-4608,81,41472,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,9,2,2,1,0,81,162,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,9,512,1,1,-9,81,81,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,9,512,512/81,1,-512/9,81,512,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,10,1,1,1,-10,100,100,one tame path profile; direct per-template control
+polynomial_count_path,10,100,100,1,-1000,100,10000,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,10,1024,1024,1,-10240,100,102400,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,10,2,2,1,0,100,200,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,10,1024,1,1,-10,100,100,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,10,1024,256/25,1,-512/5,100,1024,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,11,1,1,1,-11,121,121,one tame path profile; direct per-template control
+polynomial_count_path,11,121,121,1,-1331,121,14641,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,11,2048,2048,1,-22528,121,247808,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,11,2,2,1,0,121,242,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,11,2048,1,1,-11,121,121,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,11,2048,2048/121,1,-2048/11,121,2048,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,12,1,1,1,-12,144,144,one tame path profile; direct per-template control
+polynomial_count_path,12,144,144,1,-1728,144,20736,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,12,4096,4096,1,-49152,144,589824,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,12,2,2,1,0,144,288,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,12,4096,1,1,-12,144,144,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,12,4096,256/9,1,-1024/3,144,4096,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,13,1,1,1,-13,169,169,one tame path profile; direct per-template control
+polynomial_count_path,13,169,169,1,-2197,169,28561,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,13,8192,8192,1,-106496,169,1384448,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,13,2,2,1,0,169,338,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,13,8192,1,1,-13,169,169,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,13,8192,8192/169,1,-8192/13,169,8192,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,14,1,1,1,-14,196,196,one tame path profile; direct per-template control
+polynomial_count_path,14,196,196,1,-2744,196,38416,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,14,16384,16384,1,-229376,196,3211264,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,14,2,2,1,0,196,392,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,14,16384,1,1,-14,196,196,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,14,16384,4096/49,1,-8192/7,196,16384,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,15,1,1,1,-15,225,225,one tame path profile; direct per-template control
+polynomial_count_path,15,225,225,1,-3375,225,50625,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,15,32768,32768,1,-491520,225,7372800,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,15,2,2,1,0,225,450,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,15,32768,1,1,-15,225,225,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,15,32768,32768/225,1,-32768/15,225,32768,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,16,1,1,1,-16,256,256,one tame path profile; direct per-template control
+polynomial_count_path,16,256,256,1,-4096,256,65536,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,16,65536,65536,1,-1048576,256,16777216,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,16,2,2,1,0,256,512,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,16,65536,1,1,-16,256,256,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,16,65536,256,1,-4096,256,65536,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,17,1,1,1,-17,289,289,one tame path profile; direct per-template control
+polynomial_count_path,17,289,289,1,-4913,289,83521,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,17,131072,131072,1,-2228224,289,37879808,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,17,2,2,1,0,289,578,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,17,131072,1,1,-17,289,289,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,17,131072,131072/289,1,-131072/17,289,131072,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,18,1,1,1,-18,324,324,one tame path profile; direct per-template control
+polynomial_count_path,18,324,324,1,-5832,324,104976,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,18,262144,262144,1,-4718592,324,84934656,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,18,2,2,1,0,324,648,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,18,262144,1,1,-18,324,324,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,18,262144,65536/81,1,-131072/9,324,262144,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,19,1,1,1,-19,361,361,one tame path profile; direct per-template control
+polynomial_count_path,19,361,361,1,-6859,361,130321,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,19,524288,524288,1,-9961472,361,189267968,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,19,2,2,1,0,361,722,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,19,524288,1,1,-19,361,361,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,19,524288,524288/361,1,-524288/19,361,524288,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,20,1,1,1,-20,400,400,one tame path profile; direct per-template control
+polynomial_count_path,20,400,400,1,-8000,400,160000,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,20,1048576,1048576,1,-20971520,400,419430400,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,20,2,2,1,0,400,800,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,20,1048576,1,1,-20,400,400,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,20,1048576,65536/25,1,-262144/5,400,1048576,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,21,1,1,1,-21,441,441,one tame path profile; direct per-template control
+polynomial_count_path,21,441,441,1,-9261,441,194481,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,21,2097152,2097152,1,-44040192,441,924844032,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,21,2,2,1,0,441,882,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,21,2097152,1,1,-21,441,441,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,21,2097152,2097152/441,1,-2097152/21,441,2097152,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,22,1,1,1,-22,484,484,one tame path profile; direct per-template control
+polynomial_count_path,22,484,484,1,-10648,484,234256,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,22,4194304,4194304,1,-92274688,484,2030043136,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,22,2,2,1,0,484,968,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,22,4194304,1,1,-22,484,484,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,22,4194304,1048576/121,1,-2097152/11,484,4194304,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,23,1,1,1,-23,529,529,one tame path profile; direct per-template control
+polynomial_count_path,23,529,529,1,-12167,529,279841,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,23,8388608,8388608,1,-192937984,529,4437573632,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,23,2,2,1,0,529,1058,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,23,8388608,1,1,-23,529,529,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,23,8388608,8388608/529,1,-8388608/23,529,8388608,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,24,1,1,1,-24,576,576,one tame path profile; direct per-template control
+polynomial_count_path,24,576,576,1,-13824,576,331776,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,24,16777216,16777216,1,-402653184,576,9663676416,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,24,2,2,1,0,576,1152,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,24,16777216,1,1,-24,576,576,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,24,16777216,262144/9,1,-2097152/3,576,16777216,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,25,1,1,1,-25,625,625,one tame path profile; direct per-template control
+polynomial_count_path,25,625,625,1,-15625,625,390625,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,25,33554432,33554432,1,-838860800,625,20971520000,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,25,2,2,1,0,625,1250,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,25,33554432,1,1,-25,625,625,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,25,33554432,33554432/625,1,-33554432/25,625,33554432,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,26,1,1,1,-26,676,676,one tame path profile; direct per-template control
+polynomial_count_path,26,676,676,1,-17576,676,456976,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,26,67108864,67108864,1,-1744830464,676,45365592064,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,26,2,2,1,0,676,1352,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,26,67108864,1,1,-26,676,676,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,26,67108864,16777216/169,1,-33554432/13,676,67108864,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,27,1,1,1,-27,729,729,one tame path profile; direct per-template control
+polynomial_count_path,27,729,729,1,-19683,729,531441,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,27,134217728,134217728,1,-3623878656,729,97844723712,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,27,2,2,1,0,729,1458,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,27,134217728,1,1,-27,729,729,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,27,134217728,134217728/729,1,-134217728/27,729,134217728,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,28,1,1,1,-28,784,784,one tame path profile; direct per-template control
+polynomial_count_path,28,784,784,1,-21952,784,614656,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,28,268435456,268435456,1,-7516192768,784,210453397504,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,28,2,2,1,0,784,1568,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,28,268435456,1,1,-28,784,784,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,28,268435456,16777216/49,1,-67108864/7,784,268435456,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,29,1,1,1,-29,841,841,one tame path profile; direct per-template control
+polynomial_count_path,29,841,841,1,-24389,841,707281,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,29,536870912,536870912,1,-15569256448,841,451508436992,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,29,2,2,1,0,841,1682,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,29,536870912,1,1,-29,841,841,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,29,536870912,536870912/841,1,-536870912/29,841,536870912,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,30,1,1,1,-30,900,900,one tame path profile; direct per-template control
+polynomial_count_path,30,900,900,1,-27000,900,810000,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,30,1073741824,1073741824,1,-32212254720,900,966367641600,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,30,2,2,1,0,900,1800,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,30,1073741824,1,1,-30,900,900,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,30,1073741824,268435456/225,1,-536870912/15,900,1073741824,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,31,1,1,1,-31,961,961,one tame path profile; direct per-template control
+polynomial_count_path,31,961,961,1,-29791,961,923521,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,31,2147483648,2147483648,1,-66571993088,961,2063731785728,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,31,2,2,1,0,961,1922,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,31,2147483648,1,1,-31,961,961,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,31,2147483648,2147483648/961,1,-2147483648/31,961,2147483648,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,32,1,1,1,-32,1024,1024,one tame path profile; direct per-template control
+polynomial_count_path,32,1024,1024,1,-32768,1024,1048576,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,32,4294967296,4294967296,1,-137438953472,1024,4398046511104,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,32,2,2,1,0,1024,2048,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,32,4294967296,1,1,-32,1024,1024,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,32,4294967296,4194304,1,-134217728,1024,4294967296,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,33,1,1,1,-33,1089,1089,one tame path profile; direct per-template control
+polynomial_count_path,33,1089,1089,1,-35937,1089,1185921,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,33,8589934592,8589934592,1,-283467841536,1089,9354438770688,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,33,2,2,1,0,1089,2178,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,33,8589934592,1,1,-33,1089,1089,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,33,8589934592,8589934592/1089,1,-8589934592/33,1089,8589934592,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,34,1,1,1,-34,1156,1156,one tame path profile; direct per-template control
+polynomial_count_path,34,1156,1156,1,-39304,1156,1336336,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,34,17179869184,17179869184,1,-584115552256,1156,19859928776704,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,34,2,2,1,0,1156,2312,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,34,17179869184,1,1,-34,1156,1156,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,34,17179869184,4294967296/289,1,-8589934592/17,1156,17179869184,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,35,1,1,1,-35,1225,1225,one tame path profile; direct per-template control
+polynomial_count_path,35,1225,1225,1,-42875,1225,1500625,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,35,34359738368,34359738368,1,-1202590842880,1225,42090679500800,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,35,2,2,1,0,1225,2450,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,35,34359738368,1,1,-35,1225,1225,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,35,34359738368,34359738368/1225,1,-34359738368/35,1225,34359738368,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,36,1,1,1,-36,1296,1296,one tame path profile; direct per-template control
+polynomial_count_path,36,1296,1296,1,-46656,1296,1679616,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,36,68719476736,68719476736,1,-2473901162496,1296,89060441849856,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,36,2,2,1,0,1296,2592,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,36,68719476736,1,1,-36,1296,1296,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,36,68719476736,4294967296/81,1,-17179869184/9,1296,68719476736,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,37,1,1,1,-37,1369,1369,one tame path profile; direct per-template control
+polynomial_count_path,37,1369,1369,1,-50653,1369,1874161,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,37,137438953472,137438953472,1,-5085241278464,1369,188153927303168,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,37,2,2,1,0,1369,2738,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,37,137438953472,1,1,-37,1369,1369,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,37,137438953472,137438953472/1369,1,-137438953472/37,1369,137438953472,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,38,1,1,1,-38,1444,1444,one tame path profile; direct per-template control
+polynomial_count_path,38,1444,1444,1,-54872,1444,2085136,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,38,274877906944,274877906944,1,-10445360463872,1444,396923697627136,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,38,2,2,1,0,1444,2888,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,38,274877906944,1,1,-38,1444,1444,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,38,274877906944,68719476736/361,1,-137438953472/19,1444,274877906944,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,39,1,1,1,-39,1521,1521,one tame path profile; direct per-template control
+polynomial_count_path,39,1521,1521,1,-59319,1521,2313441,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,39,549755813888,549755813888,1,-21440476741632,1521,836178592923648,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,39,2,2,1,0,1521,3042,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,39,549755813888,1,1,-39,1521,1521,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,39,549755813888,549755813888/1521,1,-549755813888/39,1521,549755813888,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count
+single_template_path,40,1,1,1,-40,1600,1600,one tame path profile; direct per-template control
+polynomial_count_path,40,1600,1600,1,-64000,1600,2560000,L^2 positive copies; polynomial count shifts degree by 2
+exponential_count_path,40,1099511627776,1099511627776,1,-43980465111040,1600,1759218604441600,2^L positive copies; per-template bound survives but aggregate grows exponentially
+signed_cancelled_pair,40,2,2,1,0,1600,3200,two identical profiles with weights +1 and -1; cancellation is extra information
+rank_decay_toy,40,1099511627776,1,1,-40,1600,1600,2^L copies with weight 2^-L each; decay offsets family growth
+polynomial_decay_toy_s2,40,1099511627776,17179869184/25,1,-137438953472/5,1600,1099511627776,2^L copies with only L^-2 decay; polynomial decay does not offset exponential count

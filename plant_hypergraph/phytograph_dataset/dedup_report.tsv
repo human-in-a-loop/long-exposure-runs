@@ -1,0 +1,8 @@
+source_group	input_edges	retained_edges	duplicate_groups	duplicate_rows	multiplicity_preserved_rows	collapsed_rows
+chemodiversity_ethnobotany_sources	259960	257781	1234	3413	259960	2179
+convergence_sources	420545	209297	101317	312565	0	211248
+domestication_sources	190	190	0	0	0	0
+paleobotany_sources	83	83	0	0	0	0
+reticulation_sources	28	28	0	0	12	0
+taxonomy_backbone	173644	173644	0	0	0	0
+wikidata_commons	160	160	0	0	0	0

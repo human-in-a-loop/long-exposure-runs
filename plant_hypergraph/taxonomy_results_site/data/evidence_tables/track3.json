@@ -1,0 +1,15 @@
+[
+  {
+    "track": "Track 3",
+    "theme": "Convergent traits",
+    "source": "trait and confound matrix review",
+    "accepted_name_status": "accepted-key evidence reviewed; unresolved joins retained as limitations",
+    "evidence_type": "trait carrier matrix",
+    "key_counts": "3069 accepted-key trait carrier rows; 15 canonical traits; 0 controlled-ready traits",
+    "validation_use": "convergence controls",
+    "status": "confound-limited",
+    "rejection_reason": "No trait was controlled-ready.",
+    "claim_boundary": "No convergence or adaptive-origin claim",
+    "future_evidence_predicate": "Broader trait coverage, phylogenetically separated carrier sets, and family-size/sampling-density controls"
+  }
+]

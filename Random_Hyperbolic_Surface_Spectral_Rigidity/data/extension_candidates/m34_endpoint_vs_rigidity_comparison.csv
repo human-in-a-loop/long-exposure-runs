@@ -1,0 +1,16 @@
+window_label,alpha_label,alpha_kind,regime,a,b,Delta,endpoint_relative_error_exponent,rigidity_displacement_exponent,rigidity_expansion_relative_to_fixed_width,endpoint_route_classification,rigidity_route_classification,winner
+edge_fixed,theorem1_representative,proved_shape_representative,edge_adjacent,0.25,0.75,0.5,-0.006,-0.004,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+edge_fixed,improved_comparison,comparison_only_not_proved,edge_adjacent,0.25,0.75,0.5,-0.05,-0.033,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+edge_fixed,strong_comparison,comparison_only_not_proved,edge_adjacent,0.25,0.75,0.5,-0.2,-0.133,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+near_edge_fixed,theorem1_representative,proved_shape_representative,edge_adjacent,0.26,0.76,0.5,-0.006,-0.004,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+near_edge_fixed,improved_comparison,comparison_only_not_proved,edge_adjacent,0.26,0.76,0.5,-0.05,-0.033,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+near_edge_fixed,strong_comparison,comparison_only_not_proved,edge_adjacent,0.26,0.76,0.5,-0.2,-0.133,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+bulk_fixed,theorem1_representative,proved_shape_representative,bulk,4.0,4.5,0.5,-0.006,-0.004,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+bulk_fixed,improved_comparison,comparison_only_not_proved,bulk,4.0,4.5,0.5,-0.05,-0.033,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+bulk_fixed,strong_comparison,comparison_only_not_proved,bulk,4.0,4.5,0.5,-0.2,-0.133,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+wide_bulk_fixed,theorem1_representative,proved_shape_representative,bulk,4.0,6.0,2.0,-0.006,-0.004,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+wide_bulk_fixed,improved_comparison,comparison_only_not_proved,bulk,4.0,6.0,2.0,-0.05,-0.033,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+wide_bulk_fixed,strong_comparison,comparison_only_not_proved,bulk,4.0,6.0,2.0,-0.2,-0.133,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+high_energy_fixed,theorem1_representative,proved_shape_representative,high_energy,100.0,100.5,0.5,-0.006,-0.004,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+high_energy_fixed,improved_comparison,comparison_only_not_proved,high_energy,100.0,100.5,0.5,-0.05,-0.033,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic
+high_energy_fixed,strong_comparison,comparison_only_not_proved,high_energy,100.0,100.5,0.5,-0.2,-0.133,vanishes_as_n_grows,theorem_level_corollary,rigidity_bookkeeping,endpoint_subtraction_for_count_asymptotic

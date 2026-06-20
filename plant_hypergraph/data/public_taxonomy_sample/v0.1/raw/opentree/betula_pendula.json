@@ -1,0 +1,105 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "context": "Land plants",
+    "governing_code": "ICN",
+    "includes_approximate_matches": false,
+    "includes_deprecated_taxa": false,
+    "includes_suppressed_names": false,
+    "matched_names": [
+      "Betula pendula"
+    ],
+    "results": [
+      {
+        "matches": [
+          {
+            "is_approximate_match": false,
+            "is_synonym": false,
+            "matched_name": "Betula pendula",
+            "nomenclature_code": "ICN",
+            "score": 1.0,
+            "search_string": "betula pendula",
+            "taxon": {
+              "flags": [],
+              "is_suppressed": false,
+              "is_suppressed_from_synth": false,
+              "name": "Betula pendula",
+              "ott_id": 267719,
+              "rank": "species",
+              "source": "ott3.7draft3",
+              "synonyms": [
+                "Betula aetnensis",
+                "Betula alba pendula",
+                "Betula brachylepis",
+                "Betula cajanderi",
+                "Betula cycoviensis",
+                "Betula ellipticifolia",
+                "Betula fontqueri",
+                "Betula gummifera",
+                "Betula hippolyti",
+                "Betula hybrida",
+                "Betula insularis",
+                "Betula kossogolica",
+                "Betula lobulata",
+                "Betula ludmilae",
+                "Betula microlepis",
+                "Betula mongolica",
+                "Betula montana",
+                "Betula oxycoviensis",
+                "Betula oycowiensis",
+                "Betula palmata",
+                "Betula parvibracteata",
+                "Betula pendula purpurea",
+                "Betula platyphylloides",
+                "Betula pseudopendula",
+                "Betula talassica",
+                "Betula tiulinae",
+                "Betula transbaicalensis",
+                "Betula urticifolia",
+                "Betula uschkanensis",
+                "Betula verrucosa",
+                "Betula virgultosa",
+                "Betula vladimirii"
+              ],
+              "tax_sources": [
+                "ncbi:3505",
+                "gbif:5331916",
+                "irmng:10600231"
+              ],
+              "unique_name": "Betula pendula"
+            }
+          }
+        ],
+        "name": "Betula pendula"
+      }
+    ],
+    "taxonomy": {
+      "author": "open tree of life project",
+      "name": "ott",
+      "source": "ott3.7draft3",
+      "version": "3.7",
+      "weburl": "https://tree.opentreeoflife.org/about/taxonomy-version/ott3.7"
+    },
+    "unambiguous_names": [
+      "Betula pendula"
+    ],
+    "unmatched_names": []
+  },
+  "request": {
+    "json": {
+      "context_name": "Land plants",
+      "do_approximate_matching": false,
+      "include_suppressed": false,
+      "names": [
+        "Betula pendula"
+      ]
+    },
+    "method": "POST",
+    "params": {},
+    "url": "https://api.opentreeoflife.org/v3/tnrs/match_names"
+  },
+  "response_sha256": "b16741010caf6b048f5418db0e01624f73e1f6be793d9280ce6d957338274d51",
+  "used_insecure_tls_fallback": false
+}

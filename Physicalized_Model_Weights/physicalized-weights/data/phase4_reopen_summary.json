@@ -1,0 +1,58 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "central_conclusion": "Phase 2 remains downgraded: broad fixed frontier physicalization is rejected, safety/filter performance superiority remains falsified against stronger programmable baselines, and the hybrid architecture remains useful only as a failure-mode and evidence-scaffold study.",
+  "claim_count": 10,
+  "current_artifacts_reopen": false,
+  "dryrun_is_evidence": false,
+  "figure_caption": "Campaign-level evidence flow from Phase 2 downgrade through production measurement, trace/replay gates, operator preparation, uncertainty margins, lifecycle closure, and the still-empty current reopen branch.",
+  "future_reopen_condition": "valid_package && hash_match && schema_compatible && known_threshold_scenario && valid_trace && admissible_ingestion_path && measured_terms && production_or_shadow_or_canary_source && provenance_attestation && privacy_attestation && nonzero_request_volume && nonzero_accepted_fast_path_volume && measured_best_programmable_baseline && threshold_crossed && UCB_alpha(H - B) < 0 && lifecycle_terminal_state=actual_reopen_candidate",
+  "hypothetical_actual_candidate_control_count": 1,
+  "intake_actual_reopen_candidate_count": 0,
+  "integrated_milestones": [
+    "M-SYNTH-2",
+    "M-PHASE3-SYNTH-1",
+    "M-ACQUIRE-1",
+    "M-DRYRUN-1",
+    "M-INTAKE-1",
+    "M-EVIDENCEPACK-1",
+    "M-UNCERTAINTY-1",
+    "M-LIFECYCLE-1"
+  ],
+  "lifecycle_states_defined": [
+    "design_screened",
+    "collection_ready_not_evidence",
+    "dryrun_ready_not_evidence",
+    "intake_rehearsed_not_evidence",
+    "replay_valid_nonactual",
+    "replay_blocked",
+    "threshold_evaluable_not_crossed",
+    "threshold_crossed_nonactual",
+    "uncertainty_inconclusive",
+    "statistically_durable_nonactual",
+    "actual_reopen_candidate",
+    "blocked_invalid_or_unsafe"
+  ],
+  "lifecycle_terminal_state_counts": {
+    "actual_reopen_candidate": 1,
+    "blocked_invalid_or_unsafe": 3,
+    "collection_ready_not_evidence": 1,
+    "dryrun_ready_not_evidence": 1,
+    "intake_rehearsed_not_evidence": 2,
+    "replay_blocked": 2,
+    "replay_valid_nonactual": 1,
+    "statistically_durable_nonactual": 1,
+    "threshold_crossed_nonactual": 1,
+    "threshold_evaluable_not_crossed": 1,
+    "uncertainty_inconclusive": 1
+  },
+  "milestone_id": "M-PHASE4-SYNTH-1",
+  "phase2_stronger_baseline_winner_counts": {
+    "optimized_software_runtime": 1,
+    "programmable_accelerator": 9
+  },
+  "phase3_actual_reopen_candidate_count": 0,
+  "readiness_is_evidence": false,
+  "schema_version": 1,
+  "status": "validated",
+  "uncertainty_rule": "UCB_alpha(hybrid_total - best_programmable_total) < 0"
+}

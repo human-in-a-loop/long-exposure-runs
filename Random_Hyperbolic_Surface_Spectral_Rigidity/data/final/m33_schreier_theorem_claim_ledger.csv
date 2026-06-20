@@ -1,0 +1,8 @@
+claim_id,claim_type,statement,status,source,scope
+fixed_k_expectation,theorem,"For fixed k, E[n^{-1}Tr(A_n^k)] = m_k + O_k(n^{-1}).",proved_for_schreier_benchmark,M30 + M4,two independent uniform permutations; k fixed
+tree_word_separation,lemma,Words freely reducing to identity have Fix(w)=n deterministically and contribute the 4-regular tree moment m_k.,proved_for_schreier_benchmark,M30,"free group on a,b; deterministic for every sample"
+pair_variance_expansion,identity,"Var(n^{-1}Tr(A_n^k)) = n^{-2} sum_{u,v} Cov(Fix(u),Fix(v)).",proved_for_schreier_benchmark,M31,finite length-k word sum
+fixed_pair_covariance,lemma,"For fixed nontrivial reduced u,v, Cov(Fix(u),Fix(v))=O_{u,v}(1).",proved_for_schreier_benchmark,M32 + M4,conflict-free quotient templates only; conflicts contribute zero
+fixed_k_variance,theorem,"For fixed k, Var(n^{-1}Tr(A_n^k))=O_k(n^{-2}).",proved_for_schreier_benchmark,M31 + M32,finite word sum after deterministic tree-word separation
+m30_variance_slopes,numerical_evidence,"M30 empirical centered-trace variance slopes for k=2,4,6 are close to n^{-2}.",illustrative_only,M30,finite sample benchmark; not used in proof
+no_hyperbolic_transfer,scope_firewall,"No Kim--Tao random-cover, Selberg-trace, or surface-group quotient-family theorem follows from this package.",not_claimed,M30-M32,negative boundary

@@ -1,0 +1,10 @@
+case,t,training_x,true_training_residual,bad_training_residual,deployment_x0,true_deployment_x,bad_deployment_x,deployment_abs_error,true_lyapunov_dot_at_x1,bad_lyapunov_dot_at_x1,classification
+equilibrium_training_off_trajectory_deployment,0.0,0.0,0.0,0.0,1.0,1.0,1.0,0.0,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,0.25,0.0,0.0,0.0,1.0,0.7788007830714049,1.2840254166877414,0.5052246336163365,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,0.5,0.0,0.0,0.0,1.0,0.6065306597126334,1.6487212707001282,1.0421906109874948,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,0.75,0.0,0.0,0.0,1.0,0.4723665527410147,2.117000016612675,1.64463346387166,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,1.0,0.0,0.0,0.0,1.0,0.36787944117144233,2.718281828459045,2.3504023872876028,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,1.25,0.0,0.0,0.0,1.0,0.2865047968601901,3.4903429574618414,3.2038381606016513,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,1.5,0.0,0.0,0.0,1.0,0.22313016014842982,4.4816890703380645,4.258558910189635,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,1.75,0.0,0.0,0.0,1.0,0.17377394345044514,5.754602676005731,5.580828732555285,-2.0,2.0,deployment_region_stability_failure
+equilibrium_training_off_trajectory_deployment,2.0,0.0,0.0,0.0,1.0,0.1353352832366127,7.38905609893065,7.253720815694038,-2.0,2.0,deployment_region_stability_failure

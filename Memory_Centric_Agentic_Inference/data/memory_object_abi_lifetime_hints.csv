@@ -1,0 +1,7 @@
+hint,condition,planner_semantics
+instantaneous_event,created_at_step == expires_at_step,valid only for log/event objects; rejected for reusable state
+bounded_interval,created_at_step < expires_at_step,normal reusable object interval
+branch_bound,expires_at_step follows branch merge/discard,requires branch_id and parent_object_ids
+verifier_bound,expires_at_step follows checked target validity,requires checked_target_id
+freshness_bound,expires_at_step follows source invalidation,requires freshness_source_id
+durable_policy_bound,expires_at_step may be inf,requires retention_policy_id

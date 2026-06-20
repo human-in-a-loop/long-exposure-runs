@@ -1,0 +1,7 @@
+workload_class,duration_steps,event_count,event_rate,metadata_ops,metadata_ops_per_step,object_policy_ops_per_step,migration_events,migration_rate,migration_events_per_object_lifetime,dag_events,dag_event_rate,verifier_events,verifier_event_rate,durable_events,durable_rate,active_object_peak,live_bytes_peak,object_count,max_dag_width,max_dag_depth,mean_verifier_delay,verifier_results,architecture_option,benefit_object_reuse,benefit_branch_verifier_durable,evidence_label
+RAG,60,55,0.916667,51,0.85,0.85,8,0.133333,1.0,0,0.0,0,0.0,1,0.016667,8,1304.0,8,0,0,0,0,B_memory_object_aware_runtime,2.6434,0.0,synthetic
+batch summarization/offline inference control,40,23,0.575,21,0.525,0.525,3,0.075,1.0,0,0.0,0,0.0,0,0.0,3,966.0,3,0,0,0,0,A_conventional_request_model_kv_serving,0.0,0.0,synthetic
+code-agent loop,85,117,1.376471,104,1.223529,1.223529,18,0.211765,1.2,4,0.047059,4,0.047059,4,0.047059,15,1803.0,15,2,2,5.5,2,C_trajectory_dag_memory_fabric,3.797475,7.0,synthetic
+multi-agent branch/merge,95,171,1.8,152,1.6,1.6,24,0.252632,1.142857,8,0.084211,6,0.063158,5,0.052632,21,2172.0,21,4,4,6.0,3,C_trajectory_dag_memory_fabric,6.312075,11.2,synthetic
+single-turn chat control,26,22,0.846154,20,0.769231,0.769231,4,0.153846,1.0,0,0.0,0,0.0,0,0.0,4,1006.0,4,0,0,0,0,A_conventional_request_model_kv_serving,0.0,0.0,synthetic
+verification-heavy,80,115,1.4375,97,1.2125,1.2125,18,0.225,1.2,6,0.075,8,0.1,1,0.0125,15,1721.0,15,3,3,5.75,4,C_trajectory_dag_memory_fabric,3.767775,10.05,synthetic

@@ -1,0 +1,5 @@
+trace_link_id,source_artifact,cited_artifact,downstream_use
+attestation-to-intake-manifest,data/production_attestation_valid_envelopes.csv,data/production_intake_valid_bundle_manifest.csv,"attestation envelope binds manifest identity, collection window, and payload checksums"
+attestation-to-key-registry,data/production_attestation_results.csv,data/production_attestation_key_registry.csv,"key state gates unknown, expired, and revoked fixture keys before intake claim credit"
+attestation-to-intake-boundary,data/production_attestation_intake_boundary.csv,data/production_intake_admission_results.csv,mechanical signature validity remains upstream of structural admission and production ingestion
+attestation-to-final-readiness,data/production_attestation_traceability_links.csv,data/final_claim_readiness_matrix.csv,final readiness remains blocked without trusted production_target telemetry and downstream gates

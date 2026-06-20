@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Eucalyptus globulus",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 100,
+    "family": "Myrtaceae",
+    "familyKey": 5014,
+    "genus": "Eucalyptus",
+    "genusKey": 7493935,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Myrtales",
+    "orderKey": 690,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Eucalyptus globulus Labill.",
+    "species": "Eucalyptus globulus",
+    "speciesKey": 3176787,
+    "status": "ACCEPTED",
+    "usageKey": 3176787
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Eucalyptus globulus"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "dabb6c97d7ba64f0548e158a3208836122450143e9c9144e9706f3496deeb866",
+  "used_insecure_tls_fallback": false
+}

@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Rosa canina",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 99,
+    "family": "Rosaceae",
+    "familyKey": 5015,
+    "genus": "Rosa",
+    "genusKey": 8395064,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Rosales",
+    "orderKey": 691,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Rosa canina L.",
+    "species": "Rosa canina",
+    "speciesKey": 3002461,
+    "status": "ACCEPTED",
+    "usageKey": 3002461
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Rosa canina"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "fc566e06c59bef85864cd1d350f6c5beec226c937dd90c49f3487ca91c7b0ab2",
+  "used_insecure_tls_fallback": false
+}

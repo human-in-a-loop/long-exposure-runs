@@ -1,0 +1,99 @@
+{
+  "run_id": "run-2026-05-13T204826Z",
+  "milestone_status_distribution": {
+    "validated": 8
+  },
+  "plan_milestone_state": {
+    "M-1": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 6,
+      "latest_event_id": "976ad943-a9f5-474f-ba39-1f420aef02b6"
+    },
+    "M-2": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 6,
+      "latest_event_id": "4932e61a-06a4-4fa7-b9a3-aa77dfe283cd"
+    },
+    "M-3": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 14,
+      "latest_event_id": "52b92e70-6e32-4f6a-8e86-915729a068fe"
+    },
+    "M-4": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 9,
+      "latest_event_id": "41795164-be66-4914-9945-d54081926bf8"
+    },
+    "M-5": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 7,
+      "latest_event_id": "48a6db13-0eb1-4661-b136-1e902e6609bb"
+    },
+    "M-6": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 16,
+      "latest_event_id": "d2530c8b-a5c7-4f3a-8484-f7f5b8913825"
+    },
+    "M-7": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 12,
+      "latest_event_id": "697cf781-8d40-4b95-bb53-6d45c39ef6bf"
+    },
+    "M-8": {
+      "status": "validated",
+      "confidence": "high",
+      "evidence_count": 13,
+      "latest_event_id": "ef24cca4-f071-414c-bb97-f275f3c730b8"
+    }
+  },
+  "residual_debt": [
+    {
+      "milestone": "_manager/validator-warnings",
+      "kind": "validator_bookkeeping_warning",
+      "narrative": "promise_check exits 0 but emits misleading missing-artifact warnings for manager assessment artifacts because the warning path drops the leading dot from <RUN_INSTANCE_DIR>/...; cycle reports are also reported as orphan managed-path artifacts. This does not invalidate M-1 through M-8."
+    },
+    {
+      "milestone": "_run/start",
+      "kind": "run_bookkeeping_in_progress",
+      "narrative": "The run-start bookkeeping event remains in-progress even though all plan milestones M-1 through M-8 are terminal validated."
+    }
+  ],
+  "future_work": [
+    {
+      "anchored_to": "_manager/validator-warnings",
+      "proposal": "Normalize promise_check artifact paths before warning, preserve exact ledger spelling in output, and decide whether cycle reports should be ledger-tracked or exempted from orphan-artifact checks."
+    },
+    {
+      "anchored_to": "_run/start",
+      "proposal": "Add a terminal run-closure ledger event or archive marker after final validation so status summaries do not carry run-start bookkeeping as in-progress."
+    }
+  ],
+  "findings": {
+    "CRITICAL": 0,
+    "MODERATE": 1,
+    "MINOR": 0
+  },
+  "reconciliation_events_emitted": 0,
+  "lessons_emitted": [
+    "trace-integrity-before-scoring",
+    "ledger-warnings-must-preserve-exact-paths"
+  ],
+  "promise_check_status": "green",
+  "wall_cap_exceeded": false,
+  "figure_coverage": {
+    "figures_present": 4,
+    "figures_in_ledger": 4,
+    "milestones_with_figures": 5,
+    "milestones_without_figures": 0,
+    "missing_figures": [],
+    "orphan_figures": []
+  }
+}
+

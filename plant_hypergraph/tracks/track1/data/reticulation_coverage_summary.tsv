@@ -1,0 +1,6 @@
+edge_type	staged_rows	resolved_rows	pending_rows	accepted_keys_covered	source_id_breakdown	license_breakdown
+chromosome_count_assertion	12	2	10	2	"{""ccdb"": 12}"	"{""Not stated on probed pages; citation-required database use"": 12}"
+ploidy_state_assertion	6	1	5	1	"{""plant_dna_cvalues"": 1, ""wood_2009_polyploid_speciation"": 5}"	"{""Article/supplement copyright by PNAS; factual extracted rows only"": 5, ""Not stated on probed pages; cite Kew Plant DNA C-values Database"": 1}"
+hybridization_event	1	0	1	0	"{""wood_2009_polyploid_speciation"": 1}"	"{""Article/supplement copyright by PNAS; factual extracted rows only"": 1}"
+polyploidization_event	4	0	4	0	"{""wood_2009_polyploid_speciation"": 4}"	"{""Article/supplement copyright by PNAS; factual extracted rows only"": 4}"
+reticulate_inheritance_evidence	5	0	5	0	"{""wood_2009_polyploid_speciation"": 5}"	"{""Article/supplement copyright by PNAS; factual extracted rows only"": 5}"

@@ -1,0 +1,8 @@
+special_case,observed_policy_ranking,top_policy,score_spread,interpretation
+zero reuse,branch_verifier_durable_aware > cost_proxy_balanced > reuse_aware_tiering > hbm_first_baseline,branch_verifier_durable_aware,3480.679938,policy differences persist through remaining nonzero mechanisms
+zero branch survival,branch_verifier_durable_aware > reuse_aware_tiering > cost_proxy_balanced > hbm_first_baseline,branch_verifier_durable_aware,5564.542549,policy differences persist through remaining nonzero mechanisms
+zero durable horizon,branch_verifier_durable_aware > reuse_aware_tiering > cost_proxy_balanced > hbm_first_baseline,branch_verifier_durable_aware,4320.662164,policy differences persist through remaining nonzero mechanisms
+equal tier costs,hbm_first_baseline > reuse_aware_tiering > branch_verifier_durable_aware > cost_proxy_balanced,hbm_first_baseline,0.0,policy differences mostly collapse under removed mechanism
+zero correctness loss,branch_verifier_durable_aware > reuse_aware_tiering > cost_proxy_balanced > hbm_first_baseline,branch_verifier_durable_aware,1222.139374,policy differences persist through remaining nonzero mechanisms
+zero recomputation cost,branch_verifier_durable_aware > reuse_aware_tiering > cost_proxy_balanced > hbm_first_baseline,branch_verifier_durable_aware,5192.15103,policy differences persist through remaining nonzero mechanisms
+context cap saturated but durable horizon positive,branch_verifier_durable_aware > reuse_aware_tiering > cost_proxy_balanced > hbm_first_baseline,branch_verifier_durable_aware,6207.231227,durable workspace can still differentiate policies after KV reuse collapses

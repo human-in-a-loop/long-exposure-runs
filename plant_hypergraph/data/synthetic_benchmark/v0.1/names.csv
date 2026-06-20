@@ -1,0 +1,139 @@
+name_id,name_string,accepted_taxon_id,name_status,source_layer,leakage_group_id
+name:taxon:F01:accepted,Synthaceae 1,taxon:F01,accepted,nomenclature,cluster:taxon:F01
+name:taxon:G001:accepted,Genus001,taxon:G001,accepted,nomenclature,cluster:taxon:G001
+name:taxon:S0001:accepted,Genus001 species01,taxon:S0001,accepted,nomenclature,cluster:taxon:S0001
+name:taxon:S0002:accepted,Genus001 species02,taxon:S0002,accepted,nomenclature,cluster:taxon:S0002
+name:taxon:S0003:accepted,Genus001 species03,taxon:S0003,accepted,nomenclature,cluster:taxon:S0003
+name:taxon:S0003:synonym,Genus001 synonym03,taxon:S0003,synonym,nomenclature,cluster:taxon:S0003
+name:taxon:S0003:renamed,Oldname S0003,taxon:S0003,renamed_label,dataset_label_hierarchy,cluster:taxon:S0003
+name:taxon:S0003:verbatim_noise,Genus001 species03 cf.,taxon:S0003,noisy_verbatim,occurrence_evidence,cluster:taxon:S0003
+name:taxon:S0004:accepted,Genus001 species04,taxon:S0004,accepted,nomenclature,cluster:taxon:S0004
+name:taxon:S0005:accepted,Genus001 species05,taxon:S0005,accepted,nomenclature,cluster:taxon:S0005
+name:taxon:G002:accepted,Genus002,taxon:G002,accepted,nomenclature,cluster:taxon:G002
+name:taxon:S0006:accepted,Genus002 species01,taxon:S0006,accepted,nomenclature,cluster:taxon:S0006
+name:taxon:S0006:synonym,Genus002 synonym01,taxon:S0006,synonym,nomenclature,cluster:taxon:S0006
+name:taxon:S0006:renamed,Oldname S0006,taxon:S0006,renamed_label,dataset_label_hierarchy,cluster:taxon:S0006
+name:taxon:S0007:accepted,Genus002 species02,taxon:S0007,accepted,nomenclature,cluster:taxon:S0007
+name:taxon:S0007:synonym,Genus002 synonym02,taxon:S0007,synonym,nomenclature,cluster:taxon:S0007
+name:taxon:S0007:renamed,Oldname S0007,taxon:S0007,renamed_label,dataset_label_hierarchy,cluster:taxon:S0007
+name:taxon:S0008:accepted,Genus002 species03,taxon:S0008,accepted,nomenclature,cluster:taxon:S0008
+name:taxon:S0008:verbatim_noise,Genus002 species03 cf.,taxon:S0008,noisy_verbatim,occurrence_evidence,cluster:taxon:S0008
+name:taxon:S0009:accepted,Genus002 species04,taxon:S0009,accepted,nomenclature,cluster:taxon:S0009
+name:taxon:S0010:accepted,Genus002 species05,taxon:S0010,accepted,nomenclature,cluster:taxon:S0010
+name:taxon:G003:accepted,Genus003,taxon:G003,accepted,nomenclature,cluster:taxon:G003
+name:taxon:S0011:accepted,Genus003 species01,taxon:S0011,accepted,nomenclature,cluster:taxon:S0011
+name:taxon:S0011:synonym,Genus003 synonym01,taxon:S0011,synonym,nomenclature,cluster:taxon:S0011
+name:taxon:S0011:renamed,Oldname S0011,taxon:S0011,renamed_label,dataset_label_hierarchy,cluster:taxon:S0011
+name:taxon:S0011:verbatim_noise,Genus003 species01 cf.,taxon:S0011,noisy_verbatim,occurrence_evidence,cluster:taxon:S0011
+name:taxon:S0012:accepted,Genus003 species02,taxon:S0012,accepted,nomenclature,cluster:taxon:S0012
+name:taxon:S0013:accepted,Genus003 species03,taxon:S0013,accepted,nomenclature,cluster:taxon:S0013
+name:taxon:S0013:synonym,Genus003 synonym03,taxon:S0013,synonym,nomenclature,cluster:taxon:S0013
+name:taxon:S0013:renamed,Oldname S0013,taxon:S0013,renamed_label,dataset_label_hierarchy,cluster:taxon:S0013
+name:taxon:S0014:accepted,Genus003 species04,taxon:S0014,accepted,nomenclature,cluster:taxon:S0014
+name:taxon:S0015:accepted,Genus003 species05,taxon:S0015,accepted,nomenclature,cluster:taxon:S0015
+name:taxon:F02:accepted,Synthaceae 2,taxon:F02,accepted,nomenclature,cluster:taxon:F02
+name:taxon:G004:accepted,Genus004,taxon:G004,accepted,nomenclature,cluster:taxon:G004
+name:taxon:S0016:accepted,Genus004 species01,taxon:S0016,accepted,nomenclature,cluster:taxon:S0016
+name:taxon:S0016:synonym,Genus004 synonym01,taxon:S0016,synonym,nomenclature,cluster:taxon:S0016
+name:taxon:S0016:renamed,Oldname S0016,taxon:S0016,renamed_label,dataset_label_hierarchy,cluster:taxon:S0016
+name:taxon:S0017:accepted,Genus004 species02,taxon:S0017,accepted,nomenclature,cluster:taxon:S0017
+name:taxon:S0018:accepted,Genus004 species03,taxon:S0018,accepted,nomenclature,cluster:taxon:S0018
+name:taxon:S0018:synonym,Genus004 synonym03,taxon:S0018,synonym,nomenclature,cluster:taxon:S0018
+name:taxon:S0018:renamed,Oldname S0018,taxon:S0018,renamed_label,dataset_label_hierarchy,cluster:taxon:S0018
+name:taxon:S0018:verbatim_noise,Genus004 species03 cf.,taxon:S0018,noisy_verbatim,occurrence_evidence,cluster:taxon:S0018
+name:taxon:S0019:accepted,Genus004 species04,taxon:S0019,accepted,nomenclature,cluster:taxon:S0019
+name:taxon:S0019:synonym,Genus004 synonym04,taxon:S0019,synonym,nomenclature,cluster:taxon:S0019
+name:taxon:S0019:renamed,Oldname S0019,taxon:S0019,renamed_label,dataset_label_hierarchy,cluster:taxon:S0019
+name:taxon:S0020:accepted,Genus004 species05,taxon:S0020,accepted,nomenclature,cluster:taxon:S0020
+name:taxon:G005:accepted,Genus005,taxon:G005,accepted,nomenclature,cluster:taxon:G005
+name:taxon:S0021:accepted,Genus005 species01,taxon:S0021,accepted,nomenclature,cluster:taxon:S0021
+name:taxon:S0022:accepted,Genus005 species02,taxon:S0022,accepted,nomenclature,cluster:taxon:S0022
+name:taxon:S0023:accepted,Genus005 species03,taxon:S0023,accepted,nomenclature,cluster:taxon:S0023
+name:taxon:S0023:synonym,Genus005 synonym03,taxon:S0023,synonym,nomenclature,cluster:taxon:S0023
+name:taxon:S0023:renamed,Oldname S0023,taxon:S0023,renamed_label,dataset_label_hierarchy,cluster:taxon:S0023
+name:taxon:S0024:accepted,Genus005 species04,taxon:S0024,accepted,nomenclature,cluster:taxon:S0024
+name:taxon:S0024:synonym,Genus005 synonym04,taxon:S0024,synonym,nomenclature,cluster:taxon:S0024
+name:taxon:S0024:renamed,Oldname S0024,taxon:S0024,renamed_label,dataset_label_hierarchy,cluster:taxon:S0024
+name:taxon:S0025:accepted,Genus005 species05,taxon:S0025,accepted,nomenclature,cluster:taxon:S0025
+name:taxon:S0025:synonym,Genus005 synonym05,taxon:S0025,synonym,nomenclature,cluster:taxon:S0025
+name:taxon:S0025:renamed,Oldname S0025,taxon:S0025,renamed_label,dataset_label_hierarchy,cluster:taxon:S0025
+name:taxon:G006:accepted,Genus006,taxon:G006,accepted,nomenclature,cluster:taxon:G006
+name:taxon:S0026:accepted,Genus006 species01,taxon:S0026,accepted,nomenclature,cluster:taxon:S0026
+name:taxon:S0026:synonym,Genus006 synonym01,taxon:S0026,synonym,nomenclature,cluster:taxon:S0026
+name:taxon:S0026:renamed,Oldname S0026,taxon:S0026,renamed_label,dataset_label_hierarchy,cluster:taxon:S0026
+name:taxon:S0027:accepted,Genus006 species02,taxon:S0027,accepted,nomenclature,cluster:taxon:S0027
+name:taxon:S0028:accepted,Genus006 species03,taxon:S0028,accepted,nomenclature,cluster:taxon:S0028
+name:taxon:S0029:accepted,Genus006 species04,taxon:S0029,accepted,nomenclature,cluster:taxon:S0029
+name:taxon:S0029:synonym,Genus006 synonym04,taxon:S0029,synonym,nomenclature,cluster:taxon:S0029
+name:taxon:S0029:renamed,Oldname S0029,taxon:S0029,renamed_label,dataset_label_hierarchy,cluster:taxon:S0029
+name:taxon:S0029:verbatim_noise,Genus006 species04 cf.,taxon:S0029,noisy_verbatim,occurrence_evidence,cluster:taxon:S0029
+name:taxon:S0030:accepted,Genus006 species05,taxon:S0030,accepted,nomenclature,cluster:taxon:S0030
+name:taxon:S0030:synonym,Genus006 synonym05,taxon:S0030,synonym,nomenclature,cluster:taxon:S0030
+name:taxon:S0030:renamed,Oldname S0030,taxon:S0030,renamed_label,dataset_label_hierarchy,cluster:taxon:S0030
+name:taxon:F03:accepted,Synthaceae 3,taxon:F03,accepted,nomenclature,cluster:taxon:F03
+name:taxon:G007:accepted,Genus007,taxon:G007,accepted,nomenclature,cluster:taxon:G007
+name:taxon:S0031:accepted,Genus007 species01,taxon:S0031,accepted,nomenclature,cluster:taxon:S0031
+name:taxon:S0031:synonym,Genus007 synonym01,taxon:S0031,synonym,nomenclature,cluster:taxon:S0031
+name:taxon:S0031:renamed,Oldname S0031,taxon:S0031,renamed_label,dataset_label_hierarchy,cluster:taxon:S0031
+name:taxon:S0032:accepted,Genus007 species02,taxon:S0032,accepted,nomenclature,cluster:taxon:S0032
+name:taxon:S0033:accepted,Genus007 species03,taxon:S0033,accepted,nomenclature,cluster:taxon:S0033
+name:taxon:S0033:verbatim_noise,Genus007 species03 cf.,taxon:S0033,noisy_verbatim,occurrence_evidence,cluster:taxon:S0033
+name:taxon:S0034:accepted,Genus007 species04,taxon:S0034,accepted,nomenclature,cluster:taxon:S0034
+name:taxon:S0035:accepted,Genus007 species05,taxon:S0035,accepted,nomenclature,cluster:taxon:S0035
+name:taxon:G008:accepted,Genus008,taxon:G008,accepted,nomenclature,cluster:taxon:G008
+name:taxon:S0036:accepted,Genus008 species01,taxon:S0036,accepted,nomenclature,cluster:taxon:S0036
+name:taxon:S0037:accepted,Genus008 species02,taxon:S0037,accepted,nomenclature,cluster:taxon:S0037
+name:taxon:S0037:synonym,Genus008 synonym02,taxon:S0037,synonym,nomenclature,cluster:taxon:S0037
+name:taxon:S0037:renamed,Oldname S0037,taxon:S0037,renamed_label,dataset_label_hierarchy,cluster:taxon:S0037
+name:taxon:S0038:accepted,Genus008 species03,taxon:S0038,accepted,nomenclature,cluster:taxon:S0038
+name:taxon:S0038:synonym,Genus008 synonym03,taxon:S0038,synonym,nomenclature,cluster:taxon:S0038
+name:taxon:S0038:renamed,Oldname S0038,taxon:S0038,renamed_label,dataset_label_hierarchy,cluster:taxon:S0038
+name:taxon:S0039:accepted,Genus008 species04,taxon:S0039,accepted,nomenclature,cluster:taxon:S0039
+name:taxon:S0040:accepted,Genus008 species05,taxon:S0040,accepted,nomenclature,cluster:taxon:S0040
+name:taxon:S0040:synonym,Genus008 synonym05,taxon:S0040,synonym,nomenclature,cluster:taxon:S0040
+name:taxon:S0040:renamed,Oldname S0040,taxon:S0040,renamed_label,dataset_label_hierarchy,cluster:taxon:S0040
+name:taxon:G009:accepted,Genus009,taxon:G009,accepted,nomenclature,cluster:taxon:G009
+name:taxon:S0041:accepted,Genus009 species01,taxon:S0041,accepted,nomenclature,cluster:taxon:S0041
+name:taxon:S0042:accepted,Genus009 species02,taxon:S0042,accepted,nomenclature,cluster:taxon:S0042
+name:taxon:S0042:synonym,Genus009 synonym02,taxon:S0042,synonym,nomenclature,cluster:taxon:S0042
+name:taxon:S0042:renamed,Oldname S0042,taxon:S0042,renamed_label,dataset_label_hierarchy,cluster:taxon:S0042
+name:taxon:S0043:accepted,Genus009 species03,taxon:S0043,accepted,nomenclature,cluster:taxon:S0043
+name:taxon:S0044:accepted,Genus009 species04,taxon:S0044,accepted,nomenclature,cluster:taxon:S0044
+name:taxon:S0044:synonym,Genus009 synonym04,taxon:S0044,synonym,nomenclature,cluster:taxon:S0044
+name:taxon:S0044:renamed,Oldname S0044,taxon:S0044,renamed_label,dataset_label_hierarchy,cluster:taxon:S0044
+name:taxon:S0045:accepted,Genus009 species05,taxon:S0045,accepted,nomenclature,cluster:taxon:S0045
+name:taxon:S0045:synonym,Genus009 synonym05,taxon:S0045,synonym,nomenclature,cluster:taxon:S0045
+name:taxon:S0045:renamed,Oldname S0045,taxon:S0045,renamed_label,dataset_label_hierarchy,cluster:taxon:S0045
+name:taxon:F04:accepted,Synthaceae 4,taxon:F04,accepted,nomenclature,cluster:taxon:F04
+name:taxon:G010:accepted,Genus010,taxon:G010,accepted,nomenclature,cluster:taxon:G010
+name:taxon:S0046:accepted,Genus010 species01,taxon:S0046,accepted,nomenclature,cluster:taxon:S0046
+name:taxon:S0046:synonym,Genus010 synonym01,taxon:S0046,synonym,nomenclature,cluster:taxon:S0046
+name:taxon:S0046:renamed,Oldname S0046,taxon:S0046,renamed_label,dataset_label_hierarchy,cluster:taxon:S0046
+name:taxon:S0047:accepted,Genus010 species02,taxon:S0047,accepted,nomenclature,cluster:taxon:S0047
+name:taxon:S0048:accepted,Genus010 species03,taxon:S0048,accepted,nomenclature,cluster:taxon:S0048
+name:taxon:S0048:synonym,Genus010 synonym03,taxon:S0048,synonym,nomenclature,cluster:taxon:S0048
+name:taxon:S0048:renamed,Oldname S0048,taxon:S0048,renamed_label,dataset_label_hierarchy,cluster:taxon:S0048
+name:taxon:S0049:accepted,Genus010 species04,taxon:S0049,accepted,nomenclature,cluster:taxon:S0049
+name:taxon:S0050:accepted,Genus010 species05,taxon:S0050,accepted,nomenclature,cluster:taxon:S0050
+name:taxon:G011:accepted,Genus011,taxon:G011,accepted,nomenclature,cluster:taxon:G011
+name:taxon:S0051:accepted,Genus011 species01,taxon:S0051,accepted,nomenclature,cluster:taxon:S0051
+name:taxon:S0052:accepted,Genus011 species02,taxon:S0052,accepted,nomenclature,cluster:taxon:S0052
+name:taxon:S0052:verbatim_noise,Genus011 species02 cf.,taxon:S0052,noisy_verbatim,occurrence_evidence,cluster:taxon:S0052
+name:taxon:S0053:accepted,Genus011 species03,taxon:S0053,accepted,nomenclature,cluster:taxon:S0053
+name:taxon:S0054:accepted,Genus011 species04,taxon:S0054,accepted,nomenclature,cluster:taxon:S0054
+name:taxon:S0055:accepted,Genus011 species05,taxon:S0055,accepted,nomenclature,cluster:taxon:S0055
+name:taxon:S0055:synonym,Genus011 synonym05,taxon:S0055,synonym,nomenclature,cluster:taxon:S0055
+name:taxon:S0055:renamed,Oldname S0055,taxon:S0055,renamed_label,dataset_label_hierarchy,cluster:taxon:S0055
+name:taxon:G012:accepted,Genus012,taxon:G012,accepted,nomenclature,cluster:taxon:G012
+name:taxon:S0056:accepted,Genus012 species01,taxon:S0056,accepted,nomenclature,cluster:taxon:S0056
+name:taxon:S0057:accepted,Genus012 species02,taxon:S0057,accepted,nomenclature,cluster:taxon:S0057
+name:taxon:S0058:accepted,Genus012 species03,taxon:S0058,accepted,nomenclature,cluster:taxon:S0058
+name:taxon:S0058:synonym,Genus012 synonym03,taxon:S0058,synonym,nomenclature,cluster:taxon:S0058
+name:taxon:S0058:renamed,Oldname S0058,taxon:S0058,renamed_label,dataset_label_hierarchy,cluster:taxon:S0058
+name:taxon:S0059:accepted,Genus012 species04,taxon:S0059,accepted,nomenclature,cluster:taxon:S0059
+name:taxon:S0059:synonym,Genus012 synonym04,taxon:S0059,synonym,nomenclature,cluster:taxon:S0059
+name:taxon:S0059:renamed,Oldname S0059,taxon:S0059,renamed_label,dataset_label_hierarchy,cluster:taxon:S0059
+name:taxon:S0060:accepted,Genus012 species05,taxon:S0060,accepted,nomenclature,cluster:taxon:S0060
+name:taxon:S0060:synonym,Genus012 synonym05,taxon:S0060,synonym,nomenclature,cluster:taxon:S0060
+name:taxon:S0060:renamed,Oldname S0060,taxon:S0060,renamed_label,dataset_label_hierarchy,cluster:taxon:S0060
+name:taxon:S0060:verbatim_noise,Genus012 species05 cf.,taxon:S0060,noisy_verbatim,occurrence_evidence,cluster:taxon:S0060

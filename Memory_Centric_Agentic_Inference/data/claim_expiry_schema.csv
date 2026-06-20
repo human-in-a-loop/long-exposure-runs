@@ -1,0 +1,19 @@
+field,type,description
+case_id,string,unique lifecycle probe id
+upstream_replay_state,enum,production_supported or not_production_supported
+evidence_label,enum,production_target or non-production fixture/proxy label
+age_hours,number,hours since replay completion
+ttl_hours,number,policy validity window; age >= ttl expires
+model_version_changed,boolean,model version differs from replay
+topology_changed,boolean,topology differs from replay envelope
+workload_overlap_score,number,"causal overlap score in [0,1]"
+scheduler_policy_changed,boolean,scheduler policy differs from replay
+memory_tier_regime_changed,boolean,tier latency/energy regime differs from replay
+collector_identity_current,boolean,collector/root identity is current or re-enrolled
+trust_policy_current,boolean,operator trust policy remains current
+security_deny_rate_delta,number,absolute deny-rate drift since replay
+redaction_policy_changed,boolean,redaction policy differs from replay
+uncertainty_interval_widened,boolean,robust interval no longer excludes threshold
+causal_controls_comparable,boolean,control arm and covariates remain comparable
+copied_old_replay_result,boolean,row attempts to satisfy revalidation by copying old replay output
+expected_status,enum,expected lifecycle status

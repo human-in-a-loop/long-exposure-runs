@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Betula pendula",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 100,
+    "family": "Betulaceae",
+    "familyKey": 4688,
+    "genus": "Betula",
+    "genusKey": 2875008,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Fagales",
+    "orderKey": 1354,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Betula pendula Roth",
+    "species": "Betula pendula",
+    "speciesKey": 5331916,
+    "status": "ACCEPTED",
+    "usageKey": 5331916
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Betula pendula"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "2e9d4770d4ed23ffd3a4c12caf3d4b95ffc3464173fefd7529f098f6f3e9b982",
+  "used_insecure_tls_fallback": false
+}

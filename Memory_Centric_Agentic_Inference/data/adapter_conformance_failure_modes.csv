@@ -1,0 +1,8 @@
+failure_category,invalid_profile_count,fail_closed
+alias,2,true
+unit,2,true
+clock,2,true
+join,2,true
+provenance,1,true
+security,1,true
+boundary,1,true

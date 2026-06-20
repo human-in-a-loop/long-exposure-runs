@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-FINAL-1",
+  "status": "validated",
+  "evidence_map_caption": "evidence map linking validated milestones, generated artifacts, and final claims, distinguishing sourced, modeled, simulated, synthesized, inferred, and speculative support.",
+  "central_conclusion": "Full frontier-model fixed-weight physicalization is not supported. Narrow stable safety/filter physicalization remains useful as an architecture and failure-mode study, but Phase 2 stronger-baseline replay falsifies its current performance/economic superiority claim.",
+  "validated_milestones": [
+    "M-TAX-1",
+    "M-MODEL-1",
+    "M-BASE-1",
+    "M-TARGET-1",
+    "M-ARCH-1",
+    "M-PROTO-1",
+    "M-FINAL-1",
+    "M-CAL-1",
+    "M-WORKLOAD-1",
+    "M-SWBASE-2",
+    "M-SYNTH-2"
+  ],
+  "artifact_count": 29,
+  "evidence_type_counts": {
+    "sourced": 1,
+    "modeled": 7,
+    "simulated": 4,
+    "synthesized": 4,
+    "inferred": 12,
+    "speculative": 1
+  },
+  "break_even_winner_counts": {
+    "analog_in_memory": 0,
+    "fixed_digital_weights": 208,
+    "hybrid_physicalized_submodel": 0,
+    "programmable_accelerator": 192,
+    "programmable_unoptimized": 0,
+    "software_optimized": 160
+  },
+  "break_even_dominant_variables": [
+    "requests_per_update",
+    "software_memory_savings",
+    "fixed_substrate_cost",
+    "update_interval_days",
+    "analog_conversion_overhead",
+    "yield_repair_factor",
+    "accuracy_fallback_penalty",
+    "utilization"
+  ],
+  "target_recommendation": {
+    "rank": 1,
+    "component_id": "safety_filter",
+    "name": "Fixed safety/filter classifier submodels",
+    "category": "candidate",
+    "evidence_level": "inferred",
+    "update_interval_days": 180,
+    "reuse_volume": 4.4,
+    "update_stability": 4.3,
+    "approximation_tolerance": 3.8,
+    "integration_complexity": 4.0,
+    "energy_upside_vs_baseline": 3.396,
+    "software_baseline_resistance": 3.18,
+    "evidence_quality": 3.0,
+    "total_score": 3.775,
+    "baseline_penalty": 0.372,
+    "recommended_next_target": true,
+    "baseline_comparison": "Programmable accelerators are strong, but isolation and fallback make fixed or semi-fixed safety filters testable.",
+    "rationale": "Small repeated classifiers can be long-lived, isolated, and tolerant of conservative fallback.",
+    "falsifier": "Demote if policy churn forces weekly updates or false-positive/negative cost requires full programmable execution."
+  },
+  "prototype_route_counts": {
+    "physicalized_fast_path": 6,
+    "programmable_fallback": 8,
+    "fail_safe": 2
+  },
+  "prototype_fast_path_fraction": 0.375,
+  "prototype_baseline_comparison": [
+    {
+      "baseline": "software_optimized",
+      "case_count": 16,
+      "fast_path_cases": 0,
+      "fallback_cases": 16,
+      "fail_safe_cases": 0,
+      "modeled_cost_units": 400.0,
+      "notes": "feature extraction and audit retained; optimized int8 software classifier every case"
+    },
+    {
+      "baseline": "programmable_accelerator",
+      "case_count": 16,
+      "fast_path_cases": 0,
+      "fallback_cases": 16,
+      "fail_safe_cases": 0,
+      "modeled_cost_units": 368.0,
+      "notes": "feature extraction and audit retained; programmable accelerator dispatch every case"
+    },
+    {
+      "baseline": "hybrid_physicalized",
+      "case_count": 16,
+      "fast_path_cases": 6,
+      "fallback_cases": 8,
+      "fail_safe_cases": 2,
+      "modeled_cost_units": 162.0,
+      "notes": "includes feature extraction, register/control, audit, fixed dot, fallback dispatch, and fail-safe handling"
+    },
+    {
+      "baseline": "hybrid_request_volume_zero",
+      "case_count": 0,
+      "fast_path_cases": 0,
+      "fallback_cases": 0,
+      "fail_safe_cases": 0,
+      "modeled_cost_units": 0,
+      "notes": "no amortization claim when request volume is zero"
+    }
+  ],
+  "prototype_closure_status": "validated",
+  "prototype_evidence_contract": "amended_lint_yosys_eval_synthesis",
+  "compiled_verilator_status": "blocked_make_unavailable",
+  "reopen_criteria": [
+    "compiled Verilator simulation later runs and disagrees with Python or Yosys rows",
+    "Yosys eval and Python golden outputs diverge for any vector",
+    "HDL source hash changes without regenerated closure artifacts",
+    "the HDL core gains sequential state, memories, handshake timing, or mutable policy logic",
+    "Verilator lint, Yosys synthesis, or Graphviz netlist evidence becomes missing or stale"
+  ],
+  "phase2_hybrid_workload_wins": 0,
+  "phase2_preserved_case_winner": "programmable_accelerator",
+  "phase2_reopening_standard": "Measured production traces must show durable positive hybrid margin against optimized software and programmable accelerator under identical feature, audit, fallback, update, utilization, energy, and latency accounting."
+}

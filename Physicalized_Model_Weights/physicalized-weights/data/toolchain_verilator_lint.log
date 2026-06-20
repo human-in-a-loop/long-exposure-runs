@@ -1,0 +1,1 @@
+$ verilator --lint-only -sv physicalized-weights/hdl/safety_filter_core.sv

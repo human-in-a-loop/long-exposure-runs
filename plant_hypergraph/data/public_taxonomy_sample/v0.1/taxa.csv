@@ -1,0 +1,63 @@
+local_taxon_id,source,source_taxon_id,canonical_name,accepted_name,rank,parent_id,status,query_name,match_type,confidence
+wfo:wfo-0000292858,WFO,wfo-0000292858,Quercus robur L.,Quercus robur L.,species,,candidate_unresolved,Quercus robur,,
+gbif:2877951,GBIF,2877951,Quercus,Quercus,genus,,backbone_parent,Quercus robur,derived_from_match,
+gbif:2878688,GBIF,2878688,Quercus robur,Quercus robur L.,SPECIES,gbif:2877951,ACCEPTED,Quercus robur,EXACT,99
+ott:239659,OpenTree,239659,Quercus robur,Quercus robur,species,,matched,Quercus robur,TNRS,1.0
+wfo:wfo-0000891536,WFO,wfo-0000891536,Poa annua L.,Poa annua L.,species,,candidate_unresolved,Poa annua,,
+gbif:2704173,GBIF,2704173,Poa,Poa,genus,,backbone_parent,Poa annua,derived_from_match,
+gbif:2704179,GBIF,2704179,Poa annua,Poa annua L.,SPECIES,gbif:2704173,ACCEPTED,Poa annua,EXACT,99
+ott:510850,OpenTree,510850,Poa annua,Poa annua,species,,matched,Poa annua,TNRS,1.0
+wfo:wfo-0001001226,WFO,wfo-0001001226,Rosa canina Siev. ex Ledeb.,Rosa canina Siev. ex Ledeb.,species,,candidate_unresolved,Rosa canina,,
+gbif:8395064,GBIF,8395064,Rosa,Rosa,genus,,backbone_parent,Rosa canina,derived_from_match,
+gbif:3002461,GBIF,3002461,Rosa canina,Rosa canina L.,SPECIES,gbif:8395064,ACCEPTED,Rosa canina,EXACT,99
+ott:333885,OpenTree,333885,Rosa canina,Rosa canina,species,,matched,Rosa canina,TNRS,1.0
+wfo:wfo-0000541830,WFO,wfo-0000541830,Arabidopsis thaliana (L.) Heynh.,Arabidopsis thaliana (L.) Heynh.,species,,candidate_unresolved,Arabidopsis thaliana,,
+gbif:3052435,GBIF,3052435,Arabidopsis,Arabidopsis,genus,,backbone_parent,Arabidopsis thaliana,derived_from_match,
+gbif:3052436,GBIF,3052436,Arabidopsis thaliana,Arabidopsis thaliana (L.) Heynh.,SPECIES,gbif:3052435,ACCEPTED,Arabidopsis thaliana,EXACT,99
+ott:309263,OpenTree,309263,Arabidopsis thaliana,Arabidopsis thaliana,species,,matched,Arabidopsis thaliana,TNRS,1.0
+wfo:wfo-0001029216,WFO,wfo-0001029216,Solanum lycopersicum L.,Solanum lycopersicum L.,species,,candidate_unresolved,Solanum lycopersicum,,
+gbif:2928997,GBIF,2928997,Solanum,Solanum,genus,,backbone_parent,Solanum lycopersicum,derived_from_match,
+gbif:2930137,GBIF,2930137,Solanum lycopersicum,Solanum lycopersicum L.,SPECIES,gbif:2928997,ACCEPTED,Solanum lycopersicum,EXACT,99
+ott:378964,OpenTree,378964,Solanum lycopersicum,Solanum lycopersicum,species,,matched,Solanum lycopersicum,TNRS,1.0
+wfo:wfo-0000907754,WFO,wfo-0000907754,Zea mays L.,Zea mays L.,species,,matched,Zea mays,,
+gbif:2705049,GBIF,2705049,Zea,Zea,genus,,backbone_parent,Zea mays,derived_from_match,
+gbif:5290052,GBIF,5290052,Zea mays,Zea mays L.,SPECIES,gbif:2705049,ACCEPTED,Zea mays,EXACT,100
+ott:605194,OpenTree,605194,Zea mays,Zea mays,species,,matched,Zea mays,TNRS,1.0
+wfo:wfo-0000882438,WFO,wfo-0000882438,Oryza sativa L.,Oryza sativa L.,species,,matched,Oryza sativa,,
+gbif:2703455,GBIF,2703455,Oryza,Oryza,genus,,backbone_parent,Oryza sativa,derived_from_match,
+gbif:2703459,GBIF,2703459,Oryza sativa,Oryza sativa L.,SPECIES,gbif:2703455,ACCEPTED,Oryza sativa,EXACT,99
+ott:709894,OpenTree,709894,Oryza sativa,Oryza sativa,species,,matched,Oryza sativa,TNRS,1.0
+wfo:wfo-0000905667,WFO,wfo-0000905667,Triticum aestivum L.,Triticum aestivum L.,species,,matched,Triticum aestivum,,
+gbif:2706388,GBIF,2706388,Triticum,Triticum,genus,,backbone_parent,Triticum aestivum,derived_from_match,
+gbif:7795888,GBIF,7795888,Triticum aestivum,Triticum aestivum L.,SPECIES,gbif:2706388,ACCEPTED,Triticum aestivum,EXACT,99
+ott:31926,OpenTree,31926,Triticum aestivum,Triticum aestivum,species,,matched,Triticum aestivum,TNRS,1.0
+wfo:wfo-0000515026,WFO,wfo-0000515026,Acer saccharum Marshall,Acer saccharum Marshall,species,,matched,Acer saccharum,,
+gbif:3189834,GBIF,3189834,Acer,Acer,genus,,backbone_parent,Acer saccharum,derived_from_match,
+gbif:3189859,GBIF,3189859,Acer saccharum,Acer saccharum Marshall,SPECIES,gbif:3189834,ACCEPTED,Acer saccharum,EXACT,100
+ott:948916,OpenTree,948916,Acer saccharum,Acer saccharum,species,,matched,Acer saccharum,TNRS,1.0
+wfo:wfo-0000335449,WFO,wfo-0000335449,Betula pendula Roth,Betula pendula Roth,species,,matched,Betula pendula,,
+gbif:2875008,GBIF,2875008,Betula,Betula,genus,,backbone_parent,Betula pendula,derived_from_match,
+gbif:5331916,GBIF,5331916,Betula pendula,Betula pendula Roth,SPECIES,gbif:2875008,ACCEPTED,Betula pendula,EXACT,100
+ott:267719,OpenTree,267719,Betula pendula,Betula pendula,species,,matched,Betula pendula,TNRS,1.0
+wfo:wfo-0000192338,WFO,wfo-0000192338,Acacia dealbata Link,Acacia dealbata Link,species,,candidate_unresolved,Acacia dealbata,,
+gbif:2978223,GBIF,2978223,Acacia,Acacia,genus,,backbone_parent,Acacia dealbata,derived_from_match,
+gbif:2979474,GBIF,2979474,Acacia dealbata,Acacia dealbata Link,SPECIES,gbif:2978223,ACCEPTED,Acacia dealbata,EXACT,99
+ott:274405,OpenTree,274405,Acacia dealbata,Acacia dealbata,species,,matched,Acacia dealbata,TNRS,1.0
+wfo:wfo-0000954998,WFO,wfo-0000954998,Eucalyptus globulus Labill.,Eucalyptus globulus Labill.,species,,matched,Eucalyptus globulus,,
+gbif:7493935,GBIF,7493935,Eucalyptus,Eucalyptus,genus,,backbone_parent,Eucalyptus globulus,derived_from_match,
+gbif:3176787,GBIF,3176787,Eucalyptus globulus,Eucalyptus globulus Labill.,SPECIES,gbif:7493935,ACCEPTED,Eucalyptus globulus,EXACT,100
+ott:847929,OpenTree,847929,Eucalyptus globulus,Eucalyptus globulus,species,,matched,Eucalyptus globulus,TNRS,1.0
+wfo:wfo-0000482030,WFO,wfo-0000482030,Picea abies (L.) H.Karst.,Picea abies (L.) H.Karst.,species,,matched,Picea abies,,
+gbif:7606064,GBIF,7606064,Picea,Picea,genus,,backbone_parent,Picea abies,derived_from_match,
+gbif:5284884,GBIF,5284884,Picea abies,Picea abies (L.) H.Karst.,SPECIES,gbif:7606064,ACCEPTED,Picea abies,EXACT,99
+ott:517943,OpenTree,517943,Picea abies,Picea abies,species,,matched,Picea abies,TNRS,1.0
+wfo:wfo-0000481646,WFO,wfo-0000481646,Pinus sylvestris Thunb.,Pinus sylvestris Thunb.,species,,candidate_unresolved,Pinus sylvestris,,
+gbif:2684241,GBIF,2684241,Pinus,Pinus,genus,,backbone_parent,Pinus sylvestris,derived_from_match,
+gbif:5285637,GBIF,5285637,Pinus sylvestris,Pinus sylvestris L.,SPECIES,gbif:2684241,ACCEPTED,Pinus sylvestris,EXACT,99
+ott:568619,OpenTree,568619,Pinus sylvestris,Pinus sylvestris,species,,matched,Pinus sylvestris,TNRS,1.0
+wfo:wfo-0000627675,WFO,wfo-0000627675,Rhopalocarpus alternifolius (Baker) Capuron,Rhopalocarpus alternifolius (Baker) Capuron,species,,matched,Rhopalocarpus alternifolius (Baker) Capuron,,
+gbif:3233919,GBIF,3233919,Rhopalocarpus,Rhopalocarpus,genus,,backbone_parent,Rhopalocarpus alternifolius (Baker) Capuron,derived_from_match,
+gbif:5553786,GBIF,5553786,Rhopalocarpus alternifolius,Rhopalocarpus alternifolius (Baker) Capuron,SPECIES,gbif:3233919,ACCEPTED,Rhopalocarpus alternifolius (Baker) Capuron,EXACT,100
+wfo:wfo-4000033476,WFO,wfo-4000033476,Rosa L.,Rosa L.,,,matched,Rosa,,
+gbif:5015,GBIF,5015,Rosaceae,Rosaceae,family,,backbone_parent,Rosa,derived_from_match,
+ott:259066,OpenTree,259066,Rosa,Rosa,genus,,matched,Rosa,TNRS,1.0

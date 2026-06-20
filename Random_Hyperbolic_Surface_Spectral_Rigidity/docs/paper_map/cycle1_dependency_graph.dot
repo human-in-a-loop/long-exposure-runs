@@ -1,0 +1,73 @@
+digraph cycle1_dependency_graph {
+  graph [rankdir=TB, fontsize=12, labelloc="t", label="Dependency graph for Kim--Tao eigenvalue rigidity and eigenfunction delocalization proofs"];
+  node [shape=box, style="rounded,filled", fillcolor="#f8f8f8", fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  surface_setup [label="§2.1 surface group setup\nGamma, X_{g,n}, rho"];
+  test_function [label="§2.4 test function\nf_{Lambda0}, h=x htilde"];
+  trace_formula [label="Lemma 2.1\nTwisted Selberg trace formula"];
+  pretrace_formula [label="Lemma 2.2\nTwisted pre-trace formula"];
+  lemma23 [label="Lemma 2.3\ntrace uniform bound"];
+  lemma24 [label="Lemma 2.4\npre-trace uniform bound"];
+  prop31 [label="Proposition 3.1\neigenvalue variance"];
+  uniform31 [label="§3.2.1\nuniform bound"];
+  lemma33 [label="Lemma 3.3\ntwo-trace polynomial expansion"];
+  cor34 [label="Corollary 3.4\ngeodesic sum polynomial"];
+  lemma35 [label="Lemma 3.5\nMarkov brothers inequality"];
+  cheb_smooth [label="§3.1 Chebyshev expansion\npolynomial to smooth cutoff"];
+  cutoff31 [label="§3.1 smooth spectral cutoff\nh_{Lambda,epsilon}"];
+  cheb_prob1 [label="§3.1 Chebyshev probability\nand Lambda net"];
+  weyl_inversion [label="§3.1 Weyl inversion\ncounting to rigidity"];
+  theorem1 [label="Theorem 1\nWeyl law and eigenvalue rigidity"];
+
+  prop41 [label="Proposition 4.1\nfourth-moment local estimate"];
+  vnode [label="(4.1)-(4.2)\nV_n and S local statistics"];
+  uniform41 [label="§4.2.1\nuniform fourth-moment bound"];
+  prop42 [label="Proposition 4.2\neight-loop polynomial expansion"];
+  markov41 [label="§4.2.3\nMarkov step for Prop. 4.1"];
+  cutoff41 [label="§4.1 spectral windows\nh_Lambda"];
+  cheb_prob2 [label="§4.1 Chebyshev probability\nall fibers and windows"];
+  sobolev [label="§4.1 Sobolev/elliptic estimate\nlocal L2 to L-infinity"];
+  theorem2 [label="Theorem 2\nL-infinity delocalization"];
+
+  imported_poly [label="Imported polynomial method\n[MPvH25], [MP23]"];
+  imported_markov [label="Imported Markov inequality\n[MPvH25, Lemma 2.1]"];
+  imported_cutoff [label="Imported cutoff/Chebyshev tools\n[HMT25b], [DZ16], [CGVTvH26]"];
+
+  surface_setup -> trace_formula [label="cover representation"];
+  surface_setup -> pretrace_formula [label="cover representation"];
+  test_function -> lemma23 [label="trace-class bound"];
+  test_function -> lemma24 [label="kernel localization"];
+  test_function -> prop31 [label="observable"];
+  test_function -> prop41 [label="observable"];
+  trace_formula -> prop31 [label="geodesic expansion"];
+  trace_formula -> uniform31 [label="spectral-side bound"];
+  lemma23 -> uniform31 [label="Lambda0 bound"];
+  uniform31 -> prop31 [label="baseline bound"];
+  imported_poly -> lemma33 [label="homomorphism-count expansion"];
+  lemma33 -> cor34 [label="trace-product rational polynomial"];
+  cor34 -> prop31 [label="polynomial approximation"];
+  imported_markov -> lemma35 [label="derivative control"];
+  lemma35 -> prop31 [label="q^{2kappa} loss"];
+  prop31 -> cheb_smooth [label="variance bound"];
+  imported_cutoff -> cheb_smooth [label="coefficient/derivative control"];
+  cheb_smooth -> cutoff31 [label="smooth interval approximation"];
+  cutoff31 -> cheb_prob1 [label="second moment"];
+  cheb_prob1 -> theorem1 [label="Weyl law with probability 1-n^{-1/10}"];
+  cheb_prob1 -> weyl_inversion [label="counting error"];
+  weyl_inversion -> theorem1 [label="rigidity"];
+
+  pretrace_formula -> vnode [label="pointwise spectral expansion"];
+  vnode -> prop41 [label="local fourth moment"];
+  lemma24 -> uniform41 [label="pointwise Lambda0 bound"];
+  uniform41 -> prop41 [label="baseline bound"];
+  imported_poly -> prop42 [label="common fixed-point expansion"];
+  prop42 -> prop41 [label="polynomial approximation"];
+  lemma35 -> markov41 [label="q^{4kappa} loss"];
+  markov41 -> prop41 [label="derivative control"];
+  prop41 -> cutoff41 [label="fourth-moment bound"];
+  cutoff41 -> cheb_prob2 [label="window mass"];
+  cheb_prob2 -> sobolev [label="local L2 mass"];
+  sobolev -> theorem2 [label="L-infinity bound"];
+}
+

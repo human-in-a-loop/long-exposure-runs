@@ -1,0 +1,79 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "context": "Land plants",
+    "governing_code": "ICN",
+    "includes_approximate_matches": false,
+    "includes_deprecated_taxa": false,
+    "includes_suppressed_names": false,
+    "matched_names": [
+      "Rosa"
+    ],
+    "results": [
+      {
+        "matches": [
+          {
+            "is_approximate_match": false,
+            "is_synonym": false,
+            "matched_name": "Rosa",
+            "nomenclature_code": "ICN",
+            "score": 1.0,
+            "search_string": "rosa",
+            "taxon": {
+              "flags": [
+                "incertae_sedis"
+              ],
+              "is_suppressed": false,
+              "is_suppressed_from_synth": false,
+              "name": "Rosa",
+              "ott_id": 259066,
+              "rank": "genus",
+              "source": "ott3.7draft3",
+              "synonyms": [
+                "Hulthemia",
+                "Hulthemosa",
+                "\u00d7Hulthemosa"
+              ],
+              "tax_sources": [
+                "ncbi:3764",
+                "worms:425714",
+                "gbif:8395064",
+                "irmng:1333135"
+              ],
+              "unique_name": "Rosa"
+            }
+          }
+        ],
+        "name": "Rosa"
+      }
+    ],
+    "taxonomy": {
+      "author": "open tree of life project",
+      "name": "ott",
+      "source": "ott3.7draft3",
+      "version": "3.7",
+      "weburl": "https://tree.opentreeoflife.org/about/taxonomy-version/ott3.7"
+    },
+    "unambiguous_names": [
+      "Rosa"
+    ],
+    "unmatched_names": []
+  },
+  "request": {
+    "json": {
+      "context_name": "Land plants",
+      "do_approximate_matching": false,
+      "include_suppressed": false,
+      "names": [
+        "Rosa"
+      ]
+    },
+    "method": "POST",
+    "params": {},
+    "url": "https://api.opentreeoflife.org/v3/tnrs/match_names"
+  },
+  "response_sha256": "a9f9de1cc4b6cc8c04ae8b34c68353ac35413b054cadb082de3f9e02410d6dbc",
+  "used_insecure_tls_fallback": false
+}

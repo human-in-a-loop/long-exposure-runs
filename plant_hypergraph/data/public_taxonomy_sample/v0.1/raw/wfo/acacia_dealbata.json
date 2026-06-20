@@ -1,0 +1,66 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Acacia</i> <i>dealbata</i></span> <span class=\"wfo-name-authors\" >Link</span></span>",
+        "full_name_plain": "Acacia dealbata Link",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Fabales/Fabaceae/Caesalpinioideae/Acacia/dealbata",
+        "wfo_id": "wfo-0000192338"
+      },
+      {
+        "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Acacia</i> <i>dealbata</i></span> <span class=\"wfo-name-authors\" >A.Cunn.</span></span>",
+        "full_name_plain": "Acacia dealbata A.Cunn.",
+        "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Fabales/Fabaceae/Caesalpinioideae/Acacia/leucolobia$Acacia/dealbata",
+        "wfo_id": "wfo-0000201296"
+      }
+    ],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Acacia dealbata",
+    "match": null,
+    "narrative": [
+      "The first word is always a name part word: 'Acacia'",
+      "Word is found in index and so is part of name: 'dealbata'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'dealbata'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Acacia dealbata' and found 2 candidates.",
+      "Looking for matching author strings.",
+      "Still no match found.",
+      "But 2 candidates found."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Acacia dealbata",
+      "rank": "species"
+    },
+    "searchString": "Acacia dealbata"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Acacia dealbata"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "f3dcc9141d6f460dcfab26be22cdf876ba126f8c7b0d455e6f83603827bed894",
+  "used_insecure_tls_fallback": true
+}

@@ -1,0 +1,21 @@
+L,category,pair_classes,pre_fold_pair_multiplicity,num_profiles,weight_unweighted_l1,weight_exp_decay_theta_0_5_l1,weight_length_inverse_l1,notes
+1,conflict,0,0,0,0,0,0,classification is assigned before folding; profile count is after folding
+1,diagonal_cyclic,2,8,2,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+1,primitive_non_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+1,rank_two_after_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+2,conflict,26,216,10,216,36.2560113321,74,classification is assigned before folding; profile count is after folding
+2,diagonal_cyclic,2,8,2,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+2,primitive_non_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+2,rank_two_after_diagonal,8,32,4,32,7.59580035764,18,classification is assigned before folding; profile count is after folding
+3,conflict,124,1856,38,1856,156.888274396,338.888888889,classification is assigned before folding; profile count is after folding
+3,diagonal_cyclic,2,8,2,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+3,primitive_non_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+3,rank_two_after_diagonal,18,72,9,72,11.4728214144,26.8888888889,classification is assigned before folding; profile count is after folding
+4,conflict,591,16248,209,16248,580.964126601,1584.05555556,classification is assigned before folding; profile count is after folding
+4,diagonal_cyclic,2,8,2,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+4,primitive_non_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+4,rank_two_after_diagonal,32,128,16,128,14.2124577321,34.7222222222,classification is assigned before folding; profile count is after folding
+5,conflict,2549,138176,1012,138176,1959.97520081,7895.04222222,classification is assigned before folding; profile count is after folding
+5,diagonal_cyclic,2,8,2,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+5,primitive_non_diagonal,2,8,1,8,2.94303552937,8,classification is assigned before folding; profile count is after folding
+5,rank_two_after_diagonal,50,200,25,200,16.0169067036,41.7088888889,classification is assigned before folding; profile count is after folding

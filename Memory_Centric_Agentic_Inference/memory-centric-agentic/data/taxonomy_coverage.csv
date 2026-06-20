@@ -1,0 +1,10 @@
+workload_class,weights,KV cache,prefix cache,retrieved context,tool output,intermediate scratch,branch state,verifier state,trajectory log,durable workspace,semantic cache entry
+single-turn chat,dominant,major,minor,none,none,none,none,none,none,none,none
+multi-turn chat,major,dominant,major,none,none,minor,none,none,major,none,none
+batch summarization,dominant,major,minor,none,none,major,none,none,none,none,none
+RAG,major,major,major,dominant,none,minor,minor,none,minor,none,major
+code-agent loop,major,major,major,minor,dominant,major,major,major,major,dominant,minor
+tool-using research agent,major,major,minor,major,dominant,major,major,minor,dominant,major,major
+verification-heavy agent,major,major,minor,minor,major,minor,dominant,dominant,major,minor,none
+multi-agent branch/merge run,major,major,major,minor,major,minor,dominant,major,dominant,dominant,minor
+offline inference,dominant,major,none,none,none,major,none,none,none,none,none

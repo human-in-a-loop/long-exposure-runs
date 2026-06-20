@@ -1,0 +1,37 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Rosa",
+    "class": "Magnoliopsida",
+    "classKey": 220,
+    "confidence": 95,
+    "family": "Rosaceae",
+    "familyKey": 5015,
+    "genus": "Rosa",
+    "genusKey": 8395064,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "HIGHERRANK",
+    "order": "Rosales",
+    "orderKey": 691,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "GENUS",
+    "scientificName": "Rosa L.",
+    "status": "ACCEPTED",
+    "usageKey": 8395064
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Rosa"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "e4a70e84872d3dd82123c189b816816d45c989ec3ce8eebf57752254b9d85a12",
+  "used_insecure_tls_fallback": false
+}

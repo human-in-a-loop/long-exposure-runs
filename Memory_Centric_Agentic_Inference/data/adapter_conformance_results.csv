@@ -1,0 +1,13 @@
+fixture_case_id,status,profiles_seen,profile_classes_seen,run_alias_resolved,canonical_measurement_run_id,units_normalized,clock_aligned,provenance_checked,security_context_checked,evidence_label,production_calibrated,production_ready,expected_blocked_reason,blocked_reason
+valid-conformance-profile,pass,9,9,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,,
+invalid-unknown-alias,fail,9,9,false,,true,true,true,true,adapter_conformance_fixture,false,false,unknown_alias,unknown_alias
+invalid-run-id-replacement,fail,9,9,false,,true,true,true,true,adapter_conformance_fixture,false,false,run_id_without_canonicalization,run_id_without_canonicalization
+invalid-energy-unit,fail,9,9,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,invalid_unit,invalid_unit
+invalid-latency-unit,fail,9,9,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,invalid_unit,invalid_unit
+invalid-missing-clock,fail,9,9,true,port-run-001,true,false,true,true,adapter_conformance_fixture,false,false,missing_clock_domain,missing_clock_domain
+invalid-interval-mismatch,fail,9,9,true,port-run-001,true,false,true,true,adapter_conformance_fixture,false,false,interval_alignment_failed,interval_alignment_failed
+invalid-stale-provenance,fail,9,9,true,port-run-001,true,true,false,true,adapter_conformance_fixture,false,false,stale_provenance,stale_provenance
+invalid-missing-tenant,fail,9,9,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,missing_tenant_label,missing_tenant_label
+invalid-missing-security-context,fail,9,9,true,port-run-001,true,true,true,false,adapter_conformance_fixture,false,false,missing_security_context,missing_security_context
+invalid-missing-security-stream,fail,8,8,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,missing_security_stream,missing_profile_class:security/provenance/retention/verifier gates
+invalid-production-target-evidence,fail,9,9,true,port-run-001,true,true,true,true,adapter_conformance_fixture,false,false,fixture_attempted_production_target,fixture_attempted_production_target

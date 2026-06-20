@@ -1,0 +1,31 @@
+scenario_id,threshold_name,baseline_value,threshold_value,unit,interpretation
+high_volume_stable_moderation,current_hybrid_margin_vs_best_baseline,0.0,-1471448845.624272,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+high_volume_stable_moderation,software_memory_savings_that_erases_hybrid,0.0,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+high_volume_stable_moderation,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+bursty_consumer_traffic,current_hybrid_margin_vs_best_baseline,0.0,-2485085352.027402,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+bursty_consumer_traffic,software_memory_savings_that_erases_hybrid,0.35,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+bursty_consumer_traffic,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+low_volume_enterprise_deployment,current_hybrid_margin_vs_best_baseline,0.0,-320638.701573,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+low_volume_enterprise_deployment,software_memory_savings_that_erases_hybrid,0.2,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+low_volume_enterprise_deployment,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+high_near_threshold_adversarial,current_hybrid_margin_vs_best_baseline,0.0,-797452597.822575,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+high_near_threshold_adversarial,software_memory_savings_that_erases_hybrid,0.2,0.41,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+high_near_threshold_adversarial,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+frequent_policy_update_regime,current_hybrid_margin_vs_best_baseline,0.0,-325381375.528754,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+frequent_policy_update_regime,software_memory_savings_that_erases_hybrid,0.2,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+frequent_policy_update_regime,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+audit_heavy_regulated_deployment,current_hybrid_margin_vs_best_baseline,0.0,-505622627.467455,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+audit_heavy_regulated_deployment,software_memory_savings_that_erases_hybrid,0.2,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+audit_heavy_regulated_deployment,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+fallback_degraded_outage_regime,current_hybrid_margin_vs_best_baseline,0.0,-1409483322.001479,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+fallback_degraded_outage_regime,software_memory_savings_that_erases_hybrid,0.2,0.58,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+fallback_degraded_outage_regime,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+multi_tenant_underutilized_deployment,current_hybrid_margin_vs_best_baseline,0.0,-250503258.369032,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+multi_tenant_underutilized_deployment,software_memory_savings_that_erases_hybrid,0.35,not_erased_by_sweep,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+multi_tenant_underutilized_deployment,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+zero_invocation_control,current_hybrid_margin_vs_best_baseline,0.0,-42000000001283.336,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+zero_invocation_control,software_memory_savings_that_erases_hybrid,0.2,0.20,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+zero_invocation_control,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength
+fallback_all_control,current_hybrid_margin_vs_best_baseline,0.0,-948037179.803857,pJ_equivalent/day,positive means hybrid is cheaper; negative means the best programmable baseline already wins
+fallback_all_control,software_memory_savings_that_erases_hybrid,0.2,0.20,fraction,lowest tested software memory-savings fraction where optimized software matches or beats current hybrid
+fallback_all_control,accelerator_compute_multiplier_that_erases_hybrid,1.0,already_erased,multiplier,multiplier on accelerator compute energy; already_erased means accelerator wins at baseline strength

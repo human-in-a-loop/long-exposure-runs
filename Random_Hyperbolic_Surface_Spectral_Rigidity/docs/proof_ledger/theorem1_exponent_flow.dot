@@ -1,0 +1,35 @@
+digraph theorem1_exponent_flow {
+  graph [
+    rankdir=TB,
+    labelloc="t",
+    label="Quantitative loss flow from Proposition 3.1 to Theorem 1",
+    fontsize=20
+  ];
+  node [shape=box, style="rounded,filled", fillcolor="#f7f7f7", fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  prop31 [label="Proposition 3.1\nvariance <= C Lambda0^2 q^{2 kappa} n^{-1}"];
+  split33 [label="(3.3) compact-support split\nvariance <= C_K q^{2(kappa+2+K)} n^{-1} Lambda0^{-K}"];
+  cheb35 [label="(3.5) Chebyshev conversion\n<= C_K n^{-1} Lambda0^{-K} ||h~||_{C^{kappa+3+K}}^2"];
+  cutoff37 [label="(3.6)-(3.7) smooth cutoff\n|partial^j h~| <= C_j Lambda^{j(1/2-epsilon)} n^{j alpha0}"];
+  choices [label="Choose K, alpha0\nK=floor((kappa+5)/(2epsilon))+1\nalpha0=1/(3(kappa+3+K))"];
+  variance [label="Fixed-Lambda variance\n<= C Lambda^{-2} n^{-1/3}"];
+  cheb [label="Chebyshev\nthreshold n^{-1/9}\nfailure <= C Lambda^{-2} n^{-1/9}"];
+  fixedweyl [label="(3.10)-(3.11)\nfixed-Lambda Weyl error\nO(n^{1-alpha} Lambda^{1/2+epsilon})"];
+  grid [label="(3.12) grid union\nsum failures <= n^{-1/10}"];
+  allweyl [label="Uniform Weyl law (1.4)\nall Lambda >= 1/4"];
+  inversion [label="Weyl inversion\nedge costs alpha_R <= 2 alpha_W/3"];
+  theorem [label="Theorem 1 rigidity (1.2)\n|lambda_j(X_n)-lambda_j| <= C Lambda^{1/2+epsilon} n^{-alpha_R}"];
+
+  prop31 -> split33 [label="support (3.2), trace identity (3.4)"];
+  split33 -> cheb35 [label="Minkowski + Chebyshev coefficients"];
+  cheb35 -> cutoff37 [label="apply to smooth h"];
+  cutoff37 -> choices [label="m=kappa+3+K derivative order"];
+  choices -> variance [label="n: -1+2m alpha0=-1/3\nLambda: -K+2m(1/2-epsilon)<=-2"];
+  variance -> cheb [label="Chebyshev inequality"];
+  cheb -> fixedweyl [label="event Omega_n(X,Lambda,epsilon)"];
+  fixedweyl -> grid [label="geometric/additive net"];
+  grid -> allweyl [label="monotonicity fills gaps"];
+  allweyl -> inversion [label="counting-to-location"];
+  inversion -> theorem [label="edge Hölder inversion"];
+}

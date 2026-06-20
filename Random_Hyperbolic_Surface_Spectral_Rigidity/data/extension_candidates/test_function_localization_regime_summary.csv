@@ -1,0 +1,19 @@
+regime,support_model,architecture_side,rows,beats_endpoint_rows,blocked_rows,dominant_classification
+bulk,compact_support_R_inverse_width,pretrace_4kappa,15,11,6,blocked by support/interpolation growth
+bulk,compact_support_R_inverse_width,trace_2kappa,15,11,4,requires new test-function construction
+bulk,logarithmic_support,pretrace_4kappa,15,11,0,requires new random-cover variance estimate
+bulk,logarithmic_support,trace_2kappa,15,11,0,requires new random-cover variance estimate
+bulk,polynomial_q_loss_proxy,pretrace_4kappa,15,11,6,blocked by support/interpolation growth
+bulk,polynomial_q_loss_proxy,trace_2kappa,15,11,4,requires new test-function construction
+edge_or_transition,compact_support_R_inverse_width,pretrace_4kappa,29,20,4,requires new test-function construction
+edge_or_transition,compact_support_R_inverse_width,trace_2kappa,29,20,4,requires new test-function construction
+edge_or_transition,logarithmic_support,pretrace_4kappa,29,20,0,requires new random-cover variance estimate
+edge_or_transition,logarithmic_support,trace_2kappa,29,20,0,requires new random-cover variance estimate
+edge_or_transition,polynomial_q_loss_proxy,pretrace_4kappa,29,20,4,requires new test-function construction
+edge_or_transition,polynomial_q_loss_proxy,trace_2kappa,29,20,4,requires new test-function construction
+high_energy,compact_support_R_inverse_width,pretrace_4kappa,11,7,3,requires new test-function construction
+high_energy,compact_support_R_inverse_width,trace_2kappa,11,7,2,requires new test-function construction
+high_energy,logarithmic_support,pretrace_4kappa,11,7,0,requires new random-cover variance estimate
+high_energy,logarithmic_support,trace_2kappa,11,7,0,requires new random-cover variance estimate
+high_energy,polynomial_q_loss_proxy,pretrace_4kappa,11,7,3,requires new test-function construction
+high_energy,polynomial_q_loss_proxy,trace_2kappa,11,7,2,requires new test-function construction

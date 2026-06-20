@@ -1,0 +1,8 @@
+"candidate_or_check","measure","value"
+"product_P14_log_derivative_recurrence","max_abs_residual","0"
+"product_P23_log_derivative_recurrence","max_abs_residual","0"
+"first_nonzero_RR1_true_difference","k","none_through_KMax"
+"first_nonzero_RR2_true_difference","k","none_through_KMax"
+"first_nonzero_NC_residues_13","k","3"
+"first_nonzero_NC_residues_24","k","3"
+"first_nonzero_NC_shifted_exponent","k","1"

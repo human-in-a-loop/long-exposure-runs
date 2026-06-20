@@ -1,0 +1,292 @@
+[
+  {
+    "path": "physicalized-weights/docs/taxonomy_and_null.md",
+    "milestone": "M-TAX-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "",
+    "claim_supported": "Defines physicalization levels, inference-component candidates, strong software/runtime null hypothesis, and falsification criteria.",
+    "artifact_hash": "de468fb925faed43941c23aa4ee2c1d3141bd8d71b78a79f2b7e20a38ce01f21"
+  },
+  {
+    "path": "REFERENCES.md",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "sourced",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "",
+    "claim_supported": "Records the external sources used for RISC-V openness, toolchain context, and analog in-memory-computing background claims.",
+    "artifact_hash": "e2657b761a803e175066d17547f582842f89f97273924fb7f636e2f9796d9004"
+  },
+  {
+    "path": "physicalized-weights/docs/final_synthesis.md",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "speculative",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/docs/taxonomy_and_null.md; REFERENCES.md",
+    "claim_supported": "Keeps analog, photonic, and process-specific hardware-advantage claims explicitly speculative until device-level calibration, drift, conversion, yield, and repair data exist.",
+    "artifact_hash": "53ff4d5e19e5d6f58dece5d4cee0e4ac42b5602ddb880bb09b24f587653ccdfe"
+  },
+  {
+    "path": "physicalized-weights/scripts/breakeven_model.py",
+    "milestone": "M-MODEL-1",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/breakeven_model.py",
+    "dependent_artifacts": "physicalized-weights/docs/taxonomy_and_null.md",
+    "claim_supported": "Implements the normalized break-even comparison across programmable, optimized software, accelerator, fixed, analog, and hybrid strategies.",
+    "artifact_hash": "b4408d4d53c512ad64839c3bdec23a7119dd86bb44e5ac3b05188247688b6db2"
+  },
+  {
+    "path": "physicalized-weights/data/breakeven_summary.json",
+    "milestone": "M-MODEL-1/M-BASE-1",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/breakeven_model.py",
+    "dependent_artifacts": "physicalized-weights/scripts/breakeven_model.py; physicalized-weights/data/breakeven_grid.csv",
+    "claim_supported": "Software-optimized and programmable-accelerator baselines dominate many sampled regions; fixed digital wins only under favorable volume/update assumptions.",
+    "artifact_hash": "a32d851d578f3d501597673b858535b305cb4cd99dcadc71f97cbdc19c1a2932"
+  },
+  {
+    "path": "physicalized-weights/data/breakeven_update_volume.png",
+    "milestone": "M-MODEL-1",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/breakeven_model.py",
+    "dependent_artifacts": "physicalized-weights/data/breakeven_grid.csv",
+    "claim_supported": "Visualizes break-even sensitivity to request volume and update cadence.",
+    "artifact_hash": "cda59537cf854f16ba0b6dfa3f3855a05928a9f22a250a34b3dcd3f01fa64968"
+  },
+  {
+    "path": "physicalized-weights/scripts/symbolic_breakeven.wls",
+    "milestone": "M-MODEL-1",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "wolfram-batch -script physicalized-weights/scripts/symbolic_breakeven.wls",
+    "dependent_artifacts": "physicalized-weights/docs/taxonomy_and_null.md",
+    "claim_supported": "Symbolically checks the break-even inequality, zero-volume failure, update-cadence divergence, and software-savings threshold shift.",
+    "artifact_hash": "5ccddf0977c2eba658e2c2ed7f55baa228846b40c72581e5d1819441733ad3c7"
+  },
+  {
+    "path": "physicalized-weights/docs/target_ranking.md",
+    "milestone": "M-TARGET-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/data/target_scores_summary.json; physicalized-weights/data/breakeven_summary.json",
+    "claim_supported": "Ranks safety/filter classifier as the narrow next target and rejects full frontier dense weights as an anti-target.",
+    "artifact_hash": "cd8f4d42ae5ed92bd0160887267e60728dbaa8b910a8f3fe4560f8563c2fed69"
+  },
+  {
+    "path": "physicalized-weights/data/target_scores_summary.json",
+    "milestone": "M-TARGET-1",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/target_scoring.py",
+    "dependent_artifacts": "physicalized-weights/data/breakeven_summary.json; physicalized-weights/data/breakeven_grid.csv",
+    "claim_supported": "Scores 10 candidate components and 5 anti-targets while preserving software/runtime baseline pressure.",
+    "artifact_hash": "f25a6dbeacb06419b03236e6592ea9c2a35c4b5a91546ac7c75dc06bec3776cd"
+  },
+  {
+    "path": "physicalized-weights/docs/hybrid_safety_filter_architecture.md",
+    "milestone": "M-ARCH-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/docs/target_ranking.md; physicalized-weights/data/hybrid_arch_summary.json",
+    "claim_supported": "Specifies a bounded host/RISC-V-compatible safety-filter architecture with version, health, drift, audit, fallback, and rollback controls.",
+    "artifact_hash": "19b6258d0c2e7194f81e3435f691b47ad673d1e39a6878fe94bc02b3d1e362cf"
+  },
+  {
+    "path": "physicalized-weights/docs/hybrid_safety_filter_arch.png",
+    "milestone": "M-ARCH-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "dot -Tpng physicalized-weights/docs/hybrid_safety_filter_arch.dot -o physicalized-weights/docs/hybrid_safety_filter_arch.png",
+    "dependent_artifacts": "physicalized-weights/docs/hybrid_safety_filter_arch.dot",
+    "claim_supported": "Shows the architecture boundary between host runtime, fixed classifier, fallback, audit, updates, and fail-safe state.",
+    "artifact_hash": "e33d3f34d5702211dce19d0fdf355fe4bef10ed331b76037e8c8363615825a60"
+  },
+  {
+    "path": "physicalized-weights/data/hybrid_arch_summary.json",
+    "milestone": "M-ARCH-1",
+    "evidence_type": "simulated",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/fallback_policy_sim.py",
+    "dependent_artifacts": "physicalized-weights/scripts/fallback_policy_sim.py",
+    "claim_supported": "Simulates fallback policy cases so stale, low-confidence, unhealthy, drifted, or unaudited outputs do not silently use the fast path.",
+    "artifact_hash": "ab48ac7870f20b3cd1600a223764f22531e8fc44cfe2e0e477370c0f9579228f"
+  },
+  {
+    "path": "physicalized-weights/docs/prototype_safety_filter.md",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "simulated",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/data/prototype_summary.json; physicalized-weights/data/hdl_sim_results.csv",
+    "claim_supported": "Documents the tiny fixed classifier prototype, baseline comparison, and route behavior.",
+    "artifact_hash": "a7ad396d056047a1718d385f03a5c07356370d42d5e2f277e5a94828843e42a2"
+  },
+  {
+    "path": "physicalized-weights/data/prototype_summary.json",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "simulated",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/prototype_safety_filter.py",
+    "dependent_artifacts": "physicalized-weights/scripts/prototype_safety_filter.py",
+    "claim_supported": "Records 16 prototype cases: 6 fast path, 8 fallback, 2 fail-safe, with normalized baseline costs.",
+    "artifact_hash": "b212f1cf275e4c6c7bb42de4c71e0b0a108e8d684a033f9dd38e2c4c68386621"
+  },
+  {
+    "path": "physicalized-weights/hdl/safety_filter_core.sv",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "synthesized",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/scripts/prototype_safety_filter.py",
+    "claim_supported": "Implements only fixed signed int8 dot product, threshold compare, margin, and confidence in HDL.",
+    "artifact_hash": "0e8c8bf40b62aa9a97a203a7bdc879aa788c91b6a2ecd34522cf2ae1f03d1017"
+  },
+  {
+    "path": "physicalized-weights/data/hdl_sim_results.csv",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "synthesized",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/hdl/run_yosys_eval.py",
+    "dependent_artifacts": "physicalized-weights/hdl/safety_filter_core.sv; physicalized-weights/data/prototype_vectors.csv",
+    "claim_supported": "Yosys eval matches Python golden outputs for all HDL vector cases.",
+    "artifact_hash": "0246f1f8e588f5da280310464c6cc4f75704a940e1ca609f1c99628f1ff2a3c3"
+  },
+  {
+    "path": "physicalized-weights/data/yosys_safety_filter.log",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "synthesized",
+    "validation_status": "validated",
+    "generating_command": "yosys -s physicalized-weights/hdl/safety_filter_core.ys > physicalized-weights/data/yosys_safety_filter.log 2>&1",
+    "dependent_artifacts": "physicalized-weights/hdl/safety_filter_core.sv; physicalized-weights/hdl/safety_filter_core.ys",
+    "claim_supported": "Yosys check/synthesis reports no structural problems, no memories, and no processes for the pure combinational core.",
+    "artifact_hash": "cbf07508d283d6aa8991de718a479d10289eceab2699225a921efe51dcd63f14"
+  },
+  {
+    "path": "physicalized-weights/data/prototype_verification_closure.json",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "synthesized",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/verify_prototype_closure.py",
+    "dependent_artifacts": "physicalized-weights/data/hdl_sim_results.csv; physicalized-weights/data/yosys_safety_filter.log; physicalized-weights/data/verilator_safety_filter.log",
+    "claim_supported": "Hash-ties the amended Verilator/Yosys/Python/synthesis closure and records compiled Verilator as blocked by missing build tools.",
+    "artifact_hash": "2eeed47545b50c113dc207f76350af3266eb61f1081a1ae87f04578655a76413"
+  },
+  {
+    "path": "physicalized-weights/docs/prototype_verification_closure.md",
+    "milestone": "M-PROTO-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/data/prototype_verification_closure.json",
+    "claim_supported": "Defines the narrow amended evidence contract and reopen criteria for M-PROTO-1.",
+    "artifact_hash": "718b13a04425dc1a243af55dd4171a578aea9c749d198b8d06445c84266a17d0"
+  },
+  {
+    "path": "physicalized-weights/docs/final_synthesis.md",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/data/evidence_manifest.json; physicalized-weights/data/final_synthesis_summary.json",
+    "claim_supported": "Integrates validated artifacts into the final evidence-labeled answer to the directive.",
+    "artifact_hash": "53ff4d5e19e5d6f58dece5d4cee0e4ac42b5602ddb880bb09b24f587653ccdfe"
+  },
+  {
+    "path": "physicalized-weights/scripts/build_final_synthesis.py",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/docs/final_synthesis.md; physicalized-weights/docs/reproducibility.md",
+    "claim_supported": "Builds the final evidence manifest, summary JSON, and evidence map from workspace artifacts.",
+    "artifact_hash": "5d6b0c33cbca676a9263b38db732eafc3bc34476d974fda547391c1e3b241d81"
+  },
+  {
+    "path": "physicalized-weights/data/final_synthesis_summary.json",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_final_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/breakeven_summary.json; physicalized-weights/data/target_scores_summary.json; physicalized-weights/data/prototype_summary.json; physicalized-weights/data/prototype_verification_closure.json",
+    "claim_supported": "Summarizes the final conclusion, validated milestones, evidence type counts, break-even outputs, target recommendation, prototype routes, and closure status.",
+    "artifact_hash": "85eaab24352058cdf46f6dabcfadba9ebbb7ef50b048abfe1e061289ef73b665"
+  },
+  {
+    "path": "physicalized-weights/docs/reproducibility.md",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "",
+    "dependent_artifacts": "physicalized-weights/scripts/build_final_synthesis.py",
+    "claim_supported": "Gives compact commands for regenerating the first-arc artifacts with current local tool limitations noted.",
+    "artifact_hash": "0e0c5fadb159248ace2024571848edcb8d3f38c0bcb9fd6652e4cf1927e82d9a"
+  },
+  {
+    "path": "physicalized-weights/tests/test_final_synthesis.py",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "simulated",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/tests/test_final_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/docs/final_synthesis.md; physicalized-weights/data/evidence_manifest.csv; physicalized-weights/data/final_synthesis_summary.json",
+    "claim_supported": "Checks milestone coverage, manifest coverage, path existence, current hashes, evidence labels, falsification criteria, reopen rules, and no broad fixed-frontier overclaim.",
+    "artifact_hash": "8834ae5cf66d072757d74bdeed17c53f5c9346b961f43b5c61aa30a287e89e83"
+  },
+  {
+    "path": "physicalized-weights/data/final_evidence_map.png",
+    "milestone": "M-FINAL-1",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_final_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/evidence_manifest.json",
+    "claim_supported": "Evidence map linking validated milestones, generated artifacts, and final claims by evidence type.",
+    "artifact_hash": "35ad954d57078668df83f525338a12f8fcdfdcc4da6bfc8565560d8ef88f1e2a"
+  },
+  {
+    "path": "physicalized-weights/docs/phase2_synthesis_downgrade.md",
+    "milestone": "M-SYNTH-2",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/phase2_claim_matrix.csv; physicalized-weights/data/phase2_synthesis_summary.json",
+    "claim_supported": "Downgrades the safety/filter performance/economic claim after calibrated workload and stronger-baseline replay while preserving the architecture/failure-mode value.",
+    "artifact_hash": "58841894327d6b459492ef2cce2b8dcdec1c867b3d469828460b2eaa8f83659a"
+  },
+  {
+    "path": "physicalized-weights/data/phase2_claim_matrix.csv",
+    "milestone": "M-SYNTH-2",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/calibrated_breakeven_summary.json; physicalized-weights/data/workload_summary.json; physicalized-weights/data/stronger_baseline_summary.json",
+    "claim_supported": "Machine-checkable classification of major Phase 1 claims as preserved, weakened, falsified, superseded, or open after Phase 2 evidence.",
+    "artifact_hash": "c5073358e9522972bfce6c18a0d7aeb95f338c249fc17c43f1ea1c956b31a603"
+  },
+  {
+    "path": "physicalized-weights/data/phase2_synthesis_summary.json",
+    "milestone": "M-SYNTH-2",
+    "evidence_type": "modeled",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/phase2_claim_matrix.csv; physicalized-weights/data/stronger_baseline_summary.json",
+    "claim_supported": "Records zero hybrid workload wins, programmable-accelerator dominance, and the reopening standard for the safety/filter performance claim.",
+    "artifact_hash": "eeadcb2bdd6ff1b95a3444fa243f50b00acf4fbdcabb9df6236121891b44aa50"
+  },
+  {
+    "path": "physicalized-weights/data/phase2_evidence_map.png",
+    "milestone": "M-SYNTH-2",
+    "evidence_type": "inferred",
+    "validation_status": "validated",
+    "generating_command": "python3 physicalized-weights/scripts/build_phase2_synthesis.py",
+    "dependent_artifacts": "physicalized-weights/data/phase2_claim_matrix.csv",
+    "claim_supported": "Visualizes Phase 1 and Phase 2 claim statuses after calibrated workload and stronger-baseline replay.",
+    "artifact_hash": "fb97b283a3a482eaa54836949943b62541bf9a456c75a10bc2e272b005286d77"
+  }
+]

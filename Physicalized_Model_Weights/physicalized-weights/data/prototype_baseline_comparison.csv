@@ -1,0 +1,5 @@
+baseline,case_count,fast_path_cases,fallback_cases,fail_safe_cases,modeled_cost_units,notes
+software_optimized,16,0,16,0,400.0,feature extraction and audit retained; optimized int8 software classifier every case
+programmable_accelerator,16,0,16,0,368.0,feature extraction and audit retained; programmable accelerator dispatch every case
+hybrid_physicalized,16,6,8,2,162.0,"includes feature extraction, register/control, audit, fixed dot, fallback dispatch, and fail-safe handling"
+hybrid_request_volume_zero,0,0,0,0,0,no amortization claim when request volume is zero

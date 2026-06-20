@@ -1,0 +1,12 @@
+{
+  "evidence_boundary": "chromosome_count_assertion and ploidy_state_assertion are structural context, not observed reticulation evidence",
+  "n_data_limited_unknown_taxa": 30704,
+  "n_evidence_supported_taxa": 2,
+  "n_hotspot_genera": 14292,
+  "n_hotspot_genera_sufficient": 0,
+  "n_scored_taxa": 60000,
+  "n_structural_only_taxa": 29294,
+  "tci_max": 1.0,
+  "tci_mean": 0.9868581771333333,
+  "tci_min": 0.5
+}

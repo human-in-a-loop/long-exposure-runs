@@ -1,0 +1,5 @@
+format	advertised_support	runtime_dependency	dependency_available	recommended_barrier1_policy	risk_if_unresolved
+csv	yes	Python stdlib csv	yes	Allow direct intake for approved local files with required provenance.	Low; delimiter and quoting issues remain normal preview-validation concerns.
+tsv	yes	Python stdlib csv	yes	Allow direct intake for approved local files with required provenance.	Low; delimiter and quoting issues remain normal preview-validation concerns.
+json	yes	Python stdlib json	yes	Allow direct intake for approved curated event files with required provenance.	Medium; schema shape must be preview-validated because JSON records can vary.
+xlsx	conditional	pandas plus openpyxl	no	Require CSV/TSV conversion before ingestion unless openpyxl is installed and verified.	High; advertising XLSX without openpyxl would create a late Barrier 1 intake failure.

@@ -1,0 +1,45 @@
+{
+  "anti_target_plausible_win_count": 0,
+  "blocker_counts": {
+    "all_fallback": 1,
+    "anti_target_mechanism": 6,
+    "assumption_sensitive": 4,
+    "counterfactual_label_required": 8,
+    "fixed_update_integration_cost": 4,
+    "high_update_cadence": 3,
+    "software_savings_compress_margin": 1,
+    "zero_volume": 1
+  },
+  "calibrated_physicalized_win_count": 0,
+  "case_count": 28,
+  "current_artifacts_reopen": false,
+  "current_superiority_claim_count": 0,
+  "extreme_counterfactual_win_count": 8,
+  "favorable_plausible_physicalized_win_count": 4,
+  "figure_caption": "Target-class robustness frontier showing the required physicalized per-request advantage or utilization/update-cadence shift needed to beat the best programmable baseline.",
+  "frontier_fields": [
+    "minimum_physicalized_savings_to_tie",
+    "maximum_allowable_update_frequency_per_day",
+    "minimum_utilization_needed"
+  ],
+  "interpretation": "The Phase 2 downgrade generalizes across target classes under calibrated assumptions; favorable-plausible wins require simultaneous movement in volume, utilization, update cadence, overhead, and per-request savings, while extreme wins are counterfactual non-evidence.",
+  "label_counts": {
+    "all_fallback_blocked": 1,
+    "best_programmable_baseline": 11,
+    "counterfactual_not_current_evidence": 8,
+    "high_update_blocked": 3,
+    "physicalized_plausible_win": 4,
+    "zero_volume_blocked": 1
+  },
+  "milestone_id": "M-ROBUST-1",
+  "regime_counts": {
+    "calibrated": 8,
+    "extreme_counterfactual": 8,
+    "favorable_plausible": 8,
+    "special_control": 4
+  },
+  "schema_version": 1,
+  "status": "validated",
+  "status_mismatches": [],
+  "target_count": 8
+}

@@ -1,0 +1,21 @@
+criterion_id,description,gate_dependency,required_for_reopen,fatal_if_missing,repair_stage,evidence_pack_field,design_field,expected_value,downstream_gate_failure
+C01,Trace schema version is fixed before collection,M-TRACE-1,true,true,pre_collection,trace_schema_version,trace_schema_version_planned,1,schema_compatible
+C02,Privacy redaction excludes raw prompt/content/user identifiers before collection,M-TRACE-1,true,true,pre_collection,privacy_attestation,privacy_redaction,true,privacy_attestation
+C03,No raw content or disallowed privacy columns are collected,M-TRACE-1,true,true,pre_collection,privacy_attestation,raw_content_columns,false,privacy_attestation
+C04,Evidence-pack manifest generation is planned,M-EVIDENCEPACK-1,true,true,pre_collection,schema_version,manifest_generation,true,valid_package
+C05,Trace file hashing is planned for package replay,M-EVIDENCEPACK-1,true,true,pre_collection,trace_sha256,file_hashing,true,hash_match
+C06,Provenance attestation can be produced by the acquisition system,M-EVIDENCEPACK-1,true,true,pre_collection,provenance_attestation,provenance_attestation,true,provenance_attestation
+C07,Privacy attestation can be produced by the acquisition system,M-EVIDENCEPACK-1,true,true,pre_collection,privacy_attestation,privacy_attestation,true,privacy_attestation
+C08,Known reopen-threshold scenario mapping is selected before launch,M-REOPEN-1,true,true,pre_collection,threshold_scenario_id,threshold_scenario_mapping,true,known_threshold_scenario
+C09,Hybrid path is instrumented on the same workload,M-PIPELINE-1,true,true,pre_collection,trace_file,hybrid_counterfactual,true,valid_trace
+C10,Programmable accelerator counterfactual is instrumented on the same workload,M-PIPELINE-1,true,true,pre_collection,trace_file,programmable_accelerator_counterfactual,true,admissible_ingestion_path
+C11,Hybrid and accelerator energy are measured rather than proxied,M-MEASURE-1,true,false,pre_collection,measurement_status,measured_energy_plan,true,measured_terms
+C12,Hybrid and baseline latency are measured per request,M-MEASURE-1,true,false,pre_collection,trace_file,measured_latency_plan,true,measured_terms
+C13,Utilization is measured for the same policy window,M-MEASURE-1,true,false,pre_collection,trace_file,utilization_measurement,true,measured_terms
+C14,Fallback audit and update accounting are captured,M-TRACE-1,true,true,pre_collection,trace_file,fallback_audit_update_accounting,true,valid_trace
+C15,Health and drift gates are captured for accepted fast-path credit,M-TRACE-1,true,true,pre_collection,trace_file,health_drift_gates,true,valid_trace
+C16,Policy version window consistency is enforced,M-TRACE-1,true,true,pre_collection,trace_file,policy_window_consistency,true,valid_trace
+C17,Collection source is production shadow production or canary production,M-INGEST-1,true,true,pre_collection,evidence_source_type,production_or_shadow_or_canary_source,true,production_or_shadow_or_canary_source
+C18,Design is not synthetic scaled replay posing as evidence,M-INGEST-1,true,true,design_selection,evidence_source_type,scaled_synthetic_only,false,production_or_shadow_or_canary_source
+C19,Design is not vendor benchmark or local proxy only,M-INGEST-1,true,true,design_selection,measurement_status,vendor_or_proxy_only,false,admissible_ingestion_path
+C20,Design is not single-path fast-path-only logging,M-INGEST-1,true,true,design_selection,ingestion_path_id,single_path_only,false,admissible_ingestion_path

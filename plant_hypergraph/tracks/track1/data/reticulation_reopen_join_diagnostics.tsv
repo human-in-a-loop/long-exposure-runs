@@ -1,0 +1,4 @@
+source_name	candidate_rows	accepted_key_rows	event_shaped_rows	exact_name_joins	synonym_rescue_joins	rejected_rows	dominant_rejection_reason
+Barrier 4 frozen accepted-subset baseline	28	3	0	3	0	25	frozen_subset_pending_crosswalk; accepted rows were chromosome/ploidy context only
+CCDB chromosome-count seed rows	5	5	0	4	1	0	chromosome-count-only context; no event-shaped rows
+Wood et al. 2009 polyploid speciation synthesis	13	9	6	6	3	4	missing accepted WFO key for inspected event-shaped rows

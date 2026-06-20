@@ -1,0 +1,7 @@
+workload_class,option_before,option_after_security,changed_by_security,raw_reuse_credit,safe_reuse_credit,safe_reuse_loss,safe_hit_rate,denied_reuse_count,downgraded_reuse_count,validation_overhead_total,normalized_overhead_per_raw_hit,decision_basis,evidence_label
+RAG,B_memory_object_aware_runtime,B_memory_object_aware_runtime,false,86.384445,52.678645,33.7058,0.740741,6,0,3.8862,0.143933,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement
+batch summarization/offline inference control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0.0,0.0,0.0,0,0,0.0,0.0,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement
+code-agent loop,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,321.437333,92.208911,229.228422,0.53125,18,11,14.1074,0.220428,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement
+multi-agent branch/merge,C_trajectory_dag_memory_fabric,C_trajectory_dag_memory_fabric,false,587.821112,105.231622,482.58949,0.40404,35,23,23.346,0.235818,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement
+single-turn chat control,A_conventional_request_model_kv_serving,A_conventional_request_model_kv_serving,false,0.0,0.0,0.0,0.0,0,0,0.0,0.0,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement
+verification-heavy,C_trajectory_dag_memory_fabric,A_conventional_request_model_kv_serving,true,294.92489,57.503358,237.421532,0.483333,16,14,13.0794,0.21799,recomputed_from_safe_credit_and_gate_overhead,synthetic_enforcement

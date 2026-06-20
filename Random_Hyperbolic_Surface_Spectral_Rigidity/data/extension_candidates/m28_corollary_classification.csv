@@ -1,0 +1,7 @@
+item,classification,evidence,decision
+theorem2_sup_norm_input,direct_theorem2_corollary,Theorem 2 and Remark 1.1 provide the two amplitude envelopes.,
+lp_interpolation,standard_interpolation,generated 648 Lp grid rows with exact p=2 and p=infinity endpoints,
+small_set_mass,nontrivial_mass_delocalization,18 grid rows have M^2 vol(A)<1,
+high_energy_limitations,bookkeeping_only,48 rows have nonpositive effective-support exponent due to Lambda growth,
+qe_or_equidistribution,unsupported_stronger_claim,"Sup-norm control alone gives upper mass bounds on sets, not lower mass in specified regions.",
+branch_decision,nontrivial_mass_delocalization,Fixed-energy Theorem 2 excludes unit-mass concentration below polynomial volume n^(2 alpha).,advance_theorem2_consequence_branch

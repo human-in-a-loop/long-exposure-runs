@@ -1,0 +1,14 @@
+source_artifact_or_statement,candidate_id,dependency_role
+Theorem 1 rigidity,multiplicity_cluster,primary attachment
+M2 rigidity proof reconstruction,multiplicity_cluster,loss and exponent ledger
+M16 local-window corollaries,multiplicity_cluster,scale limitation warning
+Theorem 2 delocalization,eigenfunction_lp_mass,primary attachment
+Proposition 4.1 pre-trace variance,eigenfunction_lp_mass,proof-input provenance
+Theorem 1 rigidity,fixed_window_statistics,counting attachment
+Proposition 3.1 trace variance,fixed_window_statistics,variance attachment
+M3 Schreier benchmarks,schreier_graph_theoremization,toy data attachment
+M4 labelled-embedding certification,schreier_graph_theoremization,exact finite identity
+M7 product-ratio bounds,schreier_graph_theoremization,toy theorem input
+M15 Kim--Tao bridge requirement,adjacent_model_transfer,transfer obstruction
+M25 local-window decision,adjacent_model_transfer,negative route reusable
+M21-M25 local-window package,m25_dependent_local_window,open theorem dependency

@@ -1,0 +1,127 @@
+digraph HybridSafetyFilterArchitecture {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    labelloc="t",
+    label="Hybrid safety-filter architecture with fixed/semi-fixed classifier fast path, programmable fallback, update/version control, and audit telemetry",
+    fontsize=18,
+    fontname="Helvetica"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    color="#2f3b52",
+    fillcolor="#f7f9fc",
+    fontname="Helvetica",
+    fontsize=11
+  ];
+
+  edge [
+    color="#44546a",
+    fontname="Helvetica",
+    fontsize=10
+  ];
+
+  HostRuntime [
+    label="Host runtime\nfeature extraction\npolicy selection\nfinal routing",
+    fillcolor="#e8f1fb"
+  ];
+
+  ControlPlane [
+    label="RISC-V-compatible control plane\nMMIO registers\nversion + threshold checks\nhealth/drift monitor",
+    fillcolor="#edf7ed"
+  ];
+
+  FixedClassifier [
+    label="Fixed / semi-fixed safety classifier\nbounded feature vector\nconfidence + decision",
+    fillcolor="#fff4df"
+  ];
+
+  ProgrammableFallback [
+    label="Programmable fallback\nsoftware classifier\nor GPU/NPU/vector path",
+    fillcolor="#f3eafc"
+  ];
+
+  MainModel [
+    label="Main model serving stack\nallowed / blocked / escalated requests",
+    fillcolor="#eef4ff"
+  ];
+
+  PolicyStore [
+    label="Policy + update store\nsigned images\nthresholds\nrollback slots",
+    fillcolor="#fff0f0"
+  ];
+
+  AuditLog [
+    label="Telemetry / audit log\nrequest id\nversions\nroute\nconfidence\nreason",
+    fillcolor="#f0f7f7"
+  ];
+
+  FailSafe [
+    label="Fail-safe state\nfail_closed_block\nor monitor-mode escalate",
+    fillcolor="#ffe8e8",
+    color="#9d2b2b"
+  ];
+
+  HostRuntime -> ControlPlane [
+    label="MMIO command:\nrequest id, feature addr,\nrequired policy, threshold"
+  ];
+
+  ControlPlane -> FixedClassifier [
+    label="valid slot + start"
+  ];
+
+  FixedClassifier -> ControlPlane [
+    label="decision, confidence,\nactive version"
+  ];
+
+  ControlPlane -> HostRuntime [
+    label="accepted fast-path result\nonly if healthy/current/confident"
+  ];
+
+  ControlPlane -> ProgrammableFallback [
+    label="fallback on low confidence,\nstale version, health fail,\ndrift, audit failure",
+    color="#a15c00"
+  ];
+
+  ProgrammableFallback -> HostRuntime [
+    label="fallback decision"
+  ];
+
+  HostRuntime -> MainModel [
+    label="allow / block / escalate"
+  ];
+
+  PolicyStore -> ControlPlane [
+    label="signed updates,\nactive version,\nrollback slot"
+  ];
+
+  ControlPlane -> PolicyStore [
+    label="activation status,\nquarantine request"
+  ];
+
+  ControlPlane -> AuditLog [
+    label="fast-path and rejection records"
+  ];
+
+  ProgrammableFallback -> AuditLog [
+    label="fallback records"
+  ];
+
+  HostRuntime -> AuditLog [
+    label="final action + replay metadata"
+  ];
+
+  ControlPlane -> FailSafe [
+    label="invalid classifier\nand fallback unavailable",
+    color="#9d2b2b",
+    penwidth=2
+  ];
+
+  FailSafe -> AuditLog [
+    label="fail-safe record"
+  ];
+
+  { rank=same; PolicyStore; AuditLog; }
+}

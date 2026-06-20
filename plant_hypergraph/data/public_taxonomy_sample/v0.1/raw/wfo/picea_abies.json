@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Picea abies",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Picea</i> <i>abies</i></span> <span class=\"wfo-name-authors\" >(L.) H.Karst.</span></span>",
+      "full_name_plain": "Picea abies (L.) H.Karst.",
+      "placement": "Code/Plantae/Pteridobiotina/Pinophyta/Pinopsida/Pinidae/Pinales/Pinaceae/Picea/abies",
+      "wfo_id": "wfo-0000482030"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Picea'",
+      "Word is found in index and so is part of name: 'abies'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'abies'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Picea abies' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000482030) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Picea abies",
+      "rank": "species"
+    },
+    "searchString": "Picea abies"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Picea abies"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "f9a6978377951befae1e217076cc896ed8ff6c91b856ccb408fa8651a1fbdc58",
+  "used_insecure_tls_fallback": true
+}

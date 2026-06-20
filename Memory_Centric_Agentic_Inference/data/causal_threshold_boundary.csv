@@ -1,0 +1,17 @@
+case_id,statistical_threshold_status,robust_statistical_effect,causal_status,blocked_reason,robust_but_confounded,causal_threshold_replay_allowed,robust_effect_is_sufficient,confounded_can_update_readiness
+valid-causally-admissible-fixture,robust_pass,true,causally_admissible,,false,true,false,false
+valid-causally-admissible-robust-fail-fixture,robust_fail,false,causally_admissible,,false,true,false,false
+invalid-missing-option-a-control,robust_pass,true,causally_unidentified,missing_option_a_control,true,false,false,false
+invalid-workload-mix-mismatch,robust_pass,true,causally_confounded,workload_mix_mismatch,true,false,false,false
+invalid-model-version-mismatch,robust_pass,true,causally_confounded,model_version_mismatch,true,false,false,false
+invalid-topology-mismatch,robust_pass,true,causally_confounded,topology_mismatch,true,false,false,false
+invalid-tenant-concurrency-imbalance,robust_pass,true,causally_confounded,tenant_concurrency_imbalance,true,false,false,false
+invalid-object-size-distribution-shift,robust_pass,true,causally_confounded,object_size_distribution_shift,true,false,false,false
+invalid-cache-warmness-imbalance,robust_pass,true,causally_confounded,cache_warmness_imbalance,true,false,false,false
+invalid-security-deny-rate-shift,robust_pass,true,causally_confounded,security_deny_rate_shift,true,false,false,false
+invalid-time-window-drift,robust_pass,true,causally_confounded,time_window_drift,true,false,false,false
+invalid-post-treatment-covariate-leakage,robust_pass,true,causally_unidentified,post_treatment_covariate_leakage,true,false,false,false
+invalid-insufficient-overlap-positivity,robust_pass,true,causally_unidentified,insufficient_overlap_positivity,true,false,false,false
+invalid-missing-covariate-contract,robust_pass,true,causally_unidentified,missing_pre_treatment_covariate_contract,true,false,false,false
+invalid-scheduler-load-imbalance,robust_pass,true,causally_confounded,scheduler_load_imbalance,true,false,false,false
+invalid-fixture-attempted-production-calibration,robust_pass,true,causally_unidentified,fixture_attempted_production_calibration,true,false,false,false

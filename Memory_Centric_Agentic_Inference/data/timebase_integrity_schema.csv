@@ -1,0 +1,37 @@
+field_name,required,type,gate
+source_fixture_id,true,string,joins timing record to production telemetry threshold replay row
+measurement_run_id,true,string,run identity shared by all collector streams
+bundle_id,true,string,"bundle identity shared with intake, attestation, and gatechain"
+collector_id,true,string,collector identity enrolled before gatechain replay
+schema_version,true,string,production telemetry schema version
+evidence_label,true,string,fixture labels remain non-production evidence
+clock_domain_id,true,string,clock domain for all joined sources
+clock_sync_source,true,string,NTP/PTP/monotonic source or operator-approved equivalent
+clock_sync_status,true,string,declares whether the source was synchronized
+interval_id,true,string,stable interval join key
+interval_start_ms,true,number,canonical interval start
+interval_end_ms,true,number,canonical interval end
+byte_interval_start_ms,true,number,tier-byte counter interval start
+byte_interval_end_ms,true,number,tier-byte counter interval end
+power_interval_start_ms,true,number,power counter interval start
+power_interval_end_ms,true,number,power counter interval end
+latency_interval_start_ms,true,number,CXL/pooled-memory latency interval start
+latency_interval_end_ms,true,number,CXL/pooled-memory latency interval end
+queue_interval_start_ms,true,number,queue-depth interval start
+queue_interval_end_ms,true,number,queue-depth interval end
+security_interval_start_ms,true,number,security-gate timing interval start
+security_interval_end_ms,true,number,security-gate timing interval end
+sampling_period_ms,true,number,collector sampling period
+sampling_jitter_ms,true,number,observed sampling jitter
+max_cross_source_skew_ms,true,number,maximum offset across joined collector sources
+skew_tolerance_ms,true,number,maximum accepted skew before replay becomes non-identifiable
+jitter_tolerance_ms,true,number,maximum accepted jitter before replay becomes non-identifiable
+workload_label_sampled_at_ms,true,number,time at which workload/object labels were sampled
+workload_label_max_age_ms,true,number,maximum accepted label staleness
+collector_overhead_pct,true,number,estimated collector-induced perturbation
+observer_perturbation_budget_pct,true,number,maximum accepted observer overhead; equality blocks
+counter_sequence_start,true,number,monotonic counter sequence at interval start
+counter_sequence_end,true,number,monotonic counter sequence at interval end
+counter_reset_observed,true,boolean,must be false within replay interval
+clock_drift_ppm,true,number,observed clock drift across the bundle
+clock_drift_tolerance_ppm,true,number,maximum accepted drift

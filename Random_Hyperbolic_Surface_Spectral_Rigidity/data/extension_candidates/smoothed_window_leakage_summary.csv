@@ -1,0 +1,19 @@
+regime,support_model,kernel,rows,negative_obstruction_rows,fixed_quality_rows,small_leakage_asymptotic_rows,dominant_classification
+bulk,log_n,compact_fejer_transition_proxy,22,20,0,2,negative obstruction
+bulk,log_n,exponential_tail_proxy,22,20,0,2,negative obstruction
+bulk,log_n,gaussian_fourier_tail,22,20,0,2,negative obstruction
+bulk,n_eta,compact_fejer_transition_proxy,242,110,22,110,negative obstruction
+bulk,n_eta,exponential_tail_proxy,242,110,22,110,negative obstruction
+bulk,n_eta,gaussian_fourier_tail,242,110,22,110,negative obstruction
+edge,log_n,compact_fejer_transition_proxy,22,20,0,2,negative obstruction
+edge,log_n,exponential_tail_proxy,22,20,0,2,negative obstruction
+edge,log_n,gaussian_fourier_tail,22,20,0,2,negative obstruction
+edge,n_eta,compact_fejer_transition_proxy,242,92,12,138,small leakage asymptotically
+edge,n_eta,exponential_tail_proxy,242,92,12,138,small leakage asymptotically
+edge,n_eta,gaussian_fourier_tail,242,92,12,138,small leakage asymptotically
+high_energy,log_n,compact_fejer_transition_proxy,22,20,0,2,negative obstruction
+high_energy,log_n,exponential_tail_proxy,22,20,0,2,negative obstruction
+high_energy,log_n,gaussian_fourier_tail,22,20,0,2,negative obstruction
+high_energy,n_eta,compact_fejer_transition_proxy,242,110,22,110,negative obstruction
+high_energy,n_eta,exponential_tail_proxy,242,110,22,110,negative obstruction
+high_energy,n_eta,gaussian_fourier_tail,242,110,22,110,negative obstruction

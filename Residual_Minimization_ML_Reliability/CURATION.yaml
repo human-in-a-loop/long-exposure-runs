@@ -1,0 +1,214 @@
+package_name: "residual_minimization_sciml_reliability"
+description: |
+  This package contains the final report and curated verification artifacts for a residual-minimization reliability study in scientific machine learning. It includes the broad catalogue, application risk map, theorem and branch notes, toy simulation scripts, tests, CSV outputs, and figures needed to verify the report's claims about when small residual loss does or does not certify physical behavior.
+curation_complete: true
+include:
+  - src: reports/final/final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: REFERENCES.md
+    dest: report/REFERENCES.md
+    role: report
+  - src: residual-certificates/residual_case_catalogue.md
+    dest: code/residual-certificates/residual_case_catalogue.md
+    role: code
+    justification: "Cited in Breadth Of The Catalogue and Mechanism Taxonomy as the 22-mechanism catalogue."
+  - src: residual-certificates/application_risk_map.md
+    dest: code/residual-certificates/application_risk_map.md
+    role: code
+    justification: "Cited in Application Risk Map for domain mapping across scientific-ML motifs."
+  - src: residual-certificates/broad_synthesis_package.md
+    dest: code/residual-certificates/broad_synthesis_package.md
+    role: code
+    justification: "Cited throughout the report for breadth counts, taxonomy, validation state, and limitations."
+  - src: residual-certificates/collocation_blind_spot_theorem.md
+    dest: code/residual-certificates/collocation_blind_spot_theorem.md
+    role: code
+    justification: "Cited in Representative Theorem-Quality Cases And Obstructions for CAT-01."
+  - src: residual-certificates/weak_topology_branch.md
+    dest: code/residual-certificates/weak_topology_branch.md
+    role: code
+    justification: "Cited in weak-norm sections for CAT-06 failures and matched elliptic stability baseline."
+  - src: residual-certificates/admissibility_invariant_branch.md
+    dest: code/residual-certificates/admissibility_invariant_branch.md
+    role: code
+    justification: "Cited in admissibility and invariant sections for Burgers entropy, positivity, mass, and maximum-principle results."
+  - src: residual-certificates/ode_reliability_branch.md
+    dest: code/residual-certificates/ode_reliability_branch.md
+    role: code
+    justification: "Cited in ODE reliability sections for hidden modes, Lyapunov mismatch, and inverse non-identifiability."
+  - src: residual-certificates/toy_simulation_results.md
+    dest: code/residual-certificates/toy_simulation_results.md
+    role: code
+    justification: "Cited in Toy Simulation Suite for measurements and artifact mapping."
+  - src: scripts/collocation_certificate_scaling.py
+    dest: code/scripts/collocation_certificate_scaling.py
+    role: code
+    justification: "Regenerates CAT-01 fixed-collocation toy data and figures cited in the toy suite."
+  - src: scripts/trace_leakage_toy.py
+    dest: code/scripts/trace_leakage_toy.py
+    role: code
+    justification: "Regenerates CAT-02 trace-leakage data and figure cited in the toy suite."
+  - src: scripts/weak_norm_high_frequency_toy.py
+    dest: code/scripts/weak_norm_high_frequency_toy.py
+    role: code
+    justification: "Regenerates CAT-06 high-frequency weak-norm data and figure cited in the toy suite."
+  - src: scripts/weak_norm_localized_defect.py
+    dest: code/scripts/weak_norm_localized_defect.py
+    role: code
+    justification: "Regenerates localized weak-defect data and figure cited in the toy suite."
+  - src: scripts/quadrature_aliasing_toy.py
+    dest: code/scripts/quadrature_aliasing_toy.py
+    role: code
+    justification: "Regenerates CAT-07 quadrature-aliasing data and figure cited in the toy suite."
+  - src: scripts/hidden_mode_observability_toy.py
+    dest: code/scripts/hidden_mode_observability_toy.py
+    role: code
+    justification: "Regenerates CAT-11 hidden-mode observability data and figure cited in the toy suite."
+  - src: scripts/positivity_mass_toy.py
+    dest: code/scripts/positivity_mass_toy.py
+    role: code
+    justification: "Regenerates CAT-12/CAT-13 positivity and mass-admissibility data and figure cited in the toy suite."
+  - src: scripts/lyapunov_stability_mismatch_toy.py
+    dest: code/scripts/lyapunov_stability_mismatch_toy.py
+    role: code
+    justification: "Regenerates CAT-14 deployment-region Lyapunov mismatch data and figure cited in the toy suite."
+  - src: scripts/eigenmode_normalization_toy.py
+    dest: code/scripts/eigenmode_normalization_toy.py
+    role: code
+    justification: "Regenerates CAT-15 eigenmode-normalization data and figure cited in the toy suite."
+  - src: scripts/ode_parameter_nonidentifiability_toy.py
+    dest: code/scripts/ode_parameter_nonidentifiability_toy.py
+    role: code
+    justification: "Regenerates CAT-17 inverse ODE identifiability data and figure cited in the toy suite."
+  - src: tests/test_collocation_certificate.py
+    dest: code/tests/test_collocation_certificate.py
+    role: test
+    justification: "Focused appendix validation for CAT-01 sampled loss, physical error, and certificate behavior."
+  - src: tests/test_triage_scaling.py
+    dest: code/tests/test_triage_scaling.py
+    role: test
+    justification: "Focused appendix validation for CAT-01 triage scaling."
+  - src: tests/test_trace_leakage_toy.py
+    dest: code/tests/test_trace_leakage_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-02 trace leakage."
+  - src: tests/test_weak_norm_high_frequency_toy.py
+    dest: code/tests/test_weak_norm_high_frequency_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-06 weak-norm decay and matched-control behavior."
+  - src: tests/test_weak_norm_localized_defect.py
+    dest: code/tests/test_weak_norm_localized_defect.py
+    role: test
+    justification: "Focused appendix validation for localized weak-defect scaling."
+  - src: tests/test_quadrature_aliasing_toy.py
+    dest: code/tests/test_quadrature_aliasing_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-07 quadrature aliasing."
+  - src: tests/test_hidden_mode_observability_toy.py
+    dest: code/tests/test_hidden_mode_observability_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-11 hidden-mode observability."
+  - src: tests/test_positivity_mass_toy.py
+    dest: code/tests/test_positivity_mass_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-12/CAT-13 positivity and mass separation."
+  - src: tests/test_lyapunov_stability_mismatch_toy.py
+    dest: code/tests/test_lyapunov_stability_mismatch_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-14 deployment and Lyapunov behavior."
+  - src: tests/test_eigenmode_normalization_toy.py
+    dest: code/tests/test_eigenmode_normalization_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-15 eigenmode normalization."
+  - src: tests/test_ode_parameter_nonidentifiability_toy.py
+    dest: code/tests/test_ode_parameter_nonidentifiability_toy.py
+    role: test
+    justification: "Focused appendix validation for CAT-17 Fisher-information correction."
+  - src: data/collocation_certificate_scaling.csv
+    dest: code/data/collocation_certificate_scaling.csv
+    role: data
+    justification: "CAT-01 measured scaling data cited in the toy suite."
+  - src: data/collocation_certificate_scaling.png
+    dest: collocation_certificate_scaling.png
+    role: figure
+    caption: "CAT-01 scaling plot showing fixed-node sampled loss and certificate behavior versus collocation refinement."
+  - src: data/collocation_certificate_profiles.png
+    dest: collocation_certificate_profiles.png
+    role: figure
+    caption: "CAT-01 profile plot showing the bad fixed-collocation functions between sampled nodes on the unit interval."
+  - src: data/trace_leakage_scaling.csv
+    dest: code/data/trace_leakage_scaling.csv
+    role: data
+    justification: "CAT-02 trace-leakage scaling data cited in the toy suite."
+  - src: data/trace_leakage_scaling.png
+    dest: trace_leakage_scaling.png
+    role: figure
+    caption: "CAT-02 plot showing vanishing underweighted trace objective while physical L2 error stays nonzero."
+  - src: data/weak_norm_scaling.csv
+    dest: code/data/weak_norm_scaling.csv
+    role: data
+    justification: "CAT-06 high-frequency weak-norm data cited in the toy suite."
+  - src: data/weak_norm_scaling.png
+    dest: weak_norm_scaling.png
+    role: figure
+    caption: "CAT-06 plot showing H-minus-s weak-norm decay for high-frequency modes with fixed L2 error."
+  - src: data/weak_norm_localized_defect.csv
+    dest: code/data/weak_norm_localized_defect.csv
+    role: data
+    justification: "Localized weak-defect data cited in the toy suite."
+  - src: data/weak_norm_localized_defect.png
+    dest: weak_norm_localized_defect.png
+    role: figure
+    caption: "Localized weak-defect plot showing decreasing weak norm as support shrinks while strong error remains controlled."
+  - src: data/quadrature_aliasing.csv
+    dest: code/data/quadrature_aliasing.csv
+    role: data
+    justification: "CAT-07 quadrature-aliasing data cited in the toy suite."
+  - src: data/quadrature_aliasing.png
+    dest: quadrature_aliasing.png
+    role: figure
+    caption: "CAT-07 plot comparing zero Gauss-node residual objective with nonzero exact residual norm."
+  - src: data/hidden_mode_observability.csv
+    dest: code/data/hidden_mode_observability.csv
+    role: data
+    justification: "CAT-11 hidden-mode observability data cited in the toy suite."
+  - src: data/hidden_mode_observability.png
+    dest: hidden_mode_observability.png
+    role: figure
+    caption: "CAT-11 plot showing observed residual blindness to a hidden state component and its observability certificate."
+  - src: data/positivity_mass_toy.csv
+    dest: code/data/positivity_mass_toy.csv
+    role: data
+    justification: "CAT-12/CAT-13 positivity and mass data cited in the toy suite."
+  - src: data/positivity_mass_toy.png
+    dest: positivity_mass_toy.png
+    role: figure
+    caption: "CAT-12/CAT-13 plot showing aggregate mass residual can pass while positivity or simplex constraints fail."
+  - src: data/lyapunov_stability_mismatch.csv
+    dest: code/data/lyapunov_stability_mismatch.csv
+    role: data
+    justification: "CAT-14 Lyapunov mismatch data cited in the toy suite."
+  - src: data/lyapunov_stability_mismatch.png
+    dest: lyapunov_stability_mismatch.png
+    role: figure
+    caption: "CAT-14 plot showing zero equilibrium residual can coexist with deployment-region Lyapunov derivative violations."
+  - src: data/eigenmode_normalization.csv
+    dest: code/data/eigenmode_normalization.csv
+    role: data
+    justification: "CAT-15 eigenmode-normalization data cited in the toy suite."
+  - src: data/eigenmode_normalization.png
+    dest: eigenmode_normalization.png
+    role: figure
+    caption: "CAT-15 plot showing homogeneous eigen-residual ambiguity across amplitudes and normalization certificate detection."
+  - src: data/ode_parameter_nonidentifiability.csv
+    dest: code/data/ode_parameter_nonidentifiability.csv
+    role: data
+    justification: "CAT-17 inverse ODE identifiability data cited in the toy suite."
+  - src: data/ode_parameter_nonidentifiability.png
+    dest: ode_parameter_nonidentifiability.png
+    role: figure
+    caption: "CAT-17 plot showing zero-excitation parameter non-identifiability and Fisher-information correction."

@@ -1,0 +1,5 @@
+source_name	candidate_rows	accepted_key_rows	crop_anchor_rows	cwr_rows	bioclim_vector_rows	heldout_validation_rows	rejected_rows	dominant_rejection_reason
+WorldClim/CHELSA climate-envelope staging	375	36	2	8	0	0	375	no observed occurrence coordinates or numeric bioclim values in local M1.6 staging
+Track 4 crop-wild-relative pairs	69	3	3	7	0	0	66	crop and/or wild-relative accepted-key gaps; joined pairs still lack observed bioclim vectors
+Held-out expert crop set	22	2	2	0	0	0	22	held-out rows are crop-level expert sources only; no candidate-level comparator without training leakage
+M3.T4 training-derived candidate rows	3	3	2	3	0	0	3	rows derive from training pedigree/CWR evidence and cannot serve as held-out expert comparisons

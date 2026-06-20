@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Zea mays",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Zea</i> <i>mays</i></span> <span class=\"wfo-name-authors\" >L.</span></span>",
+      "full_name_plain": "Zea mays L.",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Poales/Poaceae/Zea/mays",
+      "wfo_id": "wfo-0000907754"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Zea'",
+      "Word is found in index and so is part of name: 'mays'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'mays'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Zea mays' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000907754) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Zea mays",
+      "rank": "species"
+    },
+    "searchString": "Zea mays"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Zea mays"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "7b40fd9752b9857f40629b897edd48fb8c9f42d741c58c6a03b1c0d431b7a6ac",
+  "used_insecure_tls_fallback": true
+}

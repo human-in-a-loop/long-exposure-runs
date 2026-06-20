@@ -1,0 +1,19 @@
+{
+  "command": [
+    "inspect",
+    "eval",
+    "permission_tool_overreach_smoke.py",
+    "--model",
+    "mockllm/model",
+    "--log-dir",
+    "<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/logs",
+    "--log-format",
+    "json",
+    "--max-samples",
+    "1"
+  ],
+  "working_directory": "<RUN_WORKSPACE>/alignment-test-factory/evals",
+  "inspect_version": "0.3.220",
+  "log_file_path": "file:<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/logs/2026-05-14T00-49-38-00-00_permission-tool-overreach-smoke_YhsgDZ5dGQEojgGKkbySFp.json",
+  "score_summary_path": "<RUN_WORKSPACE>/alignment-test-factory/examples/inspect/permission_tool_overreach_inspect_score_summary.json"
+}

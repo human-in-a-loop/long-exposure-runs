@@ -1,0 +1,39 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "canonicalName": "Pinus sylvestris",
+    "class": "Pinopsida",
+    "classKey": 194,
+    "confidence": 99,
+    "family": "Pinaceae",
+    "familyKey": 3925,
+    "genus": "Pinus",
+    "genusKey": 2684241,
+    "kingdom": "Plantae",
+    "kingdomKey": 6,
+    "matchType": "EXACT",
+    "order": "Pinales",
+    "orderKey": 640,
+    "phylum": "Tracheophyta",
+    "phylumKey": 7707728,
+    "rank": "SPECIES",
+    "scientificName": "Pinus sylvestris L.",
+    "species": "Pinus sylvestris",
+    "speciesKey": 5285637,
+    "status": "ACCEPTED",
+    "usageKey": 5285637
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "kingdom": "Plantae",
+      "name": "Pinus sylvestris"
+    },
+    "url": "https://api.gbif.org/v1/species/match"
+  },
+  "response_sha256": "749845c2f7e77ddd83d61ae42df488cddf9ee7416e0c35ff43d33a15eed002bb",
+  "used_insecure_tls_fallback": false
+}

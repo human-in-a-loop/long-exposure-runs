@@ -1,0 +1,57 @@
+{
+  "error": null,
+  "http_status": 200,
+  "ok": true,
+  "payload": {
+    "candidates": [],
+    "error": false,
+    "errorMessage": null,
+    "inputString": "Betula pendula",
+    "match": {
+      "full_name_html": "<span class=\"wfo-name-full\" ><span class=\"wfo-name\"><i>Betula</i> <i>pendula</i></span> <span class=\"wfo-name-authors\" >Roth</span></span>",
+      "full_name_plain": "Betula pendula Roth",
+      "placement": "Code/Plantae/Pteridobiotina/Angiosperms/Fagales/Betulaceae/Betula/pendula",
+      "wfo_id": "wfo-0000335449"
+    },
+    "narrative": [
+      "The first word is always a name part word: 'Betula'",
+      "Word is found in index and so is part of name: 'pendula'.",
+      "Word is lowercase. Subsequent words must start with lowercase: 'pendula'.",
+      "No authors string provided. Will match all authors strings.",
+      "Parsed name complete.",
+      "Rank estimated as 'species' from name parts.",
+      "Searched index of 2025-12 for canonical form of name 'Betula pendula' and found 1 candidates.",
+      "Looking for matching author strings.",
+      "Only one candidate found (wfo-0000335449) and no author string supplied so name becomes match."
+    ],
+    "params": {
+      "acceptSingleCandidate": false,
+      "authors": null,
+      "checkHomonyms": false,
+      "checkRank": false,
+      "classificationVersion": "2025-12",
+      "fuzzyAuthors": 0,
+      "fuzzyNameParts": 0,
+      "limit": 50,
+      "method": "full",
+      "rank": null,
+      "year": null
+    },
+    "parsedName": {
+      "author_string": "",
+      "canonical_form": "Betula pendula",
+      "rank": "species"
+    },
+    "searchString": "Betula pendula"
+  },
+  "request": {
+    "json": null,
+    "method": "GET",
+    "params": {
+      "input_string": "Betula pendula"
+    },
+    "url": "https://list.worldfloraonline.org/matching_rest.php"
+  },
+  "response_sha256": "b50bc164cb5615bca432c7b2f164df81f59096c9da6db4a209337d5650dec157",
+  "used_insecure_tls_fallback": true
+}

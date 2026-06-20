@@ -1,0 +1,17 @@
+case_id,threshold_status,existing_gatechain_allowed,existing_readiness_ready,confidence_precondition_only,readiness_update_allowed,production_calibrated,production_ready,claim_credit_allowed,boundary_reason
+valid-confidence-qualified-fixture,robust_pass,false,false,true,false,false,false,false,confidence_qualified_but_nonproduction_fixture
+valid-confidence-qualified-fail-fixture,robust_fail,false,false,true,false,false,false,false,
+invalid-missing-variance-noise-model,statistical_invalid,false,false,true,false,false,false,false,missing_variance
+invalid-insufficient-sample-count,statistically_indeterminate,false,false,true,false,false,false,false,insufficient_sample_count
+invalid-ci-crosses-threshold,statistically_indeterminate,false,false,true,false,false,false,false,confidence_interval_crosses_threshold
+invalid-ci-touches-threshold,statistically_indeterminate,false,false,true,false,false,false,false,confidence_interval_touches_threshold
+invalid-unbounded-p99-latency-ci,statistical_invalid,false,false,true,false,false,false,false,unbounded_p99_latency_ci
+invalid-drift-between-windows,statistically_indeterminate,false,false,true,false,false,false,false,control_treatment_drift_exceeds_budget
+invalid-missing-control-arm,statistical_invalid,false,false,true,false,false,false,false,missing_control_arm
+invalid-non-independent-repeated-samples,statistically_indeterminate,false,false,true,false,false,false,false,non_independent_repeated_samples
+invalid-negative-variance,statistical_invalid,false,false,true,false,false,false,false,negative_variance
+invalid-nan-metric,statistical_invalid,false,false,true,false,false,false,false,nan_metric
+invalid-missing-noise-model,statistical_invalid,false,false,true,false,false,false,false,missing_noise_model
+invalid-zero-samples,statistical_invalid,false,false,true,false,false,false,false,nonpositive_sample_count
+invalid-unknown-source-fixture,statistical_invalid,false,false,true,false,false,false,false,unknown_source_fixture_id
+invalid-fixture-attempted-production-calibration,statistical_invalid,false,false,true,false,false,false,false,fixture_attempted_production_calibration

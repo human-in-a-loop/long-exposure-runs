@@ -1,6 +1,25 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.pytest_cache/
+.sciml-venv/
+sessions.db
+*.sqlite
+*.sqlite3
+*.out
+*.pid
+
+# Run-local scratch and heavyweight/generated folders
+**/stale/
+**/.long-exposure*/
+**/wolfram-bridge/
+**/obj_dir/
+**/__pycache__/
+
 # Transient long-exposure session/run state — NOT the deliverable.
 */.instance/
-**/sessions.db
 **/exploration_state.json
 **/exploration.log
 **/local_sessions/

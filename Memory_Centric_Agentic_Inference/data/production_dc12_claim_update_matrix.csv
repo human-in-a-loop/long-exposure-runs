@@ -1,0 +1,6 @@
+claim_id,update_status,production_calibrated,basis,blocked_reason,evidence_label
+CL-012,production_contract_ready_candidate_only,false,3 synthetic production-shaped rows passed gates; no real production_target evidence ingested,synthetic fixtures are not real production evidence,synthetic_production_fixture
+CL-004,threshold_replay_ready,false,DC-002 rows replay against existing CXL/pooled-memory thresholds,awaiting real target CXL/pool-memory telemetry,synthetic_production_fixture
+CL-005,contention_gate_ready,false,Option B/C updates are named by threshold crossings only,synthetic fixture only,synthetic_production_fixture
+SECURITY-GATE-ENERGY-001,validated_negative_control,false,security blocked rows=1; denied reuse/energy credit granted=0,security_denied_rows_receive_zero_credit,synthetic_production_fixture
+CONTROL-OPTION-A,validated_negative_control,false,control rows=1; controls remain Option A and not calibration candidates,control_workload_has_no_positive_reuse,synthetic_production_fixture

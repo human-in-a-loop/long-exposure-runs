@@ -1,0 +1,14 @@
+row_type	target_taxon	chemical_class	family	cutoff_status	rank_within_family	family_percentile	top_decile	variant	prediction_count	outcome	interpretation
+temporal_holdout	Taxus brevifolia	Diterpene	Taxaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_absent_from_frozen_substrate|family_class_signature_absent_or_not_qualified
+temporal_holdout	Catharanthus roseus	Alkaloid	Apocynaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_seen_but_no_accepted_key|family_class_signature_absent_or_not_qualified
+temporal_holdout	Cinchona officinalis	Alkaloid	Rubiaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_absent_from_frozen_substrate|family_class_signature_absent_or_not_qualified
+temporal_holdout	Artemisia annua	Sesquiterpene	Asteraceae	no_assertion_dates_available			False			data_limited_not_recovered	family_class_signature_absent_or_not_qualified
+temporal_holdout	Digitalis purpurea	Cardenolide	Plantaginaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_seen_but_no_accepted_key|family_class_signature_absent_or_not_qualified
+temporal_holdout	Papaver somniferum	Alkaloid	Papaveraceae	no_assertion_dates_available			False			data_limited_not_recovered	name_seen_but_no_accepted_key|family_class_signature_absent_or_not_qualified
+temporal_holdout	Atropa belladonna	Alkaloid	Solanaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_absent_from_frozen_substrate|family_class_signature_absent_or_not_qualified
+temporal_holdout	Salix alba	Glycoside	Salicaceae	no_assertion_dates_available			False			data_limited_not_recovered	name_seen_but_no_accepted_key|family_class_signature_absent_or_not_qualified
+source_ablation							False	full	1405	baseline_source_dominated	M3.T5 baseline; all prediction rows carry Dr. Duke sensitivity.
+source_ablation							False	no_duke	0	collapsed_or_no_eligible_non_duke_stratum	Removing Dr. Duke leaves no qualifying phytochemical family/class signal.
+source_ablation							False	duke_downweighted	1405	not_independent_duke_still_present	Rows persist only because Duke evidence still supplies S_f[k]; not independent support.
+source_ablation							False	source_density_matched	0	collapsed_or_no_eligible_non_duke_stratum	No matched non-Duke phytochemical source stratum exists in current frozen data.
+source_ablation							False	screening_count_matched	0	collapsed_or_no_eligible_non_duke_stratum	Screening-count match cannot be formed without non-Duke detection rows.

@@ -1,0 +1,10 @@
+requirement_id,required_declaration,fail_closed_consequence,applies_before_ingestion
+manifest_sections_complete,bundle identity; telemetry payload inventory; join window; provenance; measurement quality; security/privacy; boundary labels,missing sections block admission before ingestion,true
+checksums_present,sha256 for every payload file,missing or unverifiable checksums block admission,true
+schema_version_matched,production_dc12_v1,schema mismatch blocks admission before unit or threshold replay,true
+join_window_declared,run_id; interval_id; workload_id; object_id; topology_id; tenant_id; security_context_id,missing run/interval/workload/object/topology/tenant/security joins block admission,true
+alias_resolution_declared,run_id->measurement_run_id; interval_id->interval_ms; workload_id->workload_class; object_id->object_class; topology_id->hardware_topology_id; tenant_id->tenant_count; security_context_id->security_allowed,unresolved aliases block admission; canonical schema remains authoritative,true
+adapter_conformance_linked,data/adapter_conformance_results.csv,missing conformance pointer blocks admission,true
+measurement_quality_declared,noise floor; calibration method; counter resolution; missingness,missing noise metadata blocks calibration path,true
+security_privacy_declared,tenant handling; redaction; retention; security context source,ambiguous redaction or missing security provenance blocks admission,true
+boundary_preserved,fixtures use production_intake_fixture,structural admission does not create production_target evidence or claim credit,true

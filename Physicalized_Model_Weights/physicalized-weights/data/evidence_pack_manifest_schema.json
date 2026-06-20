@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "milestone_id": "M-EVIDENCEPACK-1",
+  "required_fields": [
+    "pack_id",
+    "schema_version",
+    "created_at_utc",
+    "trace_schema_version",
+    "trace_file",
+    "trace_sha256",
+    "ingestion_path_id",
+    "evidence_source_type",
+    "measurement_status",
+    "provenance_attestation",
+    "threshold_scenario_id",
+    "pipeline_expected_status",
+    "privacy_attestation"
+  ],
+  "allowed_values": {
+    "schema_version": [1],
+    "trace_schema_version": [1],
+    "evidence_source_type": ["production", "shadow_production", "canary_production", "synthetic", "local_proxy"],
+    "measurement_status": ["measured", "proxy", "modeled", "mixed"],
+    "provenance_attestation": [true, false],
+    "privacy_attestation": [true, false],
+    "pipeline_expected_status": [
+      "invalid_trace",
+      "valid_but_insufficient",
+      "threshold_evaluable_not_crossed",
+      "synthetic_counterfactual_crossed",
+      "actual_reopen_candidate"
+    ]
+  },
+  "description": "Manifest contract for replaying candidate future trace packages through M-TRACE-1, M-INGEST-1, M-REOPEN-1, and M-PIPELINE-1 without manual assembly."
+}

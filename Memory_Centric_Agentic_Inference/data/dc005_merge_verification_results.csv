@@ -1,0 +1,11 @@
+check_id,artifact,expected,observed,status
+experiment_specs_parseable,data/measurement_experiment_specs.csv,exists with header and at least one data row,18 rows; columns=deferred_constant;experiment_id;workload_target;measurement;required_instrumentation;expected_signal;support_condition;falsification_condition;claim_updates;evidence_status;scope_note,PASS
+required_fields_parseable,data/measurement_required_fields.csv,exists with header and at least one data row,22 rows; columns=deferred_constant;field;required_for;notes;production_extension;scope_boundary,PASS
+thresholds_parseable,data/measurement_thresholds.csv,exists with header and at least one data row,14 rows; columns=deferred_constant;threshold_id;equation_text;interpretation;special_zero_denominator_behavior;fallback_decision;evidence_status;scope_note,PASS
+claim_update_matrix_parseable,data/measurement_claim_update_matrix.csv,exists with header and at least one data row,22 rows; columns=deferred_constant;experiment_id;claim_id;update_type;update_condition;non_update_condition;evidence_status;scope_note,PASS
+synthetic_probe_results_parseable,data/measurement_synthetic_probe_results.csv,exists with header and at least one data row,12 rows; columns=deferred_constant;workload_class;synthetic_dag_signal;synthetic_ablation_result;measurement_implication;evidence_status;scope_note,PASS
+required_trj_ids,data/measurement_experiment_specs.csv,TRJ-001;TRJ-002;TRJ-003;TRJ-004;TRJ-005;TRJ-006;TRJ-007,missing=none,PASS
+required_thresholds,data/measurement_thresholds.csv,C_to_A_trajectory_reuse;C_to_B_trajectory_reuse;p_survive_min;p_verifier_reuse_min,missing=none,PASS
+required_fields,data/measurement_required_fields.csv,replay_authorization_scope;retention_hold_state;trajectory_node_id;verifier_evidence_hash,missing=none,PASS
+no_dc006_measurement_rows,data/measurement_*.csv,no deferred_constant=DC-006 rows reuse DC-005 TRJ experiment IDs or thresholds,violations=none,PASS
+authorization_gate_boundary,data/measurement_required_fields.csv,"authorization/provenance fields are validity gates, not overhead magnitude rows",2 matching scope-boundary rows,PASS

@@ -1,0 +1,23 @@
+{
+  "actual_reopen_candidate_count": 0,
+  "figure_caption": "end-to-end reopen gate outcomes for invalid, insufficient, threshold-evaluable, and synthetic counterfactual traces, showing that no current artifact becomes actual production reopen evidence",
+  "final_status_counts": {
+    "invalid_trace": 1,
+    "synthetic_counterfactual_crossed": 1,
+    "threshold_evaluable_not_crossed": 1,
+    "valid_but_insufficient": 1
+  },
+  "fixture_count": 4,
+  "milestone_id": "M-PIPELINE-1",
+  "required_actual_reopen_conditions": [
+    "M-TRACE-1 valid_reopen_candidate",
+    "M-INGEST-1 reopen_candidate_path",
+    "measured hybrid and programmable baseline terms",
+    "production/shadow/canary source type",
+    "provenance attestation",
+    "threshold crossed"
+  ],
+  "schema_version": 1,
+  "status": "validated",
+  "synthetic_or_proxy_actual_reopen_candidates": []
+}

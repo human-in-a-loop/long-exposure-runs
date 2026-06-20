@@ -1,0 +1,229 @@
+package_name: "open_alignment_test_factory"
+description: |
+  This package contains the final report and selected verification artifacts for the Open Alignment Test Factory prototype. It lets a developer inspect the provider-agnostic task schema, benign runtime, deterministic scorers, Inspect adapters, generated evidence summaries, stress probes, tests, figures, and roadmap that support the final conclusions.
+curation_complete: true
+include:
+  - src: reports/final/final_report.md
+    dest: report/final_report.md
+    role: report
+  - src: reports/final/final_report.pdf
+    dest: report/final_report.pdf
+    role: report
+  - src: MANIFEST.md
+    dest: report/MANIFEST.md
+    role: report
+  - src: REFERENCES.md
+    dest: report/REFERENCES.md
+    role: report
+  - src: docs/landscape_gap_map.md
+    dest: code/docs/landscape_gap_map.md
+    role: code
+    justification: "Cited by final_report in Milestone Findings and Comparison to Existing Tools as the landscape gap analysis."
+  - src: data/landscape_gap_matrix.csv
+    dest: code/data/landscape_gap_matrix.csv
+    role: data
+    justification: "Cited by final_report Artifact Map as the machine-readable M-1 capability coverage matrix."
+  - src: data/landscape_gap_matrix.png
+    dest: landscape_gap_matrix.png
+    role: figure
+    caption: "Heatmap of M-1 landscape capability coverage across alignment testing tools and agentic factory needs; axes are tools versus capability dimensions."
+  - src: scripts/plot_landscape_gap_matrix.py
+    dest: code/scripts/plot_landscape_gap_matrix.py
+    role: code
+    justification: "Co-located plot script needed to regenerate figure landscape_gap_matrix.png from the landscape coverage CSV."
+  - src: data/failure_taxonomy_priority.png
+    dest: failure_taxonomy_priority.png
+    role: figure
+    caption: "Priority chart for operational failure taxonomy labels using prototype priority and scoreability dimensions from the M-2 taxonomy matrix."
+  - src: scripts/plot_failure_taxonomy_priority.py
+    dest: code/scripts/plot_failure_taxonomy_priority.py
+    role: code
+    justification: "Co-located plot script needed to regenerate figure failure_taxonomy_priority.png from the taxonomy matrix CSV."
+  - src: docs/failure_taxonomy.md
+    dest: code/docs/failure_taxonomy.md
+    role: code
+    justification: "Cited by final_report Milestone Findings and How to Add a Safe Task Family as the operational label taxonomy."
+  - src: docs/benchmark_quality_rubric.md
+    dest: code/docs/benchmark_quality_rubric.md
+    role: code
+    justification: "Cited by final_report Milestone Findings and Validated Architecture as the benchmark-quality gate definition."
+  - src: data/failure_taxonomy_operational_matrix.csv
+    dest: code/data/failure_taxonomy_operational_matrix.csv
+    role: data
+    justification: "Cited by final_report Artifact Map as the machine-readable M-2 failure-label matrix."
+  - src: alignment-test-factory/src/alignment_test_factory/schemas.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/schemas.py
+    role: code
+    justification: "Cited by final_report Validated Architecture as the TaskSpec schema implementation."
+  - src: alignment-test-factory/schemas/task_spec.schema.json
+    dest: code/alignment-test-factory/schemas/task_spec.schema.json
+    role: code
+    justification: "Cited by final_report Validated Architecture as the exported TaskSpec JSON Schema."
+  - src: alignment-test-factory/examples/valid/permission_tool_overreach.json
+    dest: code/alignment-test-factory/examples/valid/permission_tool_overreach.json
+    role: data
+    justification: "Cited by final_report as the valid permission-family spec used for schema validation and runtime reproduction."
+  - src: alignment-test-factory/examples/valid/provenance_trace_mismatch.json
+    dest: code/alignment-test-factory/examples/valid/provenance_trace_mismatch.json
+    role: data
+    justification: "Cited by final_report as the valid provenance-family spec used by schema validation."
+  - src: alignment-test-factory/examples/valid/uncertainty_escalation.json
+    dest: code/alignment-test-factory/examples/valid/uncertainty_escalation.json
+    role: data
+    justification: "Cited by final_report as the valid uncertainty-family spec used by schema validation."
+  - src: alignment-test-factory/examples/valid/delegation_drift.json
+    dest: code/alignment-test-factory/examples/valid/delegation_drift.json
+    role: data
+    justification: "Cited by final_report as the valid delegation-family spec used by schema validation."
+  - src: alignment-test-factory/examples/invalid/composite_without_primitive.json
+    dest: code/alignment-test-factory/examples/invalid/composite_without_primitive.json
+    role: data
+    justification: "Cited by final_report M-3 validation as an invalid fixture for composite-label rejection."
+  - src: alignment-test-factory/examples/invalid/missing_required_trace_event.json
+    dest: code/alignment-test-factory/examples/invalid/missing_required_trace_event.json
+    role: data
+    justification: "Cited by final_report M-3 validation as an invalid fixture for trace-requirement validation."
+  - src: alignment-test-factory/examples/invalid/rejected_rubric_or_unsafe_flag.json
+    dest: code/alignment-test-factory/examples/invalid/rejected_rubric_or_unsafe_flag.json
+    role: data
+    justification: "Cited by final_report M-3 validation as an invalid fixture for safety and rubric-gate rejection."
+  - src: alignment-test-factory/src/alignment_test_factory/runtime.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/runtime.py
+    role: code
+    justification: "Cited by final_report Validated Architecture and Reproduction Commands as the ToyEnvironment implementation."
+  - src: alignment-test-factory/src/alignment_test_factory/trace.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/trace.py
+    role: code
+    justification: "Cited by final_report Executive Summary and Validated Architecture as trace integrity and task requirement validation."
+  - src: alignment-test-factory/src/alignment_test_factory/scorers.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/scorers.py
+    role: code
+    justification: "Cited by final_report Validated Architecture as deterministic evidence-linked predicates."
+  - src: alignment-test-factory/src/alignment_test_factory/families.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/families.py
+    role: code
+    justification: "Cited by final_report Core Question Answer and Reproduction Commands as four-family scripted trajectories."
+  - src: alignment-test-factory/src/alignment_test_factory/stress.py
+    dest: code/alignment-test-factory/src/alignment_test_factory/stress.py
+    role: code
+    justification: "Cited by final_report Validated Architecture and Milestone Findings as the stress probe implementation."
+  - src: alignment-test-factory/tools/validate_specs.py
+    dest: code/alignment-test-factory/tools/validate_specs.py
+    role: code
+    justification: "Cited by final_report Reproduction Commands as the bundled spec validation command."
+  - src: alignment-test-factory/tools/run_toy_environment.py
+    dest: code/alignment-test-factory/tools/run_toy_environment.py
+    role: code
+    justification: "Cited by final_report Reproduction Commands as the toy runtime command."
+  - src: alignment-test-factory/tools/run_task_families.py
+    dest: code/alignment-test-factory/tools/run_task_families.py
+    role: code
+    justification: "Cited by final_report Reproduction Commands as the multi-family deterministic runner."
+  - src: alignment-test-factory/tools/run_inspect_smoke.py
+    dest: code/alignment-test-factory/tools/run_inspect_smoke.py
+    role: code
+    justification: "Cited by final_report Validated Architecture as the two-sample Inspect runner."
+  - src: alignment-test-factory/tools/run_multi_family_inspect.py
+    dest: code/alignment-test-factory/tools/run_multi_family_inspect.py
+    role: code
+    justification: "Cited by final_report Validated Architecture and Reproduction Commands as the eight-sample Inspect runner."
+  - src: alignment-test-factory/tools/run_benchmark_stress.py
+    dest: code/alignment-test-factory/tools/run_benchmark_stress.py
+    role: code
+    justification: "Cited by final_report Reproduction Commands as the benchmark stress runner."
+  - src: alignment-test-factory/evals/permission_tool_overreach_smoke.py
+    dest: code/alignment-test-factory/evals/permission_tool_overreach_smoke.py
+    role: code
+    justification: "Cited by final_report Validated Architecture as the permission/tool-overreach Inspect adapter."
+  - src: alignment-test-factory/evals/multi_family_smoke.py
+    dest: code/alignment-test-factory/evals/multi_family_smoke.py
+    role: code
+    justification: "Cited by final_report Validated Architecture as the multi-family Inspect adapter."
+  - src: alignment-test-factory/examples/runtime/permission_tool_overreach_pass_trace.json
+    dest: code/alignment-test-factory/examples/runtime/permission_tool_overreach_pass_trace.json
+    role: data
+    justification: "Cited by final_report Reproduction Commands as the compliant runtime trace supporting permission results."
+  - src: alignment-test-factory/examples/runtime/permission_tool_overreach_fail_trace.json
+    dest: code/alignment-test-factory/examples/runtime/permission_tool_overreach_fail_trace.json
+    role: data
+    justification: "Cited by final_report Reproduction Commands as the violating runtime trace supporting permission results."
+  - src: alignment-test-factory/examples/runtime/permission_tool_overreach_score_summary.json
+    dest: code/alignment-test-factory/examples/runtime/permission_tool_overreach_score_summary.json
+    role: data
+    justification: "Cited by final_report Artifact Map as the deterministic permission score summary."
+  - src: alignment-test-factory/examples/families/multi_family_score_summary.json
+    dest: code/alignment-test-factory/examples/families/multi_family_score_summary.json
+    role: data
+    justification: "Cited by final_report Core Question Answer as the four-family score summary."
+  - src: alignment-test-factory/examples/families/multi_family_verdict_matrix.csv
+    dest: code/alignment-test-factory/examples/families/multi_family_verdict_matrix.csv
+    role: data
+    justification: "Cited by final_report Artifact Map as the predicate verdict matrix for multi-family results."
+  - src: alignment-test-factory/examples/families/multi_family_verdict_matrix.svg
+    dest: multi_family_verdict_matrix.svg
+    role: figure
+    caption: "Matrix of deterministic predicate verdicts for the four task families and eight scripted samples; axes are sample or family rows versus predicate columns."
+  - src: alignment-test-factory/examples/inspect/permission_tool_overreach_inspect_score_summary.json
+    dest: code/alignment-test-factory/examples/inspect/permission_tool_overreach_inspect_score_summary.json
+    role: data
+    justification: "Cited by final_report Validated Architecture as the two-sample Inspect score summary."
+  - src: alignment-test-factory/examples/inspect/permission_tool_overreach_inspect_log_manifest.json
+    dest: code/alignment-test-factory/examples/inspect/permission_tool_overreach_inspect_log_manifest.json
+    role: data
+    justification: "Cited by final_report Inspect path as the log manifest supporting reproducibility."
+  - src: alignment-test-factory/examples/inspect/multi_family_inspect_score_summary.json
+    dest: code/alignment-test-factory/examples/inspect/multi_family_inspect_score_summary.json
+    role: data
+    justification: "Cited by final_report Validated Architecture as the eight-sample Inspect summary with accuracy 1.000."
+  - src: alignment-test-factory/examples/inspect/multi_family_inspect_log_manifest.json
+    dest: code/alignment-test-factory/examples/inspect/multi_family_inspect_log_manifest.json
+    role: data
+    justification: "Cited by final_report Inspect path as the multi-family Inspect log manifest supporting reproducibility."
+  - src: alignment-test-factory/examples/stress/benchmark_stress_results.json
+    dest: code/alignment-test-factory/examples/stress/benchmark_stress_results.json
+    role: data
+    justification: "Cited by final_report M-7 findings as the stress results supporting matched_expectations 11/11."
+  - src: alignment-test-factory/examples/stress/benchmark_stress_matrix.csv
+    dest: code/alignment-test-factory/examples/stress/benchmark_stress_matrix.csv
+    role: data
+    justification: "Cited by final_report Artifact Map as the M-7 stress matrix."
+  - src: alignment-test-factory/examples/stress/benchmark_stress_matrix.svg
+    dest: benchmark_stress_matrix.svg
+    role: figure
+    caption: "Matrix of M-7 benchmark stress probe outcomes; axes are benign stress probes versus expected and observed validation outcomes."
+  - src: tests/test_task_spec_schema.py
+    dest: code/tests/test_task_spec_schema.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as schema coverage included in the 31-test validation baseline."
+  - src: tests/test_toy_environment.py
+    dest: code/tests/test_toy_environment.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as runtime and scorer coverage included in the 31-test validation baseline."
+  - src: tests/test_inspect_smoke.py
+    dest: code/tests/test_inspect_smoke.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as Inspect smoke coverage included in the 31-test validation baseline."
+  - src: tests/test_task_families.py
+    dest: code/tests/test_task_families.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as multi-family trace and predicate coverage included in the validation baseline."
+  - src: tests/test_multi_family_inspect.py
+    dest: code/tests/test_multi_family_inspect.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as eight-sample Inspect summary coverage included in the validation baseline."
+  - src: tests/test_benchmark_stress.py
+    dest: code/tests/test_benchmark_stress.py
+    role: test
+    justification: "Cited by final_report Tests artifact map as stress coverage included in the 31-test validation baseline."
+  - src: reports/benchmark_stress_test.md
+    dest: code/reports/benchmark_stress_test.md
+    role: code
+    justification: "Cited by final_report Artifact Map as the developer-facing M-7 stress report."
+  - src: reports/final/artifact_index.md
+    dest: code/reports/final/artifact_index.md
+    role: code
+    justification: "Cited by final_report Artifact Map as the developer artifact map."
+  - src: reports/final/roadmap.md
+    dest: code/reports/final/roadmap.md
+    role: code
+    justification: "Cited by final_report Prioritized Roadmap as future implementation guidance."

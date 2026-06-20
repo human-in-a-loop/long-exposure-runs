@@ -1,0 +1,6 @@
+target,classification,statement,decision,requires_new_surface_group_input,claims_proved_exponent_improvement
+"SPC(A,sigma)",surface_theorem_target,|p(1/n)/Q_id(1/n)| <= C n Lambda0^20 ||htilde||^2 q^A n^(-sigma+o(1)) by signed grouping at x=1/n,independent_next_target_if_grouping_is_surface_attached,True,False
+fixed_stratum_absolute_control,coefficient_variation_equivalent,"absolute or total-variation control in fixed d, length, primitive-power, or quotient-complexity strata",not_independent_from_coefficient_variation,False,False
+wrong_point_cancellation,range_blocked,cancellation visible only at x=0 or away from x=1/n,does_not_control_evaluated_ratio,False,False
+denominator_uncontrolled_ratio,denominator_blocked,numerator saving without Q_id(1/n) lower bound or with |Q_id(1/n)|^-1 <= n^D,saving_loses_D_and_can_be_erased,False,False
+schreier_or_independent_pairing,toy_only,sign-reversing pairings in independent-permutation or Schreier models,analogy_only_no_surface_theorem,False,False
