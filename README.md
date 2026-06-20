@@ -13,21 +13,21 @@ Public artifacts from selected long-exposure research runs.
 
 The checked-in artifacts are intended as inspectable research outputs rather than a reusable software package. Some paths in generated logs were sanitized from local machine paths before publication.
 
-## Trading research topics (tier-2)
+## Trading research topics (tier-2) — `trading-research/`
 
 Standing per-topic deep-research runs that feed the automated trading platform
 **advisory-only** — research never touches the deterministic trade core (it is
 surfaced to the human reviewer in the daily report, never fed to portfolio
-construction, the risk veto, or execution). Each directory is its own
-long-exposure `working_directory`; the trader ingests
-`<topic>/reports/final/final_report.md`.
+construction, the risk veto, or execution). They live under `trading-research/`;
+each directory is its own long-exposure `working_directory`, and the trader
+ingests `trading-research/<topic>/reports/final/final_report.md`.
 
-- `geopolitics/`
-- `macro-rates/`
-- `energy-commodities/`
-- `tech-ai/`
-- `healthcare-biotech/`
-- `financials/`
-- `consumer/`
+- `trading-research/geopolitics/`
+- `trading-research/macro-rates/`
+- `trading-research/energy-commodities/`
+- `trading-research/tech-ai/`
+- `trading-research/healthcare-biotech/`
+- `trading-research/financials/`
+- `trading-research/consumer/`
 
 Cadence: monthly fresh runs + weekly follow-up guidance (human-prompted for now).

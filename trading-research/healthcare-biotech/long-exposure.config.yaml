@@ -98,7 +98,7 @@ anti_patterns_enabled: true
 # for soft directory boundaries enforced via instructions.
 # Leave empty for no path restriction. Set to your project dir before
 # running a real exploration.
-working_directory: "/home/jeremyad55/long-exposure-runs/geopolitics"
+working_directory: "/home/jeremyad55/long-exposure-runs/trading-research/healthcare-biotech"
 
 # Command for Wolfram Language scripts. Leave empty if you don't have
 # Wolfram installed — agents will be instructed not to use it.
