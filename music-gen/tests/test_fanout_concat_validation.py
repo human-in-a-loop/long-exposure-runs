@@ -520,6 +520,100 @@ def test_multi_milestone_shadow_with_reopen_bridge():
     assert body1 == body2, "byte drift on repeat concat"
 
 
+# --- Cycle-22 §16: harness auto-write namespacing regression guards --------
+# Cases 16-17. Case 16: 3-clone concat where each clone lands its harness
+# auto-write row at the pre-namespaced `_run/report_cycles_1-1_clone-<k>`
+# id — file-order ts is intentionally out-of-order — must merge cleanly
+# without any per-clone id normalization at integration time (retires the
+# cycle-21 workaround). Case 17: a synthetic regression where a future
+# fanout driver forgets to set the clone-index env var and two clones
+# share the un-namespaced `_run/report_cycles_1-1` — concat must fail
+# LOUD with the specific per-milestone-ts-monotonicity message so the
+# integrator gets the same diagnostic cycle-21 got.
+
+@register(
+    "16. cycle-22 §16.a: 3-clone concat with pre-namespaced "
+    "_run/report_cycles_*_clone-* rows out of file-order-ts merges cleanly"
+)
+def test_pre_namespaced_3clone_out_of_order():
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    # Reproduce cycle-21's exact ts pattern: file-order 0→1→2 gives
+    # ts 16:53:17 → 16:59:57 → 16:54:07 (clone-2's row is earlier than
+    # clone-1's despite later file order). Under the old un-namespaced
+    # id this crashes concat monotonicity; under the new namespaced ids
+    # each clone owns its own milestone, so file-order-ts is irrelevant.
+    ts = {
+        0: "2026-08-28T16:53:17.729827+00:00",
+        1: "2026-08-28T16:59:57.938736+00:00",
+        2: "2026-08-28T16:54:07.776540+00:00",
+    }
+    for k in (0, 1, 2):
+        mid = f"_run/report_cycles_1-1_clone-{k}"
+        ev = _mk_event(
+            milestone_id=mid,
+            ts=ts[k],
+            narrative=(
+                "Deterministic report artifact registration for audit "
+                "and orphan-artifact checks."
+            ),
+            agent="harness",
+            cycle=1,
+        )
+        _write_clone(fork, k, [ev])
+    n = concat_clone_ledgers(ws, fork)
+    assert n == 3, f"expected 3 rows added, got {n}"
+    text = (ws / "promise_ledger.jsonl").read_text()
+    for k in (0, 1, 2):
+        needle = f'"_run/report_cycles_1-1_clone-{k}"'
+        assert text.count(needle) == 1, f"clone-{k} mid missing/duplicated"
+
+
+@register(
+    "17. cycle-22 §16.b: regression guard — two clones sharing the "
+    "un-namespaced _run/report_cycles_1-1 fail-loud with the per-milestone "
+    "ts monotonicity message (harness lost its namespacing)"
+)
+def test_un_namespaced_collision_fails_loud():
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    # Simulate the cycle-21 pre-fix state: both clones write the same
+    # un-namespaced mid. File-order across clones (0→1) has clone-1's
+    # ts strictly earlier than clone-0's → per-candidate-milestone ts
+    # monotonicity violation at concat.
+    mid = "_run/report_cycles_1-1"
+    ts_later_first = "2026-08-28T16:59:57Z"   # clone-0 written first
+    ts_earlier_second = "2026-08-28T16:54:07Z"  # clone-1 written second
+    ev0 = _mk_event(
+        milestone_id=mid, ts=ts_later_first, narrative="c0",
+        agent="harness", cycle=1,
+    )
+    ev1 = _mk_event(
+        milestone_id=mid, ts=ts_earlier_second, narrative="c1",
+        agent="harness", cycle=1,
+    )
+    _write_clone(fork, 0, [ev0])
+    _write_clone(fork, 1, [ev1])
+    try:
+        concat_clone_ledgers(ws, fork)
+    except LedgerConcatError as e:
+        msg = str(e)
+        assert "monotonicity" in msg, msg
+        assert mid in msg, msg
+        # Both ts values appear in the diagnostic.
+        assert ts_later_first in msg, msg
+        assert ts_earlier_second in msg, msg
+    else:
+        raise AssertionError(
+            "expected LedgerConcatError; the un-namespaced collision "
+            "path must fail loud"
+        )
+    # Atomic-write guarantee: main ledger untouched on failure.
+    assert not (ws / "promise_ledger.jsonl").exists(), (
+        "main ledger touched on failure"
+    )
+
+
 # --- Runner -----------------------------------------------------------------
 
 def main():
