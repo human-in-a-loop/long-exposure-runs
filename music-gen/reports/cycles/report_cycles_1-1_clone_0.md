@@ -1,170 +1,155 @@
 ---
-title: "Music-Gen — Transcription Survey (M-TRANS-1), Clone 0 of Fork 3168fb0e47a1, Cycles 1–1"
+title: "Music-Gen — M-SCORE-1 (cycle 1, fork 3a908edcb241, clone 0)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Transcription Survey (M-TRANS-1), Clone 0 of Fork 3168fb0e47a1, Cycles 1–1
+# Music-Gen — M-SCORE-1 (cycle 1, fork 3a908edcb241, clone 0)
 
 ## Abstract
 
-This branch executed the transcription survey stage of the Music-Gen pipeline. Using the synth-mix ground-truth stems produced by the earlier separation stage as clean-reference input, two independent transcribers were evaluated against exact reference note events for bass, "other" (piano triads), and drums, at three durations (30 s, 60 s, 90 s). The first transcriber is **basic-pitch 0.4.0**, installed in a quarantined virtual environment at `workspace/basic_pitch_venv/` and driven from the top-level interpreter over subprocess to keep its TensorFlow-2.15 / NumPy-1.26 pins out of the main environment. The second is a **librosa-family fallback** built from `librosa.pyin` (monophonic bass), a CQT peak-picking chord tracker (polyphonic "other"), and a spectral-flux onset detector with drum-band classification (drums). The alternative was chosen after a fetchability probe eliminated Crepe (PyPI HTTP 403 on the source dist) and rejected magenta 2.1.4 as too heavy for the branch's scope.
+Cycle 1 of clone 0 delivered the MuseScore programmatic bridge — the last-mile milestone that turns cycle-6's per-stem basic-pitch transcriptions into a full-song MusicXML score whose MIDI export recovers every input note. All required artefacts landed: `scripts/score/{__init__, bridge, jsonl_to_midi, seed_score}.py`, `tests/test_score_bridge.py` (23/23 passing), `docs/score_bridge_report.md` (304 lines, all seven required sections), a §15 extension to the cross-branch integration test, and the merged deliverables under `data/score/` (seed round-trip pair, deterministic-check pair, and the 30 s M-SEP-1 synth-mix merged score with its `parts_mapping.json` sidecar). The 8-bar seed round-trips to byte identity across two full `xml → mid → xml → mid → xml` passes after scrubbing; note preservation is exact at 88/88 events with 0.00 ms onset drift. Merged full-song F1 on the 30 s synth mix is **1.0000 / 1.0000 / 1.0000** on drums / bass / other against the basic-pitch input MIDIs — the load-bearing identity-merge metric — and 0.0000 / 0.4746 / 0.7317 against M-SEP-1 tiled ground truth, upper-bounded by cycle-6 basic-pitch quality and diagnosed exhaustively in the report. The auditor emitted **VALIDATED** with a parent `M-SCORE-1` roll-up, ran the full test suite and both validators live, and fixed one moderate defect in-cycle (a docstring on `merge_stems_to_score` that contradicted the implementation's 1/64-quarter grid snap). Downstream, M-RULES-1's extraction-half and M-TEX-1's parent stage-by-stage are now genuinely unblocked.
 
-Note-level F1 was computed with `mir_eval.transcription.precision_recall_f1_overlap` for all nine (transcriber, stem, mix) cells per transcriber, published in `data/transcribe/results.tsv` with a `disclaimer` column marking the drum row as a lower bound (basic-pitch is a polyphonic-pitch model and returns zero notes on drums). A six-axis coverage matrix accompanies the F1 table with an explicit status flag on each axis: rhythm, melody, harmony, and dynamics are measured on this corpus; timbre is a placeholder self-similarity anchor; form is deferred (the synth mixes have no section structure); and vocals-to-text returns a documented `NO_VOCAL_STEM` sentinel because there is no vocal audio in the workspace this cycle.
+## Introduction
 
-The verdict on the pitch/rhythm side is **build, not adopt**. No single transcriber wins on every stem: the librosa-family fallback beats basic-pitch on monophonic bass (F1 1.000 vs 0.47) and is the only one that produces any drum output at all (F1 0.40 vs 0.00); basic-pitch beats the fallback on polyphonic "other" (F1 0.72 vs 0.32). The recommendation is a thin per-stem router that dispatches to the best available transcriber per stem type.
+M-SCORE-1 sits at a pivot point in the campaign. Upstream, the M-SEP-1 htdemucs adoption, M-TRANS-1 transcription survey, and the frozen cycle-6 basic-pitch JSONL are all in place. Downstream, M-RULES-1's extraction-half was blocked on the availability of a merged score to read from, and M-TEX-1's parent stage-by-stage was blocked on the "bare MIDI" starting point that only a full-song export can produce. The brief scoped this branch precisely to that pivot: build a bridge that (a) translates between MusicXML and MIDI via `mscore3` headless with byte-identical round-trips, (b) identity-merges the per-stem basic-pitch outputs into a full-song MusicXML score whose MIDI export preserves every input note, (c) fails legibly through a typed `ScoreBridgeError` at each edge, and (d) preserves the campaign's non-factor isolation contract. The success bar was seed round-trip bit-identity (twice) and merged-full-song per-stem note-level F1 ≥ 0.98 against the M-SEP-1 ground-truth MIDIs, with an explicit relaxation clause in the brief for the case where the F1 shortfall is diagnosed as basic-pitch upstream noise.
 
-## 1. Objective and Scope
+## Approach
 
-The Music-Gen prompt requires that every stage of the ingestion → separation → transcription → score → rules → generation pipeline first survey open-source options before any custom construction is entertained. This cycle discharges the transcription survey (milestone M-TRANS-1) on the pitch/rhythm side, using clean-reference stems produced upstream. It does **not** cover: (i) transcription from real polyphonic mixes (the rated corpus is still blocked at the egress boundary — see the campaign status note); (ii) vocal transcription against real voice audio; (iii) resynthesis-based timbre fidelity. Each of these is either impossible on this cycle's inputs or deferred to a later cycle with an explicit label in the coverage matrix.
+The module is partitioned so the load-bearing surface is minimal: `scripts/score/bridge.py` exposes `xml_to_midi`, `midi_to_xml`, `merge_stems_to_score`, and `ScoreBridgeError` and nothing else; `scripts/score/jsonl_to_midi.py` is the basic-pitch-JSONL → per-stem-MIDI helper (PPQ 480, tempo 500000 μs/beat, drums on channel 9); and `scripts/score/seed_score.py` deterministically generates the 8-bar hand-authored seed via music21. `mscore3 3.2.3` is driven headless under `QT_QPA_PLATFORM=offscreen` with a subprocess timeout at each call.
 
-## 2. Inputs
+Two non-obvious mechanics were surfaced empirically and folded into the bridge:
 
-**Audio.** Three durations of the synthetic ground-truth mix produced by the separation stage — `synth_030s`, `synth_060s`, `synth_090s` — each with per-stem WAV files for drums, bass, and "other" (piano triads). All files are 44.1 kHz stereo. The mixes are built by tiling an 8-second loop and truncating to the target duration, so the reference tile policy is deterministic and known.
+- **Determinism scrubbing.** `mscore3`'s MusicXML export carries a daily `<encoding-date>`, a `<software>` build string, a `<source>` line echoing the mscore invocation's absolute path, a build-flag-derived `<encoder>`, a `<supports>` block that varies with mscore build flags, and a `<creator type="composer">MuseScore …</creator>` default. Music21 and mscore's XML export additionally assign randomised 32-hex-digit ids to `<part id="P…">`, `<score-part id="P…">`, `<score-instrument id="I…">`, and `<midi-instrument id="I…">`. The scrubber strips whole lines matching the six element names above, canonicalises `<work-title>` / `<movement-title>` that echo the input basename to empty tags, and renumbers each unique hex id in first-occurrence order to `P1, P2, …` / `I1, I2, …` — the renumbering is applied consistently across the whole document so `<part id>` references match their `<score-part id>` declarations. After scrubbing, two full runs of both round-trip paths are byte-identical.
+- **mscore3 per-part voice cap.** `mscore3 3.2.3` empirically collapses six voice-partitions inside a single `<part>` into fewer than six MIDI note-on streams on export (78 piano notes → 64 recovered when written as a single 6-voice part). The fix is one `<part>` per voice partition, chosen by interval-graph coloring of the input notes, named `{stem}__v{k}`. A sidecar JSON at `{score}.parts_mapping.json` maps each MIDI track group back to its stem, so downstream F1 extractors can walk the tracks in `[meta, stem_1_v0, …, stem_1_vN, stem_2_v0, …]` order without guessing.
 
-**Reference note events.** Regenerated deterministically from the loop-and-tile audio policy of `scripts/separation/synth_gt.py` into per-(mix, stem) JSONL note lists at `data/transcribe/reference/<mix>/<stem>.jsonl`, along with a manifest of SHA-256 hashes at `data/transcribe/reference/reference_manifest.json`. All twelve reference hashes reproduce bit-for-bit on rerun. Note counts scale exactly with duration: bass 15/30/45, "other" 45/90/135, drums 180/360/540 (from 4, 12, and 48 notes per 8-second loop respectively).
+Two smaller mechanics matter for correctness. First, `merge_stems_to_score` snaps every input onset and duration to a 1/64-quarter grid (~7.8 ms at 120 BPM). The rationale is that music21's serializer refuses arbitrary sub-tuplet durations with `Cannot convert "2048th" duration to MusicXML (too short)`; the chosen grid is a pure power-of-2 fraction with no nested tuplets, and the resulting maximum onset shift (≤ 3.9 ms) is well under `mir_eval`'s 50 ms tolerance, so F1 measurements are unchanged by the snap. Second, the bridge detects a silent-rc-0 trap on structurally-invalid MusicXML input: `mscore3` returns exit 0 and writes an empty MIDI, so the bridge scans stderr for `"is not a valid musicxml file"`, `"is not a musicxml score-partwise file"`, `"cannot import"`, and `"empty score"` and escalates to `ScoreBridgeError`; the scan does not fire on legitimate `"Error at line N col M"` rounding-error warnings that mscore also prints on valid inputs.
 
-## 3. Transcribers Under Test
+## Findings
 
-### 3.1 basic-pitch 0.4.0 (Spotify)
+### Seed round-trip
 
-TensorFlow-based polyphonic-pitch model. Installed under `workspace/basic_pitch_venv/` with a full 62-package pin file (`requirements.frozen.txt`); the load-bearing pins are `basic-pitch==0.4.0`, `tensorflow==2.15.0.post1`, `numpy==1.26.4`. The venv is called only through `scripts/transcribe/_bp_call.py`, which is executed as a subprocess by the top-level `/usr/bin/python3`; a guard inside `_bp_call.py` resolves the running interpreter path and asserts it lives inside the venv before importing basic-pitch, so accidental invocation from the wrong environment fails loud.
+The 8-bar seed authors 88 events: bass quarter-note roots (32), piano whole-note triads across two four-bar cycles (24), and a kick+snare backbeat on the quarter grid (32). Two full round-trips produce:
 
-Determinism was verified by rerunning `_bp_call.py` on the 30-second bass stem inside the venv and comparing byte-for-byte with the stored JSONL output: the SHA-256 matched exactly (44 notes both times, zero observed jitter — the target for this cycle was ±0.02 s tolerance, achieved was 0).
+| Property | Authored | After `xml_to_midi` |
+|---|---|---|
+| Event count | 88 | 88 |
+| Pitch multi-set | seed | seed (exact) |
+| Onset drift, max | — | 0.00 ms |
+| Duration drift | 500 ms → 499 ms | 1 tick @ PPQ 480 (~2 ms, legitimate PPQ boundary) |
 
-### 3.2 librosa-family fallback (alternative)
+SHA-256 (first 16 hex) across two independent runs after scrub:
 
-Selected after a fetchability ladder recorded in `data/transcribe/alternative_selection.jsonl`:
+```
+m1 = e2493fc7f7e3a4df    m2 = e2493fc7f7e3a4df
+x1 = 71d0e1eaf1d798ad    x2 = 71d0e1eaf1d798ad
+```
 
-- **Crepe** — installation failed with HTTP 403 on the PyPI source distribution; not usable in this workspace.
-- **magenta 2.1.4** with `note-seq` — fetchable, but the dependency footprint is disproportionate for a second transcriber intended as a diversity check. Recorded and rejected.
-- **librosa-family (`librosa.pyin` + CQT peak picking + spectral-flux onsets)** — chosen. Every dependency was already resolved in the top-level environment from the heuristics milestone.
+Byte identity holds across separate `mscore3` invocations, so the effect is not a cache artefact.
 
-The fallback dispatches by stem: `pyin` for bass (monophonic), CQT peak-picking against an I–vi–IV–V triad template for "other" (polyphonic), and band-passed `librosa.onset.onset_detect` with argmax-band classification for drums.
+### Merged full-song F1
 
-## 4. Evaluation Protocol
+Inputs are the frozen cycle-6 basic-pitch outputs at `data/transcribe/basic_pitch/synth_030s/{drums, bass, other}.jsonl`. Converted to per-stem MIDI via `jsonl_to_midi.py`, merged via `merge_stems_to_score`, exported via `xml_to_midi`. Metric: `mir_eval.transcription.precision_recall_f1_overlap` at `onset_tolerance=0.05 s`, `pitch_tolerance=0.5 semitones`, `offset_ratio=None`.
 
-Every (transcriber, mix, stem) cell is scored with `mir_eval.transcription.precision_recall_f1_overlap` using default onset/offset tolerances. Drum stems are scored with a documented **fake-Hz identity trick**: MIDI drum numbers are mapped to synthetic frequencies `100 + midi` Hz with `pitch_tolerance=0.5` cents. Identical drum numbers give zero cents of pitch difference and pass; adjacent drum numbers (e.g. kick 36 → snare 38) give roughly 25 cents and fail. This enforces exact drum-class identity through the pitched-note interface without a separate scoring path.
+**F1 vs basic-pitch input MIDIs — the identity-merge (bridge-only) metric:**
 
-Runs are single-threaded (`OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`) so that basic-pitch's forward pass is deterministic.
+| Stem | Precision | Recall | F1 | Ref | Est | ≥ 0.98? |
+|---|---:|---:|---:|---:|---:|:---:|
+| drums | 1.0000 | 1.0000 | **1.0000** | 0 | 0 | ✅ |
+| bass  | 1.0000 | 1.0000 | **1.0000** | 44 | 44 | ✅ |
+| other | 1.0000 | 1.0000 | **1.0000** | 78 | 78 | ✅ |
 
-## 5. Results
+Every basic-pitch note event survives the (per-stem MIDI → merged MusicXML → mscore3 export) round trip.
 
-The full nine-cell-per-transcriber table lives in `data/transcribe/results.tsv`. The condensed picture, averaged across the three durations (F1 is stable across durations to three decimal places for every cell):
+**F1 vs M-SEP-1 tiled ground truth — the end-to-end metric:**
 
-| Stem  | basic-pitch F1 | librosa-family F1 | Winner        | Margin |
-|-------|----------------|-------------------|---------------|--------|
-| bass  | 0.477          | 1.000             | librosa       | +0.523 |
-| other | 0.725          | 0.325             | basic-pitch   | +0.400 |
-| drums | 0.000 (lower bound) | 0.397        | librosa       | +0.397 |
+| Stem | Precision | Recall | F1 | Ref | Est | Threshold |
+|---|---:|---:|---:|---:|---:|:---:|
+| drums | 1.0000 | 0.0000 | **0.0000** | 180 | 0 | not met |
+| bass  | 0.3182 | 0.9333 | **0.4746** | 15 | 44 | not met |
+| other | 0.5769 | 1.0000 | **0.7317** | 45 | 78 | not met |
 
-Every drum row for basic-pitch carries an explicit `disclaimer` column in `results.tsv`: *"basic-pitch is polyphonic-pitch-oriented; F1 on drums is a LOWER BOUND."* Basic-pitch emits zero notes on drum audio, so precision is trivially reported as 1.000 and recall is 0.000 — the lower-bound label is what makes this row honest rather than misleading.
+None of the three shortfalls is a bridge defect. Drums 0.0000 is inherited from basic-pitch emitting zero notes on a pitchless drum stem (the model was trained on pitched polyphonic instruments; this is exactly the *lower-bound* row in the cycle-6 transcription survey). Bass 0.4746 reproduces `docs/transcription_survey_report.md §5` bit-for-bit — basic-pitch over-generates by roughly 3× (44 est vs 15 ref) and precision is the cap. Other 0.7317 actually *slightly raises* the cycle-6 baseline of 0.72 because every one of the 78 input notes survives the merge and recall reaches 1.0. The brief explicitly relaxes the 0.98 threshold when the shortfall is diagnosed as basic-pitch upstream noise, which is the case here.
 
-![Note-level F1 by transcriber and stem, averaged across three durations. Drum bar for basic-pitch is a documented lower bound.](data/transcribe/results_bar_chart.png)
+### Failure-mode surfacing
 
-Two caveats about the numerics belong here and not in a footnote:
+All four legibility contracts hold, each covered by a test:
 
-- **The alternative's bass F1 of 1.000 is a corpus-triviality artifact.** The synth bass line is a monophonic sequence of sustained whole-note roots at 120 BPM; `pyin` nails it. Any evaluation against real, articulated bass lines will surface real gaps not visible here. Flag on file for when the rated audio arrives.
-- **The alternative's "other" F1 of 0.325** reflects the fallback's polyphonic-chord approach against basic-pitch's per-note polyphony, on triad audio where per-note ground truth is dense. It is a real weakness of the fallback for that stem, not a scoring artifact.
+| Trigger | Message contains |
+|---|---|
+| Malformed MusicXML | `"mscore3 rc=0 but stderr flagged invalid input"` |
+| Missing input file | `"input file not found"` |
+| Timeout (`timeout_s` exceeded) | `"timed out"` |
+| Missing per-stem MIDI in `merge_stems_to_score` | `"stem MIDI not found"` |
+| Non-zero `mscore3` exit | `"mscore3 exited <rc>: <stderr>"` |
 
-## 6. Six-Axis Coverage Matrix
+**Special-point coverage.** Bar-boundary ties survive round-trip (seed 88/88); rests inside a voice preserve as `<rest>`; an empty stem emits a part with a whole-measure rest so mscore does not drop it entirely; overlapping notes on the same channel partition into `{stem}__v{k}` parts by interval-graph coloring; very short notes below one PPQ tick snap to `_MERGE_GRID_QL`; and missing `set_tempo` meta falls back to 500000 μs/beat (120 BPM).
 
-The full JSON with per-axis numerics is at `data/transcribe/six_axis_coverage.json`. Status meanings: **measurable** = a real metric is computed against a real reference on this corpus; **upgraded-to-measurable** = an axis that was originally scoped as a proxy and gained a real metric this cycle; **proxy-only** = an anchor is reported but does not evaluate transcription fidelity; **deferred** = not measurable on this corpus and no proxy attempted; **placeholder** = an API surface exists but there is no substrate to run it on.
+### Non-factor isolation
 
-| Axis            | What is measured                                                                                             | Status                    |
-|-----------------|--------------------------------------------------------------------------------------------------------------|---------------------------|
-| Rhythm          | Beat F-measure via `librosa.beat.beat_track` on the drums stem (F ≈ 0.99 all durations) plus the drum-onset F1 already in results.tsv | measurable                |
-| Melody          | Note-level F1 from `mir_eval.transcription` on bass and "other" (in results.tsv)                             | measurable                |
-| Harmony         | Triad detection via `librosa.chroma_cqt` peak template vs the I–vi–IV–V reference, scored with `mir_eval.chord.triads` — weighted accuracy 0.983 on every duration | measurable                |
-| Timbre          | MFCC-13 mean-vector cosine self-similarity as a sanity anchor. The measurement is $\cos(\mathrm{mfcc}(x), \mathrm{mfcc}(x))$ and returns 1.0 modulo floating-point noise; the real timbre metric requires the resynthesis pipeline, deferred | proxy-only                |
-| Dynamics        | `mir_eval.transcription_velocity.precision_recall_f1_overlap` on the bass stem (velocity tolerance ≈ 13/127 MIDI velocity units): librosa-family 1.000; basic-pitch ≈ 0.48 | upgraded-to-measurable    |
-| Form            | Nothing — the synth mixes are uniform 8-second loop tiles with no section structure                          | deferred                  |
-| Vocals-to-text  | `transcribe_vocals(wav)` returns the sentinel string `"NO_VOCAL_STEM"` on the silent-vocals input by design  | placeholder               |
+Zero import hits for `sidecar_nonfactor` across `scripts/score/` and `tests/test_score_bridge.py` (test §6a enforces the grep at run-time; §15 of the cross-branch integration test enforces it structurally). The bridge only handles musical content — pitches, onsets, durations, velocities — and has no code path that reads or writes non-factor sidecar files. Every module carries `assert sys.executable == "/usr/bin/python3"` at import.
 
-The timbre row is deliberately labelled `proxy-only`. Under the hood it is a self-cosine that trivially yields unity, and this cycle's audit flagged the label as overstating the measurement — the honest phrasing is that the file exists as a sanity anchor and the axis remains not-yet-measured. Renaming the JSON key from `cos_self` to `sanity_anchor` is on the next-cycle probe list.
+### Tests
 
-## 7. Adopt-or-Build Verdict
+`tests/test_score_bridge.py` — 23/23 passing across six sections (seed round-trip, note preservation, merged F1 identity-merge, merged F1 vs GT, determinism byte-identity, failure modes). Cross-branch integration test — 0 failures with §15 in place.
 
-**Build.** No single transcriber wins on every stem, and the cross-stem margins are large: 0.52 on bass in favour of the librosa fallback, 0.40 on "other" in favour of basic-pitch, and 0.40 on drums in favour of the fallback (with basic-pitch's zero being a lower bound, not a real zero). The right structure is a thin router with signature `transcribe(stem_wav, stem_type) → midi` that dispatches basic-pitch to polyphonic pitched stems, `pyin` to monophonic pitched stems, and a per-band drum-onset detector to drums. The router itself is a few dozen lines; the underlying transcribers stay as they are.
+### Audit disposition
 
-This is the campaign's first build verdict — the separation stage adopted `htdemucs`, and all earlier stages either adopted an existing tool outright or used stdlib-only construction with no survey needed.
+The auditor ran `tests/test_score_bridge.py` under the single-thread BLAS pins live (23 pass, 0 fail, printed per-stem F1 numbers matched the worker's claim); ran the cross-branch integration test live (0 failures); greped for the `sidecar_nonfactor` regex live (0 import hits, only docstring / comment mentions plus the test's own regex string); ran `promise_check` and `org_check` live (only WARNINGs — the shadow-ledger orphan-artifact residue on `data/score/*`, `scripts/score/*`, `tests/test_score_bridge.py`, and `docs/score_bridge_report.md`, plus three pre-existing non-canonical root-file WARNs unrelated to this branch — and no ERRORs); independently verified the seed event count (88 = 8 bars × (4 bass + 3 piano-chord tones + 4 drum)) matches the reported preservation; and independently verified the basic-pitch JSONL schema at `data/transcribe/basic_pitch/synth_030s/bass.jsonl` (rows carry `{is_drum, onset_s, offset_s, pitch, velocity}`, matching the worker's `jsonl_to_midi.py` and contradicting the research brief's earlier `{pitch_midi, amplitude}` guess). The one moderate defect found and fixed in-cycle was a `merge_stems_to_score` docstring that claimed "sub-tick precision (no quantization, no snapping)" while the implementation snaps to the 1/64-quarter grid described in §3a of the report; the docstring was patched in place to name the grid, the max shift, and the report reference, and the test suite ran 23/23 again after the edit.
 
-## 8. Environmental Hygiene
+## Discussion
 
-Basic-pitch's TensorFlow 2.15 / NumPy 1.26 requirements are incompatible with several packages the top-level environment already hosts (notably the PANNs classifier, librosa 0.11 for the heuristics stage, and the texture-panel embedding stack). The pattern used here — a fully quarantined virtual environment invoked over subprocess with a guard on the interpreter path — resolves the conflict without downgrading anything in the top-level environment. It is a reusable pattern for future milestones that surface similarly incompatible pins.
+Two things about this branch are worth naming. First, the separation of the identity-merge metric from the end-to-end metric is what makes the escape hatch legitimate rather than a face-saving move. The claim "the bridge preserves what basic-pitch produced" is falsifiable and was falsified against a strict test (F1 vs the basic-pitch input MIDIs, on every stem, must be 1.0000); it passed on every stem. The end-to-end claim (F1 vs M-SEP-1 tiled ground truth ≥ 0.98) failed, and the failure was independently traceable to already-published cycle-6 numbers — the bass row reproduces `docs/transcription_survey_report.md §5` bit-for-bit; the drums row is the lower-bound zero-notes case the survey called out with a disclaimer; the other row *raises* the cycle-6 baseline slightly. Composing sibling clone 1's octave-suppression filter with `jsonl_to_midi.py` (drop-in on the frozen JSONL before merge) is the concrete cycle-9 reconciliation that closes the vs-GT bass F1 gap toward ≥ 0.78; this is out of scope for this branch by construction and is called out in the merge report as guidance for the root conductor.
 
-The venv is reproducible: `workspace/basic_pitch_venv/requirements.frozen.txt` pins all 62 packages, and the subprocess call path is a single 25-line script.
+Second, the two emergent findings about the toolchain — the mscore3 per-part voice cap and the determinism scrubbing list — are the kind of infrastructure knowledge that pays off across every future score-authoring path. The `_partition_into_voices` interval-graph-coloring helper in `bridge.py` is reusable by any downstream extractor that emits multi-voice content; the `{stem}__v{k}` part-name convention plus the `parts_mapping.json` sidecar makes the workaround discoverable rather than magic. The scrubbing list was empirically enumerated by exporting the same MIDI twice on the same day and diffing (`tools/_probe_merge.py`), and the resulting rule set is documented so a future toolchain upgrade can shorten or extend it without re-deriving the whole list. Both are worth propagating into the plan of record at cycle-9 integration.
 
-## 9. Determinism and Verification
+Beyond this branch, M-SCORE-1's closure genuinely unblocks two downstream milestones: M-RULES-1's extraction-half can start reading `data/score/test_merged.musicxml` (or a fresh `merge_stems_to_score` call) plus its `parts_mapping.json` sidecar to extract harmonic, rhythmic, melodic, form, and arrangement rules, and M-TEX-1's parent stage-by-stage can consume the merged MusicXML → MIDI export as its "bare MIDI" starting point for the texture ladder. Extractors should consult the sidecar's `parts_by_stem` map because a stem can occupy multiple `{stem}__v{k}` parts.
 
-Determinism was verified along two independent axes and confirmed by an independent audit:
+## Open Questions
 
-1. **Reference recovery.** All twelve reference JSONL SHA-256 hashes recorded in `reference_manifest.json` reproduce bit-for-bit when regenerated from the tile policy in `synth_gt.py`.
-2. **Model invocation.** Rerunning basic-pitch on the 30-second bass stem inside the quarantined venv produced a byte-identical JSONL to the stored output (44 notes both times).
-3. **F1 recomputation.** Directly calling `mir_eval.transcription.precision_recall_f1_overlap` on the stored basic-pitch bass@030s JSONL against the reference JSONL yielded P = 0.3182, R = 0.9333, F1 = 0.4746, exactly matching the corresponding row of `results.tsv`.
+None within the branch's scope; every falsification criterion held, the test suite is green, the moderate docstring defect was fixed in-audit, and the F1-vs-GT shortfall is diagnosed against already-published cycle-6 numbers. The following belong to future cycles and are recorded on the report and merge report:
 
-## 10. Known Limitations and Next-Cycle Probes
+- **Compose octave suppression with the bridge.** Drop sibling clone 1's `octave_suppression` filter into `jsonl_to_midi.py`'s input path (before merge) to close the vs-GT bass F1 gap toward ≥ 0.78. One-line change over the frozen JSONL; no bridge modification required.
+- **Post-merge orphan-artifact adoption.** The `data/score/*`, `scripts/score/*`, `tests/test_score_bridge.py`, and `docs/score_bridge_report.md` warnings clear at fork-merge under the `_infra/adopt-fanout-artifacts-m-score-1` pattern established in prior forks.
+- **Environment carry-forward.** `music21 9.1.0` is a new top-level pin this cycle. Numpy stayed at 1.26.4 and no cross-branch test regressed, but the cycle-9 integrator should note it in the environment record.
 
-Priorities are ordered by expected F1 impact:
+## Appendix: Provenance
 
-1. **Basic-pitch octave-doubling suppression.** Post-process to drop octave-doubled co-onset notes. Expected effect: bass F1 0.48 → ~0.9, "other" F1 0.72 → ~0.85. Cheapest high-value fix.
-2. **Per-band drum onset detector.** Three band-passed `librosa.onset.onset_detect` calls with argmax bin per hit, replacing the single-detector approach; should lift alternative drum recall above 0.33.
-3. **Per-stem router prototype.** The concrete implementation of the build verdict.
-4. **Timbre axis upgrade.** Wire fluidsynth resynthesis into the loop so `timbre` earns its `proxy-only` label instead of running a trivial self-similarity. In the interim, rename `cos_self` to `sanity_anchor` in `six_axis_coverage.json` to remove the wording overstatement flagged by this cycle's audit.
-5. **Retry Crepe and magenta** when the workspace egress policy relaxes — the current librosa-family fallback is honestly labelled as low-diversity.
+**Cycle range:** cycle 1 of fork `3a908edcb241`, clone 0 of 3.
+**Working directory:** `/home/user/long-exposure-runs/music-gen`.
+**Session references:** researcher `843cb35b-9232-47b4-925c-a94c8d4ae257`, worker `ef72c18a-a76d-406c-87ae-f8243b0ba861`, auditor `0d95720c-be8d-4925-a72e-2f464664d68b`.
+**Auditor verdict:** **VALIDATED** with a parent `M-SCORE-1` roll-up.
 
-The alternative-bass F1 of 1.000 will not survive contact with real, articulated bass audio; the finding should not be read as a universal claim about `pyin`.
+**Deliverables on disk:**
 
-## 11. Files Produced This Cycle
+- Code: `scripts/score/{__init__.py, bridge.py, jsonl_to_midi.py, seed_score.py}` — public API is `xml_to_midi`, `midi_to_xml`, `merge_stems_to_score`, `ScoreBridgeError`; every module guards `sys.executable == "/usr/bin/python3"` at import.
+- Data: seed and round-trip pairs (`seed_8bar.musicxml`, `test_seed_{m1,m2}.mid`, `test_seed_{x1,x2}.musicxml`), deterministic-check pair (`test_det_r{1,2}.{mid, musicxml, parts_mapping.json}`), the 30 s synth-mix merged score (`merged_synth030s.{mid, musicxml, parts_mapping.json}`), and the failure-mode fixtures (`test_bad.xml`, `test_bad_out.mid`, `test_timeout_out.mid`).
+- Tests: `tests/test_score_bridge.py` (396 lines, 23 checks in six sections); `tests/test_integration_cross_branch.py §15` (surface, isolation, sidecar, report guards).
+- Report: `docs/score_bridge_report.md` (304 lines, seven sections plus §6.1 non-factor isolation and §7 scrubbing list).
 
-- `docs/transcription_survey_report.md` — the primary artifact of this branch.
-- `scripts/transcribe/reference_events.py` — deterministic reference generator.
-- `scripts/transcribe/_bp_call.py` — subprocess entrypoint into the quarantined basic-pitch venv, with interpreter-path guard.
-- `scripts/transcribe/eval_transcription.py` — mir_eval wrapper, including the fake-Hz drum identity trick.
-- `scripts/transcribe/six_axis_coverage.py` — six-axis matrix builder.
-- `workspace/basic_pitch_venv/` — quarantined environment, with `requirements.frozen.txt`.
-- `data/transcribe/reference/` — twelve reference JSONLs plus SHA manifest.
-- `data/transcribe/basic_pitch/`, `data/transcribe/alternative/` — nine JSONLs each.
-- `data/transcribe/results.tsv` — the F1 table with the `disclaimer` column.
-- `data/transcribe/velocity/velocity_f1.tsv` — bass velocity F1 for the dynamics axis.
-- `data/transcribe/six_axis_coverage.json` — the coverage matrix.
-- `data/transcribe/alternative_selection.jsonl` — the fetchability ladder.
-- `data/transcribe/results_bar_chart.png` — the summary figure embedded above.
-- `tests/test_integration_cross_branch.py` — extended with M-TRANS-1 checks (venv path, interpreter guard, basic-pitch pin, reference-manifest reproduction, results.tsv shape and header, lower-bound disclaimer presence, six-axis section presence, non-factor isolation scan). Full suite passes.
+**Environment:** `mscore3` MuseScore3 3.2.3 (headless, `QT_QPA_PLATFORM=offscreen`); Python 3.11.15 (`/usr/bin/python3`); `numpy 1.26.4`; `music21 9.1.0` (installed this cycle; cross-branch tests remain green); `mir_eval 0.8.2`; `mido` (Debian package, no `__version__`). Single-thread BLAS pins: `OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=1`.
 
-## 12. Status
+**Frozen input SHA-256 (first 16 hex):**
+```
+c81d3b84a46429f3  data/separation/synth_mix/midi/drums.mid
+edc499a1f673edf0  data/separation/synth_mix/midi/bass.mid
+5fb0bae22ee71532  data/separation/synth_mix/midi/piano.mid
+01ba4719c80b6fe9  data/transcribe/basic_pitch/synth_030s/drums.jsonl
+c7165998626e9262  data/transcribe/basic_pitch/synth_030s/bass.jsonl
+90ea9a10a8f8640c  data/transcribe/basic_pitch/synth_030s/other.jsonl
+```
 
-The milestone M-TRANS-1 is discharged on the pitch/rhythm side with the six-axis coverage matrix and a build verdict. The sub-milestones for basic-pitch integration, alternative-transcriber selection, and the six-axis coverage matrix are recorded in this branch's shadow ledger and land on merge. The prior manager item covering the basic-pitch dependency conflict was resolved by the quarantined-venv approach and does not re-emit.
+**Ledger routing:** shadow-ledger events emitted at `/home/user/music-gen-instance/fork-3a908edcb241/clone-0/promise_ledger.jsonl` for `M-SCORE-1/round-trip`, `M-SCORE-1/merged-full-song`, `M-SCORE-1/bridge-api`, and the parent `M-SCORE-1` roll-up. All events emitted with explicit `event_id`, avoiding the recurring lesson from cycle 7's ledger-append helper omission. Orphan-artifact WARNings clear at fork-merge under `_infra/adopt-fanout-artifacts-m-score-1` (same pattern as cycles 3, 5, 7).
 
-## References
+**Handoff to root conductor.** Recorded verbatim in the merge report at `/home/user/music-gen-instance/fork-3a908edcb241/clone-0/merge_report.md`:
 
-[1] Bittner, R. M. et al. *A Lightweight Instrument-Agnostic Model for Polyphonic Note Transcription and Multipitch Estimation*, ICASSP 2022 — basic-pitch.
-[2] Raffel, C. et al. *mir_eval: A Transparent Implementation of Common MIR Metrics*, ISMIR 2014.
-[3] Mauch, M. and Dixon, S. *pYIN: A Fundamental Frequency Estimator Using Probabilistic Threshold Distributions*, ICASSP 2014.
-[4] McFee, B. et al. *librosa: Audio and Music Signal Analysis in Python*, SciPy 2015.
+- Adopt `scripts/score/*` (4 files), `tests/test_score_bridge.py`, `docs/score_bridge_report.md`, and the `data/score/*` outputs under `M-SCORE-1`.
+- Fold the four shadow-ledger events into the root ledger.
+- Reconcile `tests/test_integration_cross_branch.py §15` against sibling clones' additions (clones 1 and 2 both use `§17`; renumber during integration if collision).
+- Carry `music21 9.1.0` forward in the environment record; no numpy / torch / tensorflow drift.
+- Propagate the two conventions to the plan of record: (a) `{score_xml.stem}.parts_mapping.json` sidecar; (b) `{stem}__v{k}` part-name convention for the mscore3 per-part voice-cap sidestep.
+- **Downstream unlocks:** M-RULES-1 extraction-half can start immediately; M-TEX-1 parent stage-by-stage can start immediately.
 
-## Appendix: Implementation Details
-
-**Session references (this cycle).**
-
-- Researcher session: `aff8ffcc-5663-4cdb-8c7c-0eaf93894462`
-- Worker session: `6418d3f6-b78b-41b6-bb9e-5d674bc92e13`
-- Auditor session: `5523fd16-3a44-4edb-bdc7-c1f1b40a0a01`
-- Fanout fork: `3168fb0e47a1`, clone 0.
-
-**Ledger state at end of cycle (this branch's shadow ledger).**
-`M-TRANS-1` sub-milestones `basic-pitch`, `alternative`, `six-axis-coverage` recorded; the M-TRANS-1 rollup is queued for promotion to `validated/high` on fanout merge. The 27 orphan-artifact warnings surfaced by `promise_check` at branch scope are expected — the artifacts live in the clone-0 shadow ledger and resolve when the root conductor folds them into the top-level ledger under `_infra/adopt-fanout-artifacts-m-trans-1`. Two sibling-clone-owned errors on `M-RULES-1/schema` and `M-EAR-1/preparation` are not this branch's and are flagged for the root conductor.
-
-**Cross-branch integration test.** `tests/test_integration_cross_branch.py` §12 (M-TRANS-1) checks all pass in a clean run of the full suite: venv path, venv interpreter, basic-pitch pin, reference manifest reproduction, results-TSV shape and header, lower-bound disclaimer, report presence with lower-bound disclaimer plus six-axis section, seven axis rows present, non-factor isolation scan clean.
-
-**Test summary.** Full suite passes with zero failures.
-
-**Audit outcome.** Validated. Two MODERATE findings recorded and non-blocking: (i) the timbre axis label `proxy-only` overstates the underlying self-cosine measurement (substance is honest; rename planned); (ii) the alternative-bass F1 of 1.000 is a corpus-triviality artifact on the synth ground truth (disclosed in §5 and §8 above). One MINOR wording nit on a bar-duration derivation was logged and not fixed.
-
-**Cross-reference map (values that flow out of this branch).**
-- `scripts/transcribe/_bp_call.py` (basic-pitch invocation contract) → consumed by future per-stem router.
-- `data/transcribe/reference/*` (reference JSONL + manifest) → reused by any future transcription evaluation on the synth-mix corpus.
-- Preprocessing rule "44100 Hz stereo before any separator" (inherited from separation stage) also applies to transcription inputs.
-- Six-axis coverage matrix schema → reused by downstream generation-quality evaluation.
+<verdict>validated</verdict>
