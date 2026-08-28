@@ -1,0 +1,59 @@
+{
+  "confidence": 0.85,
+  "event_id": "8014f8f01fa4264bd5fab5a71e258722",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "density_over_time": [
+      0.6,
+      0.9,
+      0.6,
+      0.9,
+      0.3,
+      0.9
+    ],
+    "instrumentation": [
+      "drums",
+      "bass",
+      "electric_guitar",
+      "hammond_organ",
+      "vocals"
+    ],
+    "layer_events": [
+      {
+        "layer": "hammond_organ",
+        "op": "add",
+        "t_s": 30.0
+      },
+      {
+        "layer": "hammond_organ",
+        "op": "remove",
+        "t_s": 150.0
+      },
+      {
+        "layer": "hammond_organ",
+        "op": "add",
+        "t_s": 180.0
+      }
+    ]
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        0,
+        84
+      ],
+      "transcription_event_id": "2040b460e40cc14478211a6cd6e7fc02"
+    }
+  ],
+  "rule_id": "rule_2fda9481ef1f60c1",
+  "rule_type": "arrangement",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 210.0,
+    "level": "song",
+    "start_s": 0.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

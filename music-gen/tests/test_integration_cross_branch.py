@@ -224,6 +224,160 @@ for _sid, (_lab, _expected_w, _idx) in _heur_seeds.items():
             check(abs(_got_w - _expected_w) < 1e-9,
                   f"M-HEUR-1: {_lab} clip[{_idx}] weight={_got_w:.6f} matches formula {_expected_w:.6f}")
 
+# -------------------------------------------------------------------
+# 11. M-RULES-1/schema (clone-1 of fork 3168fb0e47a1)
+# -------------------------------------------------------------------
+
+# 11a. Ledger file exists (may be empty; extractors deferred to M-SCORE-1).
+_rules_ledger = WS / "data" / "rules" / "ledger.jsonl"
+check(_rules_ledger.exists(),
+      f"M-RULES-1/schema: {_rules_ledger.relative_to(WS)} exists (may be empty until M-SCORE-1)")
+
+# 11b. Rules schema artifacts present and JSON/YAML equivalent.
+_rules_json = WS / "scripts" / "rules" / "schema" / "rules_v1.json"
+_rules_yaml = WS / "scripts" / "rules" / "schema" / "rules_v1.yaml"
+check(_rules_json.is_file(), "M-RULES-1/schema: rules_v1.json present")
+check(_rules_yaml.is_file(), "M-RULES-1/schema: rules_v1.yaml present")
+if _rules_json.is_file() and _rules_yaml.is_file():
+    import yaml as _yaml
+    with open(_rules_json) as _f:
+        _j = json.load(_f)
+    with open(_rules_yaml) as _f:
+        _y = _yaml.safe_load(_f)
+    check(_j == _y, "M-RULES-1/schema: rules_v1.yaml safe_load equals rules_v1.json parse")
+
+# 11c. Non-factor isolation: scripts/rules/*.py never IMPORT sidecar_nonfactor
+#      (mentions in comments are allowed).
+import re as _re
+_seen_rules_nonfactor_import = False
+_rules_root = WS / "scripts" / "rules"
+_pat_sidecar_import = _re.compile(
+    r"^\s*(?:from\s+\S*\bsidecar_nonfactor\b|import\s+\S*\bsidecar_nonfactor\b)",
+    _re.MULTILINE,
+)
+if _rules_root.is_dir():
+    for _p in _rules_root.rglob("*.py"):
+        if _pat_sidecar_import.search(_p.read_text()):
+            _seen_rules_nonfactor_import = True
+            break
+check(not _seen_rules_nonfactor_import,
+      "M-RULES-1/schema: scripts/rules/*.py do NOT import scripts.classifier.sidecar_nonfactor (isolation)")
+
+# 11d. ≥5 synthetic instances per rule_type and all validate.
+try:
+    from scripts.rules.validate import validate_row as _validate_row
+    from scripts.rules.rule_id import derive_rule_id as _derive_rule_id
+    _rule_types = ["harmonic", "rhythmic", "melodic", "form", "arrangement"]
+    _examples_root = WS / "scripts" / "rules" / "schema" / "examples"
+    for _rt in _rule_types:
+        _files = sorted((_examples_root / _rt).glob("*.json"))
+        check(len(_files) >= 5,
+              f"M-RULES-1/schema: {_rt} has {len(_files)} synthetic instance(s) (>=5 required)")
+        _valid = 0
+        _rid_match = 0
+        for _p in _files:
+            with open(_p) as _f:
+                _r = json.load(_f)
+            if not _validate_row(_r):
+                _valid += 1
+            if _derive_rule_id(_r) == _r.get("rule_id"):
+                _rid_match += 1
+        check(_valid == len(_files),
+              f"M-RULES-1/schema: {_rt} all {_valid}/{len(_files)} synthetic instances validate cleanly")
+        check(_rid_match == len(_files),
+              f"M-RULES-1/schema: {_rt} rule_id reproducible for {_rid_match}/{len(_files)} instances")
+except Exception as _e:
+    check(False, f"M-RULES-1/schema: synthetic-instance validation raised {_e!r}")
+
+# -------------------------------------------------------------------
+# 12. M-TRANS-1 (clone-0 of fork 3168fb0e47a1)
+# -------------------------------------------------------------------
+
+# 12a. Quarantined venv exists and holds basic-pitch (path invariant).
+_bp_venv = WS / "workspace" / "basic_pitch_venv"
+check(_bp_venv.is_dir(),
+      f"M-TRANS-1: quarantined venv exists at {_bp_venv.relative_to(WS)}")
+_bp_py = _bp_venv / "bin" / "python3"
+check(_bp_py.is_file(),
+      "M-TRANS-1: venv interpreter present (workspace/basic_pitch_venv/bin/python3)")
+_bp_freeze = _bp_venv / "requirements.frozen.txt"
+check(_bp_freeze.is_file() and _bp_freeze.stat().st_size > 0,
+      "M-TRANS-1: requirements.frozen.txt recorded")
+if _bp_freeze.is_file():
+    _frozen = _bp_freeze.read_text().lower()
+    check("basic-pitch==0.4.0" in _frozen,
+          "M-TRANS-1: venv freeze pins basic-pitch==0.4.0")
+
+# 12b. Reference JSONLs present and deterministic (SHA-256 recomputed matches).
+import hashlib as _hashlib
+_ref_manifest_p = WS / "data" / "transcribe" / "reference" / "reference_manifest.json"
+check(_ref_manifest_p.is_file(),
+      "M-TRANS-1: reference_manifest.json present")
+if _ref_manifest_p.is_file():
+    _ref_manifest = json.loads(_ref_manifest_p.read_text())
+    _files = _ref_manifest["files"]
+    check(len(_files) == 12,
+          f"M-TRANS-1: reference manifest lists 12 (mix, stem) pairs ({len(_files)})")
+    _ok = 0
+    for _f in _files:
+        _p = WS / _f["path"]
+        if _p.is_file():
+            _h = _hashlib.sha256(_p.read_bytes()).hexdigest()
+            if _h == _f["sha256"]:
+                _ok += 1
+    check(_ok == len(_files),
+          f"M-TRANS-1: reference JSONL SHA-256 matches manifest for {_ok}/{len(_files)}")
+
+# 12c. results.tsv non-empty per (transcriber, mix, stem) — 18 rows + header.
+_res_tsv = WS / "data" / "transcribe" / "results.tsv"
+check(_res_tsv.is_file(), "M-TRANS-1: results.tsv present")
+if _res_tsv.is_file():
+    _lines = [l for l in _res_tsv.read_text().splitlines() if l.strip()]
+    check(len(_lines) == 19,
+          f"M-TRANS-1: results.tsv has 18 data rows + header ({len(_lines)-1} data)")
+    _header = _lines[0].split("\t")
+    for _need in ("transcriber", "mix", "stem", "precision", "recall", "f1"):
+        check(_need in _header,
+              f"M-TRANS-1: results.tsv header contains '{_need}'")
+
+# 12d. Drum-row lower-bound disclaimer present for basic_pitch.
+if _res_tsv.is_file():
+    _txt = _res_tsv.read_text()
+    check("LOWER BOUND" in _txt,
+          "M-TRANS-1: drum-row disclaimer 'LOWER BOUND' present in results.tsv")
+
+# 12e. Report present and mentions the drum lower-bound.
+_report = WS / "docs" / "transcription_survey_report.md"
+check(_report.is_file(), "M-TRANS-1: docs/transcription_survey_report.md present")
+if _report.is_file():
+    _rtxt = _report.read_text()
+    check("lower bound" in _rtxt.lower() or "LOWER BOUND" in _rtxt,
+          "M-TRANS-1: report text carries the drum-stem lower-bound disclaimer")
+    check("six-axis" in _rtxt.lower() or "six axis" in _rtxt.lower(),
+          "M-TRANS-1: report has a six-axis coverage section")
+
+# 12f. Non-factor isolation: scripts/transcribe/*.py must not import sidecar_nonfactor.
+_seen_trans_nonfactor_import = False
+_trans_root = WS / "scripts" / "transcribe"
+if _trans_root.is_dir():
+    for _p in _trans_root.rglob("*.py"):
+        if _pat_sidecar_import.search(_p.read_text()):
+            _seen_trans_nonfactor_import = True
+            break
+check(not _seen_trans_nonfactor_import,
+      "M-TRANS-1: scripts/transcribe/*.py do NOT import sidecar_nonfactor (isolation)")
+
+# 12g. Six-axis coverage matrix exists and covers all 7 rows explicitly
+#      (rhythm, melody, harmony, timbre, dynamics, form, vocals-to-text).
+_axes_p = WS / "data" / "transcribe" / "six_axis_coverage.json"
+check(_axes_p.is_file(), "M-TRANS-1: six_axis_coverage.json present")
+if _axes_p.is_file():
+    _axes = json.loads(_axes_p.read_text())
+    _need_axes = {"rhythm", "melody", "harmony", "timbre", "dynamics", "form", "vocals-to-text"}
+    _have = {row["axis"] for row in _axes["axis_table"]}
+    check(_need_axes.issubset(_have),
+          f"M-TRANS-1: coverage matrix has all axes (missing: {sorted(_need_axes - _have)})")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

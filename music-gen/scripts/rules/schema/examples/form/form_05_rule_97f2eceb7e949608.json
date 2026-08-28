@@ -1,0 +1,54 @@
+{
+  "confidence": 0.82,
+  "event_id": "0a444530e027c3ad256df6503b567278",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "sections": [
+      {
+        "end_measure": 24,
+        "label": "A",
+        "start_measure": 0
+      },
+      {
+        "end_measure": 48,
+        "label": "B",
+        "start_measure": 24
+      },
+      {
+        "end_measure": 72,
+        "label": "A",
+        "start_measure": 48
+      },
+      {
+        "end_measure": 96,
+        "label": "C",
+        "start_measure": 72
+      },
+      {
+        "end_measure": 120,
+        "label": "A",
+        "start_measure": 96
+      }
+    ]
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        0,
+        120
+      ],
+      "transcription_event_id": "d7e618daf1b879e264253d486915f3b2"
+    }
+  ],
+  "rule_id": "rule_97f2eceb7e949608",
+  "rule_type": "form",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 300.0,
+    "level": "song",
+    "start_s": 0.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

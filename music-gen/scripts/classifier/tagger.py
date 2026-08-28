@@ -53,6 +53,20 @@ class Tagger:
         clipwise, _ = self._at.inference(batch)
         return clipwise[0]
 
+    def embed(self, waveform: np.ndarray, sr: int = MODEL_SR) -> np.ndarray:
+        """Return the 2048-dim penultimate embedding for the clip.
+
+        panns_inference's AudioTagging.inference already returns
+        (clipwise_output, embedding); the embedding is the Cnn14
+        penultimate feature (before the 527-way linear head). Reused by
+        M-EAR-1/preparation feature-extractor pipeline. Single source of
+        truth for PANNs model handling stays in M-CLASS-1.
+        """
+        wav = _prep_waveform(waveform, sr, MODEL_SR)
+        batch = wav[None, :].astype(np.float32)
+        _, embedding = self._at.inference(batch)
+        return np.asarray(embedding[0], dtype=np.float32)
+
 
 def _prep_waveform(waveform: np.ndarray, sr_in: int, sr_out: int) -> np.ndarray:
     import librosa

@@ -1,0 +1,36 @@
+{
+  "confidence": 0.92,
+  "event_id": "9d11fa100daac4dc1c295f226dce53a5",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "cadence": "authentic",
+    "chord_progression": [
+      "I",
+      "vi",
+      "IV",
+      "V"
+    ],
+    "key": "C_major"
+  },
+  "provenance_pointers": [
+    {
+      "clip_id": "be479224c3e8c7a8",
+      "measure_range": [
+        0,
+        64
+      ],
+      "transcription_event_id": "f4059866431821d28c79e4287981717d"
+    }
+  ],
+  "rule_id": "rule_10bf79e885ab75ba",
+  "rule_type": "harmonic",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 180.0,
+    "level": "song",
+    "start_s": 0.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

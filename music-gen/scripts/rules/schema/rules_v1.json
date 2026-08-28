@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://music-gen/rules/rules_v1",
+  "title": "Rules ledger row (v1)",
+  "description": "One line per row in data/rules/ledger.jsonl. event_type distinguishes rule rows from supersede rows. Append-only ledger; supersede is expressed as a fresh event, never an in-place edit.",
+  "type": "object",
+  "required": ["event_type", "schema_v", "event_id", "ts", "extractor", "extractor_version"],
+  "properties": {
+    "event_type": {"enum": ["rule", "supersede"]},
+    "schema_v": {"const": 1},
+    "event_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "ts": {"type": "string", "format": "date-time"},
+    "extractor": {"type": "string", "minLength": 1},
+    "extractor_version": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"event_type": {"const": "rule"}}, "required": ["event_type"]},
+      "then": {
+        "required": [
+          "event_type", "schema_v", "event_id", "ts", "extractor", "extractor_version",
+          "rule_id", "rule_type", "scope", "provenance_pointers", "confidence", "parameters"
+        ],
+        "properties": {
+          "event_type": {"const": "rule"},
+          "schema_v": {"const": 1},
+          "event_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+          "ts": {"type": "string", "format": "date-time"},
+          "extractor": {"type": "string", "minLength": 1},
+          "extractor_version": {"type": "string", "minLength": 1},
+          "rule_id": {"type": "string", "pattern": "^rule_[0-9a-f]{16}$"},
+          "rule_type": {"enum": ["harmonic", "rhythmic", "melodic", "form", "arrangement"]},
+          "scope": {
+            "type": "object",
+            "required": ["level", "start_s", "end_s"],
+            "properties": {
+              "level": {"enum": ["song", "section", "measure"]},
+              "start_s": {"type": "number", "minimum": 0},
+              "end_s": {"type": "number", "minimum": 0}
+            },
+            "additionalProperties": false
+          },
+          "provenance_pointers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["transcription_event_id", "measure_range"],
+              "properties": {
+                "transcription_event_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+                "measure_range": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {"type": "integer", "minimum": 0}
+                },
+                "clip_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "parameters": {"type": "object"}
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {"properties": {"rule_type": {"const": "harmonic"}}, "required": ["rule_type"]},
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "required": ["key", "chord_progression", "cadence"],
+                  "properties": {
+                    "key": {"type": "string", "pattern": "^[A-G][b#]?_(major|minor|dorian|phrygian|lydian|mixolydian|aeolian|locrian)$"},
+                    "chord_progression": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {"type": "string", "pattern": "^(I|II|III|IV|V|VI|VII|i|ii|iii|iv|v|vi|vii)[b#]?(m|dim|aug|maj7|m7|7)?$"}
+                    },
+                    "cadence": {"enum": ["authentic", "plagal", "half", "deceptive", "none"]}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {"properties": {"rule_type": {"const": "rhythmic"}}, "required": ["rule_type"]},
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "required": ["tempo_bpm", "meter", "pattern", "swing_ratio"],
+                  "properties": {
+                    "tempo_bpm": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 300},
+                    "meter": {"type": "string", "pattern": "^[1-9][0-9]?/[1-9][0-9]?$"},
+                    "pattern": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {"enum": ["kick", "snare", "hihat", "cymbal", "tom", "rest"]}
+                    },
+                    "swing_ratio": {"type": "number", "minimum": 0.5, "maximum": 0.75}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {"properties": {"rule_type": {"const": "melodic"}}, "required": ["rule_type"]},
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "required": ["contour", "range_semitones", "pitch_class_histogram"],
+                  "properties": {
+                    "contour": {"enum": ["arch", "ascending", "descending", "static", "undulating"]},
+                    "range_semitones": {"type": "integer", "minimum": 0, "maximum": 48},
+                    "pitch_class_histogram": {
+                      "type": "array",
+                      "minItems": 12,
+                      "maxItems": 12,
+                      "items": {"type": "number", "minimum": 0, "maximum": 1}
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {"properties": {"rule_type": {"const": "form"}}, "required": ["rule_type"]},
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "required": ["sections"],
+                  "properties": {
+                    "sections": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "required": ["label", "start_measure", "end_measure"],
+                        "properties": {
+                          "label": {"type": "string", "pattern": "^[A-Z][a-z]?[0-9]?$"},
+                          "start_measure": {"type": "integer", "minimum": 0},
+                          "end_measure": {"type": "integer", "minimum": 0}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {"properties": {"rule_type": {"const": "arrangement"}}, "required": ["rule_type"]},
+            "then": {
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "required": ["instrumentation", "density_over_time", "layer_events"],
+                  "properties": {
+                    "instrumentation": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {"type": "string", "minLength": 1}
+                    },
+                    "density_over_time": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {"type": "number", "minimum": 0, "maximum": 1}
+                    },
+                    "layer_events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["t_s", "op", "layer"],
+                        "properties": {
+                          "t_s": {"type": "number", "minimum": 0},
+                          "op": {"enum": ["add", "remove", "swap"]},
+                          "layer": {"type": "string", "minLength": 1}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "supersede"}}, "required": ["event_type"]},
+      "then": {
+        "required": [
+          "event_type", "schema_v", "event_id", "ts", "extractor", "extractor_version",
+          "supersedes_rule_id", "reason", "new_rule_id"
+        ],
+        "properties": {
+          "event_type": {"const": "supersede"},
+          "schema_v": {"const": 1},
+          "event_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+          "ts": {"type": "string", "format": "date-time"},
+          "extractor": {"type": "string", "minLength": 1},
+          "extractor_version": {"type": "string", "minLength": 1},
+          "supersedes_rule_id": {"type": "string", "pattern": "^rule_[0-9a-f]{16}$"},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 500},
+          "new_rule_id": {"type": "string", "pattern": "^rule_[0-9a-f]{16}$"}
+        },
+        "additionalProperties": false
+      }
+    }
+  ]
+}

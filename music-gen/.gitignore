@@ -6,3 +6,8 @@ data/
 # so they are explicitly ignored even if `data/` is ever narrowed.
 data/ingestion/clips/
 data/ingestion/egress_status.jsonl
+
+# never commit virtualenvs the run creates
+*_venv/
+.venv/
+venv/

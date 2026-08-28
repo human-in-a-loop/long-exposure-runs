@@ -1,0 +1,43 @@
+{
+  "confidence": 0.78,
+  "event_id": "ffdb2030680d9f9dd37fffa7ceb16614",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "contour": "static",
+    "pitch_class_histogram": [
+      0.5000000000000001,
+      0.0,
+      0.1,
+      0.0,
+      0.3,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "range_semitones": 4
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        8,
+        16
+      ],
+      "transcription_event_id": "d8f14f33e55a0ade9d7d27250093cb15"
+    }
+  ],
+  "rule_id": "rule_6b1f244e48193f2c",
+  "rule_type": "melodic",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 40.0,
+    "level": "section",
+    "start_s": 20.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

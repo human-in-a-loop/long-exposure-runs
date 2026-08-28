@@ -1,0 +1,40 @@
+{
+  "confidence": 0.85,
+  "event_id": "520bd9a785920d327e3355dd08b5aab3",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "meter": "4/4",
+    "pattern": [
+      "kick",
+      "rest",
+      "rest",
+      "rest",
+      "snare",
+      "rest",
+      "rest",
+      "rest"
+    ],
+    "swing_ratio": 0.5,
+    "tempo_bpm": 80.0
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        64,
+        80
+      ],
+      "transcription_event_id": "a8e45bdb983a0ef2994eda3b348244a2"
+    }
+  ],
+  "rule_id": "rule_bd07ccedbae261aa",
+  "rule_type": "rhythmic",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 150.0,
+    "level": "section",
+    "start_s": 120.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

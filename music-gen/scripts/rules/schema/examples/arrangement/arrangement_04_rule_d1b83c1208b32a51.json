@@ -1,0 +1,43 @@
+{
+  "confidence": 0.7,
+  "event_id": "7017f82fdc18ecfd9c62981f9e69e621",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "density_over_time": [
+      0.4,
+      0.6,
+      0.4
+    ],
+    "instrumentation": [
+      "synth_pad",
+      "synth_lead"
+    ],
+    "layer_events": [
+      {
+        "layer": "synth_lead",
+        "op": "swap",
+        "t_s": 90.0
+      }
+    ]
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        16,
+        32
+      ],
+      "transcription_event_id": "9672f95ca62b507426feb7405c69cd57"
+    }
+  ],
+  "rule_id": "rule_d1b83c1208b32a51",
+  "rule_type": "arrangement",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 120.0,
+    "level": "section",
+    "start_s": 60.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}

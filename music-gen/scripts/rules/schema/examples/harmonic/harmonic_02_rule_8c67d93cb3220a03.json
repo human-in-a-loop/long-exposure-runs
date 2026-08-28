@@ -1,0 +1,34 @@
+{
+  "confidence": 0.85,
+  "event_id": "693a51f87bc3f8bb26b5bd5b96f9de6a",
+  "event_type": "rule",
+  "extractor": "synthetic_examples",
+  "extractor_version": "1.0.0",
+  "parameters": {
+    "cadence": "authentic",
+    "chord_progression": [
+      "ii",
+      "V",
+      "I"
+    ],
+    "key": "D_minor"
+  },
+  "provenance_pointers": [
+    {
+      "measure_range": [
+        16,
+        32
+      ],
+      "transcription_event_id": "c838e713f49cf2352c58868bfd11d3a7"
+    }
+  ],
+  "rule_id": "rule_8c67d93cb3220a03",
+  "rule_type": "harmonic",
+  "schema_v": 1,
+  "scope": {
+    "end_s": 60.0,
+    "level": "section",
+    "start_s": 30.0
+  },
+  "ts": "2026-08-28T00:00:00Z"
+}
