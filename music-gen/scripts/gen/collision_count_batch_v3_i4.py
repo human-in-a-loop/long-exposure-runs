@@ -76,7 +76,11 @@ def _main(argv):
     args.batch_root.mkdir(parents=True, exist_ok=True)
     (args.batch_root / "collision_report.json").write_text(
         json.dumps(report, indent=2, sort_keys=True))
-    # Also drop the standard collision_matrix.tsv for parity with batch_v2.
+    # Drop the raw cycle-13 analysis JSON and the standard matrix TSV for
+    # parity with batch_v2 (downstream figure and integration tests reach
+    # for `collision_analysis.json` by name).
+    (args.batch_root / "collision_analysis.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True))
     write_tsv(result, args.batch_root / "collision_matrix.tsv")
 
     print(f"[collision_count_batch_v3_i4] raw pairs:     {raw_total}")
