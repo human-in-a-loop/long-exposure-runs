@@ -53,6 +53,7 @@ from long_exposure.tools._ledger_schema import (
 from long_exposure import workspace_bootstrap
 from long_exposure.workspace_bootstrap import (
     LedgerAppendError,
+    _lint_clone_shadow,
     concat_clone_ledgers,
 )
 
@@ -315,6 +316,118 @@ def test_ssot_identity():
         "workspace_bootstrap should import from the SSoT"
     assert "REQUIRED_EVENT_FIELDS = " not in ws_src, \
         "workspace_bootstrap should not redefine REQUIRED_EVENT_FIELDS locally"
+
+
+# --- Cycle-14 hardening cases (v2) -----------------------------------------
+
+
+@register("11. cycle-14: list-form supersedes_path rejected at pre-concat lint AND concat")
+def test_supersedes_path_list_rejected_at_lint_and_concat():
+    """The cycle-13 line-266 drift class. Both the standalone lint helper AND
+    the concat merge must reject with a message containing the shadow path,
+    the line number, AND the field name 'supersedes_path'. Main ledger stays
+    untouched (atomicity guarantee)."""
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    # Two rows: row 1 valid, row 2 has list-form supersedes_path.
+    good = _mk_event(milestone_id="M-C14-1", ts="2026-08-28T12:00:00Z",
+                     narrative="good row")
+    bad = _mk_event(milestone_id="M-C14-1", ts="2026-08-28T12:01:00Z",
+                    narrative="bad row",
+                    supersedes_path=["tools/foo.py", "tools/bar.py"])
+    shadow = _write_clone(fork, 0, [good, bad])
+
+    # (a) pre-concat lint — importable helper.
+    try:
+        _lint_clone_shadow(shadow)
+    except LedgerConcatError as e:
+        msg = str(e)
+        assert str(shadow) in msg, f"shadow path missing in msg: {msg}"
+        assert ":2" in msg, f"line number ':2' missing in msg: {msg}"
+        assert "supersedes_path" in msg, \
+            f"field name 'supersedes_path' missing in msg: {msg}"
+    else:
+        raise AssertionError("expected LedgerConcatError from _lint_clone_shadow")
+
+    # (b) full concat gate — same rejection, atomic-write untouched.
+    try:
+        concat_clone_ledgers(ws, fork)
+    except LedgerConcatError as e:
+        msg = str(e)
+        assert "supersedes_path" in msg, msg
+        assert "line 2" in msg or ":2" in msg, msg
+    else:
+        raise AssertionError("expected LedgerConcatError from concat")
+    assert not (ws / "promise_ledger.jsonl").exists(), \
+        "main ledger touched despite validation failure"
+
+
+@register("12. cycle-14: invalid status value rejected at pre-concat lint AND concat")
+def test_invalid_status_rejected_at_lint_and_concat():
+    """Unknown status keyword (e.g. 'wobble') must fail at both gates with the
+    field name 'status' AND the offending value in the message AND the shadow
+    path + line number."""
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    bad = _mk_event(milestone_id="M-C14-2", ts="2026-08-28T12:02:00Z",
+                    status="wobble", narrative="bad status")
+    shadow = _write_clone(fork, 0, [bad])
+
+    try:
+        _lint_clone_shadow(shadow)
+    except LedgerConcatError as e:
+        msg = str(e)
+        assert str(shadow) in msg, msg
+        assert ":1" in msg, msg
+        assert "status" in msg, msg
+        assert "wobble" in msg, msg
+    else:
+        raise AssertionError("expected LedgerConcatError from _lint_clone_shadow")
+
+    try:
+        concat_clone_ledgers(ws, fork)
+    except LedgerConcatError as e:
+        assert "status" in str(e), str(e)
+        assert "wobble" in str(e), str(e)
+    else:
+        raise AssertionError("expected LedgerConcatError from concat")
+
+
+@register("13. cycle-14: all-valid shadow lints clean AND concat merges byte-identically")
+def test_valid_shadow_lints_clean_and_merges():
+    """Positive control: a shadow containing rows that use both string-form
+    supersedes_path AND canonical statuses (including 'in-progress') lints
+    cleanly, then concat merges to a byte-identical result."""
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    evs = [
+        _mk_event(milestone_id="M-C14-3", ts="2026-08-28T12:03:00Z",
+                  narrative="kickoff", status="in-progress"),
+        _mk_event(milestone_id="M-C14-3", ts="2026-08-28T12:04:00Z",
+                  narrative="closure", status="validated",
+                  supersedes_path="tools/stale/foo.py"),
+    ]
+    shadow = _write_clone(fork, 0, evs)
+
+    # Lint clean.
+    _lint_clone_shadow(shadow)  # must not raise
+
+    # Concat merges cleanly.
+    n = concat_clone_ledgers(ws, fork)
+    assert n == 2, f"expected 2 rows added, got {n}"
+    body_after_1st = (ws / "promise_ledger.jsonl").read_bytes()
+
+    # Idempotency: 2nd concat is a no-op AND byte-identical.
+    n2 = concat_clone_ledgers(ws, fork)
+    assert n2 == 0, f"expected 0 new rows on 2nd run, got {n2}"
+    body_after_2nd = (ws / "promise_ledger.jsonl").read_bytes()
+    assert body_after_1st == body_after_2nd, \
+        "main ledger changed on repeat concat"
+
+    # And the merged rows carry the string-form supersedes_path verbatim.
+    lines = body_after_1st.decode().splitlines()
+    parsed = [json.loads(l) for l in lines]
+    assert parsed[1].get("supersedes_path") == "tools/stale/foo.py"
 
 
 # --- Runner -----------------------------------------------------------------

@@ -45,6 +45,7 @@ from long_exposure.tools._ledger_schema import (
     CONFIDENCE_LEVELS,
     REQUIRED_EVENT_FIELDS,
     STATUS_VALUES,
+    _STATUS_ENUM,
     canonical_json,
     content_hash_event_id,
     validate_event,
@@ -355,6 +356,105 @@ def test_13_no_import_cycles():
     assert not cycles, f"_ledger_schema imports forbidden modules: {cycles}"
 
 
+# ------------------------------------------------------------------ cycle-14 hardening cases
+
+
+def test_14_status_in_progress_accepted():
+    """Case 14 (cycle-14): status='in-progress' accepted at the writer.
+
+    'in-progress' is a canonical status — the cycle-13 drift on line 250 was
+    a state-transition mistake (validated→in-progress without an intervening
+    reopened event), not an enum violation. The enum accepts it; the
+    state-transition check (out of scope here) is what should have caught it.
+    """
+    ws = _tmpdir()
+    try:
+        ev = _well_formed_event(status="in-progress")
+        append_ledger_event(ws, ev)  # must not raise
+        line = resolve_ledger_path(ws).read_text().splitlines()[0]
+        assert json.loads(line)["status"] == "in-progress"
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_15_status_wobble_rejected():
+    """Case 15 (cycle-14): unknown status 'wobble' rejected with message
+    citing 'status' and the enum vocabulary."""
+    ws = _tmpdir()
+    try:
+        ev = _well_formed_event(status="wobble")
+        try:
+            append_ledger_event(ws, ev)
+        except LedgerAppendError as e:
+            msg = str(e)
+            assert "status" in msg, f"error must name status, got: {e}"
+            assert "wobble" in msg, f"error must show offending value, got: {e}"
+        else:
+            raise AssertionError("expected LedgerAppendError for status='wobble'")
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_16_supersedes_path_string_accepted():
+    """Case 16 (cycle-14): supersedes_path='tools/foo.py' accepted."""
+    ws = _tmpdir()
+    try:
+        ev = _well_formed_event(supersedes_path="tools/foo.py")
+        append_ledger_event(ws, ev)  # must not raise
+        line = resolve_ledger_path(ws).read_text().splitlines()[0]
+        assert json.loads(line)["supersedes_path"] == "tools/foo.py"
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_17_supersedes_path_list_rejected():
+    """Case 17 (cycle-14): list-form supersedes_path rejected with message
+    citing 'supersedes_path' AND 'must be' (the field-named contract)."""
+    ws = _tmpdir()
+    try:
+        ev = _well_formed_event(
+            supersedes_path=["tools/foo.py", "tools/bar.py"]
+        )
+        try:
+            append_ledger_event(ws, ev)
+        except LedgerAppendError as e:
+            msg = str(e)
+            assert "supersedes_path" in msg, \
+                f"error must name supersedes_path, got: {e}"
+            assert "must be" in msg or "str" in msg, \
+                f"error must state expected type, got: {e}"
+        else:
+            raise AssertionError(
+                "expected LedgerAppendError for list-form supersedes_path"
+            )
+        # Atomicity: no file written.
+        assert not resolve_ledger_path(ws).exists()
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_18_supersedes_path_absent_accepted():
+    """Case 18 (cycle-14): well-formed event without supersedes_path accepted
+    (field is optional). Also asserts the enum alias is the frozen constant."""
+    ws = _tmpdir()
+    try:
+        ev = _well_formed_event()
+        assert "supersedes_path" not in ev
+        append_ledger_event(ws, ev)  # must not raise
+        # Alias sanity: _STATUS_ENUM is STATUS_VALUES is the same frozen set.
+        assert _STATUS_ENUM is STATUS_VALUES, \
+            "_STATUS_ENUM must alias STATUS_VALUES (is-identity)"
+        assert isinstance(_STATUS_ENUM, frozenset), \
+            "_STATUS_ENUM must be frozenset"
+        # The brief's proposed enum is a subset of the module's canonical enum.
+        brief_enum = {"in-progress", "validated", "invalidated",
+                      "reopened", "superseded"}
+        assert brief_enum.issubset(_STATUS_ENUM), \
+            f"brief enum not subset of _STATUS_ENUM: {_STATUS_ENUM}"
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
 # ------------------------------------------------------------------ runner
 
 TESTS = [
@@ -371,6 +471,11 @@ TESTS = [
     ("test_11_write_atomicity_on_validation_failure", test_11_write_atomicity_on_validation_failure),
     ("test_12_ssot_constants_are_shared_object", test_12_ssot_constants_are_shared_object),
     ("test_13_no_import_cycles", test_13_no_import_cycles),
+    ("test_14_status_in_progress_accepted", test_14_status_in_progress_accepted),
+    ("test_15_status_wobble_rejected", test_15_status_wobble_rejected),
+    ("test_16_supersedes_path_string_accepted", test_16_supersedes_path_string_accepted),
+    ("test_17_supersedes_path_list_rejected", test_17_supersedes_path_list_rejected),
+    ("test_18_supersedes_path_absent_accepted", test_18_supersedes_path_absent_accepted),
 ]
 
 

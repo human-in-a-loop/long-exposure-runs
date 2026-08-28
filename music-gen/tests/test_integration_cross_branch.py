@@ -1870,6 +1870,299 @@ check((WS / "docs" / "figures" / "gen_batch_v2_collisions.png").is_file(),
       "M-GEN-1/batch-v2: docs/figures/gen_batch_v2_collisions.png present")
 
 
+# =====================================================================
+# §28. _infra/ledger-schema-hardening-v2 — cycle 14, fork 855d4c2e9945, clone-0.
+#
+# Validates that the cycle-14 SSoT extension actually landed, without
+# depending on any of the workspace-side test suites.
+# =====================================================================
+_LE_PARENT_C14 = "/home/user/human-in-a-loop/long-exposure"
+if _LE_PARENT_C14 not in sys.path:
+    sys.path.insert(0, _LE_PARENT_C14)
+
+# (a) enum constant exported at module level
+from long_exposure.tools._ledger_schema import (
+    _STATUS_ENUM,
+    STATUS_VALUES,
+    LedgerConcatError,
+    LedgerSchemaError,
+    validate_event,
+)
+check(_STATUS_ENUM is STATUS_VALUES,
+      "schema-v2 §28a: _STATUS_ENUM aliases STATUS_VALUES (is-identity)")
+check({"in-progress", "validated", "invalidated", "reopened",
+       "superseded"}.issubset(_STATUS_ENUM),
+      "schema-v2 §28a: brief-proposed enum is subset of _STATUS_ENUM")
+
+# (b) pre-concat lint helper present on workspace_bootstrap
+from long_exposure.workspace_bootstrap import (
+    _lint_clone_shadow,
+    concat_clone_ledgers,
+)
+check(callable(_lint_clone_shadow),
+      "schema-v2 §28b: _lint_clone_shadow importable + callable")
+
+# (c) LedgerConcatError MRO subclass of LedgerSchemaError (cycle-12 contract)
+check(issubclass(LedgerConcatError, LedgerSchemaError),
+      "schema-v2 §28c: LedgerConcatError subclass of LedgerSchemaError")
+
+# (d) drift-rejection message shape — list-form supersedes_path names the field
+_bad_list = {"supersedes_path": ["a", "b"]}
+_errs_list = validate_event(_bad_list)
+_sp_hits = [e for e in _errs_list if "supersedes_path" in e and "must be" in e]
+check(len(_sp_hits) == 1,
+      "schema-v2 §28d: list-form supersedes_path names field + type")
+
+# (e) drift-rejection — unknown status names 'status' and the offending value
+_bad_status = {"status": "wobble"}
+_errs_status = validate_event(_bad_status)
+_st_hits = [e for e in _errs_status
+            if "status" in e and "wobble" in e]
+check(len(_st_hits) == 1,
+      "schema-v2 §28e: unknown status names field + offending value")
+
+# (f) string-form supersedes_path stays accepted
+_ok = validate_event({"supersedes_path": "tools/foo.py"})
+_ok_sp = [e for e in _ok if "supersedes_path" in e]
+check(_ok_sp == [],
+      "schema-v2 §28f: string-form supersedes_path accepted")
+
+# (g) 275/275 (or more) existing rows still pass tightened validator
+_ledger_path = WS / "promise_ledger.jsonl"
+if _ledger_path.exists():
+    _fails = []
+    for _i, _line in enumerate(_ledger_path.read_text().splitlines(), 1):
+        _line = _line.strip()
+        if not _line:
+            continue
+        _row = json.loads(_line)
+        _errs = validate_event(_row)
+        if _errs:
+            _fails.append((_i, _row.get("milestone_id"), _errs))
+    check(_fails == [],
+          f"schema-v2 §28g: existing ledger rows all validate ({len(_fails)} failures)")
+
+# (h) report shipped
+check((WS / "docs" / "ledger_schema_hardening_v2.md").is_file(),
+      "schema-v2 §28h: docs/ledger_schema_hardening_v2.md present")
+
+
+# =====================================================================
+# §29. M-GEN-1/collision-floor-investigation — cycle 14, fork 855d4c2e9945,
+#      clone-1. Structural investigation of the corpus-size-invariant
+#      11-pair floor at N=8 on the 76-row rules ledger.
+# =====================================================================
+
+# (a) analysis package + 5 scripts present
+_analysis_dir = WS / "scripts" / "rules" / "analysis"
+for _fname in ("__init__.py", "collision_attribution.py",
+               "structural_fingerprints.py", "pairwise_distance.py",
+               "cluster_analysis.py", "intervention_proposal.py",
+               "plot_collision_floor.py"):
+    check((_analysis_dir / _fname).is_file(),
+          f"cf-investigation §29a: {_fname} present")
+
+# (b) interpreter guard on every new script
+import re as _re29
+_guard_pat = _re29.compile(r"assert\s+sys\.executable\s*==\s*['\"]/usr/bin/python3['\"]")
+for _fname in ("collision_attribution.py", "structural_fingerprints.py",
+               "pairwise_distance.py", "cluster_analysis.py",
+               "intervention_proposal.py", "plot_collision_floor.py"):
+    _txt = (_analysis_dir / _fname).read_text()
+    check(bool(_guard_pat.search(_txt)),
+          f"cf-investigation §29b: interpreter guard in {_fname}")
+
+# (c) non-factor AST isolation: no imports of sidecar_nonfactor anywhere
+_forbid = _re29.compile(r"^\s*(from|import)\s+.*sidecar_nonfactor", _re29.MULTILINE)
+for _fname in ("collision_attribution.py", "structural_fingerprints.py",
+               "pairwise_distance.py", "cluster_analysis.py",
+               "intervention_proposal.py", "plot_collision_floor.py"):
+    _txt = (_analysis_dir / _fname).read_text()
+    check(not _forbid.search(_txt),
+          f"cf-investigation §29c: no sidecar_nonfactor import in {_fname}")
+
+# (d) attribution accounting invariant: 11 pair-contribs, 10 unique pairs
+_attr_path = WS / "data" / "rules" / "collision_floor_analysis" / "attribution.json"
+check(_attr_path.is_file(), "cf-investigation §29d: attribution.json present")
+if _attr_path.is_file():
+    _attr = json.loads(_attr_path.read_text())
+    check(_attr["total_pairwise_collisions"] == 11,
+          f"cf-investigation §29d: total_pairwise_collisions == 11 (got {_attr['total_pairwise_collisions']})")
+    check(_attr["any_collision_pair_count"] == 10,
+          f"cf-investigation §29d: any_collision_pair_count == 10 (got {_attr['any_collision_pair_count']})")
+    check(_attr["per_rule_type_pair_count"]["harmonic"] == 6,
+          "cf-investigation §29d: harmonic contributes 6 pairs")
+    check(_attr["per_rule_type_pair_count"]["rhythmic"] == 2,
+          "cf-investigation §29d: rhythmic contributes 2 pairs")
+    check(_attr["per_rule_type_pair_count"]["melodic"] == 2,
+          "cf-investigation §29d: melodic contributes 2 pairs")
+    check(_attr["per_rule_type_pair_count"]["form"] == 0,
+          "cf-investigation §29d: form contributes 0 pairs")
+    check(_attr["per_rule_type_pair_count"]["arrangement"] == 1,
+          "cf-investigation §29d: arrangement contributes 1 pair")
+
+# (e) byte-determinism SHA anchors on all 5 declared JSON/TSV outputs
+_cf_dir = WS / "data" / "rules" / "collision_floor_analysis"
+_SHA_ANCHORS = {
+    "attribution.json":
+        "0a3f9acb4bc8eaf55bf5cf78b1f466bf4f89e8abdd1c503abeba89a63ba7a12d",
+    "fingerprints.tsv":
+        "cc6aafd79aa380983b26ae39fea8ee1b04ad080750b5ce5bbeeeed7f2edcadb3",
+    "cluster_verdict.json":
+        "e42e5ccd2a6f1ce2ad84a7b0c84d516970245794567ec64300625f40e3ff5dad",
+    "intervention_proposal.json":
+        "0f124a39db0fcacff0442cc3abbb0d70ec919a8e96b807e8b95da5c42d162c53",
+    "pairwise_distances_harmonic.tsv":
+        "f3f4202a7702fcd94465d74995df043091b301dab40f2123482b11b608240c8b",
+}
+import hashlib as _h29
+for _fname, _exp_sha in _SHA_ANCHORS.items():
+    _fp = _cf_dir / _fname
+    check(_fp.is_file(), f"cf-investigation §29e: {_fname} present")
+    if _fp.is_file():
+        _got = _h29.sha256(_fp.read_bytes()).hexdigest()
+        check(_got == _exp_sha,
+              f"cf-investigation §29e: {_fname} SHA-256 matches anchor ({_got[:16]}...)")
+
+# (f) rules-schema-untouched: SHA-256 anchor of frozen schema
+_schema_path = WS / "scripts" / "rules" / "schema" / "rules_v1.json"
+if _schema_path.is_file():
+    _got = _h29.sha256(_schema_path.read_bytes()).hexdigest()
+    check(_got == "b9bec6733c0be7e4eb3d53145fd81fee1552523efcd1309c981b95cf2b4694ff",
+          f"cf-investigation §29f: rules_v1.json SHA unchanged ({_got[:16]}...)")
+
+# (g) rules-ledger-untouched: SHA-256 anchor of frozen 76-row ledger
+_ledger_r_path = WS / "data" / "rules" / "ledger.jsonl"
+if _ledger_r_path.is_file():
+    _got = _h29.sha256(_ledger_r_path.read_bytes()).hexdigest()
+    check(_got == "a6fd53e9bf9a10f6885888b0bb7d11a9a2aa97007e38ef0e6d47f4ef7d2857ae",
+          f"cf-investigation §29g: rules ledger.jsonl SHA unchanged ({_got[:16]}...)")
+    _n_rows = sum(1 for l in _ledger_r_path.read_text().splitlines() if l.strip())
+    check(_n_rows == 76, f"cf-investigation §29g: rules ledger has 76 rows (got {_n_rows})")
+
+# (h) report + figure shipped
+check((WS / "docs" / "collision_floor_investigation_report.md").is_file(),
+      "cf-investigation §29h: docs/collision_floor_investigation_report.md present")
+check((WS / "docs" / "figures" / "collision_floor_decomposition.png").is_file(),
+      "cf-investigation §29h: docs/figures/collision_floor_decomposition.png present")
+
+# (i) intervention proposal is concrete (numeric predicted floor for I3+I4)
+_ip_path = WS / "data" / "rules" / "collision_floor_analysis" / "intervention_proposal.json"
+if _ip_path.is_file():
+    _ip = json.loads(_ip_path.read_text())
+    _ivs = {iv["id"]: iv for iv in _ip["interventions"]}
+    check("I3" in _ivs and _ivs["I3"].get("sweep"),
+          "cf-investigation §29i: I3 (corpus expansion) has numeric sweep")
+    check("I4" in _ivs and _ivs["I4"].get("predicted_total_floor") == 0.0,
+          "cf-investigation §29i: I4 (rejection sampling) predicts 0 pairs")
+
+# §30. M-TEX-1/panel/embedding/content-flip-analysis — cycle 14, fork
+# 855d4c2e9945, clone 2.
+
+_cflip_scripts_dir = WS / "scripts" / "tex" / "content_flip"
+_cflip_data_dir = WS / "data" / "tex" / "embedding_flip_analysis"
+
+# (a) scripts present
+for _fname in ("__init__.py", "synth_variants.py", "apply_pinned_chain.py",
+               "measure_variant.py", "orchestrator.py", "analyze_flip.py",
+               "plot_flip_analysis.py"):
+    check((_cflip_scripts_dir / _fname).is_file(),
+          f"content-flip §30a: scripts/tex/content_flip/{_fname} present")
+
+# (b) interpreter guard on every new script
+import re as _re30
+for _fname in ("synth_variants.py", "apply_pinned_chain.py",
+               "measure_variant.py", "orchestrator.py", "analyze_flip.py",
+               "plot_flip_analysis.py"):
+    _p = _cflip_scripts_dir / _fname
+    if _p.is_file():
+        _txt = _p.read_text()
+        check('assert sys.executable == "/usr/bin/python3"' in _txt,
+              f"content-flip §30b: {_fname} interpreter guard present")
+
+# (c) non-factor AST isolation on every new script
+for _fname in ("synth_variants.py", "apply_pinned_chain.py",
+               "measure_variant.py", "orchestrator.py", "analyze_flip.py",
+               "plot_flip_analysis.py"):
+    _p = _cflip_scripts_dir / _fname
+    if _p.is_file():
+        _txt = _p.read_text()
+        _has_nf = bool(_re30.search(r"(?m)^(from|import)\s+.*sidecar_nonfactor", _txt))
+        check(not _has_nf,
+              f"content-flip §30c: {_fname} no sidecar_nonfactor import")
+
+# (d) cycle-9 chain isolation (anchored-import grep on the content_flip pkg)
+_cf_pkg_pattern = _re30.compile(
+    r"(?m)^(from|import)\s+(scripts\.tex\.render_effects_layered|scripts_tex_render_effects_layered)"
+)
+_iso_bad = []
+for _fname in ("synth_variants.py", "apply_pinned_chain.py",
+               "measure_variant.py", "orchestrator.py", "analyze_flip.py",
+               "plot_flip_analysis.py", "__init__.py"):
+    _p = _cflip_scripts_dir / _fname
+    if _p.is_file() and _cf_pkg_pattern.search(_p.read_text()):
+        _iso_bad.append(_fname)
+check(not _iso_bad,
+      f"content-flip §30d: zero anchored imports of scripts.tex.render_effects_layered under scripts/tex/content_flip/ ({_iso_bad!r})")
+
+# (e) cycle-13 anchor byte-identity: 3 anchor TSVs must match frozen SHAs.
+import hashlib as _h30
+_ANCHOR_SHA = {
+    "stage_by_stage_synth_030s.tsv":   "b3570a795c8c3e7a5f59ddefbd20096e8221cabef8d4d1fad5a621a3ba0fece2",
+    "stage_by_stage_seed_mid_50s.tsv": "a25b98e47ff3e8fc1ee257b81af33317c8eb152297fd8bed408fcbaab7674330",
+    "stage_by_stage_synth_060s.tsv":   "51f6749b5fa3c23b1549d2a57ea67286c244c344234f69f5a76592db498b9803",
+}
+for _fname, _exp in _ANCHOR_SHA.items():
+    _p = WS / "data" / "tex" / _fname
+    if _p.is_file():
+        _got = _h30.sha256(_p.read_bytes()).hexdigest()
+        check(_got == _exp,
+              f"content-flip §30e: {_fname} SHA-256 unchanged ({_got[:16]}...)")
+
+# (f) 8-variant byte-determinism SHAs: variant_manifest.json holds them.
+_manifest_path = _cflip_data_dir / "variant_manifest.json"
+if _manifest_path.is_file():
+    _manifest = json.loads(_manifest_path.read_text())
+    _variants = _manifest.get("variants", {})
+    check(len(_variants) == 8,
+          f"content-flip §30f: variant_manifest.json has 8 variants (got {len(_variants)})")
+    for _vid in ("P1", "P2", "P3", "P4", "E1", "E2", "E3", "E4"):
+        _v = _variants.get(_vid, {})
+        check("bare_sha" in _v and "eff_sha" in _v,
+              f"content-flip §30f: variant {_vid} has bare_sha + eff_sha")
+        _bare_p = WS / _v.get("bare_wav", "")
+        _eff_p  = WS / _v.get("eff_wav", "")
+        if _bare_p.is_file():
+            _got = _h30.sha256(_bare_p.read_bytes()).hexdigest()
+            check(_got == _v["bare_sha"],
+                  f"content-flip §30f: variant {_vid} bare_midi.wav SHA matches manifest")
+        if _eff_p.is_file():
+            _got = _h30.sha256(_eff_p.read_bytes()).hexdigest()
+            check(_got == _v["eff_sha"],
+                  f"content-flip §30f: variant {_vid} effects_layered.wav SHA matches manifest")
+
+# (g) threshold_characterization.json shape
+_tc_path = _cflip_data_dir / "threshold_characterization.json"
+if _tc_path.is_file():
+    _tc = json.loads(_tc_path.read_text())
+    for _k in ("verdict", "flip_dimension", "polyphony_axis", "envelope_axis",
+               "cycle13_anchors_across_stage"):
+        check(_k in _tc,
+              f"content-flip §30g: threshold_characterization.json has '{_k}'")
+    check(_tc.get("flip_dimension") in
+          ("polyphony", "envelope", "both", "neither"),
+          f"content-flip §30g: flip_dimension is one of the expected values (got {_tc.get('flip_dimension')!r})")
+    check(_tc.get("verdict") in
+          ("localized_to_polyphony", "localized_to_envelope",
+           "flip_polydimensional", "no_flip_reproduced", "noisy", "unknown"),
+          f"content-flip §30g: verdict is one of the expected values (got {_tc.get('verdict')!r})")
+
+# (h) report + figure shipped
+check((WS / "docs" / "tex_embedding_content_flip_report.md").is_file(),
+      "content-flip §30h: docs/tex_embedding_content_flip_report.md present")
+check((WS / "docs" / "figures" / "tex_embedding_flip_analysis.png").is_file(),
+      "content-flip §30h: docs/figures/tex_embedding_flip_analysis.png present")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
