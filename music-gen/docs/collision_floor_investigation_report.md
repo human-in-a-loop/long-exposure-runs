@@ -18,7 +18,7 @@ smallest rule pool in the ledger. **`rule_sub_type` splits are DISQUALIFIED
 (schema-out-of-scope) or DEGENERATE (all harmonic rules share F_major).**
 The two feasible cycle-15+ interventions are (I3) **corpus expansion** of
 the harmonic pool — analytic prediction: adding H=10 rules drops the total
-BP-expected floor from 9.64 to 7.75 pairs at N=8 — and (I4) **stratified
+BP-expected floor from 9.64 to 8.24 pairs at N=8 — and (I4) **stratified
 rejection sampling** — reduces the within-rule_type floor to 0 pairs at N=8
 via a ~10 LOC sampler change, at the cost of the batch-v1 salt=0
 byte-identity anchor.
@@ -205,7 +205,7 @@ Five candidates were evaluated
 |----|---------------------------------------------------------------|----------------|-----------------------------|-------------------------------|
 | I1 | `rule_sub_type` split on harmonic by `scope.level`            | yes            | 20.18                       | DISQUALIFIED (worse; frozen)  |
 | I2 | `rule_sub_type` split on harmonic by `key`                    | yes            | 9.64                        | DISQUALIFIED (degenerate)     |
-| I3 | corpus expansion of harmonic (add H new rules)                | no             | 7.75 (H=10) / 6.65 (H=20)   | **RECOMMENDED (structural)**  |
+| I3 | corpus expansion of harmonic (add H new rules)                | no             | 8.24 (H=10) / 7.78 (H=20)   | **RECOMMENDED (structural)**  |
 | I4 | stratified rejection sampling (per rule_type)                 | no             | 0.00                        | **RECOMMENDED (sampling)**    |
 | I5 | content-aware tiebreak (structural-spread bipartite matching) | no             | not scored this cycle       | DEFERRED (concept only)       |
 
@@ -224,8 +224,8 @@ drops the per-type BP from 2.80 to `28 / (10 + H)`. The full sweep:
 | H  | new K | new harmonic BP-exp | predicted total floor |
 |----|-------|---------------------|-----------------------|
 | 5  | 15    | 1.87                | 8.71                  |
-| 10 | 20    | 1.40                | 7.75¹                 |
-| 20 | 30    | 0.93                | 6.65                  |
+| 10 | 20    | 1.40                | 8.24¹                 |
+| 20 | 30    | 0.93                | 7.78                  |
 
 ¹ Recommended cycle-15+ target: extract harmonic rules from ≥2 non-F_major
 seed songs (target keys: D_minor to break the 4-clique per cycle-13
