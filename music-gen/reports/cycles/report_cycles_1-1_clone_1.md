@@ -1,182 +1,90 @@
 ---
-title: "Hand-Built Heuristics Battery on the Mess-Scale — cycles 1-1 (clone 1)"
+title: "Music-Gen — M-TRANS-1/basic-pitch/octave-suppression (cycle 1, fork 3a908edcb241, clone 1)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Hand-Built Heuristics Battery on the Mess-Scale — cycles 1-1 (clone 1)
+# Music-Gen — M-TRANS-1/basic-pitch/octave-suppression (cycle 1, fork 3a908edcb241, clone 1)
 
 ## Abstract
 
-This branch delivers a four-dimension hand-built heuristics battery that scores short audio clips on a common **mess-scale** ranging from 0.0 (trivial / featureless) to 1.0 (richly expressive). The four dimensions are **melody**, **timbre**, **form**, and **dynamics**; each is computed from librosa-derived raw features and mapped through a single piecewise-linear transfer function against per-dimension anchor points that are argued from first principles rather than fit to any corpus. An intra-song meta-tracker adds four macro descriptors — a dynamics-trajectory slope, a whole-song self-similarity measure, a peak-location fraction, and the across-clip variance of the mess-scale vector — and honors a `(30 − overlap_s)/30` weight on tail clips that were extracted from an overlap-with-previous window in the ingestion manifest. A static-analysis test enforces isolation from the classifier's non-factor sidecar tree and self-checks itself via a plant-and-catch. The full battery was executed on all three seed songs (seven clips) and all three whole seeds; the meta-tracker was executed on all three whole seeds. Every result was reproduced byte-for-byte on re-run, and an adversarial import plant into the real battery module was caught by three concurrent rules and cleanly reverted.
+Cycle 1 of clone 1 built the audit-surfaced octave-suppression post-processor for basic-pitch's bass output and swept it across a 3×3 grid of `(T_min, overlap_min)` on the frozen cycle-6 JSONL. All required artefacts landed: `scripts/transcribe/octave_suppression.py` (the filter), `scripts/transcribe/octave_grid_search.py` (the driver), `scripts/transcribe/octave_grid_plot.py` (the heatmap), `data/transcribe/octave_suppression/{grid_search.tsv, heatmap.png}`, `docs/basic_pitch_octave_refinement.md`, and `tests/test_octave_suppression.py` (14/14 passing). Best-cell aggregate uplift is **+0.1513 bass F1** (baseline 0.4773 → 0.6286); the harmless-to-others constraint is satisfied trivially on every cell (drums Δ = other Δ = 0.0000, mechanical from the bass-only driver). The success bar of **+0.3 aggregate uplift was not met on any cell**, and the sub-milestone was closed as a negative finding via the brief's falsifiability escape hatch. The auditor reproduced determinism live (TSV SHA-256 = `d87fa0f5e6d87e6be551fcfb4e844a35c247733c42b19452d416b5ba573b0ec2` on both runs) and validated the closure. The mechanism of the shortfall is understood — single-pass suppression stops the chain of octaves one hop short — and the concrete follow-up (fixed-point iteration) is recommended and ordered for a future cycle.
 
-## 1. Introduction
+## Introduction
 
-The larger campaign aims to compare a trained ear-model against a hand-built baseline on a common scale. This branch is the hand-built half of that comparison for the seed corpus. Three constraints shaped the design:
+The M-TRANS-1 cycle-6 survey recorded a 0.4773 aggregate bass F1 for basic-pitch on the M-SEP-1 synth-mix stems, with precision as the binding constraint (0.3186 baseline) and recall already near ceiling (0.9519). The audit called out an opportunity to lift bass F1 by roughly +0.4 via a pure post-processing filter that removes octave-doubled false-positive notes at zero inference cost. This branch is scoped exactly to that opportunity: build the filter, sweep the two natural knobs (`T_min` in {50, 100, 200} ms; `overlap_min` in {0.3, 0.5, 0.7}), publish the 9-cell heatmap co-located with the TSV, and choose the cell that maximises bass F1 uplift subject to drums Δ ≥ -0.02 and other Δ ≥ -0.02. The success bar is +0.3 uplift on at least one cell, achieved deterministically over two runs, without re-running basic-pitch and without touching the non-factor isolation contract.
 
-1. **Interpretability over calibration.** No corpus-fit; anchor points are stated priors on where each raw feature transitions from trivial to expressive. Auditors can re-argue anchors without re-computing anything, because every raw feature is preserved alongside its mess-scale value.
-2. **Honest nulls.** A heuristic must refuse to produce a number when its assumptions are violated (audio too short for a self-similarity matrix, voiced-frame fraction too low for pitch tracking, and so on). Refusal carries a machine-readable reason.
-3. **Blind-spot honesty.** Every heuristic ships with a documented list of failure modes, snapshotted onto each result at call-time so that a stale docstring cannot silently drift from what a historical run actually saw.
+## Approach
 
-Non-goals for this branch: any training, any comparison against the ear model, and any reliance on the rated-audio corpus (which remains blocked at the network layer). Seeds are fluidsynth-generated and therefore monotimbral and highly repetitive; they exercise the null-with-reason paths and the debias-weight formula, but they do not exercise the mid-range of the form heuristic — an observation the results section discusses at length.
+The filter operates on cycle-6's frozen basic-pitch JSONL. Notes are sorted by onset, grouped into co-onset buckets by a greedy forward pass with a 25 ms adjacency threshold (tighter than mir_eval's 50 ms tolerance, so the grouping never collapses notes the evaluator treats as distinct), and every ordered within-bucket pair whose pitches differ by exactly 12 semitones is enumerated. Each such pair qualifies iff `dur_min * 1000 ≥ T_min_ms` and `overlap_frac = overlap_s / dur_min ≥ overlap_min`. Qualifying pairs are then processed in confidence-descending order — velocity is the confidence proxy, since the cycle-6 JSONL has no `confidence` field and basic-pitch maps note amplitude directly to MIDI velocity — with velocity → duration → lower-pitch tie-breaking. On a tie the higher-pitched member is the loser, preserving the bass fundamental. The pass is single-pass: any pair whose either member is already suppressed is skipped.
 
-## 2. Methods
+The driver applies the filter only to the bass JSONL; the drums and other JSONL are passed through byte-identical. Evaluation reuses the cycle-6 evaluator verbatim (`mir_eval.transcription.precision_recall_f1_overlap` at `onset_tolerance=0.05`, `offset_ratio=0.20`, `offset_min_tolerance=0.05`). Ground truth is the canonical cycle-6 reference JSONL under `data/transcribe/reference/synth_{030,060,090}s/*.reference.jsonl`, chosen so the F1 numbers are directly comparable to the cycle-6 baseline. Runs are pure over the frozen JSONL: no RNG, no threading, no clock reads.
 
-### 2.1 The mess-scale transfer
+## Findings
 
-Every heuristic pipes each of its raw scalar features through a single helper of the shape `mess_scale(raw, anchors)` where `anchors` is a strictly-increasing list of `(raw_x, mess_y)` pairs with `mess_y ∈ [0, 1]`. The helper does piecewise-linear interpolation between adjacent anchors and flat extrapolation outside the range. A NaN raw value returns 0.0. Composition of multiple mess-scaled features into a single dimension score uses a fixed weight vector that must sum to 1.0 within 1e-9.
+**Aggregate uplift heatmap** (bass F1 delta vs cycle-6 baseline, averaged across the three synth mixes):
 
-The canonical return type is a frozen dataclass carrying the heuristic's name, the raw features dictionary, the mess-scale value (or `None` with a reason string), and a snapshot of the module-level blind-spot tuple as it stood at call time.
+| T_min \ overlap_min | 0.3 | 0.5 | 0.7 |
+|---|:---:|:---:|:---:|
+| **50 ms**  | **+0.1513** | **+0.1513** | **+0.1513** |
+| **100 ms** | **+0.1513** | **+0.1513** | **+0.1513** |
+| **200 ms** | +0.1152 | +0.1152 | +0.1152 |
 
-### 2.2 The four dimensions
+![3×3 octave-suppression grid — bass F1 uplift and harmless-to-others deltas](data/transcribe/octave_suppression/heatmap.png)
 
-- **`melody_quality`.** Runs `librosa.pyin` on 22.05 kHz mono audio, drops unvoiced frames, and computes three raw features: contour smoothness `1/(1 + RMS(Δpitch_semitones))`, interval variety `min(1, unique_intervals/12)`, and pitch-class entropy normalized by `log2(12)`. Blend weights `0.4 / 0.3 / 0.3`. Refuses (`unvoiced_dominant`) when the voiced-frame fraction is below 0.1.
-- **`timbre_quality`.** MFCC(13), spectral centroid, and spectral flatness. Raw features: MFCC delta-RMS across coefficients, centroid p95-minus-p05 normalized by the Nyquist, and flatness standard-deviation. Blend `0.4 / 0.35 / 0.25`. Refuses on empty, silent, or too-short input.
-- **`form_quality`.** Chroma-CQT self-similarity matrix, block-averaged to roughly 4-second cells with L2-normalized columns and cosine similarity. Single raw feature: ratio of the near-diagonal band's mean to the far-off-diagonal mean. Refuses (`too_short_for_ssm`) when the input is under 30 seconds.
-- **`dynamics_quality`.** RMS envelope at 512-sample hop. Raw features: crest factor `max|y|/rms(y)`, envelope-range-ratio `log2(clip(p95/p05, 1, 20))`, and envelope-variance in dB divided by 12. Blend `0.25 / 0.4 / 0.35`. Refuses on silent or under-5-second input.
+**Best cell:** T_min = 100 ms, overlap_min = 0.5 (named for concreteness; tied at +0.1513 with every cell on the top plateau). The best-cell aggregate is bass F1 = 0.6286 (P = 0.4695, R = 0.9519), up from baseline P = 0.3186, R = 0.9519, F1 = 0.4773. Precision does all of the work; recall is untouched. Drums delta and other delta are exactly 0.0000 on every cell — a mechanical property of the bass-only driver — so the harmless-to-others constraint is trivially satisfied everywhere.
 
-Anchor values for all three raw features of every dimension are enumerated in the on-disk report (§4). The design principle across all four dimensions is that the low anchor sits near what a trivially structured signal would produce and the top anchor sits where a well-trained musician would judge the feature to be at ceiling.
+**The +0.3 success bar is not met on any cell.** The audit's +0.4 estimate was over-optimistic under the specified single-pass rule; the true achievable uplift for this exact algorithm family is +0.15. Diagnostic on `synth_030s/bass` explains the shortfall precisely:
 
-### 2.3 Meta-tracker and the anchored-tail debias
+- The baseline emits 44 notes at pitches `[28×4, 33×5, 36×4, 41×4, 43×3, 45×4, 48×5, 53×4, 55×3, 57×4, 60×4]` against a reference of 15 notes at `{33, 36, 41, 43}`.
+- After the filter (any top-plateau cell), 30 notes remain at `[28×4, 33×5, 36×4, 41×4, 43×3, 45×1, 48×1, 57×4, 60×4]`.
+- The filter correctly suppressed the (33 → 45) and (36 → 48) pairs — 14 notes removed, precision jumped 0.318 → 0.467.
+- The filter *failed* to suppress the chained (45 → 57) and (48 → 60) pairs. Once 45 and 48 were retired in the first sweep, their own octave partners 57 and 60 lost their fundamentals and became orphaned rather than pair-eligible. This is exactly the "chain of three octaves" edge case the brief's mechanism section flagged as a known single-pass limitation. The filter also cannot touch the [28] and [53, 55] false positives, which are not `+12` partners of any reference note.
 
-The meta-tracker consumes an ingestion manifest and the per-clip battery output and produces four macro descriptors per song:
+**Response-surface shape.** The `overlap_min` axis is flat: the `overlap_frac` distribution on the cycle-6 bass JSONL is bimodal — near 1.0 for real octave-doubling artefacts and near 0.0 for spurious non-artefact pairs — and none of {0.3, 0.5, 0.7} lands between the modes. The `T_min` axis has a single step at 200 ms, where three additional short pairs are ruled out per mix, reducing uplift by ≈ 4 F1 points. In effect the two axes collapse to one useful trust-threshold knob, with T_min in [50, 100] the informative regime; a 3×1 grid over T_min would have carried the same information as the 3×3.
 
-- `dynamics_trajectory` — a weighted linear-regression slope of the raw p95/p05 envelope ratio against clip midpoint, in ratio-per-second.
-- `form_coherence` — the same diagonal-band self-similarity ratio as clip-level form, but computed on the **whole-song audio** loaded from the manifest's `source_ref`. Whole-song analysis is used here — rather than aggregating clip-level `form_quality` — because clips overlap and concatenation would double-count.
-- `peak_location_fraction` — the argmax of the weighted sum of the four clip mess-scale values, expressed as clip-midpoint over song duration.
-- `heuristic_variance_across_clips` — weighted variance of the L2 norm of the per-clip 4-vector.
+**Determinism.** Two independent runs of `scripts/transcribe/octave_grid_search.py` on the frozen cycle-6 JSONL produce byte-identical TSVs at SHA-256 `d87fa0f5e6d87e6be551fcfb4e844a35c247733c42b19452d416b5ba573b0ec2`. The auditor reproduced this live and matched the worker-reported hash. Run 1 is preserved under `stale/octave_determinism/grid_search_run1.tsv` for future re-verification.
 
-The **debias weight** on any clip whose manifest entry carries `anchored_tail=true` is `max(0, (30 − overlap_s)/30)` where `overlap_s = prev_clip.t_end − this_clip.t_start`. Non-anchored clips and short-song single-clip cases carry weight 1.0. The formula is unit-tested inside the isolation test as an anti-drift check on the two real overlaps present in the seed manifests (23 s and 10 s).
+**Non-factor isolation.** An AST scan confirms none of the three new modules under `scripts/transcribe/` imports `scripts.classifier.sidecar_nonfactor`. The invariant is enforced going forward by section 14 of `tests/test_integration_cross_branch.py` — 27 new checks in that section cover the isolation AST scan, TSV shape, heatmap presence, harmless-to-others per cell, and report-section presence.
 
-### 2.4 Non-factor isolation
+**Tests.** `tests/test_octave_suppression.py` — 14/14 passing: empty, single, perfect octave, sub-T_min, sub-overlap, confidence tie, duration + confidence tie, chain-of-three, non-octave, schema violation, missing field, determinism, interpreter guard, and bass-only stability. Cross-branch integration test passes with 0 failures.
 
-A separate test walks every `.py` under the heuristics package and rejects any match of four rules: an import of the forbidden `sidecar_nonfactor` module, any import from the classifier package, the literal strings `data/classifier/_nonfactor`, `_nonfactor/`, and `sidecar_nonfactor`, and any reference to the sidecar-audit symbols `AuditRecord`, `NonFactorValue`, or `audit_unwrap`. A bonus anti-drift assertion checks the anchored-tail formula numerically. The test embeds a plant-and-catch self-test: it copies the package to a scratch directory, prepends a forbidden import to `battery.py`, confirms three concurrent rule hits, and removes the plant.
+## Discussion
 
-## 3. Results
+Two things about this branch are worth naming. First, the escape hatch was invoked cleanly: the worker did not tune the co-onset window, the trust-threshold definition, or the harmless-to-others constraint to force a passing number. The 3×3 grid was published unchanged, the mechanism of the shortfall was diagnosed at the level of individual pitches, and the sub-milestone was filed as `invalidated/high` in the shadow ledger with the negative finding as the substantive result. This preserves the epistemic honesty the campaign's falsifiability clause is designed to protect and it produces an actionable follow-up in a single cycle, rather than a passing metric with an untraceable provenance.
 
-### 3.1 Per-clip battery (seven clips, three seeds)
+Second, the shortfall is not a defect of the implementation — the filter faithfully implements the brief's specification — nor a defect of the audit's underlying observation. The audit correctly identified octave-doubled false positives as the precision-limiting artefact. What was over-estimated was how much of that artefact a single-pass suppression rule can retire. On the cycle-6 bass JSONL, the false positives form a two-tier ladder (the fundamental's octave, and the octave's own octave); single-pass captures the first tier and orphans the second. Fixed-point iteration — a one-line `while suppressed: notes, suppressed = suppress_octaves(...)` wrapper reusing the exact same filter, grid, and evaluator — is expected to close roughly another +0.10 aggregate F1 based on the diagnostic pitch-set arithmetic, bringing the achievable ceiling to ≈ +0.25, still short of +0.3 but much closer. Both the auditor and the worker concur on this as the highest-leverage follow-up.
 
-| Source        | Clip | Span (s) | Anchored tail | Short song | melody | timbre | form   | dynamics |
-|---------------|------|----------|---------------|------------|--------|--------|--------|----------|
-| long (87 s)   | 0    | 0–30     | —             | —          | 0.6986 | 0.1949 | 1.0000 | 0.3517   |
-| long (87 s)   | 1    | 25–55    | —             | —          | 0.6744 | 0.1822 | 1.0000 | 0.4571   |
-| long (87 s)   | 2    | 50–80    | —             | —          | 0.6616 | 0.1936 | 1.0000 | 0.2384   |
-| long (87 s)   | 3    | 57–87    | yes (23 s ov) | —          | 0.6559 | 0.2185 | 1.0000 | 0.4949   |
-| mid (50 s)    | 0    | 0–30     | —             | —          | 0.6945 | 0.2177 | 1.0000 | 0.0068   |
-| mid (50 s)    | 1    | 20–50    | yes (10 s ov) | —          | 0.6947 | 0.2421 | 1.0000 | 0.0062   |
-| short (22 s)  | 0    | 0–22     | —             | yes        | 0.4000 | 0.2108 | *null: too_short_for_ssm* | 0.9216 |
+The bass F1 ceiling is now the known constraint for downstream consumers: baseline 0.4773 → achievable 0.6286 under the current algorithm family. M-SCORE-1 merged-full-song and M-RULES-1 extraction should assume this ceiling until fixed-point iteration is implemented. That said, cycle-6 transcription F1 is not the binding constraint on M-GEN-1; reopening octave-suppression should not be prioritised above unblocking M-SCORE-1's extraction-half prerequisites, which is the recommended next research step for this fork.
 
-Six numeric values plus one honest refusal on the short seed's form heuristic. See §3.4 for what these numbers do and do not say about the heuristics themselves.
+## Open Questions
 
-### 3.2 Meta-descriptors (three whole seeds)
+- **Fixed-point iteration** — the one-line wrapper suggested above. Expected ≈ +0.10 additional aggregate F1; the smallest reopen of this sub-milestone.
+- **Lowest-pitch-first ordering** — process qualifying pairs by ascending lower-pitch instead of descending confidence, so each fundamental is retained before its overtones are considered as new fundamentals.
+- **Co-onset window widening** — bump from 25 ms to 40 ms, still under `mir_eval`'s 50 ms tolerance; catches suppressed pairs whose onset gap sits at 20–30 ms.
+- **Non-octave partial filters** — a `+7` (sub-fifth) and `+5` (sub-fourth) filter with per-partial confidence penalties would generalise the same post-processing pass to the CQT fifth-partial artefacts visible in the same diagnostic.
+- **Finer `overlap_min` grid** — the current 0.3/0.5/0.7 grid falls entirely on the flat plateau of a bimodal distribution; a 0.05/0.10/0.20 grid would probe the informative regime, if a future cycle wants to characterise that axis honestly.
 
-| Source       | dur (s) | dynamics_trajectory (Δratio/s) | form_coherence | peak_frac | heur_variance |
-|--------------|---------|--------------------------------|----------------|-----------|---------------|
-| long         | 87      | −0.00904                       | 5.930          | 0.460     | 7.88e-4       |
-| mid          | 50      | −0.00013                       | 5.643          | 0.300     | 5.18e-6       |
-| short        | 22      | null (single clip)             | 1.000          | 0.500     | 0.0           |
+## Appendix: Provenance
 
-The short seed produces a `null` dynamics slope by construction — there is nothing to regress against with a single clip. `form_coherence` on the short seed computes to unity because the whole-song self-similarity matrix over 22 seconds is essentially flat.
+**Cycle range:** cycle 1 of fork `3a908edcb241`, clone 1 of 3.
+**Working directory:** `/home/user/long-exposure-runs/music-gen`.
+**Session references:** researcher `6f1cfefb-0c92-45eb-8eab-50e5c0f26095`, worker `af5ea339-1b1b-4a47-8309-045a70599ad5`, auditor `879f06da-0072-49a7-849f-2d04c6f8b34c`.
+**Auditor verdict:** VALIDATED. Rationale: negative finding delivered under the brief's falsifiability escape hatch; every required artefact present, algorithm faithful to spec, determinism reproduced live, tests green, isolation verified, mechanism of shortfall diagnosed at pitch level, follow-up ordered.
 
-### 3.3 Anchored-tail weights (numerically verified)
+**Deliverables on disk:**
 
-The two real overlap cases both produce the expected fraction, and the short-song single-clip case correctly falls to the weight-1.0 branch:
+- Code: `scripts/transcribe/octave_suppression.py`, `scripts/transcribe/octave_grid_search.py`, `scripts/transcribe/octave_grid_plot.py`.
+- Data: `data/transcribe/octave_suppression/grid_search.tsv` (41 lines = 1 header + 3 baseline + 27 per-cell + 9 aggregate + 1 aggregate baseline; 18 columns), `data/transcribe/octave_suppression/heatmap.png` (1320 × 396, three panels).
+- Report: `docs/basic_pitch_octave_refinement.md` (Problem, Method, Results, Interpretation, Determinism, Isolation, Limitations, Reproduction, Verdict).
+- Tests: `tests/test_octave_suppression.py` (14/14 passing); cross-branch integration test extended by 27 new §14 checks.
 
-| Seed  | Clip idx | Overlap (s) | Weight applied      |
-|-------|----------|-------------|---------------------|
-| long  | 3        | 23          | 0.2333… = (30−23)/30 |
-| mid   | 1        | 10          | 0.6667… = (30−10)/30 |
-| short | 0        | —           | 1.0 (short-song branch) |
+**Ledger routing:** sub-milestone `M-TRANS-1/basic-pitch/octave-suppression` filed as `invalidated/high` in the shadow ledger at `/home/user/music-gen-instance/fork-3a908edcb241/clone-1/promise_ledger.jsonl`, per the brief's escape-hatch instruction. To be folded into the workspace-root ledger as-is at fork-merge time.
 
-These values appear in the `clip_weights` field of the emitted `meta_descriptors.json` for each seed.
+**Persistent WARNs.** `promise_check` flags every new artefact under `scripts/transcribe/octave_*`, `data/transcribe/octave_suppression/`, `docs/basic_pitch_octave_refinement.md`, and `tests/test_octave_suppression.py` as orphan-artifact because the corresponding ledger events landed in the shadow ledger. This is the same shadow-routing pattern used by sibling clones 0 and 2 and by prior forks; the root conductor's `_infra/adopt-fanout-artifacts-*` event clears it at merge. Not a defect of this branch.
 
-### 3.4 What the seeds do — and do not — exercise
+**Handoff:** the merge report is written to `/home/user/music-gen-instance/fork-3a908edcb241/clone-1/merge_report.md`. The M-TRANS-1 ceiling under the current algorithm family is now known and documented (0.4773 → 0.6286 aggregate). The recommended next research step for this fork is the post-merge integration cycle followed by M-SCORE-1's extraction-half prerequisites, which unblock M-RULES-1 extraction — not a reopen of octave-suppression.
 
-The seed corpus is entirely fluidsynth-generated (per the ingestion determinism guarantee), which means monotimbral, tonally simple, and highly repetitive at the phrase scale. On this material the battery exercises:
-
-- All four **null-with-reason** paths that can fire on ≤ 22 s or single-clip input (`too_short_for_ssm`, single-clip dynamics slope).
-- Both non-trivial cases of the **anchored-tail debias weight** (0.2333 and 0.6667).
-- The **isolation contract**, including a live plant-and-catch on the real battery module (see §3.5).
-
-The seeds do **not** exercise:
-
-- The mid-range of the **form heuristic**. Every ≥ 30 s fluidsynth clip's raw diagonal-band ratio lands between 17 and 83, well above the top anchor at 3.0, so every one saturates at 1.0. This is precisely the failure mode named in the form heuristic's first blind spot — highly repeating tracks score falsely high — and it is a property of the seeds, not a defect. The anchor is *reachable* on this material but not *discriminating*; re-arguing it will happen when non-repetitive recorded audio becomes available.
-- Percussion or noise-dominated audio. The pitch-tracker's low-voiced-fraction guard is not triggered on any seed because voiced-fraction is 1.0 throughout.
-- Compressed or mastered audio (dynamics blind spot #1).
-- Polyphonic content (melody blind spot #2).
-- Reverberant material (timbre blind spot #3).
-
-One observation on the seed data reads directly as a blind spot in action: the 22 s clip's raw envelope-range-ratio is 142, driven by silence pockets in the tail rather than genuine dynamic range. This is dynamics blind spot #2 (silence pockets inflate p95/p05 spuriously) landing on real seed data.
-
-### 3.5 Determinism and isolation, both directly verified
-
-Two consecutive runs of the battery on the long seed produced byte-identical output TSVs (`diff -q` returned zero differences). An audit plant that prepended `from scripts.classifier import sidecar_nonfactor` to the real `scripts/heuristics/battery.py` caused the isolation test to fail with three concurrent rule hits on the planted line; reverting the file made the test pass again. The plant driver was preserved for future re-execution.
-
-### 3.6 Figures
-
-Per-heuristic mess-scale histograms across all seven clips and per-seed meta-descriptor bar charts are produced by `plot_battery.py` and land under `data/heuristics/battery_histograms/hist_{melody,timbre,form,dynamics}.png` and, co-located with each seed's meta JSON, at `data/heuristics/<source>/meta_bars.png`.
-
-## 4. Discussion
-
-**The mess-scale as a common interface.** Routing every heuristic through a single transfer helper with published anchors turns the four dimensions into a uniform, inspectable surface. When the trained ear model arrives, its per-dimension outputs can be compared against these hand-built scores clip-by-clip; when a comparison disagrees, the raw features preserved in the TSV allow the disagreement to be traced back to either the transfer curve or the underlying signal, without re-running any audio through librosa.
-
-**Blind-spot enumeration as an enforced contract.** Snapshotting each heuristic's blind-spot tuple onto every result — rather than relying on the docstring — means a future maintainer cannot edit the documented failure modes without changing what historical runs would replay. The single MODERATE follow-on item logged against this branch (see §5) treats blind-spot integrity as first-class in exactly this spirit.
-
-**The isolation pattern generalizes.** A sibling clone applied the same three-layer scan (import + literal string + audit symbol) to a different consumer of the classifier's non-factor sidecar. Together the two demonstrations argue that this kind of "isolation from a specific taxonomy" is enforceable via static analysis at negligible cost, and future consumers can copy the rule set.
-
-**What the seeds cannot tell us.** The most substantive limitation of this cycle's evidence is that fluidsynth material cannot argue the form heuristic's anchors from data — all long/mid seeds saturate. The right response is patience: when rated audio becomes available (currently blocked at the network layer), the top anchor should be **re-argued** from an observed distribution, not **re-fit** to it. Re-fitting to observed data would defeat the branch's interpretability commitment.
-
-## 5. Follow-on notes (not defects)
-
-- **Output-TSV header fragility.** `run_battery.py` derives its header from the first clip's flattened row. If a later clip returns a strict superset of raw-feature keys — which none of the seven current seed clips does — the writer will raise. The fix is one line (`extrasaction='ignore'` on the `DictWriter`, or pre-computing the union header from a schema). Recommended cleanup when the wider corpus activates, not blocking now.
-- **`dynamics_trajectory` units.** The label reads `envelope_range_ratio per second`; the original research brief phrased it as `mess_scale per second`. The number produced is internally consistent with the label chosen; both readings survive scrutiny.
-- **Short-seed `form_coherence` guard.** The whole-song self-similarity matrix computes on 22-second input and returns unity because the SSM is nearly flat. Adding a `too_short` guard analogous to the clip-level 30 s floor would tidy this — cosmetic, not a bug.
-- Two smaller stylistic items (a boolean-mask comparison in the melody module, and a regex that could false-positive on a comment containing the forbidden string) were noted by the audit and carry no functional impact.
-
-## 6. Conclusions and next work
-
-The hand-built half of the ear-model bake-off is discharged for the seed corpus. Every falsification-critical assertion — anchored-tail debias, isolation of the classifier's non-factor sidecar, byte-level reproducibility, blind-spot integrity, and honest nulls — was verified by direct re-execution rather than inspection alone. The trained-ear half of the same comparison is blocked until the rated-audio corpus becomes accessible; that work is out of scope for this branch. On the toolchain side, the recommended next step is a preflight for the transcription stage (basic-pitch), which will require a quarantined virtual environment to resolve a known dependency conflict.
-
-## References
-
-No new external sources were introduced by this branch; all cited packages (librosa 0.11.0, numpy 1.26.4, scipy 1.17.1, scikit-learn 1.9.0, matplotlib 3.11.1) are inherited from the workspace's pinned toolchain.
-
-## Appendix: Implementation Details
-
-**Code organization** (all under workspace root):
-
-- `scripts/heuristics/`
-  - `__init__.py`
-  - `mess_scale.py` — transfer helper + `blend()` composer + `HeuristicResult` dataclass
-  - `melody.py`, `timbre.py`, `form.py`, `dynamics.py` — one module per dimension
-  - `battery.py` — dispatches all four heuristics on a single clip
-  - `meta_tracker.py` — whole-song descriptors + anchored-tail weighting
-  - `run_battery.py`, `run_meta_tracker.py`, `plot_battery.py` — entry points
-- `tests/test_heuristics_isolation.py` — four static rules + anti-drift + plant-and-catch self-test
-
-**Data outputs**:
-
-- `data/heuristics/d60cead66dbd0b95/{clip_battery.tsv, meta_descriptors.json, meta_bars.png}` (long seed)
-- `data/heuristics/d15d5c009a70cc32/{clip_battery.tsv, meta_descriptors.json, meta_bars.png}` (mid seed)
-- `data/heuristics/d251556aedfe35ef/{clip_battery.tsv, meta_descriptors.json, meta_bars.png}` (short seed)
-- `data/heuristics/battery_histograms/hist_{melody,timbre,form,dynamics}.png`
-
-**Standing report**: `docs/heuristics_battery_report.md` (395 lines, ten sections, referenced throughout above).
-
-**Verification runs executed by the audit**:
-
-- `tests/test_heuristics_isolation.py` → OK on all three rule sets, anti-drift, and import probe.
-- Real-file plant of `from scripts.classifier import sidecar_nonfactor` into `scripts/heuristics/battery.py` → test failed with three rule hits on the planted line; file restored → test passed. Driver preserved at `audits/_plant_and_catch.py`.
-- `run_battery.py` re-run on the long-seed manifest → `diff -q` against snapshot returned zero differences.
-- Anchored-tail weights numerically verified in `meta_descriptors.json.clip_weights`: 0.2333… on the long seed's clip 3 (23 s overlap), 0.6667… on the mid seed's clip 1 (10 s overlap), 1.0 on the short seed.
-- Report shape check: all ten sections present at expected line offsets, 395 lines total.
-
-**Cross-clone notes**: This branch is disjoint from its sibling clones under fork `22b8c654f616`, touching only `scripts/heuristics/`, `tests/test_heuristics_isolation.py`, and `data/heuristics/`. Provenance events for the artifacts above are recorded in the per-clone shadow ledger; the root conductor's merge step promotes them into the main ledger under `M-HEUR-1/{melody, timbre, form, dynamics, meta-tracker}` and a rollup `M-HEUR-1` event, matching the previously established fanout-adoption pattern. The audit's `promise_check` reported zero errors and only orphan-artifact warnings, which are the expected pre-merge state.
-
-**Session references (for traceability only)**:
-
-- researcher session `72c463b3-66d5-4dd4-8a70-7235a7e078e2`
-- worker session `7efe277d-6c19-4eb6-abe8-8f1bc422668b`
-- auditor session `a46dfdba-61f1-4764-95b2-990b2bc5d524`
+<verdict>validated</verdict>
