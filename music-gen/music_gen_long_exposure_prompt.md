@@ -43,10 +43,13 @@ feeding it or measuring it. Budget your effort accordingly.
 
 Do not reopen these. They are constraints, not suggestions.
 
-**Clips are 30 seconds.** When harvested audio is chunked, the chunk length
-is 30 s. The reasoning is settled: 30 s is long enough that melodies are not
-taken out of context; 10 s is too short. How chunks overlap and how you
-handle the tail of a song are yours to decide — the length itself is not.
+**Clips are 30 seconds, with a 5-second overlap.** When harvested audio is
+chunked, the chunk length is 30 s. The reasoning is settled: 30 s is long
+enough that melodies are not taken out of context; 10 s is too short. Each
+clip shares its last 5 s with the start of the next, so a phrase cut at one
+boundary appears whole in a neighboring clip and transcription merging has
+anchor material. How you handle the tail of a song is yours to decide — the
+length and overlap are not.
 
 **Provenance is non-negotiable.** Every clip knows what song it came from
 and its start and end timestamps within that song. This chain never breaks:
@@ -82,7 +85,39 @@ not an opinion.
 
 **The DAW is chosen by its interface, not its reputation.** Ableton Live or
 Pro Tools — whichever offers the more robust programmatic interface to the
-backend. Decide by evidence, early.
+backend. Decide by evidence, early. The study is strictly those two
+candidates, both evaluated in full; no third options, no presumed winner.
+
+**Planning-stage refinements (settled 2026-08-28, interactive session).**
+These joined the fixed list during prompt refinement and carry the same
+weight:
+
+- *Chunking:* 5 s overlap between consecutive clips (folded in above).
+- *Separation depth:* the first working pipeline targets four stems —
+  vocals / drums / bass / other — where open-source separators are mature.
+  Per-instrument isolation of the "other" stem is a later refinement stage,
+  not a first-milestone requirement.
+- *First milestone corpus:* the first end-to-end milestone (harvest through
+  DAW recreation) runs on 5–10 songs — enough variety to expose per-stage
+  failure modes and seed a real rules ledger, small enough that every
+  artifact stays humanly inspectable. Scale up only after the loop closes.
+- *Classifier build:* the music/non-music classifier starts as a pretrained
+  audio tagger (PANNs/YAMNet/AST class) mapped onto this project's taxonomy,
+  validated against a hand-labeled sample of this corpus. Fine-tuning or
+  ensembling is justified only by measured inadequacy.
+- *Ear supervision:* the user maintains seven YouTube playlists, one per
+  rating band (1 = terrible … 7 = one-of-a-kind); every song inherits its
+  playlist's score. Finer-grained labeling schemes are future refinements,
+  not the starting design.
+- *Texture metric:* texture distance is a fixed multi-metric panel —
+  multi-scale spectral/mel distances, loudness/dynamics envelope error, and
+  one perceptual-embedding distance (CLAP/VGGish class) — always reported
+  side by side. No single number from the panel may be optimized in
+  isolation.
+- *Rules ledger format:* a custom typed schema (JSON/YAML): each rule
+  declares its type (harmonic, rhythmic, melodic, form, arrangement), its
+  parameters, its scope, and provenance pointers to the transcriptions that
+  support it. The schema is versioned and documented alongside the ledger.
 
 ## The system, piece by piece
 
@@ -104,9 +139,11 @@ with its sidecar row quarantined off to the side.
 ### 2. Taking songs apart
 
 Source separation, two capabilities: isolate vocals from instruments, and
-isolate individual instruments from each other. This is prime survey
-territory — measure the leading open-source separators on your own corpus
-before considering anything custom.
+isolate individual instruments from each other. The first working pipeline
+targets the four-stem split (vocals / drums / bass / other); per-instrument
+isolation within "other" comes later, as a refinement on a working loop.
+This is prime survey territory — measure the leading open-source separators
+on your own corpus before considering anything custom.
 
 ### 3. Writing down what you hear
 
@@ -147,7 +184,8 @@ macro-scale descriptors — how dynamics move, whether the form coheres, where
 the song peaks.
 
 The trained judge is the **ear**: a model of the user's taste, trained from
-user-provided YouTube playlists rated on the 1–7 scale. The ear scores
+seven user-maintained YouTube playlists — one per rating band, every song
+inheriting its playlist's 1–7 score. The ear scores
 audio; it is the fitness function for everything the system eventually
 generates. And because the non-factor rule binds here hardest of all: an ear
 that secretly learned to detect genre, era, or artist is not an ear, it is a
@@ -193,9 +231,10 @@ provenance to the transcriptions that support it.
 **Texture.** Bare MIDI renders are skeletons. First, layer on audio effects
 to give them life and color. Then the hard part: deterministic audio effects
 and heuristics that recreate the texture of the *original* song from its
-MIDI recreation. Define a measurable texture distance between a render and
-the original, and let that number — not your impression on tired ears —
-tell you whether the texture layer is working. The gap between the bare
+MIDI recreation. Texture distance is the fixed multi-metric panel (spectral,
+dynamics-envelope, perceptual-embedding — see the planning refinements), and
+that panel — not your impression on tired ears — tells you whether the
+texture layer is working. The gap between the bare
 MIDI render and the original is the project's central quantity; the texture
 layer's job is to close it, and its progress report is the honest
 measurement of how much remains.
@@ -217,7 +256,8 @@ Dependencies, not a schedule:
 2. The open-source survey and the DAW selection study run early and in
    parallel; both produce decisions the rest of the build consumes.
 3. Separation → transcription → score → MIDI is the spine; get one song
-   through it end to end, however roughly, before polishing any stage.
+   through it end to end, however roughly, before polishing any stage, then
+   widen to the 5–10-song first-milestone corpus.
 4. Heuristics and the ear can develop in parallel with the spine — they need
    the corpus, not the pipeline.
 5. Rules extraction, effect layering, and the texture work start as soon as
