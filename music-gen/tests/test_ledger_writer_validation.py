@@ -45,10 +45,12 @@ from long_exposure.tools._ledger_schema import (
     CONFIDENCE_LEVELS,
     REQUIRED_EVENT_FIELDS,
     STATUS_VALUES,
+    _STATE_TRANSITIONS,
     _STATUS_ENUM,
     canonical_json,
     content_hash_event_id,
     validate_event,
+    validate_history,
 )
 from long_exposure.workspace_bootstrap import (
     LedgerAppendError,
@@ -455,6 +457,134 @@ def test_18_supersedes_path_absent_accepted():
         shutil.rmtree(ws, ignore_errors=True)
 
 
+def test_19_transition_validated_to_in_progress_rejected():
+    """Case 19 (cycle-15): the cycle-13 line-250 flagship pattern —
+    appending a second event for the SAME milestone_id with
+    validated -> in-progress (no intervening reopened) — is rejected at
+    writer time with a message that names the milestone, both event_ids,
+    and the transition pair."""
+    ws = _tmpdir()
+    try:
+        mid = "M-C15-1/writer"
+        # First event lands validated cleanly.
+        e1 = _well_formed_event(
+            event_id=str(uuid.uuid4()),
+            milestone_id=mid,
+            status="validated",
+            ts="2026-08-28T12:00:00Z",
+            narrative="closure",
+        )
+        append_ledger_event(ws, e1)  # must not raise
+
+        # Second event tries validated -> in-progress without reopened.
+        e2 = _well_formed_event(
+            event_id=str(uuid.uuid4()),
+            milestone_id=mid,
+            status="in-progress",
+            ts="2026-08-28T13:00:00Z",
+            narrative="illegal reopen without reopened event",
+        )
+        try:
+            append_ledger_event(ws, e2)
+        except LedgerAppendError as err:
+            msg = str(err)
+            assert mid in msg, f"error must name milestone_id, got: {err}"
+            assert "validated" in msg, f"error must name prev status, got: {err}"
+            assert "in-progress" in msg, f"error must name next status, got: {err}"
+            assert e1["event_id"] in msg, (
+                f"error must reference prev event_id, got: {err}"
+            )
+            assert e2["event_id"] in msg, (
+                f"error must reference candidate event_id, got: {err}"
+            )
+            assert "_STATE_TRANSITIONS" in msg or "transition" in msg, (
+                f"error must invoke transition graph, got: {err}"
+            )
+        else:
+            raise AssertionError(
+                "expected LedgerAppendError for validated -> in-progress"
+            )
+        # Atomicity: only the first event landed.
+        lines = resolve_ledger_path(ws).read_text().splitlines()
+        assert len(lines) == 1, f"expected 1 line, got {len(lines)}"
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_20_transition_reopened_bridge_accepted():
+    """Case 20 (cycle-15): the same validated -> in-progress transition IS
+    accepted when an intervening reopened event bridges the two — this
+    is the documented reopen protocol."""
+    ws = _tmpdir()
+    try:
+        mid = "M-C15-2/writer"
+        e1 = _well_formed_event(
+            event_id=str(uuid.uuid4()), milestone_id=mid, status="validated",
+            ts="2026-08-28T12:00:00Z", narrative="closure",
+        )
+        e2 = _well_formed_event(
+            event_id=str(uuid.uuid4()), milestone_id=mid, status="reopened",
+            ts="2026-08-28T13:00:00Z", narrative="new evidence arrived",
+        )
+        e3 = _well_formed_event(
+            event_id=str(uuid.uuid4()), milestone_id=mid, status="in-progress",
+            ts="2026-08-28T14:00:00Z", narrative="re-verifying",
+        )
+        append_ledger_event(ws, e1)  # must not raise
+        append_ledger_event(ws, e2)  # validated -> reopened: allowed
+        append_ledger_event(ws, e3)  # reopened -> in-progress: allowed
+        lines = resolve_ledger_path(ws).read_text().splitlines()
+        assert len(lines) == 3, f"expected 3 lines, got {len(lines)}"
+    finally:
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_21_state_transitions_frozenset_shape():
+    """Case 21 (cycle-15): _STATE_TRANSITIONS is a frozenset of
+    (str, str) tuples; every element uses statuses drawn from
+    STATUS_VALUES; the brief's proposed core transitions are all present."""
+    assert isinstance(_STATE_TRANSITIONS, frozenset), \
+        f"_STATE_TRANSITIONS must be frozenset, got {type(_STATE_TRANSITIONS)}"
+    for t in _STATE_TRANSITIONS:
+        assert isinstance(t, tuple) and len(t) == 2, \
+            f"element {t!r} is not a 2-tuple"
+        a, b = t
+        assert a in STATUS_VALUES, f"prev {a!r} not in STATUS_VALUES"
+        assert b in STATUS_VALUES, f"next {b!r} not in STATUS_VALUES"
+    brief_core = {
+        ("not-started", "in-progress"),
+        ("in-progress", "validated"),
+        ("in-progress", "invalidated"),
+        ("validated", "reopened"),
+        ("invalidated", "reopened"),
+        ("reopened", "in-progress"),
+        ("reopened", "validated"),
+        ("reopened", "invalidated"),
+        ("validated", "superseded"),
+        ("deferred", "in-progress"),
+        ("in-progress", "deferred"),
+        ("action_required", "in-progress"),
+        ("in-progress", "action_required"),
+    }
+    missing = brief_core - _STATE_TRANSITIONS
+    assert not missing, f"brief-specified transitions missing: {missing}"
+    # Cycle-13 line-250 pattern must NOT be legal.
+    assert ("validated", "in-progress") not in _STATE_TRANSITIONS, (
+        "validated -> in-progress must not be in _STATE_TRANSITIONS "
+        "(cycle-13 line-250 drift class)"
+    )
+    # And validate_history rejects all 301 ledger histories as clean.
+    ledger = Path("/home/user/long-exposure-runs/music-gen/promise_ledger.jsonl")
+    if ledger.exists():
+        rows = []
+        for raw in ledger.read_text().splitlines():
+            raw = raw.strip()
+            if raw:
+                rows.append(json.loads(raw))
+        errs = validate_history(rows)
+        assert not errs, f"validate_history flagged the historical ledger: {errs[:3]}"
+
+
 # ------------------------------------------------------------------ runner
 
 TESTS = [
@@ -476,6 +606,12 @@ TESTS = [
     ("test_16_supersedes_path_string_accepted", test_16_supersedes_path_string_accepted),
     ("test_17_supersedes_path_list_rejected", test_17_supersedes_path_list_rejected),
     ("test_18_supersedes_path_absent_accepted", test_18_supersedes_path_absent_accepted),
+    ("test_19_transition_validated_to_in_progress_rejected",
+        test_19_transition_validated_to_in_progress_rejected),
+    ("test_20_transition_reopened_bridge_accepted",
+        test_20_transition_reopened_bridge_accepted),
+    ("test_21_state_transitions_frozenset_shape",
+        test_21_state_transitions_frozenset_shape),
 ]
 
 
