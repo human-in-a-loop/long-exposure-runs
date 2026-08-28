@@ -55,6 +55,7 @@ validation events; each rolls up into its parent milestone above).
 | M-INGEST-1/provenance         | M-INGEST-1  | Append-only JSONL provenance schema v1 + validator + replay.    |
 | M-INGEST-1/harvester-parity   | M-INGEST-1  | Local ↔ YouTube front doors converge on identical manifests.    |
 | M-INGEST-1/egress-probe       | M-INGEST-1  | Non-blocking two-stage YouTube-CDN reachability probe.          |
+| M-TEX-1/panel                 | M-TEX-1     | Texture-distance panel implementation (multi-scale spectral, dynamics envelope, one perceptual embedding) as a callable library with per-metric documented scale — pre-M-SCORE-1 partial closure of M-TEX-1. |
 
 ## Out of scope (explicit)
 
