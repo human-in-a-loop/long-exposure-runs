@@ -1,100 +1,106 @@
-# Post-merge integration report — fork 00b3ae64444c (cycle 10)
+---
+created: 2026-08-28T13:00:00Z
+cycle: 11
+run_id: run-2026-08-28T040704Z
+agent: worker
+fork_id: ddd71e9bdb0e
+milestone: _run/post-merge-integration-fork-ddd71e9bdb0e
+supersedes_path: (in-place rewrite of prior fork-00b3ae64444c rollup)
+---
 
-**Scope:** worker-only post-merge integration for fork `00b3ae64444c`.
+# Post-merge integration report — fork ddd71e9bdb0e (cycle 11)
+
+**Scope:** worker-only post-merge integration for fork `ddd71e9bdb0e`.
 Three clones reconciled into the workspace root:
 
-| Clone | Milestone | Verdict | Deliverable |
+| Clone | Milestones | Verdict | Deliverable |
 |---|---|---|---|
-| 0 | M-GEN-1/first-generation | validated/medium | docs/gen_first_generation_report.md |
-| 1 | M-INGEST-1/breadth-second-seeds | validated/medium | docs/pipeline_breadth_report.md |
-| 2 | _infra/ledger-schema-hardening | validated/high | docs/ledger_schema_hardening.md |
+| 0 | M-GEN-1/rule-composition-constraint + M-GEN-1/batch-v1 | validated/high | `docs/gen_batch_v1_report.md` |
+| 1 | M-TEX-1/panel/embedding (CLAP swap) | invalidated/medium | `docs/clap_embedding_upgrade_report.md` |
+| 2 | M-EAR-1/training-loop + M-EAR-1/armed-harness | validated/high | `docs/ear_training_armed_report.md` |
 
-Zero cross-branch content conflict: the three deliverable trees
-(`scripts/gen` + `data/gen`, `scripts/breadth` + `data/breadth`,
-`tests/test_ledger_writer_validation.py` + upstream `long_exposure/tools/_ledger_schema.py`)
-touch disjoint paths. Clones' own scope-close events were already in
-the workspace root ledger at integration entry — the fanout collapse
-merged the per-clone shadow ledgers back in.
+Zero cross-branch file-tree overlap. Each clone wrote under a disjoint
+subtree (`scripts/gen`+`data/gen/batch_v1`; `scripts/texture`+`data/tex`;
+`scripts/ear`+`data/ear/training_v1`+`tests/test_ear_training.py`).
 
 ## What this integration did
 
-Clones had already emitted their own closure events (ledger was at
-186 rows on entry). Integration work reduced to:
+Ledger sat at 213 rows on entry (clones' own closure events already
+merged in by fanout collapse). Integration work reduced to:
 
-**1. Plan-of-record drift fixes** — added three rows to the Milestones
-table so `promise_check` accepts the pre-existing per-seed events:
+**1. Two `reopened` events inserted via atomic in-place rewrite**
+(promise_check was flagging both as ERROR):
 
-- `M-INGEST-1/breadth-second-seeds/seed_mid_50s`
-- `M-INGEST-1/breadth-second-seeds/synth_060s`
+- `M-TEX-1/panel/embedding` (line 193) — cycle 4 validated/medium under
+  VGGish → cycle 11 in-progress kickoff for CLAP swap → cycle 11
+  invalidated/medium when CLAP hit HF SSL cert rung 1.2. Legit reopen;
+  reopen marker inserted with ts anchored just before the kickoff so
+  it sorts between the two per promise_check's (ts, line) key.
+- `M-EAR-1/armed-harness` (line 201, ts=11:15:00Z tie-broken by line
+  number) — clone-2's shadow ledger collapsed with the validated
+  closure landing at file line 195 BEFORE the in-progress kickoff at
+  file line 200. Fanout-collapse artifact; both events originate from
+  a single linear worker execution. The reopen marker acknowledges the
+  sequence rather than mutating past events.
 
-(Row for `_infra/ledger-schema-hardening` was already added by clone-2.)
+**2. Orphan artifact adoption** — 6 `data/ear/features/gen_first_gen_*.npz`
+feature-cache files (per-song ear-scoring inputs for salts 0..4 plus
+the pre-existing cycle-10 cache) attached to `M-GEN-1/batch-v1`.
+Clears the 6 orphan-artifact WARNs promise_check surfaced.
 
-**2. Ledger repair (in-place, atomic via `os.replace`)** —
+**3. Rollup capstone events (5)** emitted via the hardened
+`workspace_bootstrap.append_ledger_event()` writer:
 
-- Line 160: `event_id` was a raw SHA-256 hex string (produced by an
-  ad-hoc emitter under `_plan/register-gen-first-generation-milestone`
-  before the hardened writer landed). Converted to a canonical UUID via
-  `uuid5(uuid.NAMESPACE_NIL, hex)`. Original hex preserved in
-  `event_id_original`.
-- Lines 179–184: six events with `milestone_id: "M-TEST-1/writer"` were
-  round-trip fixtures emitted by clone-2 during ledger-writer testing.
-  Renamed to reserved namespace `_infra/ledger-writer-test-fixtures` so
-  `promise_check` accepts them without diluting the plan. Original
-  `milestone_id` preserved in `milestone_id_original`.
+1. `_infra/repair-ledger-cycle11-fork-ddd71e9bdb0e` — validated/high
+2. `_plan/register-post-merge-integration-fork-ddd71e9bdb0e` — validated/high
+3. `M-GEN-1/batch-v1` (adopt-only) — validated/high
+4. `_run/post-merge-integration-fork-ddd71e9bdb0e` — validated/high
+5. `_archive/integration-scratch-fork-ddd71e9bdb0e` — validated/high
 
-**3. Rollup events (5 emitted via the hardened writer)** — ledger
-186 → 191:
+## Verification
 
-| # | milestone_id | status | conf |
-|---|---|---|---|
-| 1 | `_infra/ledger-writer-test-fixtures` | validated | high |
-| 2 | `_infra/repair-ledger-cycle10` | validated | high |
-| 3 | `_plan/register-post-merge-integration-fork-00b3ae64444c` | validated | high |
-| 4 | `_run/post-merge-integration-fork-00b3ae64444c` | validated | high |
-| 5 | `_archive/integration-scratch-fork-00b3ae64444c` | validated | high |
+- `promise_check`: **0 ERRORs**, 6 pre-existing baseline WARNs
+  (5 trailing-slash canonicalization + 1 M-EAR-1 parent with no events;
+  all documented, all pre-cycle-10).
+- `tests/test_integration_cross_branch.py`: `result: PASS (0 failures)`
+  across §1–§23 including the two §23 additions from clones 0 and 2.
+- `tests/test_ledger_writer_validation.py`: `13 pass / 0 fail`.
+- Ledger final row count: 220 (213 + 2 reopens + 5 rollups).
 
-**4. Hardened-writer live proof-of-life** — every event this
-integration emitted went through `workspace_bootstrap.append_ledger_event()`
-from cycle-2 clone. Two emit-time validation failures caught real
-schema deficiencies in my draft events (missing `status`, `narrative`,
-`confidence.rationale`) — the writer refused them and returned a typed
-`LedgerAppendError` naming the missing fields, exactly as designed.
-Retry after fixing the fields succeeded. This is the tightening from
-cycle-2 doing its job on live traffic in the very cycle it landed.
+## Environment side effect
 
-## Verification (all green)
-
-| Check | Result |
-|---|---|
-| `promise_check` | **0 ERRORs** (7 pre-existing WARNs unchanged: 5 trailing-slash canonicalization, 1 `M-EAR-1` parent with no events, 1 orphan `data/ear/features/*.npz` cache byproduct from M-GEN-1 ear scoring) |
-| `tests/test_ledger_writer_validation.py` | **PASS** (exit 0) |
-| `tests/test_integration_cross_branch.py` | **PASS (0 failures)** across §1–§22 including new §20 (schema hardening), §21 (M-GEN-1, 39 checks, per-artefact SHA-256 anchors + PRNG-import grep guard + provenance-chain shape), §22 (breadth, per-seed SHA-256 anchors × 2 seeds) |
+Clone-1 installed `torchvision==0.28.0` via `/usr/bin/python3 -m pip
+install` as a CLAP prereq. `torch 2.13.0+cpu` and `numpy 1.26.4` locks
+intact. Torchvision now imports (with a `torch.library.register_fake`
+no-op workaround for `torchvision::nms`) but CLAP still cannot fetch
+its roberta-base weights under the current egress policy — VGGish
+remains the live embedding rung, exactly as the fetchability ladder
+was designed to fall back to.
 
 ## Anti-pattern lock preserved
 
-`M-TRANS-1/basic-pitch/octave-suppression` remains `invalidated/high`
-(cycle 8). None of the three clones re-attempted it; clone-1 explicitly
-names the anti-pattern in its report ("basic-pitch on pure sines — this
-is the same octave-doubling artefact identified in cycle 8; do NOT
-re-attempt").
+`M-TRANS-1/basic-pitch/octave-suppression` remains invalidated/high
+(cycle 8). Not re-attempted. Clone-1 explicitly cites the anti-pattern
+in the CLAP-egress-blocked context.
 
-## Ledger at close: 191 rows
+## Handoff
 
-## Recommended follow-ups (deferred, out of scope for this integration)
+Researcher next cycle. Recommended follow-ups (from clones):
 
-From the clones' own reports:
+- Cheap-rules extraction over `data/breadth/{seed_mid_50s,synth_060s}/merged.musicxml`
+  to widen M-RULES-1 corpus and give M-GEN-1/batch-v1's 5-song sampler
+  more distinct arrangement/melodic ruleset space (currently salts 1
+  and 4 landed on the same arrangement rule due to the 28-row ledger).
+- CORN-head recalibration on rated audio when egress unblocks
+  (`data/ear/trained_v1.flag` will be written unattended by the armed
+  harness on the next two-consecutive `media_ok=true` egress-status
+  rows).
+- Manifest schema bridge: `corpus/ratings/ratings_manifest.tsv` uses
+  `video_id`; cycle-8's chunker writes chunk-SHA-keyed rows. Bridge
+  script needed once rated chunks exist.
+- Egress unblock or pre-seeded `roberta-base` cache would reopen the
+  CLAP branch; the family-disagreement question this cycle asked
+  (does CLAP flip, reinforce, or blur VGGish's signal on the cycle-9
+  triplet and cycle-10 synth_060s pair?) remains open.
 
-- `M-GEN-1/rule-composition-constraint`: post-sampling coherence gate
-  flagging arrangement-silences-pitched-Parts and form-granularity-too-fine.
-- CORN-head recalibration on rated audio when `M-INGEST-1/egress-ready-automation` fires.
-- Cheap rules extraction over the two new merged MusicXMLs
-  (`data/breadth/{seed_mid_50s,synth_060s}/merged.musicxml`) to widen
-  the M-RULES-1 corpus without needing new audio.
-- Split `tests/test_integration_cross_branch.py` (now 1110 lines / 413+
-  checks) by milestone; flagged not executed.
-- Shadow-ledger per-line validation at `fanout._concat_clone_ledgers`
-  (clone-2 §Recommended follow-up).
-- Adopt the orphan `data/ear/features/gen_first_gen_d81089d39f31b5ca.npz`
-  under M-GEN-1/first-generation.
-
-Ready for next cycle. Ledger clean, tests green.
+Auditor NOT scheduled this cycle per worker-only research brief.
