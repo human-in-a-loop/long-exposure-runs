@@ -184,6 +184,46 @@ if _pin_path.is_file():
               f"M-SEP-1: UMXHQ synth_030s/{_stem}.wav RMS {_now_dbfs:.2f} dBFS "
               f"within ±{_tol_db} dB of pinned {_pin_dbfs:.2f} (|Δ|={_delta:.3f})")
 
+# 10. M-HEUR-1 (heuristics battery) cross-branch invariants
+#     (a) scripts/heuristics/*.py NEVER import sidecar_nonfactor.
+#     (b) All three per-seed batteries + meta JSONs exist on disk.
+#     (c) The anchored-tail debias weight formula is honored numerically.
+_heur_dir = WS / "scripts" / "heuristics"
+_seen_heur_nonfactor = False
+if _heur_dir.is_dir():
+    for _pyfile in sorted(_heur_dir.glob("*.py")):
+        _mod = ast.parse(_pyfile.read_text())
+        for _node in ast.walk(_mod):
+            if isinstance(_node, ast.ImportFrom) and _node.module and "sidecar_nonfactor" in _node.module:
+                _seen_heur_nonfactor = True
+            if isinstance(_node, ast.Import):
+                for _n in _node.names:
+                    if "sidecar_nonfactor" in _n.name:
+                        _seen_heur_nonfactor = True
+check(not _seen_heur_nonfactor,
+      "M-HEUR-1: scripts/heuristics/*.py do NOT import scripts.classifier.sidecar_nonfactor (isolation)")
+
+_heur_seeds = {
+    "d60cead66dbd0b95": ("long",  0.23333333333333334, 3),  # 23 s overlap on clip 3
+    "d15d5c009a70cc32": ("mid",   0.6666666666666666,  1),  # 10 s overlap on clip 1
+    "d251556aedfe35ef": ("short", 1.0,                 0),  # single-clip short-song branch
+}
+for _sid, (_lab, _expected_w, _idx) in _heur_seeds.items():
+    _seed_dir = WS / "data" / "heuristics" / _sid
+    _tsv = _seed_dir / "clip_battery.tsv"
+    _meta = _seed_dir / "meta_descriptors.json"
+    check(_tsv.is_file(), f"M-HEUR-1: {_lab} clip_battery.tsv present")
+    check(_meta.is_file(), f"M-HEUR-1: {_lab} meta_descriptors.json present")
+    if _meta.is_file():
+        _mj = json.loads(_meta.read_text())
+        _weights = _mj.get("clip_weights", [])
+        check(_idx < len(_weights),
+              f"M-HEUR-1: {_lab} meta_descriptors.json has ≥{_idx + 1} clip weight(s)")
+        if _idx < len(_weights):
+            _got_w = float(_weights[_idx])
+            check(abs(_got_w - _expected_w) < 1e-9,
+                  f"M-HEUR-1: {_lab} clip[{_idx}] weight={_got_w:.6f} matches formula {_expected_w:.6f}")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
