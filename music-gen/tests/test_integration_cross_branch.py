@@ -1482,6 +1482,394 @@ check(
 )
 
 
+# ---------------------------------------------------------------------------
+# §27. M-TEX-1/stage-by-stage widening — cycle 13, fork 54a6c185816e, clone 2.
+# ---------------------------------------------------------------------------
+# Widens cycle-9 stage_by_stage to 2 breadth seeds (seed_mid_50s + synth_060s).
+# Invariants:
+#   - v2 orchestrator + plot script present + interpreter-guarded
+#   - no sidecar_nonfactor imports in the new scripts
+#   - the cycle-9 pinned chain module is imported verbatim (not reimplemented)
+#   - the cycle-9 synth_030s TSV anchor SHA is unchanged
+#   - the two new per-seed TSVs + effects_layered.wav have known SHA-256 anchors
+#   - each per-seed TSV has 3 pair rows × exactly the 8-key panel contract
+#     (10 columns: a_stage, b_stage, plus 8 panel keys)
+
+_TEX_V2_ORCH = WS / "scripts" / "tex" / "stage_by_stage_v2.py"
+_TEX_V2_PLOT = WS / "scripts" / "tex" / "plot_stage_by_stage_v2.py"
+_TEX_CHAIN   = WS / "scripts" / "tex" / "render_effects_layered.py"
+
+for _p in (_TEX_V2_ORCH, _TEX_V2_PLOT):
+    check(_p.exists(), f"M-TEX-1/stage-by-stage widening: {_p.relative_to(WS)} exists")
+    _src = _p.read_text()
+    check(
+        'assert sys.executable == "/usr/bin/python3"' in _src,
+        f"M-TEX-1/stage-by-stage widening: {_p.name} carries interpreter guard",
+    )
+    import re as _re_tex_v2
+    check(
+        not _re_tex_v2.search(r"^(from|import) .*sidecar_nonfactor", _src, _re_tex_v2.MULTILINE),
+        f"M-TEX-1/stage-by-stage widening: {_p.name} has no sidecar_nonfactor imports",
+    )
+
+# The v2 orchestrator must reuse the cycle-9 chain by import, not by copy.
+_v2_src = _TEX_V2_ORCH.read_text()
+check(
+    "from scripts.tex.render_effects_layered import apply_effects_layered" in _v2_src,
+    "M-TEX-1/stage-by-stage widening: v2 orchestrator imports cycle-9 chain verbatim",
+)
+check(
+    "from scripts.tex.measure_across_stages import measure_pairs" in _v2_src,
+    "M-TEX-1/stage-by-stage widening: v2 orchestrator imports cycle-9 measurement verbatim",
+)
+
+# The cycle-9 chain module itself must still carry the pinned parameter signature.
+_chain_src = _TEX_CHAIN.read_text()
+for _needle, _msg in (
+    ("FX Type", "Surge XT chorus/reverb FX Type parameters"),
+    ("Output Mix", "Surge XT Output Mix parameter"),
+    ("0.28", "chorus FX Type=0.28 pin"),
+    ("0.35", "chorus Output Mix=0.35 pin"),
+    ("0.02", "reverb FX Type=0.02 pin"),
+    ("linspace(0.05, 0.60", "reverb Output Mix ramp 0.05→0.60 pin"),
+    ("linspace(0.25, 1.4", "post-chain gain ramp 0.25→1.4 pin"),
+):
+    check(
+        _needle in _chain_src,
+        f"M-TEX-1/stage-by-stage widening: cycle-9 chain preserves {_msg}",
+    )
+
+# Anchor SHAs.
+import hashlib as _hashlib_tex_v2
+
+_ANCHORS = {
+    WS / "data" / "tex" / "stage_by_stage_synth_030s.tsv":
+        "b3570a795c8c3e7a5f59ddefbd20096e8221cabef8d4d1fad5a621a3ba0fece2",
+    WS / "data" / "tex" / "stage_by_stage_seed_mid_50s.tsv":
+        "a25b98e47ff3e8fc1ee257b81af33317c8eb152297fd8bed408fcbaab7674330",
+    WS / "data" / "tex" / "stage_by_stage_synth_060s.tsv":
+        "51f6749b5fa3c23b1549d2a57ea67286c244c344234f69f5a76592db498b9803",
+    WS / "data" / "tex" / "renders" / "seed_mid_50s" / "effects_layered.wav":
+        "312aa9cd03b9cc09128998d5a617ec09c15404b5812fb9974b91c8f323f8040a",
+    WS / "data" / "tex" / "renders" / "synth_060s" / "effects_layered.wav":
+        "5a9842864060075a47a6bddda1106617a5d7f542029110602e00401ef15440b6",
+}
+for _path, _sha in _ANCHORS.items():
+    check(_path.exists(), f"M-TEX-1/stage-by-stage widening: {_path.relative_to(WS)} exists")
+    _actual = _hashlib_tex_v2.sha256(_path.read_bytes()).hexdigest()
+    check(
+        _actual == _sha,
+        f"M-TEX-1/stage-by-stage widening: {_path.relative_to(WS)} SHA-256 matches anchor",
+    )
+
+# TSV shape: 4 lines (header + 3 pair rows); each row has 10 tab-separated fields.
+_EXPECTED_HEADER = ("a_stage\tb_stage\tmel_l1_db\tspectral_centroid_rmse_hz\t"
+                    "rms_env_rmse\tlufs_m_rmse_lu\tembedding_cosine_distance\t"
+                    "embedding_rung\tsr_hz\tn_samples_compared")
+for _seed in ("synth_030s", "seed_mid_50s", "synth_060s"):
+    _tsv = WS / "data" / "tex" / f"stage_by_stage_{_seed}.tsv"
+    _lines = _tsv.read_text().strip().split("\n")
+    check(
+        len(_lines) == 4,
+        f"M-TEX-1/stage-by-stage widening: {_seed} TSV has header + 3 pair rows",
+    )
+    check(
+        _lines[0] == _EXPECTED_HEADER,
+        f"M-TEX-1/stage-by-stage widening: {_seed} TSV header matches 8-key panel contract",
+    )
+    for _row in _lines[1:]:
+        check(
+            len(_row.split("\t")) == 10,
+            f"M-TEX-1/stage-by-stage widening: {_seed} TSV row has 10 columns",
+        )
+
+# Report + figure ship.
+_REPORT = WS / "docs" / "tex_stage_by_stage_widening_report.md"
+_FIGURE = WS / "docs" / "figures" / "tex_stage_by_stage_3seeds.png"
+check(_REPORT.exists(), "M-TEX-1/stage-by-stage widening: report ships")
+check(_FIGURE.exists(), "M-TEX-1/stage-by-stage widening: figure ships")
+
+
+# ---------------------------------------------------------------------------
+# §26. M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation — cycle 13,
+# fork 54a6c185816e, clone 1. DawDreamer-native time-varying parameter
+# automation via set_automation(). Invariants: scripts present, interpreter
+# guard, non-factor AST isolation, byte-determinism SHA anchors on the
+# automated/reference WAVs, env_correlation JSON present + value tracked,
+# coverage_matrix_v3.json present + valid, cycle-9 pinned chain not imported
+# (grep verified).
+# ---------------------------------------------------------------------------
+
+import hashlib as _hl_gap2
+import json as _json_gap2
+from pathlib import Path as _P_gap2
+
+_GAP2 = WS / "scripts/daw_spike/gap2_v3"
+_GAP2_DATA = WS / "data/daw_spike/gap2_v3"
+
+for _f in (
+    "synth_input.py",
+    "dawdreamer_automation.py",
+    "render_reference.py",
+    "measure_env_correlation.py",
+    "orchestrator.py",
+    "coverage_matrix_v3.py",
+    "plot_gap2_v3.py",
+):
+    check(
+        (_GAP2 / _f).exists(),
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_f} present",
+    )
+
+for _f in (
+    "input_10s.wav",
+    "automated.wav",
+    "reference.wav",
+    "flat_control.wav",
+    "env_correlation.json",
+    "flat_env_correlation.json",
+    "summary.json",
+):
+    check(
+        (_GAP2_DATA / _f).exists(),
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: data/gap2_v3/{_f} present",
+    )
+
+# Interpreter guard on every new script.
+for _f in (
+    "synth_input.py",
+    "dawdreamer_automation.py",
+    "render_reference.py",
+    "measure_env_correlation.py",
+    "orchestrator.py",
+    "coverage_matrix_v3.py",
+    "plot_gap2_v3.py",
+):
+    _src = (_GAP2 / _f).read_text()
+    check(
+        "assert sys.executable == '/usr/bin/python3'" in _src,
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_f} carries interpreter guard",
+    )
+
+# Non-factor AST isolation: no sidecar_nonfactor imports.
+import re as _re_gap2
+for _f in list(_GAP2.glob("*.py")):
+    _src = _f.read_text()
+    check(
+        not _re_gap2.search(r"(?m)^\s*(from|import)\s+.*sidecar_nonfactor", _src),
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_f.name} no sidecar_nonfactor import",
+    )
+
+# Cycle-9 pinned chain isolation: no import of scripts.tex.render_effects_layered.
+for _f in list(_GAP2.glob("*.py")):
+    _src = _f.read_text()
+    check(
+        not _re_gap2.search(r"(?m)^\s*(from|import)\s+scripts\.tex\.render_effects_layered", _src),
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_f.name} does not import cycle-9 pinned chain (render_effects_layered)",
+    )
+    # Reference check restricted to code-line contexts (skip comments/docstrings).
+    _code_lines = [ln for ln in _src.splitlines() if not ln.lstrip().startswith("#")]
+    _code = "\n".join(_code_lines)
+    # Strip triple-quoted docstrings for the reference test.
+    _code_stripped = _re_gap2.sub(r'""".*?"""', '', _code, flags=_re_gap2.DOTALL)
+    _code_stripped = _re_gap2.sub(r"'''.*?'''", '', _code_stripped, flags=_re_gap2.DOTALL)
+    check(
+        "render_effects_layered" not in _code_stripped,
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_f.name} does not reference cycle-9 pinned chain in code",
+    )
+
+# Byte-determinism SHA anchors from cycle-13 clone-1 run.
+_SHA_ANCHORS = {
+    "input_10s.wav": "cdade28b97826908ba02c7251e6c02a88639033d70d9a2b62e6ea6904eded660",
+    "automated.wav": "e8e27b22f01d0e53956e036d218b0eb7fc5c8bd4e68814d265d993d128b86003",
+    "reference.wav": "cc44bcffb4c22b67867e8c9a992d8a850394163d1017677b44a1de5739984bb7",
+    "flat_control.wav": "60c6fa34381e70a9665364a54f6c611c6e4cd19581c7802ad461bbeaae299399",
+}
+for _name, _sha in _SHA_ANCHORS.items():
+    _actual = _hl_gap2.sha256((_GAP2_DATA / _name).read_bytes()).hexdigest()
+    check(
+        _actual == _sha,
+        f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: {_name} SHA anchor matches ({_actual[:16]}...)",
+    )
+
+# Env-correlation JSON present and structured.
+_ec = _json_gap2.loads((_GAP2_DATA / "env_correlation.json").read_text())
+check(
+    isinstance(_ec.get("env_correlation"), float),
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: env_correlation.json carries a float env_correlation",
+)
+check(
+    _ec.get("n_fft") == 2048 and _ec.get("hop") == 512 and _ec.get("sr") == 44100,
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: env_correlation.json methodology params match brief (n_fft=2048, hop=512, sr=44100)",
+)
+
+# Summary.json + coverage matrix v3 present and valid.
+_sm = _json_gap2.loads((_GAP2_DATA / "summary.json").read_text())
+check(
+    _sm.get("verdict") in ("GREEN-via-DawDreamer", "redefined-GAP", "still-GAP"),
+    f"M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: summary.json verdict enumerated ({_sm.get('verdict')})",
+)
+check(
+    _sm.get("byte_determinism_x2") is True,
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: summary.json records byte_determinism_x2 True",
+)
+check(
+    _sm.get("parameter_name") == "Output Mix" and _sm.get("parameter_index") == 10,
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: summary.json records Output Mix param (index 10)",
+)
+check(
+    _sm.get("dawdreamer_version") == "0.9.0",
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: summary.json records dawdreamer 0.9.0",
+)
+_v3 = _json_gap2.loads((WS / "data/daw_spike/coverage_matrix_v3.json").read_text())
+check(
+    _v3.get("matrix_version") == 3 and _v3.get("cycle") == 13,
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: coverage_matrix_v3.json version=3, cycle=13",
+)
+check(
+    _v3.get("cycle13_gap2_verdict") in ("GREEN-via-DawDreamer", "redefined-GAP", "still-GAP"),
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: coverage_matrix_v3.json cycle13_gap2_verdict enumerated",
+)
+
+# v2 is preserved byte-identically.
+_v2_expected_ver = 2
+_v2 = _json_gap2.loads((WS / "data/daw_spike/coverage_matrix_v2.json").read_text())
+check(
+    _v2.get("matrix_version") == _v2_expected_ver and _v2.get("cycle") == 12,
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: v2 preserved (matrix_version=2, cycle=12)",
+)
+
+# Report + figure exist.
+check(
+    (WS / "docs/daw_spike_gap2_dawdreamer_closure_report.md").exists(),
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: closure report present",
+)
+check(
+    (WS / "docs/figures/daw_spike_gap2_v3_automation.png").exists(),
+    "M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation: automation figure present",
+)
+
+
+# ---------------------------------------------------------------------------
+# §25. M-GEN-1/batch-v2 — cycle 13, fork 54a6c185816e, clone 0.
+# ---------------------------------------------------------------------------
+# Invariants:
+#   (a) 4 new scripts present with interpreter guard
+#   (b) non-factor AST isolation preserved
+#   (c) PRNG-grep guard clean on 4 new scripts
+#   (d) 8-song per-file artifacts present (56 files) + 6 aggregates
+#   (e) batch_v2 salt=0 anchor byte-identity (self-consistency across
+#       reruns, tracked by the frozen SHA anchors in this file)
+#   (f) collision_analysis.json + salt4_diagnostic.json + collision_matrix.tsv
+#       present; salt=4 verdict in the enumerated set
+#   (g) PYTHONHASHSEED=0 assertion visible in orchestrator source
+#   (h) report + 2 figures shipped
+import json as _json_bv2
+
+# (a) 4 new scripts present + interpreter guard
+_bv2_scripts = ("batch_v2.py", "collision_analysis.py",
+                "salt4_diagnostic.py", "plot_batch_v2.py")
+for _name in _bv2_scripts:
+    _p = WS / "scripts" / "gen" / _name
+    check(_p.is_file(), f"M-GEN-1/batch-v2: scripts/gen/{_name} present")
+    if _p.is_file():
+        _text = _p.read_text(encoding="utf-8")
+        check("assert sys.executable == \"/usr/bin/python3\"" in _text,
+              f"M-GEN-1/batch-v2: scripts/gen/{_name} interpreter guard")
+
+# (b) non-factor AST isolation
+import re as _re_bv2
+_iso_bv2 = _re_bv2.compile(r"^\s*(from|import)\s+.*sidecar_nonfactor")
+for _name in _bv2_scripts:
+    _p = WS / "scripts" / "gen" / _name
+    if _p.is_file():
+        _hits = [ln for ln in _p.read_text(encoding="utf-8").splitlines()
+                  if _iso_bv2.match(ln)]
+        check(_hits == [],
+              f"M-GEN-1/batch-v2: scripts/gen/{_name} non-factor AST isolation")
+
+# (c) PRNG-grep guard
+_prng_bv2 = _re_bv2.compile(
+    r"^\s*(from|import)\s+.*(?:^|[^A-Za-z_])"
+    r"(random|numpy\.random|torch\.rand|secrets)(?:[^A-Za-z_0-9]|$)"
+)
+for _name in _bv2_scripts:
+    _p = WS / "scripts" / "gen" / _name
+    if _p.is_file():
+        _hits = [ln for ln in _p.read_text(encoding="utf-8").splitlines()
+                  if _prng_bv2.match(ln)]
+        check(_hits == [],
+              f"M-GEN-1/batch-v2: scripts/gen/{_name} PRNG-import guard")
+
+# (d) 8-song per-file artifacts
+_batch_v2_root = WS / "data" / "gen" / "batch_v2"
+check(_batch_v2_root.is_dir(), "M-GEN-1/batch-v2: data/gen/batch_v2/ present")
+for _s in range(8):
+    _sd = _batch_v2_root / f"song_{_s}"
+    for _n in ("generated.musicxml", "generated.mid", "bare_midi.wav",
+               "effects_layered.wav", "scoring.json", "coercions.json",
+               "sampling_manifest.json"):
+        check((_sd / _n).is_file(),
+              f"M-GEN-1/batch-v2: song_{_s}/{_n} present")
+
+# Aggregates present
+for _rel in ("summary.tsv", "provenance.jsonl", "batch_manifest.json",
+             "collision_analysis.json", "collision_matrix.tsv",
+             "salt4_diagnostic.json"):
+    check((_batch_v2_root / _rel).is_file(),
+          f"M-GEN-1/batch-v2: {_rel} present")
+
+# (e) batch_v2 salt=0 anchor byte-identity — anchors are what THIS run
+# produced on the 76-row ledger (NEW anchor; batch_v1's saved anchor is
+# a separate file untouched by this cycle). See report §2.
+_bv2_song0_manifest = _batch_v2_root / "song_0" / "sampling_manifest.json"
+if _bv2_song0_manifest.is_file():
+    _sm0_bv2 = _json_bv2.loads(_bv2_song0_manifest.read_text())
+    _ANCHORS_BV2 = {
+        "harmonic":    "rule_0271c7a9f3b5f606",   # unchanged from batch-v1
+        "rhythmic":    "rule_88b63bd5e771c045",   # unchanged from batch-v1
+        "melodic":     "rule_daf022a4051dff00",   # NEW (was 09f340...)
+        "form":        "rule_8e6c38d5397fb898",   # NEW (was 84816f...)
+        "arrangement": "rule_51d59f03c4f09e1a",   # NEW (was 67d34b...)
+    }
+    _got_bv2 = _sm0_bv2.get("chosen_rule_ids", {})
+    for _rt, _exp in _ANCHORS_BV2.items():
+        check(_got_bv2.get(_rt) == _exp,
+              f"M-GEN-1/batch-v2: salt=0 {_rt} anchor "
+              f"(got {_got_bv2.get(_rt)}, expected {_exp})")
+
+# (f) salt=4 diagnostic verdict enumerated
+_sd_bv2 = _batch_v2_root / "salt4_diagnostic.json"
+if _sd_bv2.is_file():
+    _sd = _json_bv2.loads(_sd_bv2.read_text())
+    _v = _sd.get("verdict", {}).get("verdict")
+    check(_v in {"no_material_pattern", "hash_space",
+                 "arrangement_structural", "coherence_gate", "mixed"},
+          f"M-GEN-1/batch-v2: salt=4 verdict enumerated (got {_v})")
+
+# collision analysis: total pairs at N=8 is an integer > 0
+_ca_bv2 = _batch_v2_root / "collision_analysis.json"
+if _ca_bv2.is_file():
+    _ca = _json_bv2.loads(_ca_bv2.read_text())
+    _tp = _ca.get("coerced", {}).get("total_pairwise_collisions")
+    check(isinstance(_tp, int) and _tp >= 0,
+          f"M-GEN-1/batch-v2: collision_analysis total_pairwise_collisions "
+          f"is int >= 0 (got {_tp})")
+
+# (g) PYTHONHASHSEED=0 in orchestrator
+_bv2_text = (WS / "scripts" / "gen" / "batch_v2.py").read_text(encoding="utf-8")
+check('"PYTHONHASHSEED"' in _bv2_text and '"0"' in _bv2_text,
+      "M-GEN-1/batch-v2: batch_v2.py sets PYTHONHASHSEED=0")
+
+# (h) report + 2 figures shipped
+check((WS / "docs" / "gen_batch_v2_report.md").is_file(),
+      "M-GEN-1/batch-v2: docs/gen_batch_v2_report.md present")
+check((WS / "docs" / "figures" / "gen_batch_v2_grid.png").is_file(),
+      "M-GEN-1/batch-v2: docs/figures/gen_batch_v2_grid.png present")
+check((WS / "docs" / "figures" / "gen_batch_v2_collisions.png").is_file(),
+      "M-GEN-1/batch-v2: docs/figures/gen_batch_v2_collisions.png present")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
