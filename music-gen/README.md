@@ -1,6 +1,9 @@
 # music-gen
 
-**Status: planning / prompt-framing stage only. No run has been launched.**
+**Status: LIVE — long-exposure run launched 2026-08-28** (engine:
+`human-in-a-loop/long-exposure`, provider claude, model `claude-opus-4-7`,
+fresh instance at `/home/user/music-gen-instance`, working directory scoped
+to this folder).
 
 This directory holds the framed prompt for the Music-Gen project: a system
 that learns how songs work by taking them apart (harvest → curate → separate
