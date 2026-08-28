@@ -11,6 +11,10 @@ Public artifacts from selected long-exposure research runs.
 - `Rogers_Ramanujan_Derivation/` - A long-exposure run exploring a derivation-first proof trail for the Rogers-Ramanujan identities, including proof notes, symbolic probes, validation artifacts, audits, and final reports.
 - `Random_Hyperbolic_Surface_Spectral_Rigidity/` - A long-exposure run reconstructing and extending a random hyperbolic surface spectral-rigidity paper, including proof ledgers, finite Schreier benchmarks, obstruction maps, datasets, scripts, audits, and final reports.
 
+Planned runs (prompt framed, not yet launched):
+
+- `music-gen/` - A planned long-exposure campaign for a transcription-first music pipeline: audio harvesting/curation, source separation, transcription, score/MIDI generation, DAW control, quality heuristics, a trainable 1-7 "ear", and deterministic new-song generation from extracted rules. Prompt only; no run launched.
+
 The checked-in artifacts are intended as inspectable research outputs rather than a reusable software package. Some paths in generated logs were sanitized from local machine paths before publication.
 
 ## Trading research topics (tier-2) — `trading-research/`
