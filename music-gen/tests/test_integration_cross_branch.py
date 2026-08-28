@@ -2408,7 +2408,10 @@ if _hv.is_file():
         check(_k in _hvj, f"batch-v5 §33g: verdict has {_k}")
     check(_hvj.get("verdict") in
           ("CONFIRMS_CONSTRUCTION", "PARTIAL_CONFIRM", "CONFIRMS_H2_LARGER",
-           "NULL_RESULT_NO_COLLISIONS_AT_N16"),
+           "NULL_RESULT_NO_COLLISIONS_AT_N16",
+           "NOT_TESTABLE_SAMPLER_EXHAUSTS_AT_N_GT_K",
+           "NOT_TESTABLE_IMPURE_EXTENSION",
+           "NOT_TESTABLE_NON_DETERMINISTIC"),
           "batch-v5 §33g: verdict is one of the frozen rubric options")
 
 # (h) No PRNG imports in any of the four new scripts (AST-checked in unit

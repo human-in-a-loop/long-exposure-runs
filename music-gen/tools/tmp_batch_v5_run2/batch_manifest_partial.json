@@ -1,0 +1,386 @@
+{
+  "K_distribution": {
+    "arrangement": 15,
+    "form": 15,
+    "harmonic": 20,
+    "melodic": 15,
+    "rhythmic": 15
+  },
+  "label": "run2_tmp_dir",
+  "milestone": "M-GEN-1/batch-v5-n16",
+  "n_rendered": 15,
+  "per_song": [
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_51d59f03c4f09e1a",
+        "form": "rule_8e6c38d5397fb898",
+        "harmonic": "rule_0271c7a9f3b5f606",
+        "melodic": "rule_daf022a4051dff00",
+        "rhythmic": "rule_88b63bd5e771c045"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_51d59f03c4f09e1a",
+        "form": "rule_8e6c38d5397fb898",
+        "harmonic": "rule_0271c7a9f3b5f606",
+        "melodic": "rule_daf022a4051dff00",
+        "rhythmic": "rule_88b63bd5e771c045"
+      },
+      "salt": 0,
+      "sha": {
+        "bare_wav": "669fabde4a3a548062f30c0702fc49402b9a105221763c5bad0977b4ebcb9220",
+        "effects_wav": "918c8aaae0db6d7cbaf5003607ac9d2db43f3b535887de8fe0ca346976694006",
+        "midi": "80dd3420fda479bdd3fc02c6dc1abed571408bd0523fd027cfb6b92195de8789",
+        "musicxml": "d3d75dfb2676271cc0b8d0a6dc16b75158773615a4150307140a2718de954303"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_b99a5066e653b247",
+        "form": "rule_9793d09325ee859d",
+        "harmonic": "rule_1e0fcc2b2bcde086",
+        "melodic": "rule_c42411e8d5779de9",
+        "rhythmic": "rule_d15d2951e86e16bf"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_b99a5066e653b247",
+        "form": "rule_9793d09325ee859d",
+        "harmonic": "rule_1e0fcc2b2bcde086",
+        "melodic": "rule_c42411e8d5779de9",
+        "rhythmic": "rule_d15d2951e86e16bf"
+      },
+      "salt": 1,
+      "sha": {
+        "bare_wav": "3474e2c316dc3c97a2b6ca23185981afc5d6dc99cefe479a8a2517dcdc7b2692",
+        "effects_wav": "0c3b1e6902ac08460014dc944bd64d21cf78b2de1238229025c13743393ee607",
+        "midi": "cd7fd6ae2fedddcaa5a531d9315dc47b10777c40030a03726ad6211c9d29b3b5",
+        "musicxml": "e1004675f0211a6cb062b7c6fe466b422cb09d4de4822ecaf4fed8b572371279"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_29f8ef6b3ec5b9bf",
+        "form": "rule_d9d63a0877d18ec8",
+        "harmonic": "rule_d9c91401e8911f8f",
+        "melodic": "rule_cc494a72c58b0157",
+        "rhythmic": "rule_33ef6909a940a190"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_29f8ef6b3ec5b9bf",
+        "form": "rule_d9d63a0877d18ec8",
+        "harmonic": "rule_d9c91401e8911f8f",
+        "melodic": "rule_cc494a72c58b0157",
+        "rhythmic": "rule_33ef6909a940a190"
+      },
+      "salt": 2,
+      "sha": {
+        "bare_wav": "39b8622717c08615fe84f668247f96493dc5a012060788996d3fe5d3c09b5656",
+        "effects_wav": "b0f23d840322285ccb9c7b301c8e9d856686be74d4393411408085e175ffb9d6",
+        "midi": "c7bd146509ca0a99456e3ddd214c910ca90aa2ab2d60577067cef7ad4c4deced",
+        "musicxml": "1566d037b573aea893e8536a5a9bed66f4568657b110a346aae2e3cb036f9205"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_a8ffe2f88dc29eed",
+        "form": "rule_82d19db08a772fee",
+        "harmonic": "rule_ff1fa8c4bf0f228f",
+        "melodic": "rule_ff9dfff6fef38099",
+        "rhythmic": "rule_930fb4e9aa4f248e"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_a8ffe2f88dc29eed",
+        "form": "rule_82d19db08a772fee",
+        "harmonic": "rule_ff1fa8c4bf0f228f",
+        "melodic": "rule_ff9dfff6fef38099",
+        "rhythmic": "rule_930fb4e9aa4f248e"
+      },
+      "salt": 3,
+      "sha": {
+        "bare_wav": "739c4f062e34f6f2f1fb41c29d73dc1bad744dea304f8414550a25dbdac57c8e",
+        "effects_wav": "d639bb23373fa76ad42850a9fa14eadd85231f5908bb06fcdcb2c4284ed47e38",
+        "midi": "0c6fbb5b608c46649f3157182f92d955a030783bd13d5378b31d891b15914a54",
+        "musicxml": "84c698f4994caf2fa693361169ab400457d31105b09de5acbf54c66d42c61bfd"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_b75cc391f671037a",
+        "form": "rule_477b0abbb7e7c0db",
+        "harmonic": "rule_900193a92a8810e5",
+        "melodic": "rule_f449850d34e25931",
+        "rhythmic": "rule_bb616c75753c3de6"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_b75cc391f671037a",
+        "form": "rule_477b0abbb7e7c0db",
+        "harmonic": "rule_900193a92a8810e5",
+        "melodic": "rule_f449850d34e25931",
+        "rhythmic": "rule_bb616c75753c3de6"
+      },
+      "salt": 4,
+      "sha": {
+        "bare_wav": "0a995dc7e3ce5762116d08a316a7e5c657ed9b93c6c1d76d6badfc771ecf835c",
+        "effects_wav": "c96bc3e162420672d7e3ab32cc0c1911e8923d5e28ad42b39020f6e74324cd7d",
+        "midi": "2759d257229344fe5ba228a203a91f61d267ac80db8f23c29d73fa67ce5a0961",
+        "musicxml": "6c8b50cf97a351e14817280b2fc79a46827576c1c30cbd27c23ca7eae716abd4"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_f14c45df9121ab03",
+        "form": "rule_84816f91e31e50c4",
+        "harmonic": "rule_ec6f61d42ca46cf9",
+        "melodic": "rule_d848fb50ade0dab9",
+        "rhythmic": "rule_2afe9862efd1e8ea"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_f14c45df9121ab03",
+        "form": "rule_84816f91e31e50c4",
+        "harmonic": "rule_ec6f61d42ca46cf9",
+        "melodic": "rule_d848fb50ade0dab9",
+        "rhythmic": "rule_2afe9862efd1e8ea"
+      },
+      "salt": 5,
+      "sha": {
+        "bare_wav": "241135d36c218b80af074a38ebd5be86e5778f922a5a336c3047501f5f7537cb",
+        "effects_wav": "11a29680cdaeec67d56d6dddac2c97223e9c8b609342cd4d8b40ae2249bb281a",
+        "midi": "5ea5c406c56b450bf20538dc347f289c991b61d5ee397e7f41cf87a3f77234c7",
+        "musicxml": "54409187dcc5d7ef67c020c8190df75a19fdd12e4084f8c4ba690bcf93912121"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_aeaca835a649d1ca",
+        "form": "rule_ef16903b67b2f6ac",
+        "harmonic": "rule_4dbcaa2e8b745626",
+        "melodic": "rule_ca87aa6ad5ff26db",
+        "rhythmic": "rule_630409ee51b8e0f1"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_aeaca835a649d1ca",
+        "form": "rule_ef16903b67b2f6ac",
+        "harmonic": "rule_4dbcaa2e8b745626",
+        "melodic": "rule_ca87aa6ad5ff26db",
+        "rhythmic": "rule_630409ee51b8e0f1"
+      },
+      "salt": 6,
+      "sha": {
+        "bare_wav": "59a21d874c5984569cd18ae7ce8217b51eb471eb137349d78d428bf44559f51a",
+        "effects_wav": "3dda7ce1b6dcdb27f76336bbd6759274f405ce2315203e56bd2d7f94a3e6f5cb",
+        "midi": "db3e5c7397e28dce93fa7b6c917a32dc7d347e00acbede3fbf0f86ebc6990e14",
+        "musicxml": "1dee420b8f914bb5c4504bd27ef4066a67a76cf5d43bab6b8c3fe7f1219979c9"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_67d34b1c927ef33d",
+        "form": "rule_0ec47288103c56fc",
+        "harmonic": "rule_821a916f5a58a283",
+        "melodic": "rule_5226628fce18201c",
+        "rhythmic": "rule_5561e65d152e39d5"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_67d34b1c927ef33d",
+        "form": "rule_0ec47288103c56fc",
+        "harmonic": "rule_821a916f5a58a283",
+        "melodic": "rule_5226628fce18201c",
+        "rhythmic": "rule_5561e65d152e39d5"
+      },
+      "salt": 7,
+      "sha": {
+        "bare_wav": "5cb7d5b85d4c8d8200c040139cc094cc7bfb56fb914f87a8cb79cdd60151d786",
+        "effects_wav": "18575f48593a7f53d47ae2ace1ece673d4236cf96d5bb12c8caf1091af3d1127",
+        "midi": "1fcc893a10437e8765aacd15291505e52468dfa4a57998f3d73a8780ddbb416a",
+        "musicxml": "a9e690b0a697efcc3f08fb062a456702ec9e2d9d1574902839de0a43f751af86"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_1aa3fa507bba0573",
+        "form": "rule_22eab65d977ef5db",
+        "harmonic": "rule_ca6007d98315c046",
+        "melodic": "rule_f159c9f385165922",
+        "rhythmic": "rule_d23935a51f54d1a5"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_1aa3fa507bba0573",
+        "form": "rule_22eab65d977ef5db",
+        "harmonic": "rule_ca6007d98315c046",
+        "melodic": "rule_f159c9f385165922",
+        "rhythmic": "rule_d23935a51f54d1a5"
+      },
+      "salt": 8,
+      "sha": {
+        "bare_wav": "f0804792fb6ad54bb6379285e0f1943e79f0da75e8ff71f06ad28e5d6ae27f23",
+        "effects_wav": "553899ae4a2f0b7f71a1abd04ec30ea4d17eebb8d3615a81b7e9ec837aabe8b6",
+        "midi": "9c59e82d484905bc79e151cb87193b7da32cb4c927c54ceab153ad8860b6fdeb",
+        "musicxml": "5cefdd1eb9ad82a1191da0c97e91587a86b214a3990184973cccbcb999301ab1"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_6ece691d096f6819",
+        "form": "rule_16b8060f79ee810e",
+        "harmonic": "rule_d8ab0bcf0694e01d",
+        "melodic": "rule_1e455281201afb5b",
+        "rhythmic": "rule_7ecf4ec4e5f39b1b"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_6ece691d096f6819",
+        "form": "rule_16b8060f79ee810e",
+        "harmonic": "rule_d8ab0bcf0694e01d",
+        "melodic": "rule_1e455281201afb5b",
+        "rhythmic": "rule_7ecf4ec4e5f39b1b"
+      },
+      "salt": 9,
+      "sha": {
+        "bare_wav": "e66c6e45dee09a41c91738cdf222e6ae533d6a8cbc37a4a803376a5bc89241f9",
+        "effects_wav": "b9c34f8c0818e18376864f339d451bab9abf6e2fc6f54177eb2c26251222f504",
+        "midi": "60e15869d3db2dffbbd71aa9892b1030999a8c64ae5b98401da5b8fdd60eb2de",
+        "musicxml": "aaa69e12a15f140f7bd4123fe4bbd5f8e1f2e49482f65e1d331f58040e4899de"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_dc9073323dc15d36",
+        "form": "rule_291a1c6f1d928513",
+        "harmonic": "rule_1dec9ee981860ee2",
+        "melodic": "rule_157750423a5b8a04",
+        "rhythmic": "rule_f754d5f457357600"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_dc9073323dc15d36",
+        "form": "rule_291a1c6f1d928513",
+        "harmonic": "rule_1dec9ee981860ee2",
+        "melodic": "rule_157750423a5b8a04",
+        "rhythmic": "rule_f754d5f457357600"
+      },
+      "salt": 10,
+      "sha": {
+        "bare_wav": "92d7a17a8d77ae4e2ebd8db7894696556e2eddc19df1c56c5147a81e314804bc",
+        "effects_wav": "f7d024f208511bcfbcf0a3a41a8e419001a1284f87f1454a3d8ac8e8f1124fa2",
+        "midi": "52bc2ddbf161540deb499783399aaaae65e1219b22e0e1dc8476e8ce07122507",
+        "musicxml": "0a06959641c039eb16928d223710bd3cdfefa54a0e5b519c76f51f2c7a112076"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_4e0d2fded1aef6ac",
+        "form": "rule_b59d1e4303f7b07e",
+        "harmonic": "rule_2549a4193dead599",
+        "melodic": "rule_337224364477231a",
+        "rhythmic": "rule_ba740b0c3a578421"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_4e0d2fded1aef6ac",
+        "form": "rule_b59d1e4303f7b07e",
+        "harmonic": "rule_2549a4193dead599",
+        "melodic": "rule_337224364477231a",
+        "rhythmic": "rule_ba740b0c3a578421"
+      },
+      "salt": 11,
+      "sha": {
+        "bare_wav": "33ae449609530dff3afd12ec09593a3ba049d2f33b8f1b01b877d0199e335307",
+        "effects_wav": "c01c1276cc6106bd4eb9890ed8e4a7747f992b1dd560fa67539b48a215f079f2",
+        "midi": "2c895cba764aeb210a596fb3c33148445c8086d507ea78351a5b116e4269cb3b",
+        "musicxml": "d8cd014320d4e55fbedc077e01f822910fa344e83e5ba0caca0bd5f1a4dcd6d2"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_b3945fa7f1941cc1",
+        "form": "rule_c0f0928c8aae6910",
+        "harmonic": "rule_c787ba74f192b023",
+        "melodic": "rule_0236efe229056177",
+        "rhythmic": "rule_7be767b167d250f6"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_b3945fa7f1941cc1",
+        "form": "rule_c0f0928c8aae6910",
+        "harmonic": "rule_c787ba74f192b023",
+        "melodic": "rule_0236efe229056177",
+        "rhythmic": "rule_7be767b167d250f6"
+      },
+      "salt": 12,
+      "sha": {
+        "bare_wav": "52ef317ceb6988712d895e1ed158d1a116b8f9c7f45d13f2d701486a6e779218",
+        "effects_wav": "92bc906024a92e308289dcc607a23dbedaf9d88116ba6ec4ba8bdd93b23c9da7",
+        "midi": "9e6f34157049ed30db5c7c6beec382ac2b5abce76b5cc0a5a4caa6004d94aa79",
+        "musicxml": "f592a473e2d6cb1376b12ea8131bf68bc080dd4ccacc7f58447ae3ac3a177bef"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_77d78be25afc94cf",
+        "form": "rule_c3440b589e708f21",
+        "harmonic": "rule_e19b9423fa73cc26",
+        "melodic": "rule_09f340921fa2d258",
+        "rhythmic": "rule_7894d12215472070"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_77d78be25afc94cf",
+        "form": "rule_c3440b589e708f21",
+        "harmonic": "rule_e19b9423fa73cc26",
+        "melodic": "rule_09f340921fa2d258",
+        "rhythmic": "rule_7894d12215472070"
+      },
+      "salt": 13,
+      "sha": {
+        "bare_wav": "392cd44fc9a340153d9be2e8acd630acea7d2f6216a77d8adfd7f2ff5383b03a",
+        "effects_wav": "379e803d40d9d57d9feb890255fefdf0e6d01d90d62c2f8414f1974a86fc8216",
+        "midi": "0224a085ea34e7db66d5769d62cc21ad820211f45b63c3a138e75fcdc6d04b14",
+        "musicxml": "16a72013306e671234cc84fa4d78b85418e5b0e53f7012e1f25e4fbcd51a4ec7"
+      }
+    },
+    {
+      "coerced_rule_ids": {
+        "arrangement": "rule_93ddf6f18321bb42",
+        "form": "rule_251a68db4f1c71a0",
+        "harmonic": "rule_f0d4393926766453",
+        "melodic": "rule_6b85accb3e69d155",
+        "rhythmic": "rule_d85d957a8f59f9f6"
+      },
+      "raw_rule_ids": {
+        "arrangement": "rule_93ddf6f18321bb42",
+        "form": "rule_251a68db4f1c71a0",
+        "harmonic": "rule_f0d4393926766453",
+        "melodic": "rule_6b85accb3e69d155",
+        "rhythmic": "rule_d85d957a8f59f9f6"
+      },
+      "salt": 14,
+      "sha": {
+        "bare_wav": "f54038930736eb802ab7612c75c90fe7f7234757de3cd2ebda84c8c656ff9ff0",
+        "effects_wav": "aa7842b613021dbf8bb2d0ad4e6ed00c349e1006ae893aedfe41246ae11373fe",
+        "midi": "eb72b59c8e2d216e7173300f72d74f7a81cb5baace9faf28e4317bd7caa07a7b",
+        "musicxml": "9f4fbbd6476f84560a33dd5679f6244feb2292074027583de3b3b34629ca422d"
+      }
+    }
+  ],
+  "salts_rendered": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "sampler_failure": {
+    "K_for_rule_type": 15,
+    "cause": "The I4 sampler's cumulative already_picked exclusion set removes every rule_id sampled at prior salts. After salts 0..14, all 15 form rules are excluded; salt=15 has zero candidates. Same holds for K=15 rule_types (arrangement, rhythmic, melodic) at N=16 by symmetry -- form is only the FIRST to fail in RULE_TYPES declaration order.",
+    "exception_class": "scripts.rules.sampling.i4_stratified.I4SamplerError",
+    "message": "I4 stratified rejection sampler exhausted rule_type=form at salt=15: 15 candidates, 15 already picked. This is a FAIL of the intervention as specified.",
+    "rule_type": "form",
+    "salt": 15,
+    "source_line": "scripts/rules/sampling/i4_stratified.py:127-133"
+  },
+  "target_n_salts": 16
+}
