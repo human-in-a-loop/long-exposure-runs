@@ -2795,6 +2795,116 @@ if _doc.is_file():
         check(_tok in _doc_src,
               f"path-B §38g: commitment doc mentions token '{_tok}'")
 
+# §39. M-GEN-1/collision-model-shape-mechanism — cycle 27.
+print()
+print("§39 M-GEN-1/collision-model-shape-mechanism invariants (cycle 27)")
+
+import hashlib as _hl27
+
+_SHAPE_SCRIPTS = [
+    "scripts/analysis/coercion_rate_per_rule_type.py",
+    "scripts/analysis/effective_k_probe.py",
+    "scripts/analysis/shape_mechanism_fit.py",
+    "scripts/analysis/shape_mechanism_verdict.py",
+    "scripts/analysis/anchor_preservation_shape.py",
+]
+
+# (a) presence + interpreter guards
+for _rel in _SHAPE_SCRIPTS:
+    _p = WS / _rel
+    check(_p.is_file(), f"shape-mech §39a: script present: {_rel}")
+    _src39 = _p.read_text() if _p.is_file() else ""
+    check("/usr/bin/python3" in _src39, f"shape-mech §39a: interpreter guard in {_rel}")
+
+# (b) canonical_aggregate_sha utility SHA anchor (unchanged from cycle-26)
+def _sha256_of(path):
+    h = _hl27.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+_baseline39 = WS / "tests/fixtures/cycle27_util_shas.json"
+if _baseline39.is_file():
+    _base = json.loads(_baseline39.read_text())
+    _live_can = _sha256_of(WS / "scripts/analysis/canonical_aggregate_sha.py")
+    check(_base.get("canonical_aggregate_sha.py") == _live_can,
+          "shape-mech §39b: canonical_aggregate_sha.py SHA unchanged from cycle-26 baseline")
+    _live_bp = _sha256_of(WS / "scripts/analysis/collision_model_bp.py")
+    check(_base.get("collision_model_bp.py") == _live_bp,
+          "shape-mech §39b: collision_model_bp.py SHA unchanged from cycle-26 baseline")
+    _live_bpv = _sha256_of(WS / "scripts/analysis/collision_model_verdict.py")
+    check(_base.get("collision_model_verdict.py") == _live_bpv,
+          "shape-mech §39b: collision_model_verdict.py SHA unchanged from cycle-26 baseline")
+else:
+    check(False, "shape-mech §39b: baseline fixture missing at tests/fixtures/cycle27_util_shas.json")
+
+# (c) anchor preservation report exists and passes
+_apr = WS / "data/collision_model/anchor_preservation_shape.json"
+check(_apr.is_file(), "shape-mech §39c: anchor_preservation_shape.json exists")
+if _apr.is_file():
+    _apr_j = json.loads(_apr.read_text())
+    check(_apr_j.get("overall_pass") is True,
+          "shape-mech §39c: anchor preservation overall_pass True")
+    check(_apr_j.get("count_pass") == _apr_j.get("count_total"),
+          "shape-mech §39c: all anchors matched")
+
+# (d) verdict JSON present with expected shape
+_vpath = WS / "data/collision_model/shape_mechanism_verdict.json"
+check(_vpath.is_file(), "shape-mech §39d: shape_mechanism_verdict.json present")
+if _vpath.is_file():
+    _v = json.loads(_vpath.read_text())
+    for _k in ("verdict", "verdict_reason", "R2_M1", "R2_M2",
+               "rubric_thresholds", "rubric_definitions", "run_stamp"):
+        check(_k in _v, f"shape-mech §39d: verdict JSON has key '{_k}'")
+    check(_v.get("verdict") in
+          ("M1_EXPLAINS", "M2_EXPLAINS", "BOTH_EXPLAIN", "NEITHER_EXPLAINS"),
+          f"shape-mech §39d: verdict in frozen rubric ({_v.get('verdict')})")
+    check(_v.get("rubric_thresholds", {}).get("r2_min") == 0.6,
+          "shape-mech §39d: rubric r2_min threshold locked at 0.6")
+
+# (e) no PRNG imports in the 5 new scripts (AST grep)
+import ast as _ast39
+_BANNED = ("random", "secrets", "numpy.random", "numpy", "torch")
+for _rel in _SHAPE_SCRIPTS:
+    _src = (WS / _rel).read_text()
+    _tree = _ast39.parse(_src)
+    _bad = None
+    for node in _ast39.walk(_tree):
+        if isinstance(node, _ast39.Import):
+            for n in node.names:
+                for b in _BANNED:
+                    if n.name.startswith(b):
+                        _bad = n.name; break
+        elif isinstance(node, _ast39.ImportFrom):
+            m = node.module or ""
+            for b in _BANNED:
+                if m.startswith(b):
+                    _bad = m; break
+    check(_bad is None, f"shape-mech §39e: {_rel} has no PRNG/numpy/torch import ({_bad or 'clean'})")
+
+# (f) no sidecar_nonfactor, no i4_stratified imports (AST grep)
+for _rel in _SHAPE_SCRIPTS:
+    _src = (WS / _rel).read_text()
+    _tree = _ast39.parse(_src)
+    _sn = _i4 = False
+    for node in _ast39.walk(_tree):
+        if isinstance(node, _ast39.Import):
+            for n in node.names:
+                if "sidecar_nonfactor" in n.name: _sn = True
+                if "i4_stratified" in n.name: _i4 = True
+        elif isinstance(node, _ast39.ImportFrom):
+            m = node.module or ""
+            if "sidecar_nonfactor" in m: _sn = True
+            if "i4_stratified" in m: _i4 = True
+    check(not _sn, f"shape-mech §39f: {_rel} no sidecar_nonfactor import")
+    check(not _i4, f"shape-mech §39f: {_rel} no i4_stratified import")
+
+# (g) TSV outputs exist
+for _tsv in ("data/collision_model/coercion_rate_per_rule_type.tsv",
+             "data/collision_model/effective_k_per_batch.tsv"):
+    check((WS / _tsv).is_file(), f"shape-mech §39g: TSV present: {_tsv}")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
