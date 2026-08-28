@@ -2905,6 +2905,124 @@ for _tsv in ("data/collision_model/coercion_rate_per_rule_type.tsv",
              "data/collision_model/effective_k_per_batch.tsv"):
     check((WS / _tsv).is_file(), f"shape-mech §39g: TSV present: {_tsv}")
 
+# §40. M-GEN-1/collision-model-hash-space-geometry — cycle 28.
+print()
+print("§40 M-GEN-1/collision-model-hash-space-geometry invariants (cycle 28)")
+
+import ast as _ast40
+import hashlib as _hl40
+import json as _json40
+
+_HASH_SCRIPTS = [
+    "scripts/analysis/plot_shape_mechanism_scatter.py",
+    "scripts/analysis/hash_uniformity_per_rule_type.py",
+    "scripts/analysis/effective_k_hash.py",
+    "scripts/analysis/hash_geometry_fit.py",
+    "scripts/analysis/hash_geometry_verdict.py",
+    "scripts/analysis/anchor_preservation_hash.py",
+]
+
+# (a) presence + interpreter guards
+for _rel in _HASH_SCRIPTS:
+    _p = WS / _rel
+    check(_p.is_file(), f"hash-geom §40a: script present: {_rel}")
+    _src40 = _p.read_text() if _p.is_file() else ""
+    check("/usr/bin/python3" in _src40, f"hash-geom §40a: interpreter guard in {_rel}")
+
+# (b) cycle-26 + cycle-27 utility SHAs unchanged (self-anchored fixture)
+def _sha256_of40(path):
+    from pathlib import Path as _P40
+    return _hl40.sha256(_P40(path).read_bytes()).hexdigest()
+
+_base_p40 = WS / "tests" / "fixtures" / "cycle28_util_shas.json"
+if _base_p40.is_file():
+    _base40 = _json40.loads(_base_p40.read_text())
+    for _name, _expect in _base40.get("cycle_26_utilities", {}).items():
+        check(
+            _sha256_of40(WS / "scripts" / "analysis" / _name) == _expect,
+            f"hash-geom §40b: cycle-26 utility {_name} SHA unchanged"
+        )
+    for _name, _expect in _base40.get("cycle_27_utilities", {}).items():
+        check(
+            _sha256_of40(WS / "scripts" / "analysis" / _name) == _expect,
+            f"hash-geom §40b: cycle-27 utility {_name} SHA unchanged"
+        )
+    for _name, _expect in _base40.get("cycle_27_data", {}).items():
+        check(
+            _sha256_of40(WS / "data" / "collision_model" / _name) == _expect,
+            f"hash-geom §40b: cycle-27 data {_name} SHA unchanged"
+        )
+else:
+    check(False, "hash-geom §40b: baseline fixture missing at tests/fixtures/cycle28_util_shas.json")
+
+# (c) anchor_preservation_hash.json overall_pass
+_aph = WS / "data" / "collision_model" / "anchor_preservation_hash.json"
+check(_aph.is_file(), "hash-geom §40c: anchor_preservation_hash.json exists")
+if _aph.is_file():
+    _aph_j = _json40.loads(_aph.read_text())
+    check(_aph_j.get("overall_pass") is True,
+          f"hash-geom §40c: anchor_preservation overall_pass=True (got {_aph_j.get('overall_pass')})")
+    check(_aph_j.get("count_pass") == _aph_j.get("count_total"),
+          f"hash-geom §40c: all anchors PASS ({_aph_j.get('count_pass')}/{_aph_j.get('count_total')})")
+
+# (d) verdict JSON has required fields + verdict in valid enum
+_vpath40 = WS / "data" / "collision_model" / "hash_geometry_verdict.json"
+check(_vpath40.is_file(), "hash-geom §40d: hash_geometry_verdict.json present")
+if _vpath40.is_file():
+    _v40 = _json40.loads(_vpath40.read_text())
+    for _k in ("verdict", "R2_M3", "per_rule_type_chi2", "rubric_thresholds"):
+        check(_k in _v40, f"hash-geom §40d: verdict JSON has key '{_k}'")
+    check(_v40.get("verdict") in ("M3_EXPLAINS", "M3_WEAK", "M3_REFUTES"),
+          f"hash-geom §40d: verdict is one of the frozen 3-verdict rubric outcomes (got {_v40.get('verdict')})")
+
+# (e) alpha pinned at cycle-26 value in fit script AND fit JSON
+_fit_src = (WS / "scripts" / "analysis" / "hash_geometry_fit.py").read_text()
+check("0.7469387071101908" in _fit_src, "hash-geom §40e: alpha literal 0.7469387071101908 in hash_geometry_fit.py")
+_fit_path40 = WS / "data" / "collision_model" / "hash_geometry_fit.json"
+if _fit_path40.is_file():
+    _fit40 = _json40.loads(_fit_path40.read_text())
+    _ap = float(_fit40["M3"]["alpha_pinned"])
+    check(abs(_ap - 0.7469387071101908) < 1e-12, f"hash-geom §40e: fit JSON alpha_pinned = 0.7469... (got {_ap})")
+
+# (f) no PRNG / no sidecar_nonfactor / no i4_stratified imports across all six scripts
+_BANNED40 = ("random", "numpy.random", "torch", "secrets")
+for _rel in _HASH_SCRIPTS:
+    _src40 = (WS / _rel).read_text()
+    _tree40 = _ast40.parse(_src40)
+    _bad40 = None
+    _sn40 = _i4_40 = False
+    for node in _ast40.walk(_tree40):
+        if isinstance(node, _ast40.Import):
+            for n in node.names:
+                for b in _BANNED40:
+                    if n.name.startswith(b):
+                        _bad40 = n.name
+                if "sidecar_nonfactor" in n.name: _sn40 = True
+                if "i4_stratified" in n.name: _i4_40 = True
+        elif isinstance(node, _ast40.ImportFrom):
+            m = node.module or ""
+            for b in _BANNED40:
+                if m.startswith(b):
+                    _bad40 = m
+            if "sidecar_nonfactor" in m: _sn40 = True
+            if "i4_stratified" in m: _i4_40 = True
+    check(_bad40 is None, f"hash-geom §40f: {_rel} has no PRNG/numpy/torch import ({_bad40 or 'clean'})")
+    check(not _sn40, f"hash-geom §40f: {_rel} no sidecar_nonfactor import")
+    check(not _i4_40, f"hash-geom §40f: {_rel} no i4_stratified import")
+
+# (g) TSV outputs exist
+for _tsv in ("data/collision_model/hash_uniformity.tsv",
+             "data/collision_model/effective_k_hash.tsv"):
+    check((WS / _tsv).is_file(), f"hash-geom §40g: TSV present: {_tsv}")
+
+# (h) backfill + panel figures present
+for _fig in ("docs/figures/shape_mechanism_M1_correction.png",
+             "docs/figures/shape_mechanism_M2_correction.png",
+             "docs/figures/hash_geometry_per_rule_type.png"):
+    _fp = WS / _fig
+    check(_fp.is_file() and _fp.stat().st_size > 4096,
+          f"hash-geom §40h: figure present and non-trivial: {_fig}")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

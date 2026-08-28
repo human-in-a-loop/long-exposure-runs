@@ -1,0 +1,28 @@
+{
+  "cycle_26_utilities": {
+    "canonical_aggregate_sha.py": "98603ca2e9432b2f12186681cd8f21d9dc25b4ad4a03b1f0389ff3f43b065f43",
+    "collision_model_bp.py": "528c1bfe662b97a48e4f82fb59c47c0459504cbf73f75bb925a186514a7ccd1d",
+    "collision_model_verdict.py": "77d972ea7f96c23deb04fec2835e5d0829fc508ddac93cc0374f01411bbf48eb"
+  },
+  "cycle_27_utilities": {
+    "coercion_rate_per_rule_type.py": "99590327e57118d722904f4d051be21da0de1642f7ec0dd51b319695ee8fe503",
+    "effective_k_probe.py": "eeb548508e6788b5e8c27caca04e4706e793c9f800e05f3023b8c337662cfaaa",
+    "shape_mechanism_fit.py": "b3569dbabb15d44195a491482e0e045eb8fd251fd47ca50cd79cc69afbef5a30",
+    "shape_mechanism_verdict.py": "01374d4098560aacf645752bb0e0ca30fc518a6745fe76fdcb5b8c69a03e6590",
+    "anchor_preservation_shape.py": "02358d0f8e904d4f7e09745ee428320c0806619a7eda026c90d1434d79ed9738"
+  },
+  "cycle_27_data": {
+    "shape_mechanism_fit.json": "ca13f7088a39f3558dce3d21d9b2f40d1d26c307a59f371bdb6efb711166b42a",
+    "shape_mechanism_verdict.json": "0cc4bd9045be9c0c7276f7295b3a9ac3ab3f88b642070529b4ebd2338840e598"
+  },
+  "frozen_batch_shas_cycle26_baseline": {
+    "data/gen/batch_v1": "b052",
+    "data/gen/batch_v2": "be57",
+    "data/gen/batch_v3_i3": "42bd",
+    "data/gen/batch_v3_i4": "b07c",
+    "data/gen/batch_v4": "9e94",
+    "data/gen/batch_v5_n16": "2f17",
+    "data/gen/batch_v6": "eeff"
+  },
+  "_note": "SHA baselines captured at cycle 28 start. Cycle-26/27 utility SHAs and cycle-27 data JSONs must remain byte-identical (test-asserted). batch prefixes are the first 4 hex characters from the plan-of-record cycle-14/25 anchor set."
+}
