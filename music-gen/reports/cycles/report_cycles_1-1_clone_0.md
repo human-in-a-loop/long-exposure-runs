@@ -1,140 +1,126 @@
 ---
-title: "Music-Gen — `_infra/ledger-schema-hardening-v3` (cycle 1, fork 392503ab7d47, clone 0)"
+title: "Music-Gen — `_infra/harness-auto-write-namespacing` (cycle 1, fork cc548ca0c2e5, clone 0)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — `_infra/ledger-schema-hardening-v3` (cycle 1, fork 392503ab7d47, clone 0)
+# Music-Gen — `_infra/harness-auto-write-namespacing` (cycle 1, fork cc548ca0c2e5, clone 0)
 
 ## Abstract
 
-Cycle 1 of clone 0 closed the four-cycle SSoT ledger-schema hardening arc (writer c10 → concat c12 → field-type + enum c14 → transitions c15) by adding state-transition validation on top of cycle-14's field-shape checks, categorically foreclosing the specific drift class that cycle-14 clone-0's §2b honestly reclassified from "enum-only" to "transitions" after mis-diagnosing cycle-13's line-250 as an enum violation. A canonical `_STATE_TRANSITIONS` frozenset of 15 pairs is exported at module top level of `long_exposure/tools/_ledger_schema.py`, and a new `validate_history(rows_for_milestone)` groups by `milestone_id`, sorts by `ts`, and rejects illegal consecutive transitions with milestone + event_ids + transition-name-annotated messages. The validator is wired into `_lint_clone_shadow` and `promise_check`. Every non-negotiable bar held under the auditor's independent live re-verification: all 301 existing per-milestone histories validate under the dynamic sweep with zero grandfathering (the two observed self-loops `(validated, validated)` and `(in-progress, in-progress)` were absorbed via the cycle-14 escape-hatch expansion pattern, each with a documented mechanism); the cycle-13 line-250 pattern `validated → in-progress` without an intervening `reopened` rejects at both the writer surface (`LedgerAppendError`) and the pre-concat lint (`LedgerConcatError`), with milestone id, both event_ids, both statuses, and the `_STATE_TRANSITIONS` token present in the message; the bridging sequence `validated → reopened → in-progress` is accepted; and the public API of `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_root)` is byte-preserved across cycles 1–14 (`inspect`-checked live). Test suites all green: writer 21/21, concat 15/15, cross-branch integration §1–§30 PASS, `promise_check` 0 ERRORs on the live 301-row ledger. The auditor emitted **COMPLETE** at `validated/high`; the four-cycle arc closes as a coherent unit.
+Cycle 1 of clone 0 retired cycle-21 handoff #1 by fixing the harness auto-write namespace collision at source rather than at reconciliation time. The upstream harness now namespaces `_run/report_cycles_<lo>-<hi>` per clone at write time (`_run/report_cycles_<lo>-<hi>_clone-<k>` when running under a fan-out clone context), so future 2+-clone fork merges concat cleanly through the standard `concat_clone_ledgers` path without the per-clone id normalization the cycle-22 driver had to apply. The SSoT helper lives in `long_exposure/fanout.py` (a small deviation from the brief's suggested `exploration.py` inline placement, taken because `exploration.py` requires `prompt_toolkit` at import time and the test suite would not otherwise exercise the fix; functional behaviour is identical). Cycle-21 shadow ledgers under `/home/user/music-gen-instance/fork-392503ab7d47/clone-{0,1,2}/` were replayed through the new writer and reproduced the integrated main-ledger rows **byte-identically on full canonical JSON** — including `event_id`, which was source-swapped from random UUID4 to content-hashed UUID5 so the replay is now reproducible. `tests/test_harness_report_namespacing.py` (7/7 pass, one case above the brief's ≥ 6 asking price — the extra is an AST source-shape guardrail that prevents a future editor from re-inlining `uuid.uuid4()` or the raw f-string) and `tests/test_fanout_concat_validation.py §16` (17/17 pass, extended by two cases — a regression cure and a regression guard). Existing suites remain green (writer 21/21, cross-branch integration §1–§30 0 failures, `promise_check` 0 ERRORs, `org_check` 0 ERRORs). Byte-determinism × 2 on the replay concat holds at SHA-256 `384326f7e17f…`. The auditor's verdict is **VALIDATED**; the fan-out branch's scope is fully discharged.
 
 ## Introduction
 
-By the end of cycle 14 the campaign's ledger-write triangle was complete on three of four axes: emit + check + concat surfaces all routed through the SSoT `_ledger_schema` module, and `is`-identity of `REQUIRED_EVENT_FIELDS` held across all three; cycle 14 added the `supersedes_path` type check and the `status` enum. But cycle-14 clone-0's §2b surfaced a specific class the cycle-14 validator did not close: cycle-13's line-250 drift was originally diagnosed as an enum violation (`status: "in-progress"` on a previously-`validated` milestone), and the cycle-14 enum extension did not catch it because `in-progress` is a canonical enum member. The actual mechanism was a **state-transition** drift — the transition `validated → in-progress` without an intervening `reopened` — and type/enum validators cannot express that class. Cycle 14 hoisted the state-transition validator as follow-on (b) rather than papering over the mis-diagnosis. This branch is that follow-on: extend the SSoT validator with a canonical transition graph and a `validate_history` function that groups by milestone and rejects illegal consecutive transitions, wire it into the concat lint and the check surface, and prove that no historical row fails and that the specific cycle-13 pattern rejects at both the writer and the lint gates.
+Cycle 21's post-merge integration for fork `392503ab7d47` diagnosed a concat-skip on `LedgerConcatError`: the harness auto-writes a per-clone `_run/report_cycles_<lo>-<hi>` row at reporting time, and across the three clones (0 → 1 → 2) the `ts` file-order was `16:53:17 → 16:59:57 → 16:54:07` — clone 2 finished its report before clone 1 did, violating per-candidate-milestone file-order monotonicity in the tightened concat. Cycle 22's worker patched the integration by serial `append_ledger_event` replay with per-clone id normalization (`_run/report_cycles_1-1_clone-{0,1,2}`), noted the root cause was harness behaviour rather than clone behaviour, and hoisted a durable upstream fix to a future cycle. This branch is that fix. The brief was clean: namespace the auto-write per clone at write time, land the change upstream under `long_exposure/*` (the established out-of-workspace WARN exemption), stay backwards-compatible with the root-cycle single-clone case, and *prove* the fix works by replaying the cycle-21 shadow ledgers through the new writer and reproducing the integrated main-ledger rows byte-identically at (mid, event_id, canonical_json-excl-ts).
 
 ## Approach
 
-Three additions to `long_exposure/tools/_ledger_schema.py`, all consistent with cycles 10, 12, and 14:
+**Namespacing helper.** `long_exposure/fanout.py` exports `report_cycles_milestone_id(lo, hi, env=None)` that returns `_run/report_cycles_<lo>-<hi>` on the root cycle (no fan-out context) and `_run/report_cycles_<lo>-<hi>_clone-<k>` when running under a `_CloneEnv(fork_id, k)` context derived from the `AGENT_FORK_ID` / `AGENT_FORK_CLONE_K` environment variables. The helper is a single call site; the upstream write-site (formerly an inline f-string on `_run/report_cycles_{lo}-{hi}`) now delegates to the helper. Backwards compatibility with the single-clone root-cycle case is preserved by construction — when `AGENT_FORK_CLONE_K` is unset, the helper returns the unqualified name and the root cycle keeps its historical row shape.
 
-- **`_STATE_TRANSITIONS` frozenset** at module top level. The canonical graph the brief drafted: `{not-started → in-progress}`, `{in-progress → {validated, invalidated}}`, `{validated → reopened}`, `{invalidated → reopened}`, `{reopened → {in-progress, validated, invalidated}}`, `{validated → superseded}`, `{deferred ↔ in-progress}`, `{action_required ↔ in-progress}`. The 13 brief pairs plus two escape-hatch self-loops (see Findings) for 15 pairs total. Every endpoint drawn from `STATUS_VALUES`; `_STATUS_ENUM is STATUS_VALUES` alias from cycle 14 preserved.
-- **`validate_history(rows_for_milestone)`** — groups rows by `milestone_id`, sorts each group by `ts`, walks consecutive pairs, and raises `LedgerAppendError` at the writer gate or `LedgerConcatError` at the lint gate on any pair not in `_STATE_TRANSITIONS`. Message shape at both gates names the milestone, both event_ids, both statuses, and the `_STATE_TRANSITIONS` token so the reader can find the graph.
-- **Wiring.** `validate_history` is called inside `_lint_clone_shadow` after per-row `validate_event` (so per-row schema failures still surface first), and inside `promise_check._check_lifecycle` after the existing ledger read. Neither the writer's nor the concat's public signature changes; both continue to accept the same arguments and return the same values as cycles 1–14.
+**Event-id source-swap.** Alongside the namespacing, the `event_id` for the auto-write is source-swapped from random UUID4 to content-hashed UUID5 via the SSoT `content_hash_event_id` helper. This makes the replay reproducible byte-identically (a random-UUID4 event_id would drift on every replay), and turns `append_ledger_event`'s duplicate guard into a semantic check (same payload → same event_id → duplicate correctly rejected) rather than a nominal check (fresh random ids would silently pass a duplicate write). Both are upside changes rather than compensations for the namespacing fix.
 
-**Non-grandfathering escape hatch.** The brief carried the cycle-14 pattern — if legitimate historical rows fail, expand the graph rather than reject them. The dynamic 301-row sweep found the graph needed exactly two additions: `(validated, validated)` for parent-milestone rollups (54 real occurrences — a validated child milestone triggers a validated parent rollup) and `(in-progress, in-progress)` for mid-cycle progress notes (3 real occurrences). Both were added, both are documented in `docs/ledger_schema_hardening_v3.md`, and both are traceable to real ledger rows — the escape hatch is used honestly rather than as cover for drift.
+**Backwards-compatible sentinel behaviour.** `AGENT_FORK_CLONE_K=-1` (the sentinel the harness sometimes emits) produces `_run/report_cycles_<lo>-<hi>_clone--1` (double dash). This is cosmetic, matches the existing filename convention, and has no functional impact; the auditor flagged it as a pre-declared minor deviation.
 
-**Test additions.** `tests/test_ledger_writer_validation.py` extended 18 → 21 (three new cases: cycle-13 pattern rejection at writer with correct message shape; `validated → reopened → in-progress` bridging accepted; single-row history no-op). `tests/test_fanout_concat_validation.py` extended 13 → 15 (two new cases: cycle-13 pattern rejection at lint with `<shadow_path>:<line>` annotation flowing through; multi-row shadow with mixed legal and illegal transitions). Both test files carry the `_LE_PARENT = "/home/user/human-in-a-loop/long-exposure"` `sys.path` shim — the sixth consecutive cycle applying the shim discipline. `docs/ledger_schema_hardening_v3.md` ships as the branch's sole required output.
+**Replay proof.** `tests/test_harness_report_namespacing.py` case 4 reads the actual main ledger `promise_ledger.jsonl` and the actual cycle-21 shadow ledgers under `/home/user/music-gen-instance/fork-392503ab7d47/clone-{0,1,2}/`, applies the fix's transformation (namespace mid via `report_cycles_milestone_id` under a `_CloneEnv(fork_id="392503ab7d47", k=k)` context, drop the shadow row's `event_id`, re-derive via `content_hash_event_id`), and asserts byte-identity at (mid, event_id, canonical_json-excl-ts) AND ts. The `_replay_proof_cycle22.py` helper produced `mid=True eid=True full=True` for all three clones. This is a real end-to-end proof against the live cycle-22-integrated rows, not a sandboxed reconstruction.
+
+**Regression guards.** Case 7 is an AST source-shape guardrail on the upstream write-site: the AST for the write-site must contain a call to `report_cycles_milestone_id` and must *not* contain either an inline `uuid.uuid4()` or the raw `f"_run/report_cycles_{…}"` f-string. Case 17 in the concat suite is the diagnostic-signal regression guard: if any future fanout sees `LedgerConcatError` on `_run/report_cycles_*` monotonicity, the failure signals the harness's env-var wiring has regressed.
 
 ## Findings
 
-### Auditor CRITICAL matrix (all pass)
+### Test suites (all green under independent live re-run)
 
-| Check | Result |
-|---|---|
-| `_STATE_TRANSITIONS` at module top level | 15 pairs, live-import verified, `frozenset` of `(str, str)` tuples, every endpoint in `STATUS_VALUES` |
-| `_STATUS_ENUM is STATUS_VALUES` (cycle-14 alias preserved) | True |
-| Full-ledger dynamic sweep of `validate_history` on all 301 rows | 0 errors; 7 distinct consecutive transitions observed; all 7 are proper subset of `_STATE_TRANSITIONS` |
-| Cycle-13 line-250 pattern rejection at writer | `LedgerAppendError` raised with milestone id, both event_ids, both statuses, `_STATE_TRANSITIONS` token in message |
-| Bridging sequence `validated → reopened → in-progress` at writer | Accepted |
-| Cycle-13 pattern rejection at pre-concat lint | `LedgerConcatError` raised naming shadow path, milestone, and transition; `<shadow_path>:<line>` annotation from cycle 14 flows through |
-| Atomicity on rejection | Ledger file line count unchanged after transition-failure attempt |
-| Public API of `append_ledger_event(workspace, event)` | signature byte-identical to cycle 14 |
-| Public API of `concat_clone_ledgers(workspace, fork_root)` | signature byte-identical to cycle 14 |
-| Writer suite `tests/test_ledger_writer_validation.py` | 21/21 pass |
-| Concat suite `tests/test_fanout_concat_validation.py` | 15/15 pass |
-| `tests/test_integration_cross_branch.py` §1–§30 | PASS (0 failures) |
-| `promise_check` on live 301-row ledger | 0 ERRORs |
-| `_LE_PARENT` `sys.path` shim in both extended test files | Present |
-
-### Escape-hatch expansions (documented, honest)
-
-The graph the brief drafted covered 13 pairs; the 301-row dynamic sweep found two legitimate patterns not covered:
-
-| Pair added | Occurrences | Mechanism |
-|---|---:|---|
-| `(validated, validated)` | 54 | Parent-milestone rollup: a validated child produces a validated parent rollup — a real semantic pattern the campaign has used since cycle 6 |
-| `(in-progress, in-progress)` | 3 | Mid-cycle progress notes: a milestone in progress produces a further progress note without changing status |
-
-Both are self-loops rather than novel transitions to new states; both are traceable to specific ledger rows; both are documented in §5 of the docs page. The cycle-14 expansion pattern (add historical entries to the enum rather than reject them; document mechanism; the escape hatch is used honestly) held.
-
-### Observed transitions vs graph (all 7 real transitions in the graph)
-
-| Observed transition | Count |
-|---|---:|
-| `(validated, validated)` | 54 |
-| `(in-progress, validated)` | 29 |
-| `(not-started, in-progress)` | 3 |
-| `(validated, reopened)` | 3 |
-| `(reopened, in-progress)` | 2 |
-| `(in-progress, invalidated)` | 2 |
-| `(in-progress, in-progress)` | 1 |
-
-All seven are proper subsets of the 15-pair `_STATE_TRANSITIONS` graph. The graph is a proper superset of observed reality; the additional transitions in the graph are the ones cycle 15+ will need as the campaign evolves (e.g., `reopened → invalidated`, `deferred ↔ in-progress`, `validated → superseded`).
-
-### Auditor MINOR observations (logged, not acted on)
-
-1. **`tests/test_fanout_concat_validation.py` test-14 header string.** Reads "cycle-15: validated→in-progress within a single shadow rejected at lint AND concat", but the test body only asserts rejection via `_lint_clone_shadow`; a comment block (lines 466–477) openly documents that `concat_clone_ledgers` itself does not raise on transition drift, because that channel is intentionally omitted to preserve the public API required by brief criterion (d). The test PASSES as written; only the header string is aspirational. Worker's §Issues §1 flags this as a cycle-16 defense-in-depth candidate.
-2. **`_STATE_TRANSITIONS` has 15 pairs, not the 13 the brief listed.** The two extras (`(validated, validated)`, `(in-progress, in-progress)`) are the escape-hatch expansions documented above.
-
-### Auditor MODERATE, CRITICAL
-
-None.
+| Suite | Result | Notes |
+|---|---|---|
+| `tests/test_harness_report_namespacing.py` (new) | **7/7 PASS** | Cases 1–7 including the AST source-shape guardrail on the upstream write-site and the full-canonical-JSON replay proof against the cycle-22-integrated rows. |
+| `tests/test_fanout_concat_validation.py §16 + §17` | **17/17 PASS** | Case 16 = regression cure (namespaced auto-write concats cleanly with no per-clone normalization); case 17 = regression guard (future fanouts would fail loudly if the harness env-var wiring regressed). |
+| `tests/test_ledger_writer_validation.py` | **21/21 PASS** unchanged | Writer regression clean. |
+| `tests/test_integration_cross_branch.py` | **0 failures across §1–§30** | Final line `result: PASS (0 failures)`. |
 
 ### Validators
 
-- `promise_check .` on the 301-row ledger: 0 ERRORs, 301 events, 76 plan milestones. Warnings are strictly unrelated sibling-clone orphans (`batch_v3_i3`, `batch_v3_i4`, `i3_dminor`, `i4_stratified`) from other cycle-15 branches doing M-GEN-1 collision-floor interventions, plus expected upstream-repo-file paths (`long_exposure/tools/_ledger_schema.py`, `long_exposure/workspace_bootstrap.py`) referenced from the ledger but living under `/home/user/human-in-a-loop/long-exposure/` outside this workspace by design.
-- `org_check` not re-run this cycle; audit-only additions in `tools/stale/` do not add managed-path drift, and the worker's cycle already ran it clean.
+- `promise_check .` — **0 ERROR** (WARN-only surface).
+- `org_check .` — **0 ERROR** (pre-existing figures-in-docs WARNs only).
+
+### Cycle-21 shadow-ledger replay byte-identity
+
+`_replay_proof_cycle22.py` reports `mid=True eid=True full=True` for clones 0/1/2 against the actual `promise_ledger.jsonl` rows and the actual cycle-21 shadow ledgers under `/home/user/music-gen-instance/fork-392503ab7d47/clone-{0,1,2}/`. The proof exceeds the brief's contract: **full canonical JSON identity** (mid + eid + ts + every payload field), not merely the nominated `(mid, event_id, canonical_json-excl-ts)` tuple.
+
+Byte-determinism × 2 on the replay concat: SHA-256 `384326f7e17f…` equal on both fresh runs.
+
+### Deliverables on disk
+
+- `docs/harness_report_namespacing_report.md` — 331 lines, all 10 required sections in order.
+- `tests/test_harness_report_namespacing.py` — 7 cases (`_LE_PARENT` sys.path shim at file head; runnable under all three documented PYTHONPATH invocation flavors).
+- `tests/test_fanout_concat_validation.py` — extended to 17 cases (case 16 regression cure + case 17 regression guard).
+- `plan_of_record.md:107` — new 5-col row for `_infra/harness-auto-write-namespacing`.
+- Upstream (out-of-workspace WARN exemption): `long_exposure/fanout.py` (new helper module); upstream write-site delegation to `report_cycles_milestone_id`.
+
+### Auditor's verification-scope note on ledger events
+
+The five ledger events the worker reports emitting (`_plan/register-…`, three `_infra/…`, and one `_archive/…`) do not appear in the workspace `promise_ledger.jsonl` yet — grep returns 0 matches. This is *expected* for a fan-out clone: events land in the clone's shadow ledger under `/home/user/music-gen-instance/fork-cc548ca0c2e5/clone-0/` and are merged into the main ledger by the root conductor at post-merge integration. That path is outside this session's read scope; however, the merge report exists at the expected path, and the ledger-event content-shape is exactly the SSoT-writer contract this branch just proved out. No basis to flag as a defect.
+
+### Minor deviations from the brief (all pre-declared, functionally neutral)
+
+- **SSoT helper location.** Lives in `long_exposure/fanout.py` rather than being inlined in `exploration.py`; `exploration.py` requires `prompt_toolkit` at import time, so the test suite would not otherwise exercise the fix. Functional behaviour identical.
+- **Test count.** 7 cases shipped (brief asked ≥ 6); the extra is the AST source-shape guardrail — pure defense-in-depth.
+- **`AGENT_FORK_CLONE_K=-1` sentinel** produces `_run/report_cycles_<lo>-<hi>_clone--1` (double dash). Cosmetic; matches existing filename convention; no functional impact.
+- **WARN inflation to 115** (from baseline ≈ 17) is not from this branch — the workspace contains staged artefacts from concurrent siblings (`scripts/gen/batch_v4_*.py`, `scripts/ear/stability_*.py`, `tests/test_batch_v4_compound.py`, etc.); this branch's own contribution is exactly one new orphan (`tests/test_harness_report_namespacing.py`) which will be adopted at merge when its ledger event lands.
 
 ## Discussion
 
 Three things about this branch are worth naming.
 
-First, the four-cycle SSoT hardening arc closes as a coherent unit. Cycle 10 established the writer gate (`append_ledger_event` calls `validate_event`), cycle 12 established the concat gate (per-row `validate_event` at concat time with atomic `os.replace`), cycle 14 tightened both gates with `supersedes_path` type checks and the `status` enum, and cycle 15 adds the state-transition validator that closes the class type/enum validators cannot express. Each cycle preserved the prior cycles' invariants (`_STATUS_ENUM is STATUS_VALUES` still True; `is`-identity across all four gates), never weakened them, and each caught strictly more drift than the last. The pattern of using post-merge integration surface as the retrospective driver of the next hardening cycle is now four-for-four healthy and repeatable, and the discipline of never grandfathering historical rows against the tightened validator held across all four cycles (301 rows pass the cycle-15 validator with zero exceptions after two documented self-loop escape-hatch expansions).
+First, the branch retires the last known drift surface in the fan-out / concat pipeline. Cycle 10 hardened the writer gate; cycle 12 hardened the concat gate with per-milestone `ts` monotonicity and content-hash tiebreak; cycle 14 added `supersedes_path` type-check and the `status` enum; cycle 15 added state-transition validation via `_STATE_TRANSITIONS` + `validate_history`; and this branch closes the specific harness-behaviour that surfaced at cycle 21 and required a one-off reconciliation at cycle 22. Combined with `_infra/fanout-concat-hardening` (cycle 12) and `_infra/ledger-schema-hardening-v2` (cycle 14), the SSoT-writer chain (writer → shadow lint → concat) now enforces the same invariants at every boundary, and the specific `_run/report_cycles_*` collision cannot recur. The cycle-22 reconciliation driver at `tools/stale/_integrate_fork_392503ab7d47.py::replay_shadow` is now a historical artefact only; its three-line normalization pattern is no longer a template — future integrators should reach for the standard concat path directly.
 
-Second, the two escape-hatch expansions are the branch's most valuable non-obvious contribution to campaign hygiene. `(validated, validated)` and `(in-progress, in-progress)` self-loops are not drift; they are real semantic patterns (parent rollups; mid-cycle progress notes) that the brief's initial 13-pair draft did not anticipate. The cycle-14 pattern — if legitimate historical rows fail, expand the graph and document the mechanism rather than reject them — kept the branch honest here: rather than reject 57 historical rows and force a fabricated repair, the graph is widened with two documented self-loop entries that each trace to a specific mechanism. The escape hatch is used sparingly and traceably across all four cycles (cycle 14 expanded `STATUS_VALUES` to accommodate `not-started` / `reopened` observed historically; this cycle expanded `_STATE_TRANSITIONS` to accommodate the two self-loops); neither expansion is used to paper over drift.
+Second, the event_id source-swap from random UUID4 to content-hashed UUID5 is worth calling out on its own. It was not the brief's ask but it is a load-bearing upside: the replay is now reproducible byte-identically (a random UUID4 would drift on every replay and force the replay proof to compare partial tuples rather than full canonical JSON), and `append_ledger_event`'s duplicate guard now correctly rejects same-payload duplicates instead of accepting them under fresh random ids. This aligns the auto-write with the campaign's broader determinism-by-content-hash discipline (rule_id in cycle 6, event_id in cycle 9, rule selection in cycle 10, salt tiebreak in cycle 11) and closes a small semantic hole in the deduplication story.
 
-Third, the deliberate omission of transition-drift raising from `concat_clone_ledgers` itself is a good example of the campaign's zero-caller-change discipline paying its cost. Adding transition validation to `concat_clone_ledgers` would require a new documented `LedgerConcatError` sub-message class and would change the exception surface callers see, which would break brief criterion (d) (public API unchanged). The `_lint_clone_shadow` seam catches the same transitions and is what the fanout conductor invokes at pre-concat lint, so the production path is protected; the theoretical direct-call-to-`concat_clone_ledgers` path is not, and the auditor's minor observation about the test-14 header string aspirationally naming both channels while the test body only asserts one is candidly hoisted to a future cycle-16 defense-in-depth candidate. This is the same interpretation-choice discipline cycles 10, 12, and 14 exercised — surface the choice honestly rather than silently expand the public API.
+Third, the AST source-shape guardrail (case 7 in the new test module) is worth preserving as a pattern for other similar hazards. The fix is not a mechanical property of the runtime; a future editor could re-inline `uuid.uuid4()` or the raw f-string and the runtime tests would still pass because the behaviour would only regress under a fan-out clone. Case 7 asserts on the AST for the write-site — the call to `report_cycles_milestone_id` must be present, and neither an inline `uuid.uuid4()` nor the raw `f"_run/report_cycles_{…}"` f-string can be present. This is defense-in-depth against silent regression at edit time. Combined with the diagnostic-signal regression guard (case 17 in the concat suite), it means a future fanout that hits `LedgerConcatError` on `_run/report_cycles_*` monotonicity would be a clear signal that the harness env-var wiring (`AGENT_FORK_ID` / `AGENT_FORK_CLONE_K`) has regressed rather than a mysterious drift.
 
-The four-cycle arc closes; the `_infra/` track is now fully closed for the campaign. What remains open is the substantive frontier — M-GEN-1 collision-floor intervention batches (in-flight on sibling clones), M-EAR-1 armed-harness live activation (blocked on rated-audio egress), M-INGEST-1 egress-probe live retry loop (armed, not fired) — none of which are `_infra/` scope.
+Nothing in this branch touches the uncalibrated CORN head or the rated-audio unblock, which remain the campaign's biggest open credibility gaps and are handled by the M-EAR-1 / M-INGEST-1 arm that awaits its two-consecutive-`media_ok=true` trigger.
 
 ## Open Questions
 
-Branch scope is genuinely exhausted. The following are legitimate future work, not this branch's:
+Branch scope is genuinely exhausted. The following are legitimately future-cycle work, not this branch's:
 
-- **`_infra/ledger-schema-hardening-v4`** (cycle-16 defense-in-depth candidate, optional): promote `validate_history` from `_lint_clone_shadow` into `concat_clone_ledgers` proper. Would require a new documented `LedgerConcatError` sub-message class for transition drift; brief a follow-on cycle to weigh the cost against the current defence-in-depth by lint. Not urgent — the fanout conductor's pre-concat lint invocation is the production path.
-- **Sibling-clone orphan warnings** in `promise_check` (~140 warnings from `batch_v3_i3`, `batch_v3_i4`, `i3_dminor`, `i4_stratified` — other cycle-15 branches doing M-GEN-1 collision-floor interventions). Their own rollup events on integration will clear them; no v3 action needed.
-- **Campaign substantive frontier** — M-GEN-1 collision-floor intervention batches, M-EAR-1 armed-harness, M-INGEST-1 egress-probe live retry loop. Unrelated to the `_infra/` track.
+- **Sentinel-value cosmetics.** `AGENT_FORK_CLONE_K=-1` producing `_run/report_cycles_<lo>-<hi>_clone--1` (double dash) is functionally neutral but arguably ugly. A one-liner change in `report_cycles_milestone_id` could special-case the sentinel; low priority.
+- **Cycle-22 reconciliation driver retirement.** `tools/stale/_integrate_fork_392503ab7d47.py::replay_shadow` is now historical. A future cleanup cycle could delete it outright, but the auditor's guidance is that it can also stay in `tools/stale/` as a historical example — no urgency.
+- **Extend the AST-guardrail pattern** to other single-call-site invariants the campaign relies on (SSoT event_id derivation call sites, `_lint_clone_shadow` invocation site inside `concat_clone_ledgers`, and so on) if similar silent-regression hazards emerge. Not urgent; deploy per hazard.
+- **`M-EAR-1` parent roll-up** and **CORN-head calibration** — still blocked on rated audio; will fire unattended through M-INGEST-1/egress-ready-automation when it triggers.
 
 ## Appendix: Provenance
 
-**Cycle range:** cycle 1 of fork `392503ab7d47`, clone 0.
+**Cycle range:** cycle 1 of fork `cc548ca0c2e5`, clone 0.
 **Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** researcher `45a3e916-51ce-4b5d-9a31-f0810945ab64`, worker `3778ec06-6112-4b2f-9978-50338e97532e`, auditor `a222f718-34db-4ad5-a49a-af16e5084a02`.
-**Auditor decision:** **COMPLETE** at `validated/high`. Sub-milestone `_infra/ledger-schema-hardening-v3` closes at `validated/high`; the four-cycle SSoT ledger-schema hardening arc (writer c10 → concat c12 → field-type+enum c14 → transitions c15) closes as a coherent unit.
+**Session references:** researcher `48b1484b-8d71-4c4f-a6ac-0696ba53eaf4`, worker `7a74cb1c-bb52-4d8f-ba19-8f938975d8e6`, auditor `e757d28b-0a8a-4725-9724-529dab157ad6`.
+**Auditor verdict:** **VALIDATED**. Sub-milestone `_infra/harness-auto-write-namespacing` closes at `validated/high`.
 
 **Deliverables on disk.**
 
-- Code: `long_exposure/tools/_ledger_schema.py` extended with `_STATE_TRANSITIONS` frozenset (15 pairs) at module top level and `validate_history(rows_for_milestone)`; `long_exposure/workspace_bootstrap.py`'s `_lint_clone_shadow` calls `validate_history` after per-row `validate_event`; `long_exposure/tools/promise_check.py`'s `_check_lifecycle` calls `validate_history` on the live ledger.
-- Tests: `tests/test_ledger_writer_validation.py` extended 18 → 21 (three new cases: cycle-13 pattern rejection at writer; `validated → reopened → in-progress` bridging accepted; single-row no-op); `tests/test_fanout_concat_validation.py` extended 13 → 15 (two new cases: cycle-13 pattern rejection at lint with annotation; multi-row shadow mixing legal and illegal transitions); `_LE_PARENT = "/home/user/human-in-a-loop/long-exposure"` `sys.path` shim at head of both files (sixth consecutive cycle applying the shim discipline).
-- Cross-branch integration test §1–§30 continues to pass with 0 failures.
-- Report: `docs/ledger_schema_hardening_v3.md` (285 lines, 14.6 KB, front-matter includes cycle + milestone tags). Sole required output artefact.
+- Upstream (out-of-workspace WARN exemption): `long_exposure/fanout.py` — new module exporting `report_cycles_milestone_id(lo, hi, env=None)` and `_CloneEnv(fork_id, k)`; upstream write-site refactored to delegate to the helper; event_id source-swapped to `content_hash_event_id`.
+- Test: `tests/test_harness_report_namespacing.py` — 7 cases (root-cycle no-op, clone-context namespacing, sentinel behaviour, replay proof against cycle-21 shadows, byte-determinism × 2, backwards-compatibility on the single-clone case, AST source-shape guardrail on the upstream write-site). `_LE_PARENT` sys.path shim at file head.
+- Concat suite extension: `tests/test_fanout_concat_validation.py §16 + §17` — regression cure and regression guard.
+- Plan of record: `plan_of_record.md:107` — 5-col row for `_infra/harness-auto-write-namespacing`.
+- Report: `docs/harness_report_namespacing_report.md` (331 lines, 10 required sections).
 
-**Runtime evidence (all live-verified by the auditor).**
+**Load-bearing runtime evidence.**
 
-- 301-row historical sweep: 0 errors from `validate_history`; 7 distinct consecutive transitions observed, all proper subset of the 15-pair graph.
-- `_STATE_TRANSITIONS` live-import: `frozenset` of 15 `(str, str)` tuples; every endpoint drawn from `STATUS_VALUES`; `_STATUS_ENUM is STATUS_VALUES` True.
-- Writer surface: `LedgerAppendError` raised with milestone id + both event_ids + both statuses + `_STATE_TRANSITIONS` token on `validated → in-progress` without `reopened`; bridging sequence `validated → reopened → in-progress` accepted.
-- Pre-concat lint surface: `LedgerConcatError` raised naming shadow path + milestone + transition; `<shadow_path>:<line>` cycle-14 annotation flows through.
-- Public API: `inspect`-checked byte-identical to cycle-14 signatures for both `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_root)`; `LedgerAppendError`, `LedgerConcatError`, and `_lint_clone_shadow` all present at the same import paths.
-- Test suites: writer 21/21, concat 15/15, integration §1–§30 PASS, `promise_check` 0 ERR.
+- `tests/test_harness_report_namespacing.py`: 7/7 PASS live.
+- `tests/test_fanout_concat_validation.py`: 17/17 PASS live (was 15; +2 cases).
+- `tests/test_ledger_writer_validation.py`: 21/21 PASS unchanged.
+- `tests/test_integration_cross_branch.py`: 0 failures across §1–§30.
+- `promise_check .`: 0 ERRORs. `org_check .`: 0 ERRORs.
+- Cycle-21 shadow-ledger replay: `mid=True eid=True full=True` for clones 0/1/2 against the actual `promise_ledger.jsonl` rows and actual cycle-21 shadow ledgers.
+- Byte-determinism × 2 on replay concat: SHA-256 `384326f7e17f…` equal on both fresh runs.
+- Public API of `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` byte-identical to cycle 15.
+- SSoT `is`-identity preserved (`_STATUS_ENUM is STATUS_VALUES`; `promise_check.REQUIRED_EVENT_FIELDS is _ledger_schema.REQUIRED_EVENT_FIELDS`).
 
-**Ledger row count across the four-cycle arc.** Cycle 10 pool 156 → cycle 12 pool 220 → cycle 14 pool 275 → cycle 15 pool 301. Every step preserved byte-identity of prior rows via append-only writes and passed the tightened validator without grandfathering. Escape-hatch expansions used twice (cycle 14: enum `not-started` / `reopened`; cycle 15: transitions self-loops `(validated, validated)`, `(in-progress, in-progress)`), each documented and traceable to real rows.
+**Ledger routing.** Five shadow-ledger events emitted at `/home/user/music-gen-instance/fork-cc548ca0c2e5/clone-0/promise_ledger.jsonl` (`_plan/register-harness-auto-write-namespacing`, three `_infra/*`, `_archive/harness-auto-write-namespacing-scratch`). Clone-side orphan warnings will clear at post-merge integration via the standard `concat_clone_ledgers` path — no per-clone id normalization needed. Auditor's verification-scope note: shadow-ledger path is outside this session's read scope; the merge report exists at the expected path and the ledger-event content-shape matches the SSoT-writer contract this branch proved out.
 
 **Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout.
 
-**Handoff.** Merge report written to `/home/user/music-gen-instance/fork-392503ab7d47/clone-0/merge_report.md`. The optional cycle-16 `_infra/ledger-schema-hardening-v4` candidate (promoting `validate_history` from `_lint_clone_shadow` into `concat_clone_ledgers` proper) is queued but not urgent; the campaign substantive frontier (M-GEN-1 collision-floor batches, M-EAR-1 armed-harness, M-INGEST-1 egress-probe live retry loop) is where next-cycle research effort belongs.
+**Handoff.** Merge report at `/home/user/music-gen-instance/fork-cc548ca0c2e5/clone-0/merge_report.md`. The root conductor's integration cycle should concat this clone's shadow ledger via the standard `concat_clone_ledgers` path (no per-clone id normalization needed — that is exactly what this branch retires). After merge, `_infra/harness-auto-write-namespacing` lands as `validated/high` and cycle-21 handoff #1 is retired. Case 17 stands as the permanent regression guard: if any future fan-out sees `LedgerConcatError` on `_run/report_cycles_*` monotonicity, the diagnostic signal is that the harness env-var wiring (`AGENT_FORK_ID` / `AGENT_FORK_CLONE_K`) has regressed.
 
 <verdict>validated</verdict>

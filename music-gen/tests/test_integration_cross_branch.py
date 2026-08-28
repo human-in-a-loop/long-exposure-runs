@@ -2269,6 +2269,80 @@ if _cm_path.is_file():
     check(len(_lines) == 1 + 5 * 8 * 8,
           f"batch-v4 §31j: collision_matrix.tsv has 321 lines (got {len(_lines)})")
 
+# §32. M-EAR-1/synthetic-label-stability-audit — cycle 22, fork cc548ca0c2e5, clone 2.
+# (a) required scripts present with interpreter guard.
+_ear_dir = WS / "scripts" / "ear"
+for _name in ("synthetic_labels", "stability_metrics", "stability_audit", "plot_stability"):
+    _p = _ear_dir / f"{_name}.py"
+    check(_p.is_file(), f"stability-audit §32a: scripts/ear/{_name}.py present")
+    if _p.is_file():
+        _src = _p.read_text()
+        check("from . import _interp" in _src,
+              f"stability-audit §32a: {_name} has interpreter guard")
+        # Isolation: no actual import statement (docstring mentions OK).
+        import re as _re
+        _has_import = bool(_re.search(
+            r"^(from|import)\s+[\w.]*sidecar_nonfactor", _src, _re.MULTILINE))
+        check(not _has_import,
+              f"stability-audit §32a: {_name} has no sidecar_nonfactor import")
+
+# (b) no PRNG symbols in the recipe module (AST-checked in the unit tests; we
+# also grep here for the substring set).
+_sl_src = (_ear_dir / "synthetic_labels.py").read_text() if (_ear_dir / "synthetic_labels.py").is_file() else ""
+for _tok in ("np.random", "numpy.random", "random.", "secrets.", "torch.rand",
+             "torch.manual_seed", "default_rng"):
+    check(_tok not in _sl_src, f"stability-audit §32b: synthetic_labels.py has no {_tok}")
+
+# (c) audit output files present and non-empty.
+_sa_dir = WS / "data" / "ear" / "stability_audit"
+for _fn in ("stability_report.json", "per_recipe_mae.tsv", "rank_matrix.tsv",
+            "tau_pairs.tsv", "per_clip_band_variance.tsv"):
+    _p = _sa_dir / _fn
+    check(_p.is_file() and _p.stat().st_size > 0,
+          f"stability-audit §32c: data/ear/stability_audit/{_fn} present and non-empty")
+
+# (d) stability_report.json schema shape.
+_rep_p = _sa_dir / "stability_report.json"
+if _rep_p.is_file():
+    _rep = json.loads(_rep_p.read_text())
+    check(_rep.get("milestone_id") == "M-EAR-1/synthetic-label-stability-audit",
+          "stability-audit §32d: report milestone_id matches")
+    check(_rep.get("n_recipes") == 10, "stability-audit §32d: n_recipes == 10")
+    check(_rep.get("n_clips") == 55, "stability-audit §32d: n_clips == 55")
+    check(len(_rep.get("per_recipe", [])) == 10, "stability-audit §32d: 10 per-recipe entries")
+    check(len(_rep.get("tau_pairs", [])) == 45, "stability-audit §32d: 45 tau_pairs entries")
+    check(len(_rep.get("per_clip_band_variance", [])) == 55,
+          "stability-audit §32d: 55 per-clip variance rows")
+    _crit = _rep.get("criteria", {})
+    for _cid in ("C1", "C2", "C3"):
+        check(_cid in _crit, f"stability-audit §32d: {_cid} present in criteria")
+        check("verdict" in _crit.get(_cid, {}),
+              f"stability-audit §32d: {_cid} has verdict field")
+    # (e) envelope math sanity: p05 <= p50 <= p95 and both bracket min/max.
+    _env = _rep.get("mae_envelope", {})
+    check(_env.get("p05", 0) <= _env.get("p50", 0) <= _env.get("p95", 0),
+          "stability-audit §32e: p05 <= p50 <= p95 envelope monotone")
+    check(_env.get("min", 0) <= _env.get("p05", 0),
+          "stability-audit §32e: min <= p05")
+    check(_env.get("max", 0) >= _env.get("p95", 0),
+          "stability-audit §32e: max >= p95")
+    # (f) all 10 mean_mae values finite.
+    import math
+    check(all(math.isfinite(_pr["mean_mae"]) for _pr in _rep["per_recipe"]),
+          "stability-audit §32f: all 10 per-recipe mean_mae finite")
+    check(all(math.isfinite(_p["kendall_tau"]) for _p in _rep["tau_pairs"]),
+          "stability-audit §32f: all 45 pairwise τ finite")
+
+# (g) salt namespace: every recipe salt is stab-audit-N.
+if _rep_p.is_file() and _rep:
+    for _pr in _rep["per_recipe"]:
+        check(_pr["salt"] == f"stab-audit-{_pr['idx']}",
+              f"stability-audit §32g: recipe {_pr['idx']} salt namespace")
+
+# (h) test suite reference present.
+_tp = WS / "tests" / "test_ear_stability_audit.py"
+check(_tp.is_file(), "stability-audit §32h: tests/test_ear_stability_audit.py present")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
