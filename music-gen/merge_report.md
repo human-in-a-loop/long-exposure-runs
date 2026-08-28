@@ -1,232 +1,136 @@
 ---
-created: 2026-08-28T17:20:50Z
-cycle: 21
+created: 2026-08-28T19:10:00Z
+cycle: 16
 run_id: run-2026-08-28T040704Z
-agent: worker
-milestone: _run/post-merge-integration-fork-392503ab7d47
-supersedes: fork-855d4c2e9945 capstone (cycle 14)
+agent: worker (clone-1, fork cc548ca0c2e5)
+milestone: M-GEN-1/batch-v4-compound
 ---
 
-# Post-Merge Integration Report — fork 392503ab7d47 (cycle 21)
+# Merge Report — Fork cc548ca0c2e5, Clone 1 → M-GEN-1/batch-v4-compound
 
-## Fanout outcome
+## Verdict
 
-Three clones landed with **zero cross-branch file-tree overlap on
-deliverables**. The fanout conductor's automatic concat step was
-SKIPPED with `LedgerConcatError` — see §Shadow-ledger reconciliation
-below — and this cycle replays the three shadow ledgers into the main
-promise ledger by serial `append_ledger_event` with a small
-milestone-id normalization for the one auto-write mid that collided
-across clones. No promises lost.
+**CONFIRMS_H0_STRICT** at 0 observed collision pairs at N=8, with 12 of 32
+`(salt, file_kind)` cells reproducing the I4-only anchor byte-identically
+(4 `matches_i4_only` + 8 `matches_both`). The I3 corpus-side lever and the
+I4 algorithmic lever compose **without interference** on this workload.
 
-| Clone | Milestone                          | Verdict          | Deliverable                                   |
-|-------|------------------------------------|------------------|-----------------------------------------------|
-| 0     | _infra/ledger-schema-hardening-v3  | validated/high   | docs/ledger_schema_hardening_v3.md            |
-| 1     | M-GEN-1/batch-v3-i4                | validated/high   | docs/gen_batch_v3_i4_report.md                |
-| 2     | M-GEN-1/batch-v3-i3                | validated/high   | docs/gen_batch_v3_i3_report.md                |
+## What shipped
 
-## Per-clone summary
+| Artifact | Path |
+|---|---|
+| Report | `docs/gen_batch_v4_compound_report.md` |
+| 8-song grid figure | `docs/figures/batch_v4_grid.png` |
+| Collision heatmap figure | `docs/figures/batch_v4_collision_heatmap.png` |
+| Driver | `scripts/gen/batch_v4_compound.py` |
+| Collision counter | `scripts/gen/collision_count_batch_v4.py` |
+| Anchor comparator | `scripts/gen/batch_v4_anchor_check.py` |
+| Plotter | `scripts/gen/plot_batch_v4.py` |
+| Unit tests (6/6) | `tests/test_batch_v4_compound.py` |
+| Cross-branch §31 | `tests/test_integration_cross_branch.py` (added 11 named checks) |
+| Batch outputs | `data/gen/batch_v4/song_{0..7}/{musicxml,mid,bare.wav,effects.wav,scoring.json,coercions.json,sampling_manifest.json,rules.json}` |
+| Batch aggregates | `data/gen/batch_v4/{batch_manifest,collision_analysis,collision_matrix.tsv,anchor_cross_reference,hypothesis_verdict,summary.tsv,provenance.jsonl}` |
+| Byte-det proof | `data/gen/batch_v4/.byte_determinism_proof.json` |
+| Anchor snapshots | `data/gen/batch_v4/.pre_run_anchors.json`, `.i4_sampler_anchor_sha256` |
+| Plan of record | `plan_of_record.md` (Milestones + Sub-milestones rows for `M-GEN-1/batch-v4-compound`) |
 
-### Clone 0 — _infra/ledger-schema-hardening-v3
+## Ledger events emitted (per-clone shadow ledger, cc548ca0c2e5/clone-1)
 
-Completes the **4-cycle SSoT ledger-schema hardening arc**:
+1. `_plan/register-batch-v4-compound-milestone` — validated/high
+2. `M-GEN-1/batch-v4-compound` — in-progress/medium (kickoff, investigation-first)
+3. `M-GEN-1/batch-v4-compound` — in-progress/medium (first render + collision + anchor XREF; verdict CONFIRMS_H0_STRICT)
+4. `M-GEN-1/batch-v4-compound` — in-progress/medium (second byte-det run byte-identical; anchor preservation runtime-enforced; §31 added)
+5. `M-GEN-1/batch-v4-compound` — validated/high (terminal, verdict CONFIRMS_H0_STRICT with mechanistic interpretation and cycle-17 follow-up)
+6. `_archive/batch-v4-scratch` — validated/high (one-shot emitters moved to `tools/stale/`)
 
-    writer (c10) -> concat (c12) -> field-type + enum (c14) -> transitions (c15)
+## Sufficiency criteria — all met
 
-Additive changes (all upstream at `/home/user/human-in-a-loop/long-exposure/`,
-the established out-of-workspace exemption pattern):
+- [x] `docs/gen_batch_v4_compound_report.md` published with verdict under frozen rubric
+- [x] Verdict machine-readable from `hypothesis_verdict.json` + `collision_analysis.json`
+- [x] 8 songs render non-silent (peak > 1e-4 asserted for both bare.wav and effects.wav)
+- [x] Byte-deterministic × 2 across all 71 tracked artifacts
+- [x] Anchor SHAs for `batch_v2`, `batch_v3_i3`, `batch_v3_i4` byte-identical before/after (runtime-enforced)
+- [x] Both ledger files SHA-256-equal before/after (runtime-enforced)
+- [x] `tests/test_batch_v4_compound.py` 6/6 pass
+- [x] Cross-branch integration test §31 green (suite PASS overall)
+- [x] `promise_check` 0 ERRORs (WARNs are pre-integration orphan artifacts adopted by the terminal event; fork integrator will resolve on merge, per cycle-13/15/21 pattern)
+- [x] SHA-256 tiebreak, NO PRNG, no `sidecar_nonfactor` imports (AST-checked)
 
-- `long_exposure/tools/_ledger_schema.py`
-    * `_STATE_TRANSITIONS`: frozenset of 15 canonical `(prev, next)`
-      pairs — covers the brief-specified transitions plus two documented
-      historical self-loops (`validated -> validated` parent rollup,
-      `in-progress -> in-progress` progress-note update).
-    * `validate_history(rows)` — groups by `milestone_id`, sorts by `ts`,
-      returns illegal-transition errors annotated with `milestone_id +
-      both event_ids + pair-name`.
-- `long_exposure/workspace_bootstrap.py`
-    * `append_ledger_event` splices new event onto prior same-milestone
-      rows and runs `validate_history` **before** opening the ledger file
-      (atomicity preserved on transition failure).
-    * `_lint_clone_shadow` runs `validate_history` over the whole shadow
-      after the per-row `validate_event` pass.
-- `long_exposure/tools/promise_check.py`
-    * `_check_lifecycle` retains the hand-coded backward-compat rule
-      and defers to `validate_history` for the full transition graph.
+## Anchor-XREF distribution and mechanism (report §4, §7)
 
-Proof (from the shipped `docs/ledger_schema_hardening_v3.md`):
+| Category | Count / 32 | Salts |
+|---|---|---|
+| matches_both | 8 | 0, 3 |
+| matches_i4_only | 4 | 4 |
+| matches_i3_only | 12 | 2, 5, 6 |
+| novel | 8 | 1, 7 |
 
-- (a) all 301 pre-existing per-milestone histories validate — **0 errors**
-  via a dynamic sweep (no grandfathering).
-- (b) the cycle-13 line-250 pattern (`validated -> in-progress` without
-  `reopened`) rejects at **both** writer (writer suite test_19) **and**
-  pre-concat lint (concat suite test_14), with milestone + event_ids +
-  transition-pair-annotated messages.
-- (c) existing suites remain green: writer 21/21, concat 15/15,
-  integration cross-branch §1-§30 0 failures.
-- (d) public API of `append_ledger_event` and `concat_clone_ledgers`
-  unchanged — same signatures, same exception types, same return types,
-  same atomicity contract.
+The 4-cell `matches_i4_only` block on salt=4 is the direct CONFIRMS_H0_STRICT
+witness: batch-v4 on the 86-row augmented ledger produces byte-identical
+whole-song SHAs to batch-v3-i4 on the 76-row source ledger for all four file
+kinds. I3's harmonic expansion left I4's rank-0 pick undisturbed after
+rejection at that salt for every rule_type.
 
-Clone-0's honest surprise from cycle 14 (state-transition drift class
-mistakenly diagnosed as enum drift) is now retired.
+I3 augmentation only ADDED rules; it never removed or renumbered them. On
+non-harmonic rule_types the source and augmented ledgers produce byte-
+identical candidate lists → byte-identical hash rankings → byte-identical
+I4 rejection behavior. On harmonic, 4 of 8 salts pick a new D_minor variant
+(rule_ids in the augmentation manifest); the other 4 coincidentally re-select
+an F_major rule. K_harmonic=20 ≥ N=8 keeps I4's 0-pair construction proof
+intact; no stratum-shift edge case is tripped → CONFIRMS_H2 ruled out.
 
-### Clone 1 — M-GEN-1/batch-v3-i4
+## Cycle-17 handoff (single item)
 
-Empirical **PASS** on cycle-14's I4 analytic zero-floor prediction
-under the frozen `PASS ≤ 3, PARTIAL 4-7, FAIL ≥ 8` rubric:
+**`M-GEN-1/batch-v4-N16`** — extend the compound to salts 0..15 on the
+augmented ledger. At N=16, K_harmonic=20 remains ≥ N; K_rhythmic=18 ≥ N;
+K_melodic=18 ≥ N; but K_form=15 and K_arrangement=15 are BELOW N. Expected
+outcome under I4's construction proof: collisions land entirely inside
+form + arrangement (I4-limit indicators, unrelated to I3). If harmonic
+collisions appear at N=16, that would be a genuine CONFIRMS_H2 signal this
+branch could not reach. Either way, N=16 is the cheapest deterministic test
+that extends the compositional envelope past the K=N boundary.
 
-| Prediction (cycle-14 clone-1 I4)                      | Observed              | Rubric  |
-|-------------------------------------------------------|-----------------------|---------|
-| **0 pairs** at N=8 (analytic construction proof)      | **0 raw / 0 coerced** | ✅ PASS |
+Alternative (cheaper, weaker): compound against
+`data/rules/ledger_i3_expansion_v2.jsonl` with K_harmonic=30 and a
+deliberately shrunk K_melodic=6 to probe stratum-shift interference under a
+steeper compositional gradient.
 
-Per-rule-type delta batch-v2 → batch-v3-i4:
+## No cross-cycle handoffs required
 
-| rule_type   | batch-v2 | batch-v3-i4 | Δ  |
-|-------------|---------:|------------:|---:|
-| harmonic    |        6 |           0 | −6 |
-| rhythmic    |        2 |           0 | −2 |
-| melodic     |        2 |           0 | −2 |
-| form        |        0 |           0 |  0 |
-| arrangement |        1 |           0 | −1 |
-| **total**   |   **11** |       **0** | **−11** |
+- Cycle-21 handoff #1 (harness auto-write per-clone namespacing for
+  `_run/report_cycles_*`) is unchanged; if this clone's shadow ledger
+  collides on merge, the fork integrator reconciles it as cycle-21 did.
+- No environment changes; python 3.11.15, torch 2.13.0+cpu, numpy 1.26.4,
+  mscore3 3.2.3, DawDreamer 0.9.0, basic-pitch 0.4.0 quarantined venv,
+  SF2 pin `74594e8f…1cb0`, single-thread BLAS pins.
+- No changes to `data/gen/batch_v2/`, `data/gen/batch_v3_i3/`,
+  `data/gen/batch_v3_i4/`, `data/rules/ledger.jsonl`,
+  `data/rules/ledger_i3_dminor.jsonl`, `scripts/rules/sampling/i4_stratified.py`,
+  `scripts/tex/render_effects_layered.py`, or any file under `long_exposure/`.
 
-Design of the audit ruled out the three ways a spurious zero could
-have appeared: (i) salt=0 legacy anchor is byte-identical to batch-v2
-across all four file kinds (`musicxml d3d75dfb…`, `midi 80dd3420…`,
-`bare 669fabde…`, `effects 918c8aaa…`), so the reduction is a
-like-for-like comparison, not a wholesale sampler replacement;
-(ii) 8/8 distinct SHAs per artefact class rules out hidden collisions
-via render-SHA collapse; (iii) 0 coherence-gate coercions across all
-8 salts (honestly not generalised beyond this configuration).
-Byte-determinism × 2 across 56 SHA-256 artefacts. 6/6 i4 unit tests
-green.
+## Files touched
 
-### Clone 2 — M-GEN-1/batch-v3-i3
+Added:
+- `scripts/gen/batch_v4_compound.py`
+- `scripts/gen/collision_count_batch_v4.py`
+- `scripts/gen/batch_v4_anchor_check.py`
+- `scripts/gen/plot_batch_v4.py`
+- `tests/test_batch_v4_compound.py`
+- `docs/gen_batch_v4_compound_report.md`
+- `docs/figures/batch_v4_grid.png`
+- `docs/figures/batch_v4_collision_heatmap.png`
+- `data/gen/batch_v4/` (batch outputs, 8 songs × 8 files + 7 batch-level files)
+- `tools/stale/_emit_batch_v4_events.py`
+- `tools/stale/_emit_batch_v4_events_final.py`
+- `tools/stale/_byte_determinism_check.py`
 
-Empirical **PASS** on cycle-14's I3 D_minor headline prediction of
-7.75 pairs at N=8 under the frozen `PASS 6-9, PARTIAL {5,10}, FAIL
-otherwise` rubric:
+Modified:
+- `plan_of_record.md` (Milestones + Sub-milestones rows for `M-GEN-1/batch-v4-compound`)
+- `tests/test_integration_cross_branch.py` (added §31, 11 named checks)
 
-| Prediction source                                     | Value | Rubric  |
-|-------------------------------------------------------|------:|---------|
-| Cycle-14 report §I3 headline                          |  7.75 | in band |
-| Cycle-14 `intervention_proposal.json` H=10 sweep      |  8.24 | in band |
-| **Observed**                                          |  **6** | ✅ PASS (low edge) |
-
-Per-rule-type v2 → v3-i3:
-
-| rule_type   | v2 (K, pairs) | v3-i3 (K, pairs) | Δ   |
-|-------------|:-------------:|:----------------:|----:|
-| harmonic    |    (10, 6)    |     (20, 1)      | −5  |
-| rhythmic    |    (18, 2)    |     (18, 2)      |  0  |
-| melodic     |    (18, 2)    |     (18, 2)      |  0  |
-| form        |    (15, 0)    |     (15, 0)      |  0  |
-| arrangement |    (15, 1)    |     (15, 1)      |  0  |
-| **total**   |    **11**     |     **6**        | **−5** |
-
-The entire −5 delta is inside the rule_type whose K doubled — mechanism
-cleanly confirmed. BP-expected harmonic under H=20 is 1.40; observed 1
-is within single-sample variance. Augmented ledger (86 rows) lives in a
-distinct file `data/rules/ledger_i3_dminor.jsonl` so the source ledger's
-append-only invariant stays intact. Byte-determinism × 2 across 62
-artefacts. **Synthetic-relabel caveat**: the 10 D_minor variants keep
-the F_major `chord_progression` content verbatim and only change
-`parameters.key`; `rule_id` shifts because it is content-hashed, so the
-sampler sees 20 genuinely distinct harmonic rules — the mechanism claim
-is real, but the observed 6 could move within BP variance once real
-minor-mode scores harvest (egress-blocked).
-
-## Shadow-ledger reconciliation
-
-The fanout conductor's concat was skipped with:
-
-    LedgerConcatError: per-milestone ts monotonicity violation on
-    milestone_id '_run/report_cycles_1-1' between clone-1 (ts
-    2026-08-28T16:59:57Z, promise_ledger.jsonl line 7) and
-    clone-2 (ts 2026-08-28T16:54:07Z, line 4)
-
-Root cause: the harness auto-writes a per-clone `_run/report_cycles_1-1`
-row into each clone's shadow ledger at reporting time. File-order across
-clones (0 → 1 → 2) is not monotonic in `ts` on that mid because clone-2
-finished its report before clone-1 did. The concat's
-per-candidate-milestone file-order check therefore rejects.
-
-Reconciliation this cycle: rather than re-run concat, replay each
-clone's shadow events serially via `append_ledger_event` with a small
-milestone-id normalization on the one colliding auto-write mid:
-
-    _run/report_cycles_1-1  →  _run/report_cycles_1-1_clone-{0,1,2}
-
-Serial append uses the writer's own `validate_history`, which permits
-the `validated -> validated` self-loop explicitly allowed in cycle-15
-clone-0's `_STATE_TRANSITIONS` frozenset. All 3+7+4=14 shadow events
-reach the main ledger; the three renamed rows land at
-`_run/report_cycles_1-1_clone-{0,1,2}`. Recorded under
-`_infra/shadow-concat-skip-reconciliation-fork-392503ab7d47`.
-
-## Ledger + validator state
-
-- promise_ledger: **301 → 321** rows (+14 shadow + +6 rollup)
-- `promise_check`: **0 ERRORs**; 17 WARNs, all pre-existing categories
-  (6 trailing-slash canonicalization; 1 `M-EAR-1` parent roll-up
-  pending; 7 `data/ear/features/gen_first_gen_*.npz` orphans; 3
-  upstream `long_exposure/*` out-of-workspace exemption — clone-0
-  additively references `long_exposure/tools/promise_check.py`, so
-  this count moved 2→3 as expected)
-- `tests/test_integration_cross_branch.py`: PASS (0 failures §1-§30)
-- `tests/test_ledger_writer_validation.py`: 21/21 pass (18 → 21;
-  clone-0 added state-transition cases 19-21)
-- `tests/test_fanout_concat_validation.py`: 15/15 pass (13 → 15;
-  clone-0 added cases 14-15)
-- `tests/test_i4_stratified.py`: 6/6 pass (clone-1 new)
-
-## Handoff to cycle 22 (researcher)
-
-1. **Harness auto-write per-clone namespacing** — the concat-skip root
-   cause is not clone behaviour; the harness writes
-   `_run/report_cycles_1-1` under a shared mid across clones. Namespace
-   the mid at write time (`_run/report_cycles_1-1_clone-<k>`) so future
-   fork merges do not require this reconciliation. Small; blocks nothing.
-2. **`concat_clone_ledgers` transition sweep** — pre-concat lint runs
-   `validate_history` at the emit boundary but concat itself does not.
-   Defense-in-depth would add a second pass; touches concat's public
-   behaviour surface, so merits its own cycle. (Clone-0 §7 follow-up 1.)
-3. **`_INFRA_DRIFT_CLASSES` enumeration index** — cycles 10 / 12 / 14 /
-   15 each closed one drift class. A frozenset with representative-test
-   pointers would make future audits' cross-cycle triage O(1).
-   Documentation-only. (Clone-0 §7 follow-up 2.)
-4. **I3 + I4 composition** — the natural next empirical test: run this
-   fork's I4 stratified sampler against clone-2's I3 augmented ledger
-   (86 rows) at N=8 and N=12. Analytic prediction: composed floor sits
-   at the between-rule_type contribution only, ≈0 pairs. Cheap and
-   informative. (Both clone reports flag this in their Open Questions.)
-5. **`--n-salts` CLI on batch drivers** — expose so `N > K` (harmonic
-   K=10 hard ceiling on the source ledger) fails loudly via the existing
-   `I4SamplerError` rather than silently defaulting. Small ergonomics.
-6. **Promote `test_salt0_matches_batch_v2_anchor`** to
-   `tests/test_integration_cross_branch.py` as a locked cross-branch
-   regression on the salt=0 legacy anchor. Cheap; catches drift.
-7. **VGGish content-caveat surfacing** at M-GEN-1 scoring — still open
-   from cycle 14; docstring caveat draft in cycle-14 clone-2 §8 is
-   ready to ship.
-8. **`M-EAR-1` parent roll-up** — clears one standing WARN; cheap
-   documentation-only close.
-9. **Real minor-mode extraction** — when rated audio unblocks via
-   `M-INGEST-1/egress-ready-automation`, rerun clone-2's I3 with real
-   D_minor scores. Mechanism verdict is invariant; observed count could
-   move within BP variance. Retires the synthetic-relabel caveat.
-10. **CORN-head calibration** — remains the campaign's biggest open
-    credibility gap; egress-blocked and armed-not-fired.
-
-## Environment
-
-Unchanged since cycle 10. python 3.11.15 / `/usr/bin/python3`;
-torch 2.13.0+cpu; torchvision 0.28.0 workaround; numpy 1.26.4;
-music21 9.1.0; mir_eval 0.8.2; mscore3 3.2.3
-(`QT_QPA_PLATFORM=offscreen`); fluidsynth with pinned SF2
-`74594e8f…1cb0`; DawDreamer 0.9.0; Surge XT Effects.vst3 at
-`/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`;
-VGGish rung on the texture panel with cycle-14 content-caveat;
-single-thread BLAS pins throughout. Egress: **still blocked** per
-`corpus/CORPUS_STATUS.md`.
+Untouched (per anchor-preservation contract, runtime-enforced):
+- `data/gen/batch_v2/`, `data/gen/batch_v3_i3/`, `data/gen/batch_v3_i4/`
+- `data/rules/ledger.jsonl`, `data/rules/ledger_i3_dminor.jsonl`
+- `scripts/rules/sampling/i4_stratified.py`
+- `scripts/tex/render_effects_layered.py`
+- `scripts/gen/render_pipeline.py`, `scripts/gen/batch_v2.py`, `scripts/gen/batch_v3_i4.py`, `scripts/gen/batch_v3_i3.py`

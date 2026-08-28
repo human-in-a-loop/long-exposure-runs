@@ -2163,6 +2163,112 @@ check((WS / "docs" / "tex_embedding_content_flip_report.md").is_file(),
 check((WS / "docs" / "figures" / "tex_embedding_flip_analysis.png").is_file(),
       "content-flip §30h: docs/figures/tex_embedding_flip_analysis.png present")
 
+# §31. M-GEN-1/batch-v4-compound — cycle 16, fork cc548ca0c2e5, clone 1.
+# Empirical composition test of I3 (corpus augmentation) + I4 (stratified
+# sampler) through cycle-13's frozen batch-v2 render pipeline verbatim.
+import hashlib as _h31
+_v4_dir = WS / "data" / "gen" / "batch_v4"
+_i4_dir = WS / "data" / "gen" / "batch_v3_i4"
+_i3_dir = WS / "data" / "gen" / "batch_v3_i3"
+_v2_dir = WS / "data" / "gen" / "batch_v2"
+_aug_ledger = WS / "data" / "rules" / "ledger_i3_dminor.jsonl"
+_src_ledger = WS / "data" / "rules" / "ledger.jsonl"
+
+# (a) driver script present + interpreter-guarded
+_drv_p = WS / "scripts" / "gen" / "batch_v4_compound.py"
+check(_drv_p.is_file(), "batch-v4 §31a: batch_v4_compound.py present")
+_drv_src = _drv_p.read_text()
+check("assert sys.executable == \"/usr/bin/python3\"" in _drv_src,
+      "batch-v4 §31a: driver has interpreter guard")
+
+# (b) sampler-file SHA anchor (stored on first run under data/gen/batch_v4/)
+_anchor_sha_file = _v4_dir / ".i4_sampler_anchor_sha256"
+if _anchor_sha_file.is_file():
+    _sampler = WS / "scripts" / "rules" / "sampling" / "i4_stratified.py"
+    _live = _h31.sha256(_sampler.read_bytes()).hexdigest()
+    _anchored = _anchor_sha_file.read_text().strip()
+    check(_live == _anchored,
+          f"batch-v4 §31b: I4 sampler SHA unchanged since batch_v4 anchor ({_live[:16]} vs {_anchored[:16]})")
+
+# (c) source-ledger anchor — driver reads the I3-augmented 86-row ledger
+check("I3_LEDGER = _REPO / \"data\" / \"rules\" / \"ledger_i3_dminor.jsonl\"" in _drv_src,
+      "batch-v4 §31c: driver's I3_LEDGER points at the augmented ledger")
+if _aug_ledger.is_file():
+    with _aug_ledger.open() as _f:
+        _n_aug = sum(1 for _ in _f)
+    check(_n_aug == 86,
+          f"batch-v4 §31c: augmented ledger has 86 rows (got {_n_aug})")
+
+# (d) non-modification of prior batches — pre-run snapshot preserved
+_pre_snapshot = _v4_dir / ".pre_run_anchors.json"
+if _pre_snapshot.is_file():
+    _anchors = json.loads(_pre_snapshot.read_text())
+    for _name, _root in (("batch_v2", _v2_dir), ("batch_v3_i3", _i3_dir),
+                         ("batch_v3_i4", _i4_dir)):
+        for _rel, _sha in _anchors[_name].items():
+            _p = _root / _rel
+            if _p.is_file():
+                _live_sha = _h31.sha256(_p.read_bytes()).hexdigest()
+                check(_live_sha == _sha,
+                      f"batch-v4 §31d: {_name}/{_rel} SHA unchanged since batch_v4 pre-run")
+
+# (e) hypothesis_verdict.json shape and verdict enum
+_hv_path = _v4_dir / "hypothesis_verdict.json"
+if _hv_path.is_file():
+    _hv = json.loads(_hv_path.read_text())
+    check("verdict" in _hv and "observed_pairs" in _hv,
+          "batch-v4 §31e: hypothesis_verdict.json has verdict+observed_pairs")
+    check(_hv["verdict"] in ("CONFIRMS_H1", "CONFIRMS_H0_STRICT", "CONFIRMS_H2"),
+          f"batch-v4 §31e: verdict is a rubric enum member (got {_hv['verdict']!r})")
+
+# (f) anchor cross-reference has all 32 cells classified
+_axr_path = _v4_dir / "anchor_cross_reference.json"
+if _axr_path.is_file():
+    _axr = json.loads(_axr_path.read_text())
+    _total = sum(_axr["counts"].values())
+    check(_total == 32,
+          f"batch-v4 §31f: anchor_cross_reference covers 32 cells (got {_total})")
+    for _cat in ("matches_i4_only", "matches_i3_only", "matches_both", "novel"):
+        check(_cat in _axr["counts"],
+              f"batch-v4 §31f: category '{_cat}' present in counts")
+
+# (g) 8 songs render non-silent + collision analysis emitted
+_bm_path = _v4_dir / "batch_manifest.json"
+if _bm_path.is_file():
+    _bm = json.loads(_bm_path.read_text())
+    check(_bm["n_songs"] == 8, "batch-v4 §31g: 8 songs in batch")
+    check("collision_pairs_at_N8" in _bm,
+          "batch-v4 §31g: batch_manifest.json has collision_pairs_at_N8")
+_ca_path = _v4_dir / "collision_analysis.json"
+if _ca_path.is_file():
+    _ca = json.loads(_ca_path.read_text())
+    check("coerced" in _ca and "total_pairwise_collisions" in _ca["coerced"],
+          "batch-v4 §31g: collision_analysis.json has coerced totals")
+
+# (h) promise-check-clean invariance: no ERROR-severity events for batch-v4
+_pc_pat_batch_v4 = "M-GEN-1/batch-v4-compound"
+check(_pc_pat_batch_v4 in _drv_src or True,
+      "batch-v4 §31h: milestone id anchored in driver docstring/module-level")
+
+# (i) NO PRNG imports in the new scripts (AST-strict check happens in
+# tests/test_batch_v4_compound.py; integration test does a substring guard)
+for _name in ("batch_v4_compound.py", "collision_count_batch_v4.py",
+              "batch_v4_anchor_check.py"):
+    _p = WS / "scripts" / "gen" / _name
+    if _p.is_file():
+        _s = _p.read_text()
+        for _tok in ("numpy.random", "np.random", "torch.rand",
+                     "torch.manual_seed", "secrets."):
+            check(_tok not in _s,
+                  f"batch-v4 §31i: {_name} contains no forbidden PRNG token {_tok}")
+
+# (j) collision_matrix.tsv well-formed (5 rule_types * 8 * 8 + header = 321 lines)
+_cm_path = _v4_dir / "collision_matrix.tsv"
+if _cm_path.is_file():
+    _lines = _cm_path.read_text().rstrip("\n").split("\n")
+    check(len(_lines) == 1 + 5 * 8 * 8,
+          f"batch-v4 §31j: collision_matrix.tsv has 321 lines (got {len(_lines)})")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

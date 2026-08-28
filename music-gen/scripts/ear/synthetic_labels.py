@@ -20,16 +20,13 @@ Family C ("nonlinear", salts 4,5)
     Score = sum_i sign_i * tanh((feat[axis_i] - mu[axis_i]) / (sigma[axis_i] + eps)).
     Rank-quantized to 7 bins (SHA-256-tiebreak dedup).
 
-Family D ("decision-tree", salts 6,7,8,9)
-    3 hash-picked feature axes with hash-picked thresholds (per-axis median-
-    fraction quantile derived from SHA-256 tiebreak) form a depth-3 decision
-    tree. The 3 binary bits (feat[axis_k] > threshold_k) are concatenated
-    LSB-first into an integer 0..7, then mapped to rating 1..7 by an SHA-256-
-    salt-derived permutation of {1..7} and value 0 collapsed to value 1.
-    Structurally decoupled from Families B and C: sparse categorical (only
-    3 axes), threshold-based (not dense linear), rating derived from a
-    permutation, not rank quantization. Different salts pick different axes,
-    thresholds, and rating permutations — genuinely distinct signals.
+Family D ("signed-popcount", salts 6,7,8,9)
+    32 hash-picked feature axes with hash-picked sign flips. Score = sum over
+    the 32 axes of sign_k * (feat[axis_k] > median[axis_k]), i.e. the signed
+    popcount of thresholded z-scored features on a hash-selected axis subset.
+    Rank-quantized to 7 equal-population bins via SHA-256 tiebreak. Structurally
+    distinct from B (thresholded not linear) and C (integer popcount not
+    tanh-summed real signal), and from A (feature-derived not pure hash).
     Family D deliberately allocates 4 salts (vs 2 for A/B/C) to broaden the
     envelope on the family with the most axis-choice variability.
 
@@ -84,6 +81,25 @@ def _sha_signed_unit(*parts) -> float:
 def salt_for(idx: int) -> str:
     """Canonical salt string for recipe index (0..9)."""
     return f"{SALT_NAMESPACE}-{idx}"
+
+
+# ---------------------------------------------------------------------------
+# Feature imputation (mirror scripts.ear.model.train_and_eval)
+# ---------------------------------------------------------------------------
+def _impute(X: np.ndarray) -> np.ndarray:
+    """Replace NaNs in X with the finite per-column mean (0 if column all-NaN).
+
+    Mirrors the imputation in scripts.ear.model.train_and_eval so that
+    recipe scoring cannot silently degenerate to insertion-order (which
+    happens when NaN scores tie the sort primary key on 1279/2052
+    dead-PANNs axes present in the ear feature cache).
+    """
+    X = X.astype(np.float64).copy()
+    col_mean = np.nanmean(X, axis=0)
+    col_mean = np.where(np.isfinite(col_mean), col_mean, 0.0)
+    inds = np.where(np.isnan(X))
+    X[inds] = np.take(col_mean, inds[1])
+    return X
 
 
 # ---------------------------------------------------------------------------
@@ -143,11 +159,16 @@ def recipe_linear_projection(
     ids = list(features.keys())
     if not ids:
         return {}
-    X = np.stack([features[c] for c in ids], axis=0).astype(np.float64)
-    # Feature-wise mean-center (deterministic across recipes; single-precision-safe).
-    X = X - X.mean(axis=0, keepdims=True)
+    X = _impute(np.stack([features[c] for c in ids], axis=0))
+    # Per-axis z-score. In 2052-D with only mean-centering, ||x|| varies
+    # widely and the linear-projection ranking collapses to ||x||-ranking by
+    # concentration of measure; z-scoring makes ||x_z|| ≈ sqrt(D) for every
+    # clip so the ranking is driven by direction, not norm.
+    mu = X.mean(axis=0, keepdims=True)
+    sd = X.std(axis=0, keepdims=True) + 1e-8
+    Xz = (X - mu) / sd
     coefs = _linear_coefs(salt, X.shape[1])
-    scores = X @ coefs
+    scores = Xz @ coefs
     scores_map = {cid: float(scores[i]) for i, cid in enumerate(ids)}
     return _rank_to_7bins(scores_map, salt)
 
@@ -184,7 +205,7 @@ def recipe_nonlinear(
     ids = list(features.keys())
     if not ids:
         return {}
-    X = np.stack([features[c] for c in ids], axis=0).astype(np.float64)
+    X = _impute(np.stack([features[c] for c in ids], axis=0))
     mu = X.mean(axis=0)
     sd = X.std(axis=0) + 1e-8
     axes, signs = _pick_axes_and_signs(salt, X.shape[1], _C_N_AXES)
@@ -195,67 +216,45 @@ def recipe_nonlinear(
 
 
 # ---------------------------------------------------------------------------
-# Family D: decision-tree (3 hash-picked axes + hash-picked thresholds)
+# Family D: signed popcount (32 hash-picked axes, hash-picked signs, median-thresh)
 # ---------------------------------------------------------------------------
-_D_N_AXES = 3  # 3 bits -> 8 leaves
+_D_N_AXES = 32
 
 
-def _pick_decision_tree(
-    salt: str, dim: int
-) -> tuple[list[int], list[float], list[int]]:
-    """Return (axes, quantile_fractions_in_[0.2,0.8], permutation_of_1_to_7).
-
-    * axes: 3 distinct indices in [0, dim).
-    * quantile_fractions: per-axis fraction ∈ [0.2, 0.8] used to pick a
-      threshold at the empirical `quantile` on the feature axis.
-    * permutation: Fisher-Yates on [1..7] driven by SHA-256 tiebreak. Leaf
-      values 1..7 mapped to rating via this permutation; leaf 0 is
-      collapsed to leaf 1 before permuting (so 7 buckets, not 8).
-    """
-    # Axes (distinct, dedup via counter)
+def _pick_popcount_axes_signs(
+    salt: str, dim: int, n: int
+) -> tuple[list[int], list[int]]:
     axes: list[int] = []
+    signs: list[int] = []
     seen: set[int] = set()
     i = 0
-    while len(axes) < _D_N_AXES:
-        a = _sha_int(salt, "dt-axis", i) % dim
+    while len(axes) < n:
+        a = _sha_int(salt, "pc-axis", i) % dim
         if a not in seen:
             axes.append(a)
             seen.add(a)
+            signs.append(1 if (_sha_int(salt, "pc-sign", len(signs)) & 1) else -1)
         i += 1
         if i > dim * 4:
             break
-    # Threshold fractions in [0.2, 0.8]
-    qfracs = [0.2 + 0.6 * _sha_unit(salt, "dt-quant", k) for k in range(_D_N_AXES)]
-    # Permutation of [1..7] via SHA-256 Fisher-Yates
-    perm = list(range(1, K + 1))
-    for k in range(len(perm) - 1, 0, -1):
-        j = _sha_int(salt, "dt-perm", k) % (k + 1)
-        perm[k], perm[j] = perm[j], perm[k]
-    return axes, qfracs, perm
+    return axes, signs
 
 
-def recipe_decision_tree(
+def recipe_signed_popcount(
     features: Mapping[str, np.ndarray], salt: str
 ) -> dict[str, int]:
     ids = list(features.keys())
     if not ids:
         return {}
-    X = np.stack([features[c] for c in ids], axis=0).astype(np.float64)
-    axes, qfracs, perm = _pick_decision_tree(salt, X.shape[1])
-    thresholds = [float(np.quantile(X[:, ax], q)) for ax, q in zip(axes, qfracs)]
-    # Bits (N, 3): axis-i > threshold-i
-    bits = np.stack(
-        [(X[:, ax] > thr).astype(np.int64) for ax, thr in zip(axes, thresholds)],
-        axis=1,
-    )
-    # LSB-first: leaf = b0 + 2*b1 + 4*b2 ∈ {0..7}
-    leaf = bits[:, 0] + 2 * bits[:, 1] + 4 * bits[:, 2]
-    # Collapse leaf 0 into leaf 1 so we have exactly 7 buckets to permute.
-    leaf_effective = np.maximum(leaf, 1).astype(int)  # {1..7}
-    out: dict[str, int] = {}
-    for j, cid in enumerate(ids):
-        out[cid] = int(perm[leaf_effective[j] - 1])
-    return out
+    X = _impute(np.stack([features[c] for c in ids], axis=0))
+    axes, signs = _pick_popcount_axes_signs(salt, X.shape[1], _D_N_AXES)
+    # Per-axis median → binary above/below
+    medians = np.median(X[:, axes], axis=0)  # (n_axes,)
+    bits = (X[:, axes] > medians).astype(np.int64)  # (N, n_axes)
+    signed = bits * np.asarray(signs, dtype=np.int64)  # (N, n_axes)
+    scores = signed.sum(axis=1)  # (N,) integer signed popcount
+    scores_map = {cid: float(scores[i]) for i, cid in enumerate(ids)}
+    return _rank_to_7bins(scores_map, salt)
 
 
 # ---------------------------------------------------------------------------
@@ -270,10 +269,10 @@ RECIPES: list[dict] = [
     {"idx": 3, "family": "linear-projection", "func": recipe_linear_projection,"salt": salt_for(3)},
     {"idx": 4, "family": "nonlinear",         "func": recipe_nonlinear,        "salt": salt_for(4)},
     {"idx": 5, "family": "nonlinear",         "func": recipe_nonlinear,        "salt": salt_for(5)},
-    {"idx": 6, "family": "decision-tree",     "func": recipe_decision_tree,   "salt": salt_for(6)},
-    {"idx": 7, "family": "decision-tree",     "func": recipe_decision_tree,   "salt": salt_for(7)},
-    {"idx": 8, "family": "decision-tree",     "func": recipe_decision_tree,   "salt": salt_for(8)},
-    {"idx": 9, "family": "decision-tree",     "func": recipe_decision_tree,   "salt": salt_for(9)},
+    {"idx": 6, "family": "signed-popcount",   "func": recipe_signed_popcount,   "salt": salt_for(6)},
+    {"idx": 7, "family": "signed-popcount",   "func": recipe_signed_popcount,   "salt": salt_for(7)},
+    {"idx": 8, "family": "signed-popcount",   "func": recipe_signed_popcount,   "salt": salt_for(8)},
+    {"idx": 9, "family": "signed-popcount",   "func": recipe_signed_popcount,   "salt": salt_for(9)},
 ]
 
 
