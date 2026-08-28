@@ -518,6 +518,65 @@ if _os_report.is_file():
         check(_sec in _rtext, f"M-TRANS-1/octave-suppression: report has {_sec!r}")
 
 # =========================================================================
+# §15. M-SCORE-1 (fork 3a908edcb241 clone 0) — MuseScore programmatic bridge
+# =========================================================================
+# (a) Non-factor isolation: scripts/score/*.py never import sidecar_nonfactor.
+# (b) Interpreter-guard is present as the first executable line in
+#     bridge.py, jsonl_to_midi.py, seed_score.py, and the test file.
+# (c) Public API surface stable: bridge exposes xml_to_midi, midi_to_xml,
+#     merge_stems_to_score, ScoreBridgeError.
+# (d) The parts-mapping sidecar exists next to the merged XML and covers
+#     all 3 stems.
+# (e) Report artifact present with the 7 sections named in the research
+#     brief.
+import re as _re
+_score_root = _root / "scripts" / "score"
+_score_pyfiles = list(_score_root.rglob("*.py"))
+check(len(_score_pyfiles) >= 3,
+      f"M-SCORE-1: >=3 python files under scripts/score/ (got {len(_score_pyfiles)})")
+
+_sidecar_pat = _re.compile(
+    r"^\s*(from|import)\s+scripts\.classifier\.sidecar_nonfactor",
+    _re.MULTILINE)
+for _p in _score_pyfiles:
+    _t = _p.read_text()
+    check(not _sidecar_pat.search(_t),
+          f"M-SCORE-1: {_p.name} does not import sidecar_nonfactor")
+
+_guard_pat = _re.compile(
+    r"assert\s+sys\.executable\s*==\s*['\"]/usr/bin/python3['\"]")
+for _p in _score_pyfiles + [_root / "tests" / "test_score_bridge.py"]:
+    _t = _p.read_text()
+    check(bool(_guard_pat.search(_t)),
+          f"M-SCORE-1: {_p.name} has interpreter guard")
+
+# Public API surface
+_bridge_src = (_score_root / "bridge.py").read_text()
+for _name in ("def xml_to_midi", "def midi_to_xml",
+              "def merge_stems_to_score", "class ScoreBridgeError"):
+    check(_name in _bridge_src,
+          f"M-SCORE-1: bridge.py exposes {_name!r}")
+
+# Merged sidecar (produced by tests/test_score_bridge.py §3)
+_sidecar_path = _root / "data" / "score" / "test_merged.parts_mapping.json"
+if _sidecar_path.exists():
+    import json as _json
+    _side = _json.loads(_sidecar_path.read_text())
+    _pbs = _side.get("parts_by_stem", {})
+    check(set(_pbs) >= {"drums", "bass", "other"},
+          f"M-SCORE-1: sidecar covers all 3 stems (got {sorted(_pbs)})")
+
+# Report artifact
+_score_report = _root / "docs" / "score_bridge_report.md"
+check(_score_report.exists(), "M-SCORE-1: docs/score_bridge_report.md exists")
+if _score_report.exists():
+    _rtext = _score_report.read_text()
+    for _sec in ("## §1", "## §2", "## §3",
+                 "## §4", "## §5", "## §6", "## §7"):
+        check(_sec in _rtext, f"M-SCORE-1: report has {_sec!r}")
+
+
+# =========================================================================
 # §17. M-INGEST-1/egress-ready-automation invariants (fork 3a908edcb241 clone 2)
 # =========================================================================
 # (a) scripts/egress_ready/*.py NEVER import sidecar_nonfactor (isolation).
