@@ -1,0 +1,550 @@
+{
+  "chosen_rule_ids": {
+    "arrangement": "rule_b3945fa7f1941cc1",
+    "form": "rule_c0f0928c8aae6910",
+    "harmonic": "rule_c787ba74f192b023",
+    "melodic": "rule_0236efe229056177",
+    "rhythmic": "rule_7be767b167d250f6"
+  },
+  "raw_rule_ids": {
+    "arrangement": "rule_b3945fa7f1941cc1",
+    "form": "rule_c0f0928c8aae6910",
+    "harmonic": "rule_c787ba74f192b023",
+    "melodic": "rule_0236efe229056177",
+    "rhythmic": "rule_7be767b167d250f6"
+  },
+  "salt": 12,
+  "sampling_manifest": {
+    "algorithm": "i4_stratified_rejection_sha256",
+    "already_picked_snapshot": {
+      "arrangement": [
+        "rule_1aa3fa507bba0573",
+        "rule_29f8ef6b3ec5b9bf",
+        "rule_4e0d2fded1aef6ac",
+        "rule_51d59f03c4f09e1a",
+        "rule_67d34b1c927ef33d",
+        "rule_6ece691d096f6819",
+        "rule_a8ffe2f88dc29eed",
+        "rule_aeaca835a649d1ca",
+        "rule_b75cc391f671037a",
+        "rule_b99a5066e653b247",
+        "rule_dc9073323dc15d36",
+        "rule_f14c45df9121ab03"
+      ],
+      "form": [
+        "rule_0ec47288103c56fc",
+        "rule_16b8060f79ee810e",
+        "rule_22eab65d977ef5db",
+        "rule_291a1c6f1d928513",
+        "rule_477b0abbb7e7c0db",
+        "rule_82d19db08a772fee",
+        "rule_84816f91e31e50c4",
+        "rule_8e6c38d5397fb898",
+        "rule_9793d09325ee859d",
+        "rule_b59d1e4303f7b07e",
+        "rule_d9d63a0877d18ec8",
+        "rule_ef16903b67b2f6ac"
+      ],
+      "harmonic": [
+        "rule_0271c7a9f3b5f606",
+        "rule_1dec9ee981860ee2",
+        "rule_1e0fcc2b2bcde086",
+        "rule_2549a4193dead599",
+        "rule_4dbcaa2e8b745626",
+        "rule_821a916f5a58a283",
+        "rule_900193a92a8810e5",
+        "rule_ca6007d98315c046",
+        "rule_d8ab0bcf0694e01d",
+        "rule_d9c91401e8911f8f",
+        "rule_ec6f61d42ca46cf9",
+        "rule_ff1fa8c4bf0f228f"
+      ],
+      "melodic": [
+        "rule_157750423a5b8a04",
+        "rule_1e455281201afb5b",
+        "rule_337224364477231a",
+        "rule_5226628fce18201c",
+        "rule_c42411e8d5779de9",
+        "rule_ca87aa6ad5ff26db",
+        "rule_cc494a72c58b0157",
+        "rule_d848fb50ade0dab9",
+        "rule_daf022a4051dff00",
+        "rule_f159c9f385165922",
+        "rule_f449850d34e25931",
+        "rule_ff9dfff6fef38099"
+      ],
+      "rhythmic": [
+        "rule_2afe9862efd1e8ea",
+        "rule_33ef6909a940a190",
+        "rule_5561e65d152e39d5",
+        "rule_630409ee51b8e0f1",
+        "rule_7ecf4ec4e5f39b1b",
+        "rule_88b63bd5e771c045",
+        "rule_930fb4e9aa4f248e",
+        "rule_ba740b0c3a578421",
+        "rule_bb616c75753c3de6",
+        "rule_d15d2951e86e16bf",
+        "rule_d23935a51f54d1a5",
+        "rule_f754d5f457357600"
+      ]
+    },
+    "assembler_summary": {
+      "active_parts": [
+        "bass"
+      ],
+      "key": "D_minor",
+      "meter": "4/4",
+      "pattern_tokens": 32,
+      "progression_len": 131,
+      "seconds_per_measure": 2.0,
+      "sections_dropped": 0,
+      "sections_placed": 1,
+      "tempo_bpm": 120.0,
+      "total_measures": 15
+    },
+    "coherence_gate": {
+      "applied_coercions": [
+        "harmonic_progression_shorter_than_form"
+      ],
+      "gate_version": "v1",
+      "n_coercions": 1,
+      "ordered_rule_set": [
+        "arrangement_silence_vs_pitched_melodic",
+        "harmonic_progression_shorter_than_form",
+        "drums_pattern_empty_fallback_to_bass"
+      ]
+    },
+    "form_sections_dropped_beyond_duration": 0,
+    "per_rule_type": {
+      "arrangement": {
+        "all_candidates": [
+          {
+            "content_hash": "04ba978157bc00df80f8153ef54bf29627cd66deceb58c7c5768ffb6ad3397f9",
+            "rule_id": "rule_f14c45df9121ab03"
+          },
+          {
+            "content_hash": "0b2fb8b9b86c5564b8d83946311adc60132e61d3d12062f973b59a236ae89937",
+            "rule_id": "rule_51d59f03c4f09e1a"
+          },
+          {
+            "content_hash": "1d90a79a7fc3a23da919f810ead16b646d4dc4b45a0fccc71fa3280318e356ce",
+            "rule_id": "rule_4e0d2fded1aef6ac"
+          },
+          {
+            "content_hash": "3b05d172dbe91c1a8f87c37bd0a64071632197ad6c4d132a216576e5493e8457",
+            "rule_id": "rule_6ece691d096f6819"
+          },
+          {
+            "content_hash": "43955c41ca83455a4727c4451b0c4c967982f9143884a90bba4bc103675642e8",
+            "rule_id": "rule_1aa3fa507bba0573"
+          },
+          {
+            "content_hash": "442a6e60e223b23a97cf4d27c225e352ba7e112a1c97c59aca8034e0be417c0d",
+            "rule_id": "rule_b3945fa7f1941cc1"
+          },
+          {
+            "content_hash": "5a72a37e913e4864e304824f92f92b1c26b728b8eb3f38d730c205151a7b977f",
+            "rule_id": "rule_a8ffe2f88dc29eed"
+          },
+          {
+            "content_hash": "6621c316b93c428aea12f0235a9cae521853c21f0a743859b6ff500c3cfcf9da",
+            "rule_id": "rule_93ddf6f18321bb42"
+          },
+          {
+            "content_hash": "7aa6f5446ef6f91921afd680b0b72c3232ec3348ded924374d2e3f8c5f18e2d8",
+            "rule_id": "rule_29f8ef6b3ec5b9bf"
+          },
+          {
+            "content_hash": "985208f0df33f919ed68d890522ef7851afef09f0644b3c8097455c0b7120288",
+            "rule_id": "rule_b75cc391f671037a"
+          },
+          {
+            "content_hash": "b972bcb063b8599eaa480cf89df28e48644007b7e6e51e750336e1316d052bbf",
+            "rule_id": "rule_b99a5066e653b247"
+          },
+          {
+            "content_hash": "beca60e7fb9f3c2237e4dd054b31c61ed3129d761c901430534b8259d54d3090",
+            "rule_id": "rule_dc9073323dc15d36"
+          },
+          {
+            "content_hash": "dddb1b336258bd61b6ff278538adb4c879d4aac198b2972cb49bb97f373d6cc5",
+            "rule_id": "rule_77d78be25afc94cf"
+          },
+          {
+            "content_hash": "de3e57313ce9654d916a800843f132a245ec04bbb83b24ea88e55f258a70d8cd",
+            "rule_id": "rule_aeaca835a649d1ca"
+          },
+          {
+            "content_hash": "e9476ddb4fb7f87091fd1c48714c91a8c376952e5d97210ea8d009a7b7f6160e",
+            "rule_id": "rule_67d34b1c927ef33d"
+          }
+        ],
+        "n_already_picked_before": 12,
+        "n_candidates": 15,
+        "n_skipped_this_call": 5,
+        "skipped": [
+          {
+            "content_hash": "04ba978157bc00df80f8153ef54bf29627cd66deceb58c7c5768ffb6ad3397f9",
+            "rule_id": "rule_f14c45df9121ab03"
+          },
+          {
+            "content_hash": "0b2fb8b9b86c5564b8d83946311adc60132e61d3d12062f973b59a236ae89937",
+            "rule_id": "rule_51d59f03c4f09e1a"
+          },
+          {
+            "content_hash": "1d90a79a7fc3a23da919f810ead16b646d4dc4b45a0fccc71fa3280318e356ce",
+            "rule_id": "rule_4e0d2fded1aef6ac"
+          },
+          {
+            "content_hash": "3b05d172dbe91c1a8f87c37bd0a64071632197ad6c4d132a216576e5493e8457",
+            "rule_id": "rule_6ece691d096f6819"
+          },
+          {
+            "content_hash": "43955c41ca83455a4727c4451b0c4c967982f9143884a90bba4bc103675642e8",
+            "rule_id": "rule_1aa3fa507bba0573"
+          }
+        ],
+        "winner_content_hash": "442a6e60e223b23a97cf4d27c225e352ba7e112a1c97c59aca8034e0be417c0d",
+        "winner_rule_id": "rule_b3945fa7f1941cc1"
+      },
+      "form": {
+        "all_candidates": [
+          {
+            "content_hash": "184d20098af7f424fd447f6badad0c41c78a6cfba9ffc9ef29303bff9d8553e1",
+            "rule_id": "rule_82d19db08a772fee"
+          },
+          {
+            "content_hash": "234fc6036ab23afd16b64b67b21ad0731490d6ca3b572db35a5e5c06367bca10",
+            "rule_id": "rule_c0f0928c8aae6910"
+          },
+          {
+            "content_hash": "3930618b6fb499cfe7e71ac80430be39f17a99e4e7eeb346f9f16f191ee73500",
+            "rule_id": "rule_251a68db4f1c71a0"
+          },
+          {
+            "content_hash": "4a62fe80fc7cd0586df62f1c05c4cf7605e1dee0ce785a716da4dcbbc31a069e",
+            "rule_id": "rule_c3440b589e708f21"
+          },
+          {
+            "content_hash": "60597b98904d4f1c9a48578e3322b107aabc60bd02d27964009c64b5e260168b",
+            "rule_id": "rule_477b0abbb7e7c0db"
+          },
+          {
+            "content_hash": "6e89274c4bec857c3beca85b80eb4ac23998602e98fd5a8d2a9d9998ee3de23c",
+            "rule_id": "rule_22eab65d977ef5db"
+          },
+          {
+            "content_hash": "99d1d908b912337451a784f3b58e53eb7f32e3d4a4690379fc5edd4c2e1cb91a",
+            "rule_id": "rule_291a1c6f1d928513"
+          },
+          {
+            "content_hash": "a1d48d417b32b381558b1d2e3e79e67c4fc2bde09707206b56dac40b4d7f6550",
+            "rule_id": "rule_ef16903b67b2f6ac"
+          },
+          {
+            "content_hash": "b6d1f1ca6de64fb3a994e9156d8a249081ccc2c6a18f68713b2ea4a83449286a",
+            "rule_id": "rule_0ec47288103c56fc"
+          },
+          {
+            "content_hash": "c9599f8b97e476b215d5967be6f5804769bb30729859942e89fb1b83ed515048",
+            "rule_id": "rule_84816f91e31e50c4"
+          },
+          {
+            "content_hash": "d2cf76f98f388d724fdadefd94ec2a364416af615a2fa8992a5594fce7567e45",
+            "rule_id": "rule_b59d1e4303f7b07e"
+          },
+          {
+            "content_hash": "e4b0bea501c5ed15e3e74e48b1ec1c1084782606a4f4c52f5b8eb9adf2cdcd30",
+            "rule_id": "rule_9793d09325ee859d"
+          },
+          {
+            "content_hash": "f21218a812d51c7ab41c384e08c2fd62024bc90ec233a299ac6800e2a5adcaf3",
+            "rule_id": "rule_8e6c38d5397fb898"
+          },
+          {
+            "content_hash": "f9d70f528a1b5930bd0afadf975c45fdbe60ff855ec5a88c1adbc84e7445d6c7",
+            "rule_id": "rule_d9d63a0877d18ec8"
+          },
+          {
+            "content_hash": "fd51b11af82af2f9c805d717b3e5a5b221246eb5c320aac36c886c0a3f816528",
+            "rule_id": "rule_16b8060f79ee810e"
+          }
+        ],
+        "n_already_picked_before": 12,
+        "n_candidates": 15,
+        "n_skipped_this_call": 1,
+        "skipped": [
+          {
+            "content_hash": "184d20098af7f424fd447f6badad0c41c78a6cfba9ffc9ef29303bff9d8553e1",
+            "rule_id": "rule_82d19db08a772fee"
+          }
+        ],
+        "winner_content_hash": "234fc6036ab23afd16b64b67b21ad0731490d6ca3b572db35a5e5c06367bca10",
+        "winner_rule_id": "rule_c0f0928c8aae6910"
+      },
+      "harmonic": {
+        "all_candidates": [
+          {
+            "content_hash": "0220dc0ce554c95ba3a2f55abf263d3c91c0e841d72a116b30a1f255583e6ef9",
+            "rule_id": "rule_c787ba74f192b023"
+          },
+          {
+            "content_hash": "06d7a853f085b46de007e46c824304b356c3907c269d4ca94c59ab2970f8dd53",
+            "rule_id": "rule_900193a92a8810e5"
+          },
+          {
+            "content_hash": "16d0ab1f3cf120d9a29fefcc1cf7bdc78b4813f76f518f9a62aa3b7ef5b400ec",
+            "rule_id": "rule_ca6007d98315c046"
+          },
+          {
+            "content_hash": "1d458cf689a165183cf742dc6a0693a550232fd7ee53bdfb6986737d637f5adb",
+            "rule_id": "rule_e19b9423fa73cc26"
+          },
+          {
+            "content_hash": "2a1cf5f848ffcf03cd90f4bcbff38c6c8f83cbf4092837e9f98d649f531cca1b",
+            "rule_id": "rule_7277be6c89559984"
+          },
+          {
+            "content_hash": "2d58da1334fd1a0f39eebb7b045b4635d4e255fc0dd3784f1c22b820ad314639",
+            "rule_id": "rule_2549a4193dead599"
+          },
+          {
+            "content_hash": "38af5790ff38e7575f5283e9e42256fc5af99d887ebe47836c37321cd0ff06b7",
+            "rule_id": "rule_a57738cf384fa27c"
+          },
+          {
+            "content_hash": "399fdcf3598c4e3fa4597234aa024937b879bc28b64dd40d4aefa11dfe4318b8",
+            "rule_id": "rule_ec6f61d42ca46cf9"
+          },
+          {
+            "content_hash": "4af2aa68eca8f53ca0aa3ffd58bde30f1c26ed5c5eff4523670483ab5767e7fb",
+            "rule_id": "rule_f0d4393926766453"
+          },
+          {
+            "content_hash": "5f838ae0f11a186048ba99a2c9d7d98b1e330acf64d3ac1bc740118e5df2d153",
+            "rule_id": "rule_0271c7a9f3b5f606"
+          },
+          {
+            "content_hash": "641977fc7756e6b752e2f196006c9cbbfbfb630d2e0ec51f2eec3572d51407c7",
+            "rule_id": "rule_d9c91401e8911f8f"
+          },
+          {
+            "content_hash": "73ae69f03736957a0f43a4c5bb8ad81475a0ec2fd6c1936b0ac01b44f2c9faa9",
+            "rule_id": "rule_821a916f5a58a283"
+          },
+          {
+            "content_hash": "7ea660905d197ac3bf91553c7ffd408f21b8ffafe2aa8cdc75c16af4427f8307",
+            "rule_id": "rule_1e0fcc2b2bcde086"
+          },
+          {
+            "content_hash": "9cf94de4107a440af5fb6c2811fbc8344af1172d96161c82ffefb03eea2b9ab4",
+            "rule_id": "rule_ff1fa8c4bf0f228f"
+          },
+          {
+            "content_hash": "a4f3d6d6c8baa288cd008c4f01c44ca261529dd9cde399e8e39e5f2af6f42813",
+            "rule_id": "rule_a5f50a9707200179"
+          },
+          {
+            "content_hash": "a8bbf9bd887d5ab32966799e0e9c9b9bca8cbc57e95ea167a47bf4122df70b4b",
+            "rule_id": "rule_4dbcaa2e8b745626"
+          },
+          {
+            "content_hash": "c413b84f984e9ace074c97b20798b23e11fa1b2e55b7f833234d4243e1e39a0f",
+            "rule_id": "rule_1dec9ee981860ee2"
+          },
+          {
+            "content_hash": "c4690a76ce84f2c6c4ccef7df2f93b0e3914b1d9fabf8232167bd86159fb3ac9",
+            "rule_id": "rule_e97a8ce34a67651d"
+          },
+          {
+            "content_hash": "cc2b3a67b225773a269e55b6cb5111e485007a8e50ad9dc6d256864e26bdc6e0",
+            "rule_id": "rule_b6a593724a47048e"
+          },
+          {
+            "content_hash": "e7a9136dd1ce09d5f0c48febdf3d4b0fe507bba557d87966954e187eaf3aa31a",
+            "rule_id": "rule_d8ab0bcf0694e01d"
+          }
+        ],
+        "n_already_picked_before": 12,
+        "n_candidates": 20,
+        "n_skipped_this_call": 0,
+        "skipped": [],
+        "winner_content_hash": "0220dc0ce554c95ba3a2f55abf263d3c91c0e841d72a116b30a1f255583e6ef9",
+        "winner_rule_id": "rule_c787ba74f192b023"
+      },
+      "melodic": {
+        "all_candidates": [
+          {
+            "content_hash": "00ba651b35ac6e52bd9367ebe6f5beeec34b8f357f1cb79f677da378d632097c",
+            "rule_id": "rule_c42411e8d5779de9"
+          },
+          {
+            "content_hash": "03565c312e701ea8a89c25246557a313559fcc0d2b8385a85ad1e0722e377e24",
+            "rule_id": "rule_0236efe229056177"
+          },
+          {
+            "content_hash": "098f079190fffba2dacd2b0aad72e44edb735345e37ed635fab78f844462c08e",
+            "rule_id": "rule_cc494a72c58b0157"
+          },
+          {
+            "content_hash": "0bc6ed1e4d066a6045c394700dfd9b8b24b6ee11615454eab1eb3d46fe644b53",
+            "rule_id": "rule_09f340921fa2d258"
+          },
+          {
+            "content_hash": "5791b1c27ada12f4b5bac58a98198da2186e1c634526e632bb63455ae388c72c",
+            "rule_id": "rule_157750423a5b8a04"
+          },
+          {
+            "content_hash": "733ede68ef514b8b9e61826036279a08ed3ced0064ead106583a8ce6196fd948",
+            "rule_id": "rule_6b85accb3e69d155"
+          },
+          {
+            "content_hash": "82a5bfd20d0dcc8b6ba54715671b6dfdee849d29ca51a9a8248603ec9161a2f6",
+            "rule_id": "rule_5226628fce18201c"
+          },
+          {
+            "content_hash": "85ee0bfe01847da7d314c0bff37ffe5dfeb5a6262335fb3305b2c6981dd25129",
+            "rule_id": "rule_f449850d34e25931"
+          },
+          {
+            "content_hash": "867b4f226351122b1b373899246d2dd8ef2a9b3cca95a2a685b3727f891acd38",
+            "rule_id": "rule_ca87aa6ad5ff26db"
+          },
+          {
+            "content_hash": "8e4f1b8a8c062288a44bc7d93e6da0e2291050bcbd7690aca42be7d820e9ced4",
+            "rule_id": "rule_337224364477231a"
+          },
+          {
+            "content_hash": "ad652fbbc8a9177d7f31d2c3c759c7ab3228e73e1c278ce2135e68acadb14493",
+            "rule_id": "rule_effb046311ede5c4"
+          },
+          {
+            "content_hash": "b2c3bebbd84481525c35792036d02f8b288bb6800b7ceab5ea8647e981c66dcd",
+            "rule_id": "rule_ec6ae689efac10e3"
+          },
+          {
+            "content_hash": "c4db8fcf0a5a79497fda17ebf127ccb237cd02878ca90595950430e1b34f02bf",
+            "rule_id": "rule_ff9dfff6fef38099"
+          },
+          {
+            "content_hash": "d64e6e5de34b3f6180bc393775a55580937a5d05bc7d0421c9d3802fd3f5035c",
+            "rule_id": "rule_1e455281201afb5b"
+          },
+          {
+            "content_hash": "dfab556fc38399bf942717ad451f6d806f8760e6ba1b265e49b137a0fb809fa7",
+            "rule_id": "rule_f159c9f385165922"
+          },
+          {
+            "content_hash": "edb1f9bfedefe62f12b9611fc6c987c61b28ac07cc1b96c21d913caef2788bad",
+            "rule_id": "rule_a00e6d9066420012"
+          },
+          {
+            "content_hash": "eff8a7b735b02ac044e08afd3cb482fa111cb43ada24ee137873b0b84d2241ad",
+            "rule_id": "rule_daf022a4051dff00"
+          },
+          {
+            "content_hash": "f4815882d0231e7ce54c00e9826e323db335029d0594a9d50d4cc2dae4d2271e",
+            "rule_id": "rule_d848fb50ade0dab9"
+          }
+        ],
+        "n_already_picked_before": 12,
+        "n_candidates": 18,
+        "n_skipped_this_call": 1,
+        "skipped": [
+          {
+            "content_hash": "00ba651b35ac6e52bd9367ebe6f5beeec34b8f357f1cb79f677da378d632097c",
+            "rule_id": "rule_c42411e8d5779de9"
+          }
+        ],
+        "winner_content_hash": "03565c312e701ea8a89c25246557a313559fcc0d2b8385a85ad1e0722e377e24",
+        "winner_rule_id": "rule_0236efe229056177"
+      },
+      "rhythmic": {
+        "all_candidates": [
+          {
+            "content_hash": "05544297246e2bb6e51be6277d3e938f7e39fa1bf27cc02877c264c5253e478f",
+            "rule_id": "rule_7be767b167d250f6"
+          },
+          {
+            "content_hash": "277bde6226ea83aed3f0d534f09dc83a0059bb8f230b700910af1f955f8296f3",
+            "rule_id": "rule_d85d957a8f59f9f6"
+          },
+          {
+            "content_hash": "79ff6158e9158887f8c03bdfeccf249fb138773f316c816756ff4534f7f5825b",
+            "rule_id": "rule_6ae8cec716982090"
+          },
+          {
+            "content_hash": "7b098032855e3716d65dfdd99bd3b8c1e2315a455b685eac3f76e08f702e1259",
+            "rule_id": "rule_88b63bd5e771c045"
+          },
+          {
+            "content_hash": "88ec199671493aad66c624d6f091456ce8365ab653a312f8825527db8abe87c1",
+            "rule_id": "rule_f754d5f457357600"
+          },
+          {
+            "content_hash": "8bd2b7221c8d84d4010e06ab1a0668ceff66a7b373c94cb48e0bcb5fbaf5beb2",
+            "rule_id": "rule_2afe9862efd1e8ea"
+          },
+          {
+            "content_hash": "8c597aa23b8507ad577fe6fcd8f1b6cf1b387065bed14598acbdb32cc535bd04",
+            "rule_id": "rule_7ecf4ec4e5f39b1b"
+          },
+          {
+            "content_hash": "96adecd7eba24a3e99776cfcb14012ea7a2af5dee9e722557c6d87342726bbd5",
+            "rule_id": "rule_5561e65d152e39d5"
+          },
+          {
+            "content_hash": "a3fcdf582e738973f8dadfcf0aebc8d6f490b233236cb51f63c86492a570ef43",
+            "rule_id": "rule_4f801fa8961967c3"
+          },
+          {
+            "content_hash": "ab31daf847bb4ff08e7b2cebb1390a3c7df9c58f36a514f32b55f884ba615bf8",
+            "rule_id": "rule_d23935a51f54d1a5"
+          },
+          {
+            "content_hash": "bb56750090ead10c39b4f4819864ebce9f2376ab7928c82a25e0d82260ec5583",
+            "rule_id": "rule_33ef6909a940a190"
+          },
+          {
+            "content_hash": "cd2d422f11b314af4b542326f8dbb2fbe41a9f50b886d91f955419f591810a62",
+            "rule_id": "rule_bb616c75753c3de6"
+          },
+          {
+            "content_hash": "dc9f60dbe896c77408234554b1a041deeee83e8cf1965fb0f5b4b84720822141",
+            "rule_id": "rule_ba740b0c3a578421"
+          },
+          {
+            "content_hash": "dca0b64052503eb890e20c953c88ed34cf2f6f705c3e072dd45c35b66593bdcc",
+            "rule_id": "rule_d15d2951e86e16bf"
+          },
+          {
+            "content_hash": "f9b6eecd2fcf27fd6e3bcb519a8fbf1eafd4946582051e8a9a188efe358be3f5",
+            "rule_id": "rule_930fb4e9aa4f248e"
+          },
+          {
+            "content_hash": "fb10a9760afcbf25aa1ebcceaf62a435066b1260a142ea796476ff1d7c31af43",
+            "rule_id": "rule_630409ee51b8e0f1"
+          },
+          {
+            "content_hash": "fcc74da2d209193563f57bed7decfc3a206393bb3415d26445cbcc680e473769",
+            "rule_id": "rule_7894d12215472070"
+          },
+          {
+            "content_hash": "ffcb754b8893753dcc1769d84e687e6a666d4fdc7fe79395cd72511b0ae52f3c",
+            "rule_id": "rule_eef35db6b15551c4"
+          }
+        ],
+        "n_already_picked_before": 12,
+        "n_candidates": 18,
+        "n_skipped_this_call": 0,
+        "skipped": [],
+        "winner_content_hash": "05544297246e2bb6e51be6277d3e938f7e39fa1bf27cc02877c264c5253e478f",
+        "winner_rule_id": "rule_7be767b167d250f6"
+      }
+    },
+    "prng_used": false,
+    "salt": 12,
+    "salt_envelope": "canonical_json_envelope",
+    "skipped_instrument": []
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "coerced_rule_ids": {
+    "arrangement": "rule_29f8ef6b3ec5b9bf",
+    "form": "rule_d9d63a0877d18ec8",
+    "harmonic": "rule_d9c91401e8911f8f",
+    "melodic": "rule_cc494a72c58b0157",
+    "rhythmic": "rule_33ef6909a940a190"
+  },
+  "coercions": [
+    {
+      "action": "chord_progression cycled deterministically to length 208 (index modulo)",
+      "coercion": "harmonic_progression_shorter_than_form",
+      "deterministic_input": {
+        "first_cycle": [
+          "V",
+          "vii",
+          "iii",
+          "I",
+          "i",
+          "I",
+          "II",
+          "ii"
+        ],
+        "original_len": 8,
+        "target_len": 208
+      },
+      "reason": "len(chord_progression)=8 < form.total_measures=208",
+      "rule_pair": "harmonic \u00d7 form"
+    }
+  ],
+  "gate_applied_summary": {
+    "applied_coercions": [
+      "harmonic_progression_shorter_than_form"
+    ],
+    "gate_version": "v1",
+    "n_coercions": 1,
+    "ordered_rule_set": [
+      "arrangement_silence_vs_pitched_melodic",
+      "harmonic_progression_shorter_than_form",
+      "drums_pattern_empty_fallback_to_bass"
+    ]
+  },
+  "n_coercions": 1,
+  "raw_rule_ids": {
+    "arrangement": "rule_29f8ef6b3ec5b9bf",
+    "form": "rule_d9d63a0877d18ec8",
+    "harmonic": "rule_d9c91401e8911f8f",
+    "melodic": "rule_cc494a72c58b0157",
+    "rhythmic": "rule_33ef6909a940a190"
+  },
+  "salt": 2
+}

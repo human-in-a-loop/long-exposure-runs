@@ -1,0 +1,124 @@
+{
+  "ear": {
+    "calibration": "synthetic_labels_only",
+    "calibration_note": "CORN head trained on M-EAR-1/preparation synthetic labels (deterministic PC-1 driven, seed=0) from the M-CLASS-1 55-clip valset. The 1-7 output is a functional-pipeline signal, NOT a musical quality judgment. Real calibration is gated on rated audio arrival (M-INGEST-1/egress-ready-automation triggers).",
+    "clip_feat_hash": "be3242fae129051b",
+    "clip_id": "gen_first_gen_d639bb23373fa76a",
+    "clip_source_wav_sha256": "d639bb23373fa76ad42850a9fa14eadd85231f5908bb06fcdcb2c4284ed47e38",
+    "feature_dim": 2052,
+    "feature_version": "ear-features-v1",
+    "majority_class": 2,
+    "mean_int_baseline": 4,
+    "n_valset_train": 55,
+    "prediction": 4
+  },
+  "heuristics": {
+    "dynamics_quality": {
+      "blind_spots": [
+        "heavily compressed / mastered audio collapses toward the loudness-war floor: crest factor \u2248 3-4\u00d7 and envelope_range_ratio \u2248 1-2\u00d7 regardless of the actual musical dynamics.",
+        "silence pockets inside a clip inflate p95/p05 ratio spuriously; a bar of rest between two loud events reads as huge dynamic range without any actual crescendo.",
+        "envelope-variance dB is undefined for silent frames; the mixer floor (\u221280 dB fallback) truncates near-silent passages and biases variance downward.",
+        "the crest factor is a scalar and cannot distinguish 'one loud transient in a quiet piece' from 'a piece that alternates loud and quiet'."
+      ],
+      "mess_scale": 0.6617840133703939,
+      "name": "dynamics_quality",
+      "raw_features": {
+        "crest_factor": 6.4321712389907235,
+        "duration_s": 30.0,
+        "envelope_p05_rms": 0.018308770190924407,
+        "envelope_p95_rms": 0.11994639448821545,
+        "envelope_range_ratio": 6.5513081019320705,
+        "envelope_variance_db": 5.076420307159424,
+        "mess__crest": 0.5432171238990723,
+        "mess__envvar": 0.6120400292532784,
+        "mess__range": 0.779414305392446
+      },
+      "reason": null
+    },
+    "form_quality": {
+      "blind_spots": [
+        "heavily-repeating tracks (loops, minimalism) score falsely high \u2014 the SSM diagonal-band ratio just measures block self-similarity, not compositional intent.",
+        "through-composed pieces (no repetition by design) score falsely low regardless of whether the form coheres at higher levels.",
+        "the ~4s block granularity captures phrase-scale structure and misses both note-level texture (below 4s) and section-level form (repeats separated by >30s inside a single 30s clip are impossible).",
+        "key modulation partway through a clip depresses chroma self-similarity even when the arrangement is otherwise repetitive."
+      ],
+      "mess_scale": 0.3028784214565702,
+      "name": "form_quality",
+      "raw_features": {
+        "diag_off_ratio": 1.0043176321848553,
+        "duration_s": 30.0,
+        "n_blocks": 7.0
+      },
+      "reason": null
+    },
+    "melody_quality": {
+      "blind_spots": [
+        "percussion-only or noise tracks: pyin is not meaningful; falls back to null-with-reason when voiced-frame fraction < 0.1, but partially-pitched percussion (e.g. tuned toms) can slip through with meaningless F0.",
+        "polyphonic content: pyin picks a single salient F0 per frame; harmony and counterpoint are collapsed to the loudest voice.",
+        "atonal vs. tonal bias: pitch-class entropy penalizes strongly tonal music (a diatonic piece caps around H/log2(12) \u2248 log2(7)/log2(12) \u2248 0.78) more than atonal / 12-tone material.",
+        "octave errors: pyin may octave-jump; the smoothness feature is sensitive to these as \u00b112 semitone spikes."
+      ],
+      "mess_scale": 0.38511248367028883,
+      "name": "melody_quality",
+      "raw_features": {
+        "contour_smoothness": 0.4819241346177097,
+        "interval_variety": 0.08333333333333333,
+        "mess__entropy": 0.2880653729139235,
+        "mess__smoothness": 0.6592321794902796,
+        "mess__variety": 0.11666666666666665,
+        "pitch_class_entropy": 0.2880653729139235,
+        "pitch_delta_semitones_rms": 1.0750153980008867,
+        "unique_interval_count": 1.0,
+        "voiced_fraction": 0.9651702786377709
+      },
+      "reason": null
+    },
+    "timbre_quality": {
+      "blind_spots": [
+        "low-SNR (noisy or lo-fi) audio biases spectral centroid downward, deflating centroid_range irrespective of true timbral motion.",
+        "MFCC-delta RMS conflates timbral evolution with note onsets; at 512-hop resolution the two are inseparable.",
+        "reverb widens perceived spectral flatness spuriously; a wet reverb-tail track scores as more timbrally varied than a dry version of the same source.",
+        "silence-padded clips flatten every feature; near-silent audio scores toward the low anchor for all three features."
+      ],
+      "mess_scale": 0.31583789025673115,
+      "name": "timbre_quality",
+      "raw_features": {
+        "centroid_range_norm": 0.10066994664597602,
+        "flatness_variance": 2.6071074898936786e-05,
+        "mess__centroid_range": 0.5351198577226027,
+        "mess__flatness_var": 0.0003910661234840518,
+        "mess__mfcc_delta": 0.32112043380737304,
+        "mfcc_delta_rms": 5.528010845184326,
+        "spectral_centroid_p05_hz": 348.5625045027497,
+        "spectral_centroid_p95_hz": 903.5055853886925
+      },
+      "reason": null
+    }
+  },
+  "inputs": {
+    "bare_wav_basename": "bare_midi.wav",
+    "bare_wav_sha256": "739c4f062e34f6f2f1fb41c29d73dc1bad744dea304f8414550a25dbdac57c8e",
+    "effects_wav_basename": "effects_layered.wav",
+    "effects_wav_sha256": "d639bb23373fa76ad42850a9fa14eadd85231f5908bb06fcdcb2c4284ed47e38"
+  },
+  "meta_tracker_single_clip": {
+    "anchored_tail_weight": 1.0,
+    "dynamics_trajectory_db": 16.32657480239868,
+    "form_coherence": 1.0043176321848553,
+    "heuristic_variance_across_clips": 0.0,
+    "n_clips_input": 1,
+    "peak_location_fraction": 0.9420967498110355,
+    "single_clip_reduction_note": "single 30 s generated clip \u2192 anchored-tail weight=1.0 and variance-across-clips=0 by construction; descriptors reduce to per-clip measurements."
+  },
+  "milestone": "M-GEN-1/first-generation",
+  "texture_panel_bare_vs_effects": {
+    "embedding_cosine_distance": 0.12477169243168951,
+    "embedding_rung": "vggish",
+    "lufs_m_rmse_lu": 4.8254475593566895,
+    "mel_l1_db": 9.70525074005127,
+    "n_samples_compared": 1323000,
+    "rms_env_rmse": 0.03263695538043976,
+    "spectral_centroid_rmse_hz": 264.76407345444966,
+    "sr_hz": 44100
+  }
+}

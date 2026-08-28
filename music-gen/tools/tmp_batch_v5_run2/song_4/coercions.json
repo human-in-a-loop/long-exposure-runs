@@ -1,0 +1,59 @@
+{
+  "coerced_rule_ids": {
+    "arrangement": "rule_b75cc391f671037a",
+    "form": "rule_477b0abbb7e7c0db",
+    "harmonic": "rule_900193a92a8810e5",
+    "melodic": "rule_f449850d34e25931",
+    "rhythmic": "rule_bb616c75753c3de6"
+  },
+  "coercions": [
+    {
+      "action": "chord_progression cycled deterministically to length 299 (index modulo)",
+      "coercion": "harmonic_progression_shorter_than_form",
+      "deterministic_input": {
+        "first_cycle": [
+          "V"
+        ],
+        "original_len": 1,
+        "target_len": 299
+      },
+      "reason": "len(chord_progression)=1 < form.total_measures=299",
+      "rule_pair": "harmonic \u00d7 form"
+    },
+    {
+      "action": "arrangement.instrumentation.append('piano')  # reduced-density interpretation",
+      "coercion": "arrangement_silence_vs_pitched_melodic",
+      "deterministic_input": {
+        "before_instrumentation": [
+          "other"
+        ],
+        "pch_nonzero_bins": 4,
+        "pch_sum": 1.0
+      },
+      "reason": "arrangement excluded bass+piano but melodic PCH has non-zero content",
+      "rule_pair": "arrangement \u00d7 melodic"
+    }
+  ],
+  "gate_applied_summary": {
+    "applied_coercions": [
+      "harmonic_progression_shorter_than_form",
+      "arrangement_silence_vs_pitched_melodic"
+    ],
+    "gate_version": "v1",
+    "n_coercions": 2,
+    "ordered_rule_set": [
+      "arrangement_silence_vs_pitched_melodic",
+      "harmonic_progression_shorter_than_form",
+      "drums_pattern_empty_fallback_to_bass"
+    ]
+  },
+  "n_coercions": 2,
+  "raw_rule_ids": {
+    "arrangement": "rule_b75cc391f671037a",
+    "form": "rule_477b0abbb7e7c0db",
+    "harmonic": "rule_900193a92a8810e5",
+    "melodic": "rule_f449850d34e25931",
+    "rhythmic": "rule_bb616c75753c3de6"
+  },
+  "salt": 4
+}

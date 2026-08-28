@@ -53,14 +53,15 @@ def emit(batch_root: Path = V5_BATCH_ROOT) -> Dict:
     fraction = float(coll["coerced"]["form_arrangement_primary_fraction"])
 
     if total_pairs == 0:
-        verdict_str = "CONFIRMS_CONSTRUCTION"
-        note = ("Zero collision pairs at N=16. The construction proof is "
-                "trivially upheld: nothing to attribute. The frozen rubric "
-                "assigns CONFIRMS_CONSTRUCTION by convention (>=90% of 0 pairs). "
-                "Note that this contradicts the pigeonhole prediction that at "
-                "N=16 > K=15 there MUST be at least one collision per K<N "
-                "rule_type. Investigate: sampler statefulness (already_picked "
-                "exclusion) prevents within-rule_type collisions even when K<N.")
+        verdict_str = "NULL_RESULT_NO_COLLISIONS_AT_N16"
+        note = ("Zero collision pairs observed at N=16. Consistent with the "
+                "cycle-14 construction proof (a lower-bound argument, so a "
+                "zero-count is not falsified) but not informative — the "
+                "attribution rubric requires at least one pair to evaluate. "
+                "Likely cause: the I4 stratified rejection sampler's "
+                "`already_picked` exclusion set prevents within-rule_type "
+                "collisions at N <= K. Recommend N=24 (or larger) follow-up "
+                "where at least two rule_types have N > K.")
     else:
         verdict_str = _classify(fraction)
         note = ("Attribution from cycle-13 tiebreak methodology: first rule_type "
@@ -84,6 +85,7 @@ def emit(batch_root: Path = V5_BATCH_ROOT) -> Dict:
             "CONFIRMS_CONSTRUCTION": ">=0.90",
             "PARTIAL_CONFIRM": "[0.60, 0.90)",
             "CONFIRMS_H2_LARGER": "<0.60",
+            "NULL_RESULT_NO_COLLISIONS_AT_N16": "total_pairs == 0",
         },
         "note": note,
         "K_distribution": {

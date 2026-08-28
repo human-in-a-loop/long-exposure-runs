@@ -1,0 +1,17 @@
+{
+  "coerced_rule_ids": {
+    "arrangement": "rule_aeaca835a649d1ca",
+    "form": "rule_ef16903b67b2f6ac",
+    "harmonic": "rule_4dbcaa2e8b745626",
+    "melodic": "rule_ca87aa6ad5ff26db",
+    "rhythmic": "rule_630409ee51b8e0f1"
+  },
+  "raw_rule_ids": {
+    "arrangement": "rule_aeaca835a649d1ca",
+    "form": "rule_ef16903b67b2f6ac",
+    "harmonic": "rule_4dbcaa2e8b745626",
+    "melodic": "rule_ca87aa6ad5ff26db",
+    "rhythmic": "rule_630409ee51b8e0f1"
+  },
+  "salt": 6
+}
