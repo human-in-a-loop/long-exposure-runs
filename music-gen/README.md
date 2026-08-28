@@ -33,6 +33,11 @@ workspace ahead of time. All are open source and headless-capable:
   audio runs unattended in the workspace. Green smoke test is a launch
   precondition.
 
+This is now implemented in `workspace/`: run `workspace/provision.sh`, then
+`workspace/smoke_test.py` (all stages must PASS). See
+`workspace/PROVISIONING_REPORT.md` for the verified install (2026-08-28,
+Ubuntu 24.04: all 14 smoke stages green) and known gaps.
+
 Corpus artifacts (downloaded audio, clips, stems) are private research inputs
 and must never be committed here — only code, schemas, measurements, and
 reports are publishable.
