@@ -42,6 +42,9 @@ lives in named subfolders (e.g., `benchmark-XX-...`).
 | `scripts/generate/`   | deterministic new-song generator                                                         |
 | `data/ingestion/`     | chunker outputs + provenance manifests on seed audio                                     |
 | `data/classifier/`    | classifier confusion matrices and per-taxonomy metrics                                   |
+| `data/classifier/_nonfactor/` | **OFF-LIMITS** non-factor sidecar files (genre/artist/etc.). Only `scripts/classifier/sidecar_nonfactor.py` and `scripts/classifier/write_sidecars.py` may open this path; enforced by `tests/test_sidecar_isolation.py`. |
+| `data/classifier/_cache/`     | model-weights / dataset download cache (git-ignored)                                     |
+| `data/classifier/valset/`     | M-CLASS-1 labeled validation clips (55 clips, 5 classes) + manifest                      |
 | `data/daw_spike/`     | DAW-stack validation-spike coverage matrix + rendered artifacts                          |
 
 ## Conventions
