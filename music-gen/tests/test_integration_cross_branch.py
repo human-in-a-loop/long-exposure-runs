@@ -2705,6 +2705,96 @@ if _fs_fr.is_file():
     check("cycle6_baseline" in _row_variants_fr,
           "feat-rep §36h: frontier summary includes cycle-6 reference row")
 
+# ---------------------------------------------------------------------------
+# §38. _manager/M-EAR-1-path-B-commit — cycle 26, fork 8f3344880d29, clone 1.
+# ---------------------------------------------------------------------------
+print()
+print("§38 M-EAR-1 Path B commit invariants (cycle 26)")
+
+_doc = WS / "docs" / "ear_path_b_commitment.md"
+check(_doc.is_file(), f"path-B §38a: {_doc.relative_to(WS)} exists")
+
+_hprobe = WS / "tests" / "test_ear_armed_harness_synthetic_trigger.py"
+check(_hprobe.is_file(), "path-B §38a: armed-harness test module exists")
+
+_ref = WS / "scripts" / "ear" / "path_b_success_bar_reference.py"
+if _ref.is_file():
+    _src = _ref.read_text()
+    check("assert sys.executable == \"/usr/bin/python3\"" in _src,
+          "path-B §38b: success-bar-reference has interpreter guard")
+    # AST-scan for PRNG + sidecar_nonfactor imports (docstring mentions don't count).
+    import ast as _ast_r
+    _tree_r = _ast_r.parse(_src)
+    _imps_r = set()
+    for _n in _ast_r.walk(_tree_r):
+        if isinstance(_n, _ast_r.Import):
+            for _a in _n.names:
+                _imps_r.add(_a.name)
+                _imps_r.add(_a.name.split(".")[0])
+        elif isinstance(_n, _ast_r.ImportFrom):
+            if _n.module:
+                _imps_r.add(_n.module)
+                _imps_r.add(_n.module.split(".")[0])
+    check("random" not in _imps_r,
+          "path-B §38b: success-bar-reference has no PRNG import")
+    check("scripts.classifier.sidecar_nonfactor" not in _imps_r
+          and "sidecar_nonfactor" not in _imps_r,
+          "path-B §38b: success-bar-reference has no sidecar_nonfactor import")
+
+# (c) plan-of-record row present for _manager/M-EAR-1-path-B-commit
+_por = (WS / "plan_of_record.md").read_text()
+check("_manager/M-EAR-1-path-B-commit" in _por,
+      "path-B §38c: plan_of_record.md references _manager/M-EAR-1-path-B-commit")
+
+# (d) IQR value in doc matches value computed live from stability_audit TSV.
+_mae_tsv = WS / "data" / "ear" / "stability_audit" / "per_recipe_mae.tsv"
+if _doc.is_file() and _mae_tsv.is_file():
+    import numpy as _np_iqr
+    _rows = _mae_tsv.read_text().splitlines()
+    _hdr = _rows[0].split("\t")
+    _idx_mae = _hdr.index("mean_mae")
+    _mae_vals = [float(r.split("\t")[_idx_mae]) for r in _rows[1:]]
+    _live_iqr = float(_np_iqr.percentile(_mae_vals, 75)
+                      - _np_iqr.percentile(_mae_vals, 25))
+    _doc_src = _doc.read_text()
+    _iqr_tok = f"{_live_iqr:.10f}"
+    check(_iqr_tok in _doc_src,
+          f"path-B §38d: commitment doc IQR ({_iqr_tok}) matches live-computed value")
+
+# (e) doc references ratings_manifest.tsv columns that actually exist.
+_manifest = WS / "corpus" / "ratings" / "ratings_manifest.tsv"
+if _doc.is_file() and _manifest.is_file():
+    _cols = _manifest.read_text().splitlines()[0].split("\t")
+    _doc_src = _doc.read_text()
+    for _c in _cols:
+        check(_c in _doc_src,
+              f"path-B §38e: commitment doc references manifest column '{_c}'")
+
+# (f) armed-harness module present + parses cleanly + no live-network imports.
+_harness = WS / "scripts" / "ear" / "train_armed_harness.py"
+if _harness.is_file():
+    import ast as _ast_h
+    _tree = _ast_h.parse(_harness.read_text())
+    _imps = set()
+    for _n in _ast_h.walk(_tree):
+        if isinstance(_n, _ast_h.Import):
+            for _a in _n.names:
+                _imps.add(_a.name.split(".")[0])
+        elif isinstance(_n, _ast_h.ImportFrom):
+            if _n.module:
+                _imps.add(_n.module.split(".")[0])
+    for _bad in ("urllib", "requests", "socket", "httpx", "aiohttp"):
+        check(_bad not in _imps,
+              f"path-B §38f: armed harness has no {_bad} import")
+
+# (g) commitment doc mentions all three success bars and both baseline formulas.
+if _doc.is_file():
+    _doc_src = _doc.read_text()
+    for _tok in ("SB1", "SB2", "SB3", "majority-class", "mean-integer",
+                 "Path B", "corpus-expansion"):
+        check(_tok in _doc_src,
+              f"path-B §38g: commitment doc mentions token '{_tok}'")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
