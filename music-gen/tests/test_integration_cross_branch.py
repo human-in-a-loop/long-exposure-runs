@@ -2421,6 +2421,111 @@ for _name in ("batch_v5_n16", "collision_count_batch_v5",
                      "secrets.", "default_rng"):
             check(_tok not in _src, f"batch-v5 §33h: {_name} has no {_tok}")
 
+# -----------------------------------------------------------------------------
+# §34. M-EAR-1/head-regularization-audit — cycle 23, fork 3fbd8c1ab57c, clone 1.
+# Chassis-redesign response to cycle-22's invalidation of the cycle-6 CORN
+# head under synthetic-label recipe perturbation. Three regularized variants
+# (ridge / bottleneck / frozen_projector) audited under the UNCHANGED cycle-22
+# harness; relaxed rubric (C1' MAE-in-envelope; C2' mean τ ≥ 0.4;
+# C3' byte-determinism × 2). Frontier and per-variant verdicts published.
+# -----------------------------------------------------------------------------
+_hr_scripts = [
+    "scripts/ear/_variant_core.py",
+    "scripts/ear/model_v2_ridge.py",
+    "scripts/ear/model_v2_bottleneck.py",
+    "scripts/ear/model_v2_frozen_projector.py",
+    "scripts/ear/stability_audit_v2_variants.py",
+    "scripts/ear/tau_mae_frontier.py",
+]
+
+# (a) Variant files + driver + frontier script exist.
+for _rel in _hr_scripts:
+    check((WS / _rel).is_file(),
+          f"head-reg §34a: variant script present: {_rel}")
+
+# (b) Harness anchor SHAs still match cycle-22 clone-2 recorded values.
+import hashlib as _hlib
+def _sha256_file(p):
+    h = _hlib.sha256()
+    with open(p, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+_anchor = {
+    "scripts/ear/stability_audit.py":
+        "b1ce5137b665a962657f1ee128db4d36abcb6d2174f57101b354a3194ea02e4c",
+    "scripts/ear/synthetic_labels.py":
+        "b71f194ef97e8936bb8942d5fccba899e6efe47e292cca185728d1cd9f41fb4d",
+    "scripts/ear/stability_metrics.py":
+        "6a5cb5183fdc77e80677ef01bb47f777a2662404f737f8aa74287f30cf97dc27",
+}
+for _rel, _want in _anchor.items():
+    _got = _sha256_file(WS / _rel)
+    check(_got == _want,
+          f"head-reg §34b: harness anchor SHA unchanged for {_rel}")
+
+# (c) PCA basis pinned.
+_pca = WS / "data" / "ear" / "head_regularization_audit" / "pca_basis.npz"
+_pca_sha = WS / "data" / "ear" / "head_regularization_audit" / "pca_basis.sha256"
+if _pca.is_file() and _pca_sha.is_file():
+    check(_sha256_file(_pca) == _pca_sha.read_text().strip(),
+          "head-reg §34c: PCA basis SHA matches its .sha256 sidecar")
+
+# (d) Feature cache SHA-manifest byte-identical before/after audit run.
+_fc = WS / "data" / "ear" / "head_regularization_audit" / "feature_cache_pre_post_shas.json"
+if _fc.is_file():
+    _fcj = json.loads(_fc.read_text())
+    check(bool(_fcj.get("byte_identical")),
+          "head-reg §34d: feature cache SHA-manifest unchanged pre/post")
+
+# (e) No sidecar_nonfactor imports in any new script.
+import re as _re
+_pat_sidecar = _re.compile(r"^\s*(?:from|import)\s+.*sidecar_nonfactor", _re.M)
+for _rel in _hr_scripts:
+    if (WS / _rel).is_file():
+        _src = (WS / _rel).read_text()
+        check(_pat_sidecar.search(_src) is None,
+              f"head-reg §34e: no sidecar_nonfactor import in {_rel}")
+
+# (f) No PRNG substrings in variant/driver scripts.
+for _rel in _hr_scripts:
+    if (WS / _rel).is_file():
+        _src = (WS / _rel).read_text()
+        for _tok in ("numpy.random", "np.random", "torch.randn", "torch.rand(",
+                     "torch.randint", "torch.randperm",
+                     "secrets.", "default_rng", "import random"):
+            check(_tok not in _src,
+                  f"head-reg §34f: {_rel} has no {_tok}")
+
+# (g) Variant verdicts + frontier summary present with correct schema.
+_vv = WS / "data" / "ear" / "head_regularization_audit" / "variant_verdicts.json"
+if _vv.is_file():
+    _vvj = json.loads(_vv.read_text())
+    for _v in ("ridge", "bottleneck", "frozen_projector"):
+        check(_v in _vvj, f"head-reg §34g: variant_verdicts has {_v}")
+        for _k in ("C1_prime", "C2_prime", "C3_prime", "overall"):
+            check(_k in _vvj[_v], f"head-reg §34g: {_v} has {_k}")
+
+_fs = WS / "data" / "ear" / "head_regularization_audit" / "frontier_summary.json"
+if _fs.is_file():
+    _fsj = json.loads(_fs.read_text())
+    check(_fsj.get("c2_prime_threshold") == 0.4,
+          "head-reg §34g: frontier summary carries C2' threshold = 0.4")
+    _row_variants = {r["variant"] for r in _fsj.get("rows", [])}
+    check("cycle6_baseline" in _row_variants,
+          "head-reg §34g: frontier summary includes cycle-6 reference row")
+
+# (h) Per-variant stability_report_v2_<variant>.json non-empty + variant tag.
+for _v in ("ridge", "bottleneck", "frozen_projector"):
+    _p = WS / "data" / "ear" / "head_regularization_audit" / f"stability_report_v2_{_v}.json"
+    if _p.is_file():
+        _rj = json.loads(_p.read_text())
+        check(_rj.get("variant") == _v,
+              f"head-reg §34h: stability_report_v2_{_v}.json variant tag matches")
+        check(_rj.get("n_recipes") == 10 and _rj.get("n_clips") == 55,
+              f"head-reg §34h: stability_report_v2_{_v}.json has 10 recipes × 55 clips")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
