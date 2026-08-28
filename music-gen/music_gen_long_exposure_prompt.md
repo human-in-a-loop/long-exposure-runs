@@ -1,491 +1,262 @@
-# Long-Exposure Research Prompt: Music-Gen
+# Music-Gen
 
-> **STATUS: PLANNING / PROMPT-FRAMING STAGE ONLY.** This prompt documents the
-> intended campaign. No run has been launched against it, and nothing in this
-> document authorizes launching one. Launch requires an explicit human go-ahead
-> plus a `long-exposure.config.yaml` scoped to this directory.
-
-## Campaign Title
-
-**Music-Gen: A Transcription-First, Rules-Extracting Pipeline from Harvested Audio to Deterministic New-Song Generation, with a Trainable Ear and Full DAW Control**
-
-## Mission
-
-Build a full audio-manipulation stack that can take real songs from a
-user-provided YouTube playlist and carry them end-to-end through:
-
-```text
-harvest → classify → separate → transcribe → score → MIDI → DAW import
-        → extract rules/patterns → layer effects → deterministic texture
-        heuristics → repeat over many songs → generate NEW songs
-        deterministically from the extracted rules
-```
-
-The campaign is **transcription-first and rules-first**: the generative step is
-not a neural sampler producing audio directly, but a deterministic composer
-that selects and recombines rules and patterns extracted from real songs,
-renders them as scores/MIDI, and then re-textures the MIDI into full audio
-using deterministic effect and heuristic layers learned from the originals.
-
-The single hardest and most important piece of the entire campaign — stated up
-front so no track loses sight of it — is the **MIDI-to-texture problem**:
-building deterministic audio effects and audio heuristics that recreate the
-texture, life, and color of an original song starting from a bare MIDI
-recreation of its transcription. Every other capability exists to feed,
-measure, or exploit that piece.
-
-Alongside the pipeline, the campaign builds a **trainable "ear"** — a music
-quality judge trained from user-rated playlists on a 1–7 scale — and a
-**professional-DAW control layer** (Ableton Live or Pro Tools, chosen by
-interface robustness) so that every DAW feature is drivable from the backend.
-
-## Fixed Design Decisions (do not relitigate)
-
-These are inputs to the campaign, not open questions:
-
-1. **Clip length is 30 seconds.** Harvested audio is split into 30 s chunks.
-   30 s is long enough that melodies are not taken out of musical context;
-   10 s is too short. Do not shorten it. (Overlap/hop strategy between
-   consecutive 30 s chunks is an open engineering choice; the chunk length is
-   not.)
-2. **Every clip carries provenance.** Each clip records what song it came
-   from and its start/end timestamps within that song. No clip enters any
-   downstream stage without a resolvable provenance record.
-3. **Input curation filters to music only.** The classifier must distinguish
-   at least: speech (no music), applause (no music), background/ambient
-   (no music), and music — with a subtree under music that differentiates
-   live vs. recorded. Only clips classified as music proceed downstream.
-4. **Non-factors are tracked as a sidecar and must not influence anything.**
-   Non-factors include: genre, country of origin, date released, language the
-   lyrics are written in, instrumental vs. with-lyrics, live vs. recorded,
-   artist name, and the non-music classes themselves (speech, applause,
-   ambient sounds, etc.). They are recorded per clip in a sidecar file for
-   audit and analysis, but no model, heuristic, ranking, curation step, or
-   generative decision may condition on them. This is the **non-factor
-   firewall**, and it is testable (see Track 5 ablations).
-5. **Survey open source before building.** For separation, transcription,
-   score generation, and MIDI tooling: first survey existing open-source
-   software with high accuracy. Only if no adequate open-source solution
-   exists may the campaign develop its own method — and the inadequacy must
-   be documented with measurements, not vibes.
-6. **The ear's scale is 1–7**, anchored as: 1 terrible, 2 bad, 3 average,
-   4 good, 5 great, 6 exceptional, 7 one-of-a-kind.
-7. **DAW choice is decided by interface robustness**, not preference:
-   Ableton Live vs. Pro Tools, whichever supports deeper, more reliable
-   programmatic control from the backend. The evaluation is Track 4's first
-   deliverable.
-
-## Required Novelty
-
-Across the tracks, at least four of the following are required:
-
-- A **rules/pattern ledger format** for extracted compositional rules that is
-  expressive enough to regenerate a score "in the style of" its sources
-  deterministically, with per-rule provenance back to source clips.
-- A **deterministic MIDI-to-texture layer** — effect chains and heuristics
-  that measurably close the gap between a bare MIDI render and the original
-  song's texture, with an objective texture-distance metric to prove it.
-- A **mess-scale heuristic battery** (melody quality, timbre quality, form
-  quality, dynamics quality, …) with stated failure modes, plus an
-  **intra-song meta-heuristic tracker** that aggregates clip-level heuristics
-  into macro-scale (whole-song) descriptors.
-- A **trainable ear** whose 1–7 predictions on held-out user-rated playlists
-  beat non-trivial baselines, and which is demonstrably invariant to the
-  non-factor sidecar.
-- A **layered DAW/score corpus-mining system** — deterministic floor, agentic
-  ceiling (the comsol-support pattern): a deterministic lookup layer over
-  mined official docs/APIs that answers what it can exactly, with an agentic
-  layer above it for everything the deterministic floor cannot answer, plus a
-  telemetry/live-debugging loop that feeds failures back into the floor.
-- An **honest transcription-accuracy survey** of open-source separation and
-  transcription tools on this campaign's own clip corpus, with a documented
-  build-vs-adopt decision per stage.
-
-The final report must state explicitly, per track, what is new, what is merely
-integrated, and what remains speculative.
+*Status: planning stage. This prompt is framed and waiting; no run has been
+launched against it, and this document does not authorize one.*
 
 ---
 
-## Track 1 — Corpus Engine (harvest, chunk, classify, provenance)
+## Intent
 
-**Goal.** A reproducible corpus builder from user-provided YouTube playlists
-to a curated, music-only, provenance-complete library of 30 s clips.
+You are building a system that learns how songs work by taking them apart,
+and then writes new ones by putting the learned parts back together —
+deterministically.
 
-**Capabilities.**
-- **Audio harvesting:** download audio from a user-provided YouTube playlist
-  (see Guardrails — lawful, ToS-respecting acquisition for personal research
-  use only; the harvester is an interchangeable input stage, and the rest of
-  the pipeline must also accept locally supplied audio files so no downstream
-  track is blocked on acquisition policy).
-- **Chunking:** split each track into 30 s clips (fixed decision #1); decide
-  and document hop/overlap and edge-clip handling.
-- **Provenance ledger:** `clip_provenance.tsv` — clip id, source song id,
-  source title/artist (as sidecar-only fields), start timestamp, end
-  timestamp, checksum, acquisition date.
-- **Classification:** clip-level classifier over {speech, applause,
-  background/ambient, music{live, recorded}}; music-only filter gates the
-  curated corpus.
-- **Sidecar:** `clip_sidecar.tsv` holding all non-factors (fixed decision #4).
-  Downstream stages read the curated clip list, never the sidecar.
+The bet behind this project is specific, so understand it before writing any
+code. Most machine music generation goes straight from data to audio and
+hopes quality emerges. This project refuses that shortcut. It insists on the
+long way around: real songs get separated into stems, transcribed into
+symbolic form, rebuilt as MIDI, and re-clothed in sound — and only once that
+round trip works do we ask the system to compose. Every stage produces an
+artifact a human can inspect: a clip with a timestamp, a score, a MIDI file,
+a named rule, an effect chain. If the system makes something good, we can say
+exactly why. If it makes something bad, we can find the stage that failed.
 
-**Validation.** Held-out labeled clips for the classifier (confusion matrix,
-per-class precision/recall); spot-audit of provenance timestamps against the
-source audio; an automated check that no downstream artifact imports or joins
-the sidecar.
+The full loop you are building:
 
-**Falsification.** If the music/non-music filter's errors correlate with a
-non-factor (e.g. it drops live recordings or a particular language at a higher
-rate), the curation step is leaking non-factors — flag and fix before any
-downstream training.
+> Harvest audio → keep only music → split into stems → transcribe each stem →
+> merge into a full score → render the score as MIDI → import MIDI into a
+> professional DAW → extract and save the rules and patterns that governed
+> the transcription → layer on effects to give the MIDI life and color →
+> build deterministic effects and heuristics that recreate the *texture* of
+> the original song → repeat over many songs, accumulating rules and
+> texture heuristics → generate new songs deterministically by selecting
+> similar rules and patterns and pushing a fresh score through the same
+> MIDI-to-full-audio path.
 
-**Parallelism.** Per-song fan-out for download + chunking; per-clip-batch
-fan-out for classification.
+One warning, placed here so it is never forgotten: the step where bare MIDI
+becomes something that sounds like a record — deterministic audio effects and
+heuristics that recreate the texture of the original — is the hardest and
+most important piece of this entire project. Everything else is either
+feeding it or measuring it. Budget your effort accordingly.
 
----
+## Decisions already made
 
-## Track 2 — Separation and Transcription
+Do not reopen these. They are constraints, not suggestions.
 
-**Goal.** From a curated music clip to a complete, merged symbolic
-transcription.
+**Clips are 30 seconds.** When harvested audio is chunked, the chunk length
+is 30 s. The reasoning is settled: 30 s is long enough that melodies are not
+taken out of context; 10 s is too short. How chunks overlap and how you
+handle the tail of a song are yours to decide — the length itself is not.
 
-**Capabilities.**
-- **Audio splitting (source separation):** isolate vocals from instruments;
-  isolate individual instruments (stems).
-- **Instrumental transcription** of each split stem, covering all six axes:
-  rhythm, melody, timbre, dynamics, harmony, form.
-- **Vocal transcription:** lyrics extraction (vocals-to-text), vocal melody,
-  vocal rhythm, and harmony detection.
-- **Merged transcription:** recombine per-stem transcriptions into a full
-  score for the clip/song.
-- **Open-source survey first (fixed decision #5):** benchmark candidate tools
-  (e.g. current open-source separation and AMT systems) on this campaign's own
-  clips; adopt the winners; build custom methods only where the survey proves
-  inadequacy, and document why.
+**Provenance is non-negotiable.** Every clip knows what song it came from
+and its start and end timestamps within that song. This chain never breaks:
+a stem knows its clip, a transcription knows its stem, a rule knows its
+transcriptions, a generated song knows its rules. An artifact whose lineage
+cannot be traced back to source audio is a bug.
 
-**Validation.** A small hand-verified reference set: clips where a competent
-listener has checked the transcription (notes, rhythm, chords, lyrics) so that
-tool accuracy is measured on in-domain data, not just published benchmarks.
-Round-trip checks: render the transcription to audio and measure similarity to
-the separated stems.
+**Only music flows downstream.** Harvested audio must be classified before
+anything else touches it. The classifier distinguishes at minimum: speech
+(no music), applause (no music), background/ambient (no music), and music —
+with a subtree under music separating live from recorded. Everything that is
+not music is filtered out of the working corpus.
 
-**Falsification.** If merged transcriptions systematically lose one of the six
-instrumental axes (timbre and form are the likely casualties), say so
-explicitly — the rules ledger (Track 6) cannot extract what transcription
-never captured.
+**Non-factors are recorded but powerless.** Certain attributes must be
+tracked in a sidecar file and must influence nothing: genre, country of
+origin, date released, the language the lyrics are written in, instrumental
+vs. with lyrics, live vs. recorded, artist name, and the non-music classes
+themselves (speech, applause, ambient sounds, and so on). The sidecar exists
+for audit and curiosity. No model trains on it, no heuristic reads it, no
+curation or generation step branches on it. Treat any leak of a non-factor
+into a decision as a defect and prove absence of leaks with tests, not
+assertions.
 
-**Parallelism.** Per-clip and per-stem fan-out; per-tool fan-out for the
-survey benchmark.
+**Survey before you build.** For separation, transcription, and score
+tooling: open-source software with high transcription accuracy exists, and
+your first job is to find it, benchmark it on this project's own clips, and
+adopt what wins. You may develop your own method only where no adequate
+open-source solution exists, and "inadequate" is a measurement you publish,
+not an opinion.
 
----
+**The ear's scale is 1–7.** 1 terrible, 2 bad, 3 average, 4 good, 5 great,
+6 exceptional, 7 one-of-a-kind. These anchors are fixed.
 
-## Track 3 — Score, MIDI, and the Composing-Tool Bridge
+**The DAW is chosen by its interface, not its reputation.** Ableton Live or
+Pro Tools — whichever offers the more robust programmatic interface to the
+backend. Decide by evidence, early.
 
-**Goal.** Symbolic transcriptions become editable scores and DAW-ready MIDI.
+## The system, piece by piece
 
-**Capabilities.**
-- **Score generation:** a backend bridge to MuseScore (or another open
-  composing tool if the survey favors it) that turns merged transcriptions
-  into engraved, editable scores programmatically.
-- **Corpus mining + telemetry loop for the bridge:** mine the composing
-  tool's docs/API corpus; instrument the bridge with telemetry and a live
-  debugging loop so bridge failures are captured, diagnosed, and folded back
-  into the deterministic layer (same layered pattern as Track 4).
-- **Score → MIDI conversion**, preserving as much of dynamics/tempo/voicing
-  as the format allows.
-- **MIDI import into the DAW** (consumes Track 4's control layer), landing
-  stems on the right tracks/instruments.
+### 1. Getting audio in
 
-**Validation.** Round-trip fidelity: transcription → score → MIDI → re-parsed
-symbolic form, diffed against the original transcription; a batch of scores
-opened and audited in MuseScore without manual repair.
+Build the harvester around a user-provided YouTube playlist: given the
+playlist, download the audio, chunk it into 30 s clips, and register every
+clip in the provenance ledger. Design the harvester as a replaceable front
+door — the rest of the system should accept audio from a local folder just
+as happily, because acquisition policy must never be the thing that blocks
+work on the interesting stages.
 
-**Parallelism.** Per-score fan-out; bridge development is largely serial until
-its API surface stabilizes, then per-document fan-out for corpus mining.
+Then curate. Run the classifier over every clip, write the non-music
+verdicts and all non-factor attributes to the sidecar, and pass only the
+music clips onward. When this stage is done you have the project's raw
+material: a music-only library of 30 s clips, each with provenance, each
+with its sidecar row quarantined off to the side.
 
----
+### 2. Taking songs apart
 
-## Track 4 — DAW Control Layer (deterministic floor, agentic ceiling)
+Source separation, two capabilities: isolate vocals from instruments, and
+isolate individual instruments from each other. This is prime survey
+territory — measure the leading open-source separators on your own corpus
+before considering anything custom.
 
-**Goal.** Control all features of a professional DAW from the backend.
+### 3. Writing down what you hear
 
-**Capabilities.**
-- **DAW selection study (first deliverable):** evaluate Ableton Live vs.
-  Pro Tools strictly on robustness of programmatic control (API/scripting
-  surface, remote-control protocols, headless/automation support, latency,
-  reliability, licensing/automation friction). Choose one; document the
-  decision matrix. (Fixed decision #7: robustness decides.)
-- **Layered corpus-mining system over DAW-specific docs**, modeled on
-  comsol-support: a **deterministic floor** — mined, indexed, exactly-quotable
-  official documentation and API references answering known questions with
-  zero model involvement — under an **agentic ceiling** — an agent that
-  handles everything the floor cannot, and whose successful resolutions are
-  distilled back down into the floor.
-- **Backend control of the full DAW feature surface:** track/device creation,
-  MIDI import and routing, instrument/effect selection and parameterization,
-  automation lanes, mixing, rendering/bounce — everything Track 6's pipeline
-  needs, driven headlessly where possible.
-- **Telemetry/live-debugging loop:** every backend→DAW command logged with
-  outcome; failures reproduce into test cases.
+Transcription operates on the separated stems, not the mix.
 
-**Validation.** A scripted end-to-end demo: backend builds a session from a
-MIDI file, applies a specified effect chain, and renders audio, with zero
-manual DAW interaction. Coverage report: which DAW features are controllable
-from the backend, which are not, and why.
+For instrumental stems, transcription means all six of: rhythm, melody,
+timbre, dynamics, harmony, and form. Be honest about coverage — pitch and
+rhythm tools are plentiful; timbre, dynamics, and form are where
+transcription usually goes silent, and a rule you never wrote down is a rule
+the generator can never use.
 
-**Falsification.** If neither DAW offers robust enough control for the
-pipeline's needs, report the gap honestly and scope what is controllable
-rather than faking coverage.
+For vocal stems: transcribe the vocals to text (lyrics extraction), capture
+the vocal melody, capture the vocal rhythm, and detect harmony.
 
-**Parallelism.** Per-doc-section fan-out for corpus mining; per-feature
-fan-out for control-surface coverage tests.
+Per-stem transcriptions then merge into one full score for the song. From
+the score, two bridges:
 
----
+- **Score generation.** A backend bridge to MuseScore or another composing
+  tool, so scores are created and edited programmatically. Support the
+  bridge with corpus mining of the tool's documentation and a
+  telemetry/live-debugging loop: every bridge failure is captured with
+  enough context to diagnose, and fixes flow back into the bridge's
+  knowledge base rather than dying in a log file.
+- **Score to MIDI.** Convert scores to MIDI, and import that MIDI into the
+  DAW (via the interface in piece 5).
 
-## Track 5 — Heuristics and the Trainable Ear
+### 4. Judging
 
-**Goal.** Measure music quality — at clip scale, at song scale, and with a
-trained judge.
+Two judges, one hand-built and one trained.
 
-**Capabilities.**
-- **Mess-scale heuristics:** per-clip quality heuristics along named axes —
-  melody quality, timbre quality, form quality, dynamics quality, and
-  additional axes as justified. Each heuristic states what it measures, its
-  scale, and its known failure modes.
-- **Intra-song meta-heuristic tracker:** aggregates clip-level heuristics
-  across a song into macro-scale descriptors (arc of dynamics, form-level
-  coherence, section contrast), so song-scale quality is not just a mean of
-  clip scores.
-- **Trainable ear:** a judge trained on user-provided YouTube playlists rated
-  1–7 (fixed decision #6). Input: audio clips (and optionally symbolic
-  features from Track 2); output: predicted 1–7 rating with calibration.
-- **Non-factor firewall enforcement:** the ear and all heuristics must be
-  invariant to the sidecar. Test it: predictions must not shift when
-  non-factors are permuted, and a probe trained to recover non-factors from
-  the ear's internal features should perform near chance — or the leak must
-  be reported.
+The hand-built judge is a battery of **audio heuristics on a mess-scale**:
+melody quality, timbre quality, form quality, dynamics quality, and further
+axes as they earn their place. Each heuristic is a function with a defined
+scale and known blind spots. On top of the clip-level battery sits an
+**intra-song meta-heuristic tracker**: because a song is not the average of
+its clips, the tracker follows heuristics across a whole song to produce
+macro-scale descriptors — how dynamics move, whether the form coheres, where
+the song peaks.
 
-**Validation.** Held-out playlist ratings (rank correlation and per-band
-accuracy against the user's 1–7 labels); heuristic sanity suites (known-good
-vs. deliberately corrupted audio: detuned melody, flattened dynamics,
-shuffled form); meta-tracker checked against whole-song human judgments.
+The trained judge is the **ear**: a model of the user's taste, trained from
+user-provided YouTube playlists rated on the 1–7 scale. The ear scores
+audio; it is the fitness function for everything the system eventually
+generates. And because the non-factor rule binds here hardest of all: an ear
+that secretly learned to detect genre, era, or artist is not an ear, it is a
+demographic profiler wearing headphones. Test for this directly.
 
-**Falsification.** If the ear's accuracy comes from a non-factor proxy
-(e.g. it learned a genre or era detector), that is a firewall breach, not a
-result — report it and retrain. If mess-scale heuristics do not separate
-known-good from corrupted audio, they are decoration; drop or fix them.
+### 5. The DAW as an instrument
 
-**Parallelism.** Per-heuristic fan-out; per-playlist fan-out for ear training
-and evaluation; ablation matrix fan-out for firewall tests.
+The goal is blunt: control all features of a professional DAW from the
+backend. Session and track creation, MIDI import, instrument and effect
+selection and parameterization, automation, mixing, rendering — the backend
+plays the DAW the way the rest of the system plays MuseScore.
 
----
+First, run the selection study: Ableton Live vs. Pro Tools, scored on the
+robustness of what the backend can actually reach — scripting and remote
+protocols, headless operation, reliability under automation. Pick the winner
+and commit.
 
-## Track 6 — Sampling, Rules Extraction, and Deterministic Generation
+Then build the knowledge layer that makes deep control sustainable: mine the
+corpus of DAW-specific documentation into a **layered system — a
+deterministic floor under an agentic ceiling**. The floor is an indexed,
+exactly-answerable knowledge base built from the mined docs: questions it
+can answer, it answers identically every time, with no model in the loop.
+The ceiling is an agent that handles what the floor cannot — and every
+problem the ceiling solves gets distilled downward, growing the floor.
+Telemetry and live debugging run through both layers, so the interface gets
+more deterministic the longer it operates.
 
-**Goal.** The end-to-end payoff: remix engines, extracted rules, texture
-recreation, and deterministically generated new songs.
+### 6. Putting songs back together
 
-**Capabilities.**
-- **Audio sampling engine:** remixing and remastering tooling; "chop and
-  flip" workflows that put a new spin on an original song by chopping it up
-  and recombining it, in the tradition of popular hip-hop and rap production —
-  driven by clip provenance so every sample in a remix is traceable.
-- **Rules/pattern extraction:** from each song's full transcription, extract
-  and save the rules and patterns that govern it (harmonic movement, rhythmic
-  signatures, form templates, melodic contours, arrangement patterns) into a
-  cross-song **rules ledger** with per-rule provenance.
-- **Effect layering:** apply audio effects to bare MIDI renders to give them
-  life and color.
-- **MIDI-to-texture heuristics (the hardest and most important piece):**
-  deterministic effect chains + heuristics that recreate the texture of the
-  original song from its MIDI recreation. Define a texture-distance metric
-  (spectral/timbral/dynamics-based) between the re-rendered audio and the
-  original; drive the deterministic layer to minimize it; report the residual
-  gap honestly.
-- **Multi-song accumulation:** repeat the full pipeline over many songs,
-  growing the rules ledger and the MIDI-to-texture heuristic library.
-- **Deterministic new-song generation:** select compatible rules/patterns
-  from the ledger, compose a new score deterministically, render to MIDI, and
-  push it through the same MIDI → DAW → effects → texture pipeline used for
-  recreations — so generation is the recreation path pointed at a new score,
-  not a separate system. Judge outputs with Track 5's ear and heuristics.
+This is where the project pays off or doesn't.
 
-**Validation.**
-- **Recreation benchmark (gate for generation):** for held-out songs, measure
-  texture distance between (a) bare MIDI render, (b) effect-layered render,
-  (c) full deterministic-texture render, and the original. The claim "the
-  texture layer works" is the measured (a)→(c) improvement.
-- **Rules-ledger regeneration test:** regenerate a score from a single song's
-  extracted rules and check it is recognizably derived from that song's
-  patterns (symbolic similarity + ear score).
-- **Generation test:** new songs scored by the ear; target distribution
-  stated in advance (see Hypotheses).
+**Sampling.** Tools for remixing and remastering — including chopping an
+original song up and recombining it into something new, the way hip-hop and
+rap producers flip a sample. Provenance makes this safe to iterate on: every
+slice in a remix is traceable to its source and timestamps.
 
-**Falsification.** If the deterministic texture layer cannot beat a trivial
-baseline (e.g. a stock general-purpose mastering chain applied blindly), the
-"deterministic texture heuristics" claim fails — report it as the campaign's
-central open problem rather than papering over it.
+**Rules extraction.** From each song's full transcription, extract and save
+the rules and patterns that govern it — harmonic movement, rhythmic
+signatures, melodic contours, structural templates, arrangement habits.
+Rules accumulate across songs into a single ledger, each rule carrying
+provenance to the transcriptions that support it.
 
-**Parallelism.** Per-song fan-out for rules extraction and recreation
-benchmarks; per-(rule-set × generation-seed) fan-out for generation trials.
+**Texture.** Bare MIDI renders are skeletons. First, layer on audio effects
+to give them life and color. Then the hard part: deterministic audio effects
+and heuristics that recreate the texture of the *original* song from its
+MIDI recreation. Define a measurable texture distance between a render and
+the original, and let that number — not your impression on tired ears —
+tell you whether the texture layer is working. The gap between the bare
+MIDI render and the original is the project's central quantity; the texture
+layer's job is to close it, and its progress report is the honest
+measurement of how much remains.
 
----
+**Generation.** Once the loop runs over multiple songs and the ledgers have
+depth: generate new songs deterministically. Select compatible, similar
+rules and patterns from the ledger, compose a fresh score with them, and
+push it through the exact same score → MIDI → DAW → effects → texture path
+used for recreations. Generation is not a new pipeline; it is the recreation
+pipeline pointed at a score that never existed. The ear and the heuristics
+judge the results.
 
-## End-to-End Pipeline (the campaign's spine)
+## Order of work
 
-Every stage below must exist as a callable, tested step, and the whole chain
-must run unattended on at least a small corpus:
+Dependencies, not a schedule:
 
-1. Audio harvesting (YouTube playlist or local files) — Track 1
-2. Audio identification/classification, music-only curation — Track 1
-3. Source separation (vocals, per-instrument stems) — Track 2
-4. Transcription of split tracks — Track 2
-5. Merged transcription (full score) — Tracks 2–3
-6. Recreation of transcription as MIDI track — Track 3
-7. MIDI import into DAW — Tracks 3–4
-8. Extraction and saving of rules/patterns governing the transcription — Track 6
-9. Effect layering to give life/color to MIDI tracks — Tracks 4, 6
-10. Deterministic audio effects + heuristics recreating the original song's
-    texture (**hardest, most important**) — Track 6
-11. Repeat over multiple songs, accumulating rules and MIDI-to-texture
-    heuristics — Track 6
-12. Deterministic generation of new songs: select similar rules/patterns,
-    start from a direct transcription-style score, run the full
-    MIDI-to-full-audio path — Track 6, judged by Track 5
+1. Harvesting, chunking, provenance, and classification come first — nothing
+   else has inputs without them.
+2. The open-source survey and the DAW selection study run early and in
+   parallel; both produce decisions the rest of the build consumes.
+3. Separation → transcription → score → MIDI is the spine; get one song
+   through it end to end, however roughly, before polishing any stage.
+4. Heuristics and the ear can develop in parallel with the spine — they need
+   the corpus, not the pipeline.
+5. Rules extraction, effect layering, and the texture work start as soon as
+   the first recreation exists, and they never really stop.
+6. Generation comes last and only earns attention once recreations of
+   held-out songs demonstrably work.
 
-## Phase Plan and Fan-Out
+## What counts as done
 
-```text
-[BARRIER 0] Phase 1 — scope, schemas, tool survey plan, DAW selection study,
-            legal/licensing review (single coordinator)
-   ↓
-[FAN-OUT A] Phase 2 — Corpus Engine (Track 1) ∥ open-source tool survey
-            (Track 2 benchmark harness) ∥ DAW corpus mining floor (Track 4)
-   ↓
-[BARRIER 1] curated corpus frozen (provenance + sidecar complete);
-            build-vs-adopt decisions recorded per stage
-   ↓
-[FAN-OUT B] Phase 3 — separation + transcription (Track 2) ∥ score/MIDI
-            bridge (Track 3) ∥ DAW control surface (Track 4) ∥ heuristics +
-            ear training (Track 5)
-   ↓
-[BARRIER 2] first end-to-end recreation of one song, however rough
-   ↓
-[FAN-OUT C] Phase 4 — rules extraction ∥ sampling/remix engine ∥
-            MIDI-to-texture heuristics ∥ ear refinement + firewall ablations
-   ↓
-[BARRIER 3] recreation benchmark passes its stated gate on held-out songs
-   ↓
-[FAN-OUT D] Phase 5 — multi-song accumulation ∥ deterministic generation
-            trials ∥ ablations
-   ↓
-[BARRIER 4] ledger reconciliation: rules ledger, heuristic library,
-            prediction/claims ledger
-   ↓
-Phase 6 — final synthesis (single coordinator)
-```
+- A music-only clip corpus with unbroken provenance and a sidecar whose
+  contents demonstrably influence nothing.
+- A survey document with on-corpus benchmarks and an adopt-or-build verdict
+  for every separation and transcription stage.
+- Full-score transcriptions whose accuracy was measured on this corpus,
+  with honest per-axis reporting — including the awkward axes.
+- A backend that can take a MIDI file to rendered audio in the chosen DAW
+  with zero human clicks, backed by the mined-docs floor-and-ceiling layer.
+- A recreation of at least one held-out song where the measured texture
+  distance from the original improves stage by stage — bare MIDI, effects
+  layered, full texture heuristics — and the remaining gap is stated.
+- An ear whose 1–7 predictions on held-out rated playlists beat honest
+  baselines and survive non-factor leak tests.
+- At least one batch of new songs generated deterministically from the rules
+  ledger, each with full provenance and an ear score.
 
-Barrier discipline: schemas (provenance, sidecar, rules ledger, texture
-metric) freeze at their barrier and change only through a coordinator. The
-rules ledger and heuristic library are single sources of truth — per-clone
-sub-ledgers merge at barriers, never concurrent writes to the master.
+And the failure modes to refuse: a downloader with nothing downstream; a
+pipeline whose accuracy was never measured on its own data; a DAW bridge
+that needs a human hand; an ear that profiles instead of listens; a
+"texture layer" that is a stock mastering preset; a generator bolted on
+before recreation worked.
 
-## Required Final Deliverables
+## Conduct
 
-1. `corpus_engine/` — harvester, chunker, classifier; `clip_provenance.tsv`;
-   `clip_sidecar.tsv`; classifier evaluation report.
-2. `tool_survey.md` — the open-source separation/transcription/score survey
-   with on-corpus benchmarks and per-stage build-vs-adopt decisions.
-3. `separation_transcription/` — pipelines + the hand-verified reference set
-   and accuracy report across all transcription axes.
-4. `score_midi_bridge/` — MuseScore (or chosen tool) bridge, telemetry logs,
-   round-trip fidelity report.
-5. `daw_control/` — DAW selection study, deterministic-floor corpus index,
-   agentic-ceiling agent, feature-coverage report, scripted end-to-end demo.
-6. `heuristics_ear/` — mess-scale battery, intra-song meta-tracker, trained
-   ear + calibration report, non-factor firewall ablation report.
-7. `rules_ledger/` — cross-song rules/pattern ledger with provenance.
-8. `texture_layer/` — deterministic MIDI-to-texture effects + heuristics,
-   texture-distance metric definition, recreation benchmark results.
-9. `sampling_engine/` — remix/remaster/chop-and-flip tooling with
-   provenance-traced outputs.
-10. `generated/` — deterministic new-song trials with ear scores and the
-    exact rules/patterns each was generated from.
-11. `claims_ledger.tsv` — every quantitative claim, its status
-    (`validated` / `falsified` / `pending` / `data-limited`), and its
-    evidence artifact.
-12. `final_report.md` and `audit_report.md`.
-13. Reproducible code, tests, and build scripts throughout.
-
-## Success Criteria
-
-The campaign succeeds if, at minimum:
-
-- The curated corpus exists with complete provenance, music-only filtering,
-  and a verified non-factor firewall.
-- Transcription accuracy is measured (not assumed) on in-domain clips, with
-  honest per-axis coverage including timbre, dynamics, and form.
-- The backend can build a DAW session, import MIDI, apply effects, and render
-  audio with zero manual DAW interaction.
-- The recreation benchmark shows a measured, non-trivial texture-distance
-  improvement from bare MIDI to the deterministic texture layer on held-out
-  songs.
-- The ear beats stated baselines on held-out user ratings and passes the
-  firewall ablations.
-- At least one batch of deterministically generated new songs exists,
-  end-to-end, with ear scores and full rule provenance.
-
-The campaign fails if it produces only: a downloader plus a pile of stems; a
-transcription pipeline whose accuracy was never measured on its own corpus; a
-DAW "integration" that requires a human clicking; an ear that is secretly a
-genre detector; or generated audio whose texture step is an off-the-shelf
-mastering preset with no measured contribution.
-
-## Guardrails
-
-- **Copyright and terms of service.** Harvested audio is for the user's
-  private research/analysis only. Comply with applicable law and platform
-  terms when acquiring audio; prefer the user's own library, licensed, or
-  freely licensed sources where the pipeline permits. Never redistribute
-  harvested audio, stems, or clips; keep them out of the public repo (corpus
-  artifacts stay local; only code, schemas, metrics, and reports are
-  publishable). Generated songs must come from the rules ledger and texture
-  heuristics, not from recognizable copied audio; remix/sampling outputs are
-  private experiments, not releases.
-- **Non-factor firewall.** No stage conditions on sidecar fields. Violations
-  found in ablation are reported, not quietly patched.
-- **Provenance is mandatory.** A clip, stem, transcription, rule, or
-  generated song without a resolvable provenance chain is an invalid
-  artifact.
-- **Survey before building.** No custom model where an adequate open-source
-  tool exists; inadequacy claims require on-corpus measurements.
-- **Honest metrics.** Texture distance, transcription accuracy, and ear
-  calibration are defined before results are collected; negative results are
-  reported as results.
-- **No silent scope shrink.** If a stage (e.g. timbre transcription, full DAW
-  coverage) proves infeasible, the gap is documented in the final report, not
-  dropped from the success criteria.
-
-## Initial Hypotheses
-
-- **H1.** Open-source source separation is adequate (adoptable) for
-  vocals-vs-instruments and for the common stem classes; open-source
-  transcription is adequate for melody/rhythm/harmony but inadequate for
-  timbre and form, which will need campaign-built methods.
-- **H2.** The 30 s clip length preserves enough melodic context that
-  clip-level transcriptions can be merged into song-level scores without
-  major boundary artifacts, given a sensible overlap policy.
-- **H3.** Ableton Live will win the DAW selection study on interface
-  robustness (remote-control surface depth), but the study may falsify this.
-- **H4.** The deterministic floor will resolve the majority of routine DAW
-  and score-bridge operations without agentic involvement once the mined
-  corpus and telemetry loop mature.
-- **H5.** The ear will reach useful rank correlation with user ratings from
-  audio features alone, and firewall ablations will initially catch at least
-  one non-factor leak (most likely era/production-quality proxies).
-- **H6.** The MIDI-to-texture layer will close a substantial fraction of the
-  measured texture gap on sparse arrangements and a smaller fraction on dense
-  ones — and this residual will be the campaign's headline open problem.
-- **H7.** Deterministically generated songs built from rules of highly rated
-  (5–7) source songs will score measurably higher on the ear than songs built
-  from rules of low-rated (1–3) sources — the key end-to-end signal that the
-  rules ledger captures something real about quality.
+- Harvested audio is private research material for the user. Acquire it
+  lawfully and in keeping with platform terms; never commit or redistribute
+  audio, clips, or stems — code, schemas, measurements, and reports are the
+  publishable surface.
+- Remixes and generated songs are experiments, not releases. Generated work
+  must derive from the rules ledger and texture heuristics, not from
+  recognizable lifted audio.
+- Report negative results as results. A stage that doesn't work, measured
+  honestly, is worth more than a stage that pretends to.
