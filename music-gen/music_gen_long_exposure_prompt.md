@@ -83,10 +83,34 @@ not an opinion.
 **The ear's scale is 1–7.** 1 terrible, 2 bad, 3 average, 4 good, 5 great,
 6 exceptional, 7 one-of-a-kind. These anchors are fixed.
 
-**The DAW is chosen by its interface, not its reputation.** Ableton Live or
-Pro Tools — whichever offers the more robust programmatic interface to the
-backend. Decide by evidence, early. The study is strictly those two
-candidates, both evaluated in full; no third options, no presumed winner.
+**The DAW is open source, chosen for unattended automation.** (This
+supersedes an earlier Ableton-vs-Pro-Tools framing, reversed 2026-08-28.)
+This project executes as an autonomous long-exposure run, so every tool must
+be installable into the workspace ahead of time and operable headlessly — no
+license activation, no GUI-only setup, no human at a screen. That
+disqualifies Ableton Live and Pro Tools regardless of interface quality. The
+chosen stack is fully open source:
+
+- **Ardour** is the DAW proper — professional-grade editing, mixing, and
+  automation; LV2/VST3 plugin hosting; OSC and Lua scripting; XML session
+  files a backend can read and write directly.
+- **DawDreamer** (with **Pedalboard** as a lighter alternative where it
+  suffices) is the headless render engine — a code-driven DAW-as-a-library
+  for the automated effect-chain and texture loops, which need thousands of
+  unattended programmatic renders and fit a library better than any GUI
+  application.
+- Instruments and effects come from the open plugin ecosystem (Surge XT,
+  Vital, Dexed, sfizz, LSP, x42, Calf, and peers), which is where output
+  quality actually lives; Ableton's genuine advantages — session workflow,
+  bundled sound library — are human-facing features an autonomous backend
+  never touches.
+
+The former selection study shrinks to a validation spike: confirm early that
+this stack covers the control surface the pipeline needs (session build,
+MIDI import, instrument/effect parameterization, automation, render), and
+document any gaps honestly. If the spike finds a hole Ardour + DawDreamer
+cannot cover, the fallback search stays within open-source, headless-capable
+tools.
 
 **Planning-stage refinements (settled 2026-08-28, interactive session).**
 These joined the fixed list during prompt refinement and carry the same
@@ -193,21 +217,29 @@ demographic profiler wearing headphones. Test for this directly.
 
 ### 5. The DAW as an instrument
 
-The goal is blunt: control all features of a professional DAW from the
+The goal is blunt: control all features of a professional-grade DAW from the
 backend. Session and track creation, MIDI import, instrument and effect
 selection and parameterization, automation, mixing, rendering — the backend
 plays the DAW the way the rest of the system plays MuseScore.
 
-First, run the selection study: Ableton Live vs. Pro Tools, scored on the
-robustness of what the backend can actually reach — scripting and remote
-protocols, headless operation, reliability under automation. Pick the winner
-and commit.
+The stack is decided (see the fixed decisions): Ardour as the DAW proper,
+DawDreamer/Pedalboard as the headless render engine, open-source plugins as
+the instrument and effect palette. Start with the validation spike — prove
+the stack covers session build, MIDI import, parameterization, automation,
+and render, unattended — and split responsibilities deliberately: Ardour
+owns sessions a human might later open and inspect; DawDreamer owns the
+high-volume automated render loops the texture work depends on. The two
+must agree: an effect chain defined once should be reproducible in both.
 
 Then build the knowledge layer that makes deep control sustainable: mine the
 corpus of DAW-specific documentation into a **layered system — a
-deterministic floor under an agentic ceiling**. The floor is an indexed,
-exactly-answerable knowledge base built from the mined docs: questions it
-can answer, it answers identically every time, with no model in the loop.
+deterministic floor under an agentic ceiling**. Everything in this stack is
+open source, which widens the floor: mine not just the docs (Ardour manual,
+Lua/OSC references, DawDreamer API, plugin parameter maps) but the source
+code itself, so the floor can answer questions the manuals never wrote down.
+The floor is an indexed, exactly-answerable knowledge base built from the
+mined material: questions it can answer, it answers identically every time,
+with no model in the loop.
 The ceiling is an agent that handles what the floor cannot — and every
 problem the ceiling solves gets distilled downward, growing the floor.
 Telemetry and live debugging run through both layers, so the interface gets
@@ -253,8 +285,8 @@ Dependencies, not a schedule:
 
 1. Harvesting, chunking, provenance, and classification come first — nothing
    else has inputs without them.
-2. The open-source survey and the DAW selection study run early and in
-   parallel; both produce decisions the rest of the build consumes.
+2. The open-source survey and the DAW-stack validation spike run early and
+   in parallel; both produce decisions the rest of the build consumes.
 3. Separation → transcription → score → MIDI is the spine; get one song
    through it end to end, however roughly, before polishing any stage, then
    widen to the 5–10-song first-milestone corpus.
@@ -273,8 +305,9 @@ Dependencies, not a schedule:
   for every separation and transcription stage.
 - Full-score transcriptions whose accuracy was measured on this corpus,
   with honest per-axis reporting — including the awkward axes.
-- A backend that can take a MIDI file to rendered audio in the chosen DAW
-  with zero human clicks, backed by the mined-docs floor-and-ceiling layer.
+- A backend that can take a MIDI file to rendered audio in the Ardour +
+  DawDreamer stack with zero human clicks, backed by the mined
+  docs-and-source floor-and-ceiling layer.
 - A recreation of at least one held-out song where the measured texture
   distance from the original improves stage by stage — bare MIDI, effects
   layered, full texture heuristics — and the remaining gap is stated.
