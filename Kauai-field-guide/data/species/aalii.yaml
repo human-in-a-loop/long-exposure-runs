@@ -1,0 +1,93 @@
+slug: aalii
+scientific_name: Dodonaea viscosa
+authority: Jacq.
+family: Sapindaceae
+common_names:
+  hawaiian: [ʻaʻaliʻi]
+  english: [hopbush, hopseed bush]
+status: indigenous
+conservation_status: null
+coastal_zones: [sea_cliff, valley_mouth]
+tier: notable
+occurrence_notes: >-
+  Widespread on the dry Nā Pali–Kona coastal cliffs and valley mouths;
+  a common woody component of dry lowland shrubland from the coast
+  up into the ridges. Tolerates wind, salt spray, and thin cliff-face
+  soils.
+how_to_identify:
+  growth_form: >-
+    Small shrub to small tree, 1–8 m; usually seen on the coast as a
+    dense multi-stemmed shrub 1–3 m high.
+  leaves: >-
+    Alternate, simple, narrow lanceolate to oblanceolate, 4–10 cm long,
+    tapering at both ends. Surface often sticky-resinous to the touch
+    when young (the species epithet *viscosa* means "sticky"); frequently
+    yellow-green rather than deep green.
+  flowers: >-
+    Small greenish or yellow-green, inconspicuous, in short axillary or
+    terminal clusters — usually overlooked next to the showy fruits.
+  fruit: >-
+    Papery three-winged (occasionally four-winged) capsule ~1.5 cm across,
+    ranging from bright red to pink to pale yellow depending on plant and
+    ripening stage; often clustered densely along shoot tips and persisting
+    for weeks. Contains a small black seed in the middle chamber. **The
+    fruit — not the flower — is what carries the plant's colour**, and
+    at a distance a fruiting ʻaʻaliʻi can be mistaken for something in
+    heavy flower.
+  bark_stem: Slender, tan-grey, with fine longitudinal ridging on older stems.
+  size: 1–3 m as a coastal shrub; up to 8 m in sheltered sites.
+  zone_hint: >-
+    Sea cliffs (including exposed Nā Pali cliff faces), dry ridge shoulders,
+    valley mouths — anywhere the soil is thin and drainage is fast.
+  clinchers:
+    - Papery three-winged fruit capsule in red/pink/yellow, clustered at shoot tips — unmistakable.
+    - Narrow sticky-resinous leaves; young growth genuinely tacky to a fingertip.
+    - Dry, wind-exposed, well-drained coastal position.
+    - Colour on the plant is in the fruit, not the flower.
+  look_alikes:
+    - species: Introduced legumes with reddish pods (Sesbania, Cassia)
+      how_to_distinguish: >-
+        Introduced legume pods are elongated cylinders or flattened straps
+        that hang from the branch, not radial three-winged papery
+        capsules clustered at shoot tips. Legume leaves are pinnately
+        compound; ʻaʻaliʻi leaves are simple.
+    - species: Introduced *Dodonaea* cultivars ("Purple Hopbush")
+      how_to_distinguish: >-
+        Cultivated purple-leaved forms exist in landscape use elsewhere in
+        Hawaiʻi; wild coastal ʻaʻaliʻi on the Nā Pali cliffs is always
+        green-leaved. If a plant with the winged fruit has consistently
+        purple foliage in a garden setting, it is not a Nā Pali wild
+        population.
+ecology: >-
+  Pantropical and subtropical species with well-established Hawaiian
+  populations; extremely wind- and drought-tolerant, an early colonist
+  of exposed thin-soil sites, and a persistent component of dry
+  lowland Hawaiian shrubland. Wagner, Herbst & Sohmer (1999) treats
+  Hawaiian populations under *Dodonaea viscosa* sensu lato; several
+  named forms have been described but are not consistently maintained
+  in current treatments.
+cultural_significance: >-
+  The bright, showy winged fruits are a distinctive natural material for
+  lei — the fruit clusters hold their colour well and make striking
+  strand lei. Hawaiian tradition also used the hard wood for tool
+  handles, hoe (digging stick) shafts, and parts of weapons; historical
+  material-culture accounts (Rock 1913, Krauss 1993) record ʻaʻaliʻi
+  wood alongside other hard-wooded natives. This guide names the
+  practices; the transmission of lei-making and wood-working
+  traditions belongs to Hawaiian cultural practitioners.
+hazards: null
+taxonomic_notes: >-
+  Wagner, Herbst & Sohmer 1999 treats Hawaiian ʻaʻaliʻi as *Dodonaea
+  viscosa* Jacq. sensu lato — a polymorphic pantropical species. Several
+  named Hawaiian forms exist in the older literature but are not
+  currently recognised at species level.
+images:
+  - id: aalii-flowers-01
+    role: flower
+    diagnostic_pointer: "Small greenish flowers — inconspicuous relative to the showy winged fruit."
+diagrams:
+  - file: habit-mounding-shrub.svg
+    caption: "Mounding-shrub silhouette — ʻaʻaliʻi's typical coastal habit."
+  - file: leaf-lanceolate.svg
+    caption: "Narrow lanceolate leaf outline — ʻaʻaliʻi leaves are simple and narrow."
+citations: [1, 2, 3, "B:10", "B:13", "B:14"]

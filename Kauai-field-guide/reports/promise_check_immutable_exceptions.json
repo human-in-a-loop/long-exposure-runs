@@ -1,0 +1,186 @@
+{
+  "generated_at": "2026-08-28T03:00:00Z",
+  "by": "cycle-2 post-merge integration",
+  "exceptions": [
+    {
+      "line": 12,
+      "event_id": "23d97f49-e923-4e60-b4ee-196bf2d44aa6",
+      "ts": "2026-08-28T02:03:20Z",
+      "milestone_id": "_moderate/hala-uncertainty",
+      "raw_sha256": "6469b6bed21c2225b2cd49251865914860e16c5b2212a28c37e0582f149da147",
+      "error": "status 'resolved' not in unified vocabulary (['action_required', 'deferred', 'in-progress', 'invalidated', 'not-started', 'reopened', 'superseded', 'validated'])",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 13,
+      "event_id": "13ec8798-469c-49ce-8bce-ebe239ddfbc6",
+      "ts": "2026-08-28T02:03:20Z",
+      "milestone_id": "_moderate/look-alikes-len-tightening",
+      "raw_sha256": "32289d077b6d4a688e852d2352bd947606f2efe139d884052f66d064ade5c5e1",
+      "error": "status 'resolved' not in unified vocabulary (['action_required', 'deferred', 'in-progress', 'invalidated', 'not-started', 'reopened', 'superseded', 'validated'])",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 14,
+      "event_id": "32ab3888-50f9-4720-b26d-720dbca84198",
+      "ts": "2026-08-28T02:03:20Z",
+      "milestone_id": "_minor/coverage-images-empty-list-bug",
+      "raw_sha256": "6bc55677eaa816ebef80f89b756907a7df97485b53af74c49d16187b43632a73",
+      "error": "status 'resolved' not in unified vocabulary (['action_required', 'deferred', 'in-progress', 'invalidated', 'not-started', 'reopened', 'superseded', 'validated'])",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 15,
+      "event_id": "7a7c9c58-cb47-8c4f-da21-df3a68acc70d",
+      "ts": "2026-08-28T02:10:00Z",
+      "milestone_id": "M-rare-tier-broaden",
+      "raw_sha256": "7a7c9c58cb478c4fda21df3a68acc70d61407c2938071149c8a266cabd00fb50",
+      "error": "missing required field 'event_id'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 15,
+      "event_id": "7a7c9c58-cb47-8c4f-da21-df3a68acc70d",
+      "ts": "2026-08-28T02:10:00Z",
+      "milestone_id": "M-rare-tier-broaden",
+      "raw_sha256": "7a7c9c58cb478c4fda21df3a68acc70d61407c2938071149c8a266cabd00fb50",
+      "error": "missing required field 'ts'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 15,
+      "event_id": "7a7c9c58-cb47-8c4f-da21-df3a68acc70d",
+      "ts": "2026-08-28T02:10:00Z",
+      "milestone_id": "M-rare-tier-broaden",
+      "raw_sha256": "7a7c9c58cb478c4fda21df3a68acc70d61407c2938071149c8a266cabd00fb50",
+      "error": "missing required field 'narrative'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 15,
+      "event_id": "7a7c9c58-cb47-8c4f-da21-df3a68acc70d",
+      "ts": "2026-08-28T02:10:00Z",
+      "milestone_id": "M-rare-tier-broaden",
+      "raw_sha256": "7a7c9c58cb478c4fda21df3a68acc70d61407c2938071149c8a266cabd00fb50",
+      "error": "confidence must be an object",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 16,
+      "event_id": "278938ab-a69f-de52-8c91-e305d639e6ea",
+      "ts": "2026-08-28T02:10:01Z",
+      "milestone_id": "_moderate/wilelaiki-style-leak",
+      "raw_sha256": "278938aba69fde528c91e305d639e6eacffb3fbb16cbf3ed3ade5a667cd27b2a",
+      "error": "missing required field 'event_id'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 16,
+      "event_id": "278938ab-a69f-de52-8c91-e305d639e6ea",
+      "ts": "2026-08-28T02:10:01Z",
+      "milestone_id": "_moderate/wilelaiki-style-leak",
+      "raw_sha256": "278938aba69fde528c91e305d639e6eacffb3fbb16cbf3ed3ade5a667cd27b2a",
+      "error": "missing required field 'ts'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 16,
+      "event_id": "278938ab-a69f-de52-8c91-e305d639e6ea",
+      "ts": "2026-08-28T02:10:01Z",
+      "milestone_id": "_moderate/wilelaiki-style-leak",
+      "raw_sha256": "278938aba69fde528c91e305d639e6eacffb3fbb16cbf3ed3ade5a667cd27b2a",
+      "error": "missing required field 'narrative'",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 16,
+      "event_id": "278938ab-a69f-de52-8c91-e305d639e6ea",
+      "ts": "2026-08-28T02:10:01Z",
+      "milestone_id": "_moderate/wilelaiki-style-leak",
+      "raw_sha256": "278938aba69fde528c91e305d639e6eacffb3fbb16cbf3ed3ade5a667cd27b2a",
+      "error": "status 'resolved' not in unified vocabulary (['action_required', 'deferred', 'in-progress', 'invalidated', 'not-started', 'reopened', 'superseded', 'validated'])",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 16,
+      "event_id": "278938ab-a69f-de52-8c91-e305d639e6ea",
+      "ts": "2026-08-28T02:10:01Z",
+      "milestone_id": "_moderate/wilelaiki-style-leak",
+      "raw_sha256": "278938aba69fde528c91e305d639e6eacffb3fbb16cbf3ed3ade5a667cd27b2a",
+      "error": "confidence must be an object",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 32,
+      "event_id": "dcfdf5af-8bfa-4155-9475-87c5f89164cd",
+      "ts": "2026-08-28T02:12:00Z",
+      "milestone_id": "_deferred/niu-status-uncertainty",
+      "raw_sha256": "27686a49c26c20fc15b59efb17bdd3cc57ae03388a3c1322ca518dc7c51b72d4",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 33,
+      "event_id": "27cc30e8-f0b2-4b2b-8d7e-3a2f5b78da18",
+      "ts": "2026-08-28T02:12:00Z",
+      "milestone_id": "_deferred/hala-status-uncertainty",
+      "raw_sha256": "56a0ee1fee18fd21385fbd5cb401a6d605115bfe360e9e1d20c1901af226ae26",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 34,
+      "event_id": "1c288a6c-3c37-4afc-853b-4b18f7c7e192",
+      "ts": "2026-08-28T02:12:00Z",
+      "milestone_id": "_stale/emit_cycle1_events",
+      "raw_sha256": "c049aec8966c919dd749949af53e9d3c715603f45cbf858db060ee1f20bd6c07",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 34,
+      "event_id": "1c288a6c-3c37-4afc-853b-4b18f7c7e192",
+      "ts": "2026-08-28T02:12:00Z",
+      "milestone_id": "_stale/emit_cycle1_events",
+      "raw_sha256": "c049aec8966c919dd749949af53e9d3c715603f45cbf858db060ee1f20bd6c07",
+      "error": "superseded event for '_stale/emit_cycle1_events' missing 'supersedes' field",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 35,
+      "event_id": "51d2478d-fcc7-4706-ac17-00ca933bcaa7",
+      "ts": "2026-08-28T02:12:00Z",
+      "milestone_id": "_run/cycle-1-close",
+      "raw_sha256": "ff629c62677a25c31d89b73ea86d85e9d40cd1b965117be64ddf246fd01b48a6",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 36,
+      "event_id": "e4b50e1e-89c1-4efb-8489-363feea633a0",
+      "ts": "2026-08-28T02:19:00Z",
+      "milestone_id": "M-notable-tier-broaden",
+      "raw_sha256": "28bbaa26da9569acc083f0e55d44a3a9146bd367315870dd1eab5525ccbb75a1",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 37,
+      "event_id": "a0800ca3-fe69-48b4-a886-15a22f7d10bb",
+      "ts": "2026-08-28T02:19:00Z",
+      "milestone_id": "_deferred/niu-status-uncertainty",
+      "raw_sha256": "71fff5c3a4f6a4cdf8c3e336a09887bf704b2847e9f27ccd58bf7417a2f1823c",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    },
+    {
+      "line": 38,
+      "event_id": "40665041-c465-4361-a800-474a469bbec9",
+      "ts": "2026-08-28T02:19:00Z",
+      "milestone_id": "_deferred/hala-status-uncertainty",
+      "raw_sha256": "901c2e8353794be66b152a3fff96861a01e7be22cf1b5197c311a63b3be6c2c7",
+      "error": "confidence.assessor 'auditor-on-behalf-of-worker' not recognized",
+      "rationale": "Cycle-2 post-merge integration: historical malformed event predating schema normalization; content preserved in append-only log, waived here."
+    }
+  ]
+}

@@ -10,6 +10,7 @@ Public artifacts from selected long-exposure research runs.
 - `Residual_Minimization_ML_Reliability/` - A long-exposure run exploring when residual minimization objectives in scientific machine learning do or do not certify reliability, including theorem sketches, toy simulations, figures, tests, audits, and final synthesized outputs.
 - `Rogers_Ramanujan_Derivation/` - A long-exposure run exploring a derivation-first proof trail for the Rogers-Ramanujan identities, including proof notes, symbolic probes, validation artifacts, audits, and final reports.
 - `Random_Hyperbolic_Surface_Spectral_Rigidity/` - A long-exposure run reconstructing and extending a random hyperbolic surface spectral-rigidity paper, including proof ledgers, finite Schreier benchmarks, obstruction maps, datasets, scripts, audits, and final reports.
+- `Kauai-field-guide/` - A long-exposure run producing a self-contained offline HTML field guide to the plants of Kauai's unpopulated coast (46 species across common / notable / rare & exotic tiers, 113 openly licensed photos plus SVG identification diagrams); open `Kauai-field-guide/site/index.html`.
 
 The checked-in artifacts are intended as inspectable research outputs rather than a reusable software package. Some paths in generated logs were sanitized from local machine paths before publication.
 

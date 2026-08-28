@@ -1,0 +1,85 @@
+slug: cassytha-filiformis
+scientific_name: Cassytha filiformis
+authority: L.
+family: Lauraceae
+common_names:
+  hawaiian: [kaunaʻoa pehu, kaunaʻoa lei, kaunaʻoa uka]
+  english: [love vine, devil's gut, laurel dodder]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, sea_cliff, valley_mouth]
+tier: common
+occurrence_notes: >-
+  A conspicuous parasitic vine of Hawaiian coastal shrublands, common on
+  Nāpali coastal cliff-tops draped over naupaka, ʻilima, ʻāweoweo, and
+  ʻaʻaliʻi. Pantropical; occurs on the roadless Kauaʻi coast from
+  Nuʻalolo Kai through Kalalau and at Māhāʻulepū on cliff-shrub margins.
+how_to_identify:
+  growth_form: >-
+    Leafless twining parasitic vine that scrambles over host shrubs,
+    forming loose masses of yellow-orange wiry thread-like stems
+    draped across the host canopy.
+  leaves: >-
+    Reduced to tiny scales, effectively absent as identification
+    features. The stems themselves are the photosynthetic tissue.
+  flowers: >-
+    Tiny greenish-white, 3-parted, ~2 mm across, borne in small
+    inconspicuous spikes along the stem.
+  fruit: >-
+    Small round white berry, ~5–8 mm, one-seeded, often persistent on
+    the vine and easy to see against the orange stems.
+  bark_stem: >-
+    Wiry orange to pale yellow-green stems 1–2 mm thick, with visible
+    swollen attachment points (haustoria) where the vine has fused into
+    its host to draw water and nutrients.
+  size: Vines to several metres long draping across host shrubs.
+  zone_hint: >-
+    Over the tops of native coastal shrub canopies on cliff-top rims,
+    strand-edge scrub, and dry valley-mouth thickets.
+  clinchers:
+    - Leafless orange to yellow-green wiry vine draped over another plant's canopy — a signature Nāpali cliff-top sight.
+    - Visible swollen haustorial bumps where the vine attaches to host stems (hand-lens confirms).
+    - Small round white berries along the vine (unlike the yellow-orange berries of Cuscuta).
+  look_alikes:
+    - species: Cuscuta sandwichiana (kaunaʻoa, endemic dodder)
+      how_to_distinguish: >-
+        Cuscuta is much finer and brighter orange, with more slender
+        thread-like stems and pale orange or yellow flowers/fruits
+        rather than white berries. Cuscuta is mostly upland or
+        freshwater-margin; Cassytha is the coastal species. The two
+        share the "kaunaʻoa" name in Hawaiian usage, which is exactly
+        why the berry colour and stem thickness matter.
+    - species: Cuscuta campestris (introduced dodder)
+      how_to_distinguish: >-
+        Very fine bright yellow-orange threads on herbaceous hosts,
+        typically in disturbed inland ground rather than on woody
+        coastal shrub canopies.
+ecology: >-
+  Obligate stem-parasite that takes water and photosynthates from a wide
+  range of host species. Ecologically important as a native shrub-level
+  regulator; heavy infestations can suppress preferred host shrubs but
+  the parasite is part of the native community.
+cultural_significance: >-
+  Kaunaʻoa (the name) is used in Hawaiian tradition for both Cassytha
+  and Cuscuta and appears in mele and moʻolelo referencing coastal
+  wahi. This guide names that tradition and defers cultural detail to
+  Hawaiian practitioners.
+hazards: >-
+  TOXIC — do not consume. The vine and its small white berries contain
+  alkaloids (including aporphine-type alkaloids) and are not edible.
+  If you see white berries on an orange twining vine, do not eat them
+  and do not include this plant in any food gathering.
+images:
+  - id: a-cassytha-filiformis-habit-01
+    role: habit
+    diagnostic_pointer: "Orange leafless twining parasitic vine draped over host shrubs."
+  - id: a-cassytha-filiformis-on-host-01
+    role: habitat
+    diagnostic_pointer: "Vine smothering a native ʻaʻaliʻi host — yellow-orange stems and haustorial attachments are diagnostic."
+  - id: a-cassytha-filiformis-flowering-01
+    role: fruit
+    diagnostic_pointer: "Flowering / fruiting habit — small round white berries are the alkaloidal, toxic fruits."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Twining / draping vine habit — Cassytha climbs over host canopies rather than trailing on the ground."
+citations: ["A:1", "A:6", "A:7", "A:12", "A:13", "A:14"]

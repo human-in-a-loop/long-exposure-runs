@@ -1,0 +1,81 @@
+slug: chamaesyce-degeneri
+scientific_name: Chamaesyce degeneri
+authority: Sherff
+family: Euphorbiaceae
+common_names:
+  hawaiian: [ʻakoko]
+  english: [Degener's sandmat, coastal ʻakoko]
+status: endemic
+conservation_status: null
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Hawaiian endemic prostrate ʻakoko of low coastal ground. Records include
+  coastal Kauaʻi; on the roadless coast, likely on exposed calcareous or
+  basaltic pans and stabilized dune surfaces. Kauaʻi has additional coastal
+  ʻakoko species (e.g., *C. celastroides* varieties), so genus-level
+  identification is often more reliable in the field than species-level.
+how_to_identify:
+  growth_form: >-
+    A prostrate perennial herb forming low mats, all vegetative parts
+    exuding a milky white latex when broken (Euphorbiaceae signature).
+  leaves: >-
+    Opposite, small (0.5–1.5 cm), oblong-elliptic, thin, with entire to
+    slightly toothed margins and a distinctly asymmetric base — another
+    Chamaesyce genus signature.
+  flowers: >-
+    Not true flowers but cyathia — the tiny cup-shaped Euphorbiaceae
+    reproductive structure, ~1–2 mm across, holding a cluster of stamens
+    and a single pistil. Cyathia sit in leaf axils; look for glandular
+    appendages around the rim.
+  fruit: A small (~2 mm) three-lobed capsule that splits explosively at maturity.
+  bark_stem: Slender green to reddish trailing stems, thin, breaking easily.
+  size: Prostrate mats to 30–60 cm across; only a few cm tall.
+  zone_hint: >-
+    Open dry ground on strand, low dune, coral rubble pans; often on hot
+    exposed micro-sites where competition is low.
+  clinchers:
+    - Milky white latex from any broken stem or leaf — genus signature (be careful — see hazards).
+    - Opposite small leaves with an asymmetric base and often slightly toothed margin.
+    - Prostrate low-mat habit on exposed dry coastal ground.
+    - Cyathia (tiny cup-shaped flower structures) with rim glands — hand lens confirms.
+  look_alikes:
+    - species: Chamaesyce celastroides (and varieties, including var. stokesii on Kauaʻi)
+      how_to_distinguish: >-
+        Another Hawaiian endemic coastal ʻakoko. In the field these
+        Chamaesyce are often not separable without close inspection of
+        the cyathial appendages and habit. Note the plant as "coastal
+        ʻakoko / Chamaesyce sp." and consult Wagner et al. [A:1] and
+        Herbst & Wagner [A:5] for identification.
+    - species: Euphorbia peplus, E. maculata, other introduced spurges
+      how_to_distinguish: >-
+        Introduced spurges tend to be smaller-leaved weedy annuals of
+        disturbed lawns and gardens, without the specifically coastal
+        habitat. Latex is shared across the family — habitat context is
+        the discriminator.
+    - species: Boerhavia repens (alena)
+      how_to_distinguish: >-
+        Boerhavia also has prostrate opposite-leaved habit but exudes no
+        milky sap when broken. Break a stem — latex present = Chamaesyce,
+        latex absent = not Chamaesyce.
+ecology: >-
+  Pioneer of hot exposed coastal substrates. The milky latex deters some
+  herbivores. Cyathia are pollinated by small flies and native bees.
+cultural_significance: >-
+  ʻAkoko names the Hawaiian coastal spurges collectively; the shared
+  Hawaiian name recognizes the group's milky latex and prostrate form.
+  Framed respectfully.
+hazards: >-
+  Milky latex is irritating to skin and especially to eyes — do not touch
+  eyes after handling any Chamaesyce or Euphorbia in the field.
+images:
+  - id: a-chamaesyce-degeneri-habit-01
+    role: habit
+    diagnostic_pointer: "Prostrate mat with small opposite leaves on open ground."
+  - id: a-chamaesyce-degeneri-flowers-01
+    role: flower
+    diagnostic_pointer: "Cyathia and small three-lobed fruit — Euphorbiaceae reproductive structures, not petals."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate/trailing habit — coastal ʻakoko forms low mats over dry coastal substrate."
+citations: ["A:1", "A:5", "A:6", "A:7", "A:8"]

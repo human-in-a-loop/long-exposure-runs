@@ -1,0 +1,80 @@
+slug: naupaka-kahakai
+scientific_name: Scaevola taccada
+authority: (Gaertn.) Roxb.
+family: Goodeniaceae
+common_names:
+  hawaiian: [naupaka kahakai, naupaka]
+  english: [beach naupaka, half-flower, sea lettuce]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Dominant sprawling shrub on virtually every accessible Nā Pali beach berm
+  (Kalalau, Honopū, Nuʻalolo Kai, Miloliʻi) and on the strand at Māhāʻulepū.
+  The most-encountered coastal shrub on the roadless coast.
+how_to_identify:
+  growth_form: >-
+    Dense mounding-to-sprawling shrub, 1–3 m tall, often forming continuous
+    hedges parallel to the beach.
+  leaves: >-
+    Bright glossy green, thick and fleshy, obovate (widest near the tip),
+    3–20 cm long, clustered toward the branch tips in loose rosettes.
+    Margins entire; venation obscure.
+  flowers: >-
+    White to pale purple, 1.5–2.5 cm, with all five petals arrayed on the
+    lower half only — the "half-flower" — as if a normal flower had been
+    torn down the middle. Borne singly or in small clusters at the leaf axils.
+  fruit: >-
+    Small white succulent drupe about 1 cm across, buoyant, dispersed by
+    ocean currents (which is how it circled the Indo-Pacific).
+  bark_stem: >-
+    Pale-grey pithy stems that snap easily; branches spread horizontally.
+  size: 1–3 m tall, forming clumps up to several metres across.
+  zone_hint: >-
+    Immediately above the wrack line on sandy or gravelly beaches; also on
+    low rocky headlands and stabilized dunes. Rarely more than 50 m inland.
+  clinchers:
+    - Petals only on the lower half of the flower — no other Hawaiian coastal shrub does this.
+    - Glossy, thick, obovate leaves clustered at branch tips.
+    - White succulent drupe (not a dry capsule, not a berry pair).
+    - Dense mounding habit directly above the strand, forming natural hedges.
+  look_alikes:
+    - species: Scaevola gaudichaudiana / S. gaudichaudii and other native mountain naupaka
+      how_to_distinguish: >-
+        Also half-flowered, but they grow at mid- to high-elevation forest
+        edges — not on the beach. If you are on sand or salt spray, you are
+        looking at S. taccada.
+    - species: Heliotropium foertherianum (formerly Tournefortia argentea, tree heliotrope)
+      how_to_distinguish: >-
+        Bigger silvery-hairy leaves in a rosette at branch tips; small white
+        five-radially-symmetric flowers in scorpioid cymes. Not half-flowered.
+ecology: >-
+  Salt-tolerant halophyte whose buoyant fruits establish it as a pantropical
+  strand shrub. On Nā Pali it stabilizes sand berms, provides shade for beach-
+  crabs and juvenile seabirds, and forms the dominant strand community with
+  pōhuehue (Ipomoea pes-caprae) and ʻakiʻaki (Sporobolus virginicus).
+cultural_significance: >-
+  In Hawaiian tradition the half-flower is remembered in the moʻolelo of two
+  separated lovers — often told with a mountain naupaka and a beach naupaka
+  each carrying half of a whole blossom. The plant is respected as a story-
+  keeper of the shoreline rather than harvested for material use.
+hazards: null
+images:
+  - id: naupaka-kahakai-habit-01
+    role: habit
+    diagnostic_pointer: "Mounding shrub massed above the wrack line."
+  - id: naupaka-kahakai-flower-01
+    role: flower
+    diagnostic_pointer: "The five petals are all on the lower side of the flower."
+  - id: naupaka-kahakai-fruit-01
+    role: fruit
+    diagnostic_pointer: "White fleshy drupe — floats and disperses on ocean currents."
+diagrams:
+  - file: leaf-obovate-entire.svg
+    caption: "Obovate leaf with an entire (smooth) margin, clustered at the branch tip."
+  - file: flower-scaevola-half.svg
+    caption: "Scaevola half-flower: five petals arrayed only on the lower side."
+  - file: habit-mounding-shrub.svg
+    caption: "Mounding shrub habit — the standard silhouette above the strand."
+citations: [1, 2, 3, 6]

@@ -1,0 +1,78 @@
+slug: fimbristylis-cymosa
+scientific_name: Fimbristylis cymosa
+authority: R. Br.
+family: Cyperaceae
+common_names:
+  hawaiian: [mauʻu ʻakiʻaki]
+  english: [button sedge, tropical fimbry]
+status: indigenous
+coastal_zones: [strand, dune, sea_cliff]
+tier: common
+occurrence_notes: >-
+  Indigenous tufted sedge of Kauaʻi rocky coasts and upper beaches. Common
+  in exposed calcareous or basaltic pans just above the wrack line at
+  Māhāʻulepū, on the low sea-cliff shelves along Nāpali, and on the upper
+  strand at Kalalau and Nuʻalolo Kai.
+how_to_identify:
+  growth_form: >-
+    A densely tufted perennial sedge forming small clumps 10–30 cm across,
+    lifting a bristle of wiry stems above short flat leaves.
+  leaves: >-
+    Basal, narrow (2–4 mm wide), flat to slightly folded, dark green, all
+    much shorter than the flowering stems. Stems triangular in cross-
+    section — pinch one to feel the three ridges (Cyperaceae sign).
+  flowers: >-
+    Tiny; the inflorescence is a compact brown umbel-like cluster of small
+    ovoid spikelets held at the top of each wiry stem. The whole cluster is
+    what you see, not individual florets.
+  fruit: A minute achene enclosed in each spikelet scale.
+  bark_stem: >-
+    Slender wiry culms, triangular in cross-section, unbranched, arising
+    directly from the tuft.
+  size: 15–40 cm tall from a basal tuft; tufts 10–30 cm across.
+  zone_hint: >-
+    Fully exposed hard substrate above high-tide line: coral rubble, wave-
+    scoured basalt, calcareous flats, and dry back-beach edges.
+  clinchers:
+    - Dense low tuft of sedge with wiry brown-topped stems above the leaves.
+    - Compact brown umbel-like inflorescence — a tight cluster of small ovoid spikelets.
+    - Triangular (three-ridged) stem in cross-section — sedge, not grass.
+  look_alikes:
+    - species: Sporobolus virginicus (ʻakiʻaki grass)
+      how_to_distinguish: >-
+        A true grass, not a sedge — stems are round in cross-section (roll
+        smoothly between fingers), leaves are longer relative to plant, and
+        the inflorescence is a narrow one-sided spike rather than a brown
+        button cluster. The two share the "ʻakiʻaki" name in Hawaiian usage,
+        which is exactly why the cross-section test matters.
+    - species: Cyperus polystachyos (puʻukaʻa)
+      how_to_distinguish: >-
+        Puʻukaʻa is a taller (20–70 cm), coarser tufted sedge with a
+        looser head-like cluster of flat brown-golden spikelets and
+        3–6 leaf-like bracts that project well above the flower head.
+        Fimbristylis has a tighter, compact brown button-like head
+        without long overtopping bracts and typically grows on drier,
+        harder substrates than the moist sand and seep edges preferred
+        by puʻukaʻa. Both are native Kauaʻi coastal sedges.
+ecology: >-
+  A pioneer of exposed calcareous and salt-spray habitats. Its dense root
+  system stabilizes rubble and coral pans and it colonizes rapidly on
+  disturbed strand where finer sediments are absent.
+cultural_significance: >-
+  "Mauʻu ʻakiʻaki" is the common Hawaiian name for this and related low
+  coastal sedges. Its role as a bench-forming ground layer is recognized in
+  coastal restoration and cultural landscape work.
+hazards: null
+images:
+  - id: a-fimbristylis-cymosa-habit-01
+    role: habit
+    diagnostic_pointer: "Densely tufted sedge on strand edge — wiry stems above short flat leaves."
+  - id: a-fimbristylis-cymosa-inflorescence-01
+    role: inflorescence
+    diagnostic_pointer: "Brown umbel-like cluster of small ovoid spikelets at the top of each wiry stem."
+diagrams:
+  - file: habit-grass-tuft.svg
+    caption: "Basal tuft habit — Fimbristylis is a sedge, not a grass; the tuft silhouette is similar but stems are triangular."
+  - file: leaf-linear-grass.svg
+    caption: "Narrow linear leaves like a grass — the sedge is distinguished by its triangular stem and umbel-like brown inflorescence."
+citations: ["A:1", "A:6", "A:7"]

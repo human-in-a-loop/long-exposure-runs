@@ -1,0 +1,114 @@
+slug: schiedea-apokremnos
+scientific_name: Schiedea apokremnos
+authority: H.St.John
+family: Caryophyllaceae
+common_names:
+  hawaiian: []
+  english: [cliff schiedea, Nā Pali sea-cliff schiedea]
+status: endemic
+conservation_status: "US Endangered (federally listed)"
+coastal_zones: [sea_cliff]
+tier: rare_exotic
+occurrence_notes: >-
+  Kauaʻi endemic. Known from a very small number of near-vertical
+  basalt sea cliffs on the Nā Pali coast, growing in cliff-face
+  crevices where feral goats cannot reach. One of the most
+  restricted plants in the guide; most population points are
+  known only from rope surveys or boat/offshore vantage. Not a
+  plant the average hiker will encounter — included because it
+  is a signature Nā Pali coastal endemic and a good visual anchor
+  for cliff-face biology.
+how_to_identify:
+  growth_form: >-
+    Low subshrub, often pendent from the cliff face — multiple
+    slender, semi-woody branches trailing outward and downward
+    from a woody rootstock wedged into a rock crevice. Total
+    branch length on established plants can reach 0.5–1 m; the
+    plant does not stand erect off the cliff.
+  leaves: >-
+    Narrow, linear-oblanceolate, fleshy-succulent, 2–5 cm long
+    and only a few millimeters wide; opposite along the slender
+    stems (Caryophyllaceae — leaves in pairs, one pair per node).
+    Green to slightly glaucous; a hand lens shows a smooth glabrous
+    surface without conspicuous hairs.
+  flowers: >-
+    Small, wind-pollinated, greenish-white, in open branched
+    clusters (cymes) at the shoot tips. Individual flowers ~5 mm
+    across; petals absent or minute — the visible parts are
+    mostly the five green-white sepals and the small stamens.
+    Unshowy but distinctive when a shoot is examined.
+  fruit: >-
+    Small dry capsule opening at the top by three valves,
+    releasing tiny dark seeds; not conspicuous from a distance.
+  bark_stem: >-
+    Slender woody stems at the base, becoming green and herbaceous
+    toward the tips; older stems grey-brown.
+  size: >-
+    Individual branches to 0.5–1 m long; the plant hugs the cliff
+    rather than standing tall.
+  zone_hint: >-
+    Near-vertical to overhanging basalt sea cliffs, essentially
+    at the sea/rock interface. Observed most reliably from a boat
+    passing beneath Nā Pali cliffs during calm weather.
+  clinchers:
+    - Pendent low subshrub rooted in a cliff-face crevice — no other Kauai coastal plant grows quite this way.
+    - Narrow, fleshy, opposite (paired-at-a-node) succulent leaves — the Caryophyllaceae signature at this scale.
+    - Small unshowy greenish-white flowers in open clusters, wind-pollinated.
+  look_alikes:
+    - species: Schiedea membranacea and other upland Schiedea
+      how_to_distinguish: >-
+        Other Kauaʻi *Schiedea* grow in higher-elevation mesic to wet
+        forest, are usually more erect, and are found nowhere near
+        the sea. If it is on a Nā Pali sea cliff, it is not one of
+        those species.
+    - species: Portulaca species (small coastal succulents)
+      how_to_distinguish: >-
+        Portulaca leaves are alternate (single at a node), fleshy-
+        cylindrical, and its flowers are showy pink to yellow with
+        obvious petals — the opposite of Schiedea's small greenish
+        petal-less flowers and paired leaves.
+    - species: Brighamia insignis (ʻālula, in this guide)
+      how_to_distinguish: >-
+        ʻĀlula is a stout single-stemmed succulent with a terminal
+        rosette of paddle-shaped leaves — very different growth form,
+        though it shares the sea-cliff habitat.
+ecology: >-
+  A relict of Kauaʻi's near-shore cliff flora. Its sea-cliff refuge
+  is exactly the microhabitat that feral goats and pigs cannot
+  reach; extirpation of near-cliff-top populations by ungulates and
+  landslide loss of individual crevices are the main ongoing
+  threats. Wind pollination is consistent with life in an
+  environment where insect pollinators are scarce.
+cultural_significance: null
+hazards: null
+uncertainty: >-
+  Anatomy details (petal presence, exact stem length range) are
+  drawn from published *Schiedea* revisions; individual wild plants
+  may vary. Do NOT climb or approach any Nā Pali sea-cliff plant —
+  a federally listed species and inherently dangerous terrain.
+image_search_notes: >-
+  As of cycle 2, an exhaustive Wikimedia Commons search returned
+  zero photographs of *Schiedea apokremnos* under any Creative
+  Commons license. The only hit was a US Fish and Wildlife Service
+  Kauaʻi plant-cluster recovery-plan PDF (public domain) that does
+  not contain a diagnostic plant photograph. NTBG holds photographs
+  of the species in its Meet the Plants database, but the license
+  terms on those pages are all-rights-reserved and cannot be
+  redistributed here. THIS PROFILE THEREFORE USES SVG-ONLY
+  VISUALS — two hand-authored diagrams (habit-cliff-pendent-
+  subshrub, leaf-narrow-succulent) satisfy the ≥ 2 visual minimum
+  while remaining license-clean. If a future cycle finds a
+  license-verifiable photograph on Wikimedia or in a USFWS/NPS
+  media library, it should be added and this note updated.
+_migration_note: >-
+  Written during cycle-2 Branch C fan-out. Uses the single shared
+  data/images.json manifest and integer citation numbers. Two new
+  SVG diagrams were authored for this profile: habit-cliff-pendent-
+  subshrub.svg and leaf-narrow-succulent.svg.
+images: []
+diagrams:
+  - file: habit-cliff-pendent-subshrub.svg
+    caption: "Habit schematic — low pendent subshrub anchored in a sea-cliff crevice, with slender branches trailing outward and downward over basalt. The rock-face microhabitat is the plant's ecological signature."
+  - file: leaf-narrow-succulent.svg
+    caption: "Leaf schematic — narrow, linear, fleshy succulent leaves in opposite pairs on a slender stem (the Caryophyllaceae paired-leaf arrangement)."
+citations: [1, 2, 3, 5, "C:2", "C:4"]

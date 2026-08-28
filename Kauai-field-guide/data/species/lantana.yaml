@@ -1,0 +1,71 @@
+slug: lantana
+scientific_name: Lantana camara
+authority: L.
+family: Verbenaceae
+common_names:
+  hawaiian: [lākana]
+  english: [lantana, common lantana, wild sage]
+status: invasive
+conservation_status: "Hawaii state noxious weed; global top-100 invasive (IUCN ISSG)"
+coastal_zones: [sea_cliff, valley_mouth]
+tier: rare_exotic
+occurrence_notes: >-
+  Widespread on dry stretches of the Nā Pali–Kona coast and lower slopes
+  of the drier Nā Pali valleys; forms thorny thickets on disturbed soil.
+how_to_identify:
+  growth_form: >-
+    Arching, often thorny shrub, 1–3 m tall, forming dense many-branched
+    tangles. Stems square in cross-section, with recurved prickles.
+  leaves: >-
+    Ovate, opposite, 3–8 cm long, dull green with a rough (sandpapery)
+    upper surface and prominent venation. Margins finely toothed.
+    Strongly aromatic when crushed (unpleasant to most people).
+  flowers: >-
+    Tiny (~4 mm) tubular flowers packed into flat-topped rounded heads
+    2–3 cm across. Flowers change colour as they age within the head, so
+    a single head often shows yellow centre, orange middle, and pink or
+    red outer flowers simultaneously — this multicoloured head is the
+    single most diagnostic feature.
+  fruit: >-
+    Small round drupe, ~5 mm, green ripening blue-black; borne in
+    clusters.
+  bark_stem: Square-sectioned stems with recurved prickles; grey-brown bark.
+  size: 1–3 m tall, forming thickets several metres across.
+  zone_hint: >-
+    Dry, disturbed slopes and old track edges on the leeward coastal
+    strip; also spreads into valley mouths after fire or grazing history.
+  clinchers:
+    - Multi-coloured flat-topped flower heads — yellow to orange to pink in the same head.
+    - Square stem with backward-curving prickles.
+    - Strongly aromatic (unpleasant) crushed leaf odour.
+    - Blue-black berry clusters when in fruit.
+  look_alikes:
+    - species: Lantana montevidensis (trailing lantana)
+      how_to_distinguish: >-
+        Also naturalized in Hawaiʻi, but low sprawling, purple/pink flowers
+        only (never multicoloured), no prickles.
+    - species: Verbena species
+      how_to_distinguish: >-
+        Verbenas have narrower spikes of same-coloured flowers, not the
+        colour-changing flat-topped heads of Lantana camara.
+ecology: >-
+  Native to the American tropics; introduced worldwide as an ornamental
+  and now one of the world's most damaging invasive shrubs. In Hawaiʻi
+  it dominates dry disturbed land, poisoning livestock, providing dense
+  fuel for wildfires, and displacing native shrubs. Bird-dispersed
+  seeds carry it into remote coastal slopes.
+cultural_significance: null
+hazards: >-
+  Green (unripe) berries and foliage are toxic to livestock, dogs, and
+  humans. Prickly stems tear clothing and skin. Handle only with gloves.
+images:
+  - id: lantana-flowers-01
+    role: flower
+    diagnostic_pointer: "The multicoloured head — yellow, orange, pink flowers together — is diagnostic."
+  - id: lantana-habit-01
+    role: habit
+    diagnostic_pointer: "Arching prickly thicket on dry coastal ground."
+diagrams:
+  - file: leaf-ovate-serrate.svg
+    caption: "Ovate leaf with a serrate margin; opposite in Lantana."
+citations: [1, 2, 13, 14]

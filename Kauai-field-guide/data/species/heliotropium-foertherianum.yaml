@@ -1,0 +1,88 @@
+slug: heliotropium-foertherianum
+scientific_name: Heliotropium foertherianum
+authority: Diane & Hilger
+family: Boraginaceae
+common_names:
+  hawaiian: [hinahina kū kahakai, tahinu]
+  english: [tree heliotrope, velvet-leaf soldierbush, octopus bush]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, sea_cliff, dune]
+tier: common
+occurrence_notes: >-
+  A conspicuous silvery-leaved small tree of Kauaʻi's coastal strand and
+  low sea-cliff shelves. On the roadless coast it grows above the wrack
+  line at Nāpali beaches and on the Māhāʻulepū strand. Formerly placed in
+  the genus *Tournefortia* as *T. argentea*.
+how_to_identify:
+  growth_form: >-
+    A rounded, densely-branched small tree or large shrub, 2–8 m tall, with
+    a broad low crown and thick corky twigs. Often grows leaning seaward.
+  leaves: >-
+    Thick, obovate to spatulate, 8–20 cm long, densely covered in short
+    silky white-silvery hairs that make the whole crown look pale grey-
+    green from a distance. Clustered in dense rosettes at the branch tips.
+    Margins entire.
+  flowers: >-
+    Tiny (~4 mm) white flowers arranged along one side of a coiled
+    (scorpioid) cyme resembling a fern crozier that unfurls as the buds
+    open — this cyme shape is diagnostic in the family.
+  fruit: >-
+    A small (4–6 mm), corky, buoyant, greenish-white to pale-brown four-
+    parted rounded drupe. Floats and disperses on ocean currents.
+  bark_stem: Pale grey-brown, thick and slightly corky on older stems.
+  size: 2–8 m tall, crown often as wide as the plant is tall.
+  zone_hint: >-
+    Immediately above the strand on sandy or rocky substrate, on low sea-
+    cliff shelves, and around lagoon margins.
+  clinchers:
+    - Silvery velvety obovate leaves clustered in tight rosettes at branch tips — visible from a hundred metres away.
+    - Tiny white flowers arranged along one side of a coiled (scorpioid) cyme — a Boraginaceae signature.
+    - Rounded corky buoyant fruit dispersing on the tide.
+    - Rounded dense low crown of a small coastal tree.
+  look_alikes:
+    - species: Cordia subcordata (kou)
+      how_to_distinguish: >-
+        Kou has broadly ovate, smooth (not silvery-hairy) leaves and showy
+        bright-orange trumpet flowers about 4 cm across — an unmistakable
+        contrast once the flowers or leaves are seen up close.
+    - species: Scaevola taccada (naupaka kahakai)
+      how_to_distinguish: >-
+        Naupaka's leaves are bright glossy green (not silvery), fleshy but
+        smooth, and its flowers are the diagnostic half-flower rather than
+        the scorpioid cyme of heliotrope.
+    - species: Argusia (older Tournefortia relative treatments)
+      how_to_distinguish: >-
+        Nomenclatural shuffle only; same plant in older Hawaiian floras
+        under *Tournefortia argentea* or *Argusia argentea*. Modern floras
+        (Wagner et al. supplement, Herbst & Wagner 2004) use *Heliotropium
+        foertherianum*.
+ecology: >-
+  Salt-tolerant halophyte with buoyant fruits that establish it on pan-
+  tropical strands. Stabilizes back-beach sand, offers windbreak and cover
+  for shore-nesting seabirds, and (like naupaka) forms part of the classic
+  strand shrub matrix.
+cultural_significance: >-
+  "Hinahina" refers to several silvery-leaved coastal plants in Hawaiian
+  usage; hinahina kū kahakai names this species specifically. Framed
+  respectfully; harvesting practices are not covered here.
+hazards: null
+uncertainty: >-
+  The biogeographic status of *Heliotropium foertherianum* in Hawaiʻi is
+  most often treated as indigenous (present pre-contact via natural ocean
+  dispersal — its buoyant corky fruit is well-suited to it). Some recent
+  treatments (see Imada 2019 checklist [A:6]) note ambiguity about whether
+  the earliest Hawaiian records represent a truly pre-Polynesian arrival
+  or an early post-Polynesian introduction. This guide follows Wagner et
+  al. and treats it as indigenous while flagging the discussion.
+images:
+  - id: a-heliotropium-foertherianum-habit-01
+    role: habit
+    diagnostic_pointer: "Silvery-leaved coastal tree with a broad low crown."
+  - id: a-heliotropium-foertherianum-flowers-01
+    role: flower
+    diagnostic_pointer: "Tiny white flowers along one side of a coiled (scorpioid) cyme."
+diagrams:
+  - file: leaf-obovate-entire.svg
+    caption: "Obovate leaf with entire margin — matches the leaves of hinahina kū kahakai (silvery in life)."
+citations: ["A:1", "A:2", "A:6", "A:7"]

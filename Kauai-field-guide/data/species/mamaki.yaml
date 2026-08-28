@@ -1,0 +1,99 @@
+slug: mamaki
+scientific_name: Pipturus albidus
+authority: (Hook. & Arn.) A.Gray
+family: Urticaceae
+common_names:
+  hawaiian: [māmaki]
+  english: [waimea pipturus, mamaki]
+status: endemic
+conservation_status: null
+coastal_zones: [valley_mouth, riparian]
+tier: notable
+occurrence_notes: >-
+  Moist stream drainages reaching the coast at Nā Pali valley mouths;
+  populations also in drier valleys where enough shade and seep water
+  persists. On the Kauaʻi unpopulated coast, māmaki is most easily
+  seen in the wetter valley-bottom forest just above the beach — not
+  on open sea cliffs.
+how_to_identify:
+  growth_form: >-
+    Shrub to small tree 2–6 m, often multi-stemmed from the base with
+    an open branching form.
+  leaves: >-
+    Alternate, simple, ovate to elliptic, 5–15 cm long, with a rounded
+    to subcordate base, an acuminate tip, and a serrate to crenate
+    margin. **Diagnostic feature: three prominent veins emerge together
+    from the leaf base** — a strong midrib and two lateral veins running
+    a large fraction of the leaf length. Petiole often tinged reddish
+    on younger growth. **Leaf underside is distinctly pale-whitish**
+    (from a coating of fine hairs), an easy field mark: turn one over.
+  flowers: >-
+    Small greenish and inconspicuous, in dense compact clusters in the
+    leaf axils; individually not showy.
+  fruit: >-
+    Small white fleshy compound fruits — the tiny individual fruits fuse
+    into a soft whitish cluster with dark seeds embedded in it. The
+    compound cluster looks a bit like a small white berry with dark
+    dots.
+  bark_stem: Slender, grey-brown, smooth on younger stems.
+  size: 2–6 m tall.
+  zone_hint: >-
+    Moist valley-bottom forest and stream margins at Nā Pali valley
+    mouths; look for it just above the beach where a stream reaches
+    the coast.
+  clinchers:
+    - Three main veins emerging together from the leaf base (3-veined base).
+    - Leaf underside pale-whitish from fine hairs — flip a leaf to check.
+    - Small white fleshy compound fruit cluster in leaf axils.
+    - "**No stinging hairs** — despite being in the nettle family (Urticaceae), māmaki is completely non-stinging. If your palm brushed a leaf and there was no sting, you have not ruled it out."
+  look_alikes:
+    - species: Introduced *Boehmeria* spp. and other Urticaceae
+      how_to_distinguish: >-
+        Introduced Urticaceae in Hawaiʻi generally lack the strong 3-veined
+        base *plus* the pale whitish underside combination. Check both
+        features together — either alone is not diagnostic. Some Boehmeria
+        have serrate leaves with a pinnate venation pattern (one strong
+        midrib, secondaries branching off it), which is different from
+        māmaki's basal three-veined arrangement.
+    - species: Olonā (*Touchardia latifolia*, native endemic Urticaceae)
+      how_to_distinguish: >-
+        Olonā is smaller and its leaves are narrower and lack the
+        conspicuous three-veined base of māmaki. Olonā's leaf venation
+        is dominated by a single midrib. Olonā is not currently included
+        in this guide but is worth knowing at Nā Pali valley bottoms.
+    - species: Introduced *Cecropia* ornamentals
+      how_to_distinguish: >-
+        Cecropia leaves are much larger and palmately lobed, with a
+        clearly star-shaped outline. No confusion with māmaki.
+ecology: >-
+  Hawaiian endemic in the nettle family (Urticaceae); occupies moist
+  lowland-to-mesic forest across the main Hawaiian Islands. Larval
+  host plant for the Kamehameha butterfly (*Vanessa tameamea*) — the
+  presence of māmaki along a Nā Pali valley stream can indicate
+  suitable Kamehameha butterfly habitat.
+cultural_significance: >-
+  Māmaki bark fibre was worked into tapa (kapa) cloth as a supplementary
+  material to wauke (*Broussonetia papyrifera*, the primary bark-cloth
+  plant). Leaves have long been brewed as māmaki tea, a tradition
+  that continues today alongside a small commercial industry. Fruit
+  is occasionally eaten. This guide names the traditional uses; the
+  transmission of tea preparation and bark-fibre work belongs to
+  Hawaiian cultural practitioners and to contemporary māmaki
+  growers and educators.
+hazards: null
+taxonomic_notes: >-
+  Wagner, Herbst & Sohmer 1999 recognises several subspecies and
+  varieties of *Pipturus albidus* across the Hawaiian Islands; this
+  guide uses the species-level treatment as sufficient for field
+  identification on the Kauaʻi coast.
+images:
+  - id: mamaki-leaves-01
+    role: leaves
+    diagnostic_pointer: "Leaves showing the 3-veined base — the single most diagnostic feature."
+  - id: mamaki-shoot-01
+    role: leaves and habit
+    diagnostic_pointer: "Leafy shoot; flip a leaf over to see the pale-whitish underside."
+diagrams:
+  - file: leaf-ovate-serrate.svg
+    caption: "Ovate leaf with serrate margin — māmaki matches this general shape."
+citations: [1, 2, "B:10", "B:11", "B:13", "B:14"]

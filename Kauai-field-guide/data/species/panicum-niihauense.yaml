@@ -1,0 +1,116 @@
+slug: panicum-niihauense
+scientific_name: Panicum niihauense
+authority: H.St.John
+family: Poaceae
+common_names:
+  hawaiian: [lauʻehu]
+  english: [Niʻihau panicgrass]
+status: endemic
+conservation_status: "US Endangered (federally listed)"
+coastal_zones: [dune, strand]
+tier: rare_exotic
+occurrence_notes: >-
+  Originally described from Niʻihau, where it is now considered
+  extirpated. The remaining wild population on the main Hawaiian
+  Islands is on the Kauaʻi side, associated with the coastal
+  strand and dune remnants at the northwest end of the Nā Pali–
+  Kona coast (near Polihale). Sits at the very boundary of the
+  guide's "unpopulated coast" scope; a listed species that a
+  boater or a Kalalau/Polihale hiker may encounter.
+how_to_identify:
+  growth_form: >-
+    Coarse perennial bunchgrass forming clumps 0.5–1.2 m tall. Not
+    stoloniferous — it does not form the low mat of ʻakiʻaki
+    (Sporobolus virginicus) that shares similar habitat.
+  leaves: >-
+    Long (20–40 cm), narrow (5–15 mm wide) leaf blades, folded or
+    weakly rolled toward the tip, tapering to a fine point. Blades
+    green to blue-green, with a prominent white midrib on the
+    underside; sheaths mostly glabrous but often with a few long
+    hairs near the collar.
+  flowers: >-
+    Open, airy panicle 15–35 cm long at the top of each culm, with
+    slender spreading branches. Individual spikelets small (~3 mm),
+    two-flowered, greenish to purplish. Flowers spring through
+    autumn depending on rainfall.
+  fruit: >-
+    Small grass caryopsis (grain) hidden inside the persistent
+    lemma and palea after the spikelet matures.
+  bark_stem: >-
+    Not applicable — herbaceous. Culms (flowering stems) upright,
+    solid at the nodes.
+  size: 0.5–1.2 m tall.
+  zone_hint: >-
+    Coastal strand and back-dune, on sandy or sandy-calcareous
+    substrate; at Polihale, in low remnant dune vegetation behind
+    the beach.
+  clinchers:
+    - Coarse tall bunchgrass (0.5–1.2 m) — much larger than mat-forming ʻakiʻaki.
+    - Wide, tapering, prominently white-midribbed leaf blade.
+    - Open airy panicle inflorescence at Polihale-side coastal dune.
+  look_alikes:
+    - species: Sporobolus virginicus (ʻakiʻaki, in this guide)
+      how_to_distinguish: >-
+        ʻAkiʻaki forms a low, sod-like mat with slender spike-like
+        panicles rising only 10–30 cm; Panicum niihauense forms
+        upright clumps three to four times taller with open, spreading
+        panicles.
+    - species: Cenchrus / Pennisetum bunchgrasses (introduced)
+      how_to_distinguish: >-
+        Many introduced coastal bunchgrasses have bristly, spike-like
+        inflorescences (buffelgrass, foxtail); Panicum niihauense has
+        an airy, open-branched panicle with tiny greenish spikelets,
+        no bristles.
+    - species: Eragrostis variabilis (kāwelu, native bunchgrass)
+      how_to_distinguish: >-
+        Kāwelu also forms upright clumps but its spikelets are many-
+        flowered and packed differently; leaves usually more slender
+        and often more rolled than Panicum niihauense.
+ecology: >-
+  A grass of coastal dune and strand; part of the pre-contact native
+  coastal-grass flora that has been largely displaced across the
+  main Hawaiian Islands by introduced grasses, browsing by feral
+  ungulates, and coastal habitat loss. Recovery efforts include
+  seed collection and outplanting at protected sites.
+cultural_significance: >-
+  Recognized in Hawaiian by the name lauʻehu. Native coastal
+  bunchgrasses provided cover and stability to dune systems in the
+  pre-contact landscape.
+hazards: null
+uncertainty: >-
+  Whether the coastal Kauaʻi population presently persists as a
+  wild self-sustaining stand at Polihale, versus survives largely
+  through outplanting from cultivated stock, is not fully resolved
+  in publicly available sources; treat any observed clump on the
+  strand as a listed species — observe from a distance and do not
+  trample.
+image_search_notes: >-
+  Cycle 3 (Branch C) extended the license allow-list to include CC-BY-2.0.
+  Two David Eickhoff living-plant photographs (cultivated Oʻahu material)
+  were then added: one habit shot showing the coarse bunchgrass form, one
+  flowering-panicle close-up. A single CC0 Smithsonian NMNH herbarium
+  sheet (Kauaʻi collection) is retained as historical / taxonomic
+  reference; the second herbarium sheet from cycle 2 was retired as
+  redundant. All three photos remain cultivated-source (no
+  license-verifiable wild-Polihale photograph has surfaced); the living
+  plant material shows the diagnostic characters faithfully.
+_migration_note: >-
+  Written during cycle-2 Branch C fan-out. Cycle-3 Branch C re-imaged
+  under expanded CC-BY-2.0 allow-list: retired specimen-02, added
+  living-habit-01 + living-flowers-01 (both David Eickhoff, CC-BY-2.0).
+images:
+  - id: panicum-niihauense-living-habit-01
+    role: habit
+    diagnostic_pointer: "Living cultivated plant on Oʻahu — the coarse upright bunchgrass habit, much taller and more open than the low mat of ʻakiʻaki. Wild Polihale plants look like this."
+  - id: panicum-niihauense-living-flowers-01
+    role: flowers
+    diagnostic_pointer: "Airy open panicle with tiny greenish spikelets — not the bristly spike of introduced coastal bunchgrasses."
+  - id: panicum-niihauense-specimen-01
+    role: habit
+    diagnostic_pointer: "Kauaʻi herbarium sheet from Smithsonian NMNH; roots, culms, and inflorescence to scale — retained as a taxonomic anchor."
+diagrams:
+  - file: leaf-linear-grass.svg
+    caption: "Linear grass-leaf schematic; Panicum niihauense leaves are wider than typical fine grasses and taper to a fine point."
+  - file: habit-grass-tuft.svg
+    caption: "Bunchgrass tuft habit; imagine 0.5–1.2 m tall — considerably taller and more open than the low ʻakiʻaki mat."
+citations: [1, 2, 3, "C:1"]

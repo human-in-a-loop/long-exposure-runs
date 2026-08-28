@@ -1,0 +1,69 @@
+slug: vitex-rotundifolia
+scientific_name: Vitex rotundifolia
+authority: L. f.
+family: Lamiaceae
+common_names:
+  hawaiian: [pōhinahina, kolokolo kahakai]
+  english: [beach vitex, roundleaf chastetree]
+status: indigenous
+coastal_zones: [dune, strand]
+tier: common
+occurrence_notes: >-
+  Indigenous trailing sub-shrub of Kauaʻi dunes and back-beach edges;
+  present on stabilized sand at Māhāʻulepū and the low dunes above Kalalau
+  and Nuʻalolo Kai beaches. Its trailing habit knits the sand together.
+how_to_identify:
+  growth_form: >-
+    A prostrate to sprawling woody sub-shrub, forming trailing mats up to
+    several metres across but only a few dm tall, rooting at the nodes.
+  leaves: >-
+    Opposite (Lamiaceae signature), simple, rounded to obovate, 2–5 cm,
+    thick, silvery-green on the upper surface and densely white-hairy
+    below, entire-margined. Aromatic when crushed.
+  flowers: >-
+    Violet-blue (occasionally pale lavender), tubular, 1–1.5 cm long, in
+    short terminal spike-like clusters just above the leafy mat. Two-lipped
+    corolla with the lower lip larger.
+  fruit: >-
+    A small (~5 mm) rounded dark drupe, ripening blackish.
+  bark_stem: Slender woody trailing stems that root at the nodes.
+  size: >-
+    Trailing mats to several m across; rarely more than 30 cm tall on
+    exposed dunes.
+  zone_hint: >-
+    Open sandy dune tops and back-beach sand where the strand grades into
+    dune. Not on rocky sea cliffs.
+  clinchers:
+    - Rounded, opposite, silvery-green leaves with a strong aromatic scent when crushed.
+    - Violet-blue two-lipped tubular flowers in short terminal spikes above trailing mats.
+    - Prostrate woody habit rooting at the nodes across open dune sand.
+  look_alikes:
+    - species: Sesuvium portulacastrum (ʻākulikuli)
+      how_to_distinguish: >-
+        Also prostrate on sand, but leaves are succulent fleshy cylinder-
+        oblong (not rounded and dry), flowers are pink 5-petaled starlets
+        (not tubular violet-blue), and there is no aromatic scent.
+    - species: Ipomoea pes-caprae (pōhuehue)
+      how_to_distinguish: >-
+        A vine with much longer stems, alternate two-lobed "goat's foot"
+        leaves, and pink funnelform morning-glory flowers rather than
+        opposite silvery leaves and violet tubular flowers.
+ecology: >-
+  Sand-stabilizing pioneer of Pacific-basin coasts. Trailing stems root at
+  the nodes and knit windblown sand into stable dune surfaces; its low
+  aromatic canopy discourages some herbivores.
+cultural_significance: >-
+  "Pōhinahina" and "kolokolo kahakai" recognize the silvery dune-crawling
+  habit. Framed respectfully; not for harvesting instruction here.
+hazards: null
+images:
+  - id: a-vitex-rotundifolia-habit-01
+    role: habit
+    diagnostic_pointer: "Trailing dune mat with rounded silvery leaves."
+  - id: a-vitex-rotundifolia-flower-01
+    role: flower
+    diagnostic_pointer: "Violet-blue two-lipped tubular flowers on a short terminal spike."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate/trailing habit — pōhinahina forms low mats rooting at the nodes across dune sand."
+citations: ["A:1", "A:6", "A:7"]

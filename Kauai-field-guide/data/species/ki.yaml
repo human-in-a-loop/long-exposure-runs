@@ -1,0 +1,94 @@
+slug: ki
+scientific_name: Cordyline fruticosa
+authority: (L.) A.Chev.
+family: Asparagaceae
+common_names:
+  hawaiian: [kī, ti]
+  english: [ti plant, ti, cabbage palm]
+status: polynesian_introduction
+conservation_status: null
+coastal_zones: [valley_mouth, riparian]
+tier: notable
+occurrence_notes: >-
+  Persistent remnants of pre-depopulation plantings at Kalalau, Nuʻalolo
+  Kai, and Miloliʻi valley bottoms and along adjacent stream margins;
+  also naturalized in mesic forest higher up. On the unpopulated coast,
+  kī signals a former Hawaiian dwelling or garden site as strongly as
+  any single plant species.
+how_to_identify:
+  growth_form: >-
+    Unbranched palm-like shrub 1–4 m with a slender ringed stem and a
+    single terminal rosette of leaves at the top. Older plants often
+    develop side shoots from the base rather than branching aloft.
+  leaves: >-
+    Large, lanceolate to oblong-lanceolate, 30–60 × 5–10 cm, spirally
+    arranged around the stem tip in a dense rosette, glossy green (some
+    cultivars red or green-red variegated). Venation parallel — the
+    typical monocot pattern.
+  flowers: >-
+    Large drooping terminal panicles 30–50 cm long carrying many small
+    white-to-pinkish flowers, each with six spreading tepals.
+  fruit: >-
+    Small round red berries 5–10 mm in diameter, in loose clusters
+    following the panicle position.
+  bark_stem: >-
+    Slender pale-green to grey stem; marked with the characteristic
+    ring scars of fallen leaf bases (similar to a small palm).
+  size: 1–4 m tall, occasionally to 5 m in sheltered valleys.
+  zone_hint: >-
+    Valley bottoms and stream margins at Nā Pali valley mouths; sheltered,
+    moist, and often close to former habitation sites.
+  clinchers:
+    - Single unbranched stem topped by a rosette of large lanceolate leaves.
+    - Stem visibly ring-scarred from fallen leaf bases (palm-like).
+    - Drooping panicle of small white-pink flowers or red berries at shoot tip.
+    - Valley-bottom position at Nā Pali marks it as almost certainly a Hawaiian planting remnant.
+  look_alikes:
+    - species: Dracaena spp. (dracaenas)
+      how_to_distinguish: >-
+        Dracaenas share the general palm-like rosette form but are almost
+        always cultivated ornamentals rather than remnants of Hawaiian
+        valley plantings; wild kī on the Nā Pali coast is almost never a
+        dracaena. If in doubt, look at the flower and fruit: dracaena
+        inflorescences are more branched-cymose, and the fruit is orange
+        to yellow, not the small red berry of kī.
+    - species: Young Pandanus tectorius (hala)
+      how_to_distinguish: >-
+        Young hala can look superficially rosette-topped, but hala leaves
+        are strap-shaped with a spiny margin and midrib and are 1–2 m long;
+        kī leaves are shorter, wider, and completely spine-free. Hala also
+        develops prop roots early.
+ecology: >-
+  Widely naturalized across the Pacific from Southeast Asian origin;
+  spread by Polynesian voyagers and now a durable component of lowland
+  Hawaiian valley bottoms. Reproduces vegetatively from stem sections
+  (traditionally propagated this way) as well as from seed.
+cultural_significance: >-
+  Kī is one of the most heavily used plants in Hawaiian daily life:
+  leaves for wrapping food (including laulau), for hula skirts (pāʻū),
+  for sandals, for thatch, and for many ceremonial and household
+  purposes; roots historically fermented into an alcoholic beverage
+  (ʻōkolehao) after Western contact. Kī is also associated with
+  spiritual protection in some traditions, and is often planted around
+  homes and heiau. This guide names those relationships; the
+  transmission of leaf-preparation, weaving, and ceremonial practice
+  belongs to Hawaiian cultural practitioners and lineal descendants.
+hazards: null
+taxonomic_notes: >-
+  Family placement follows APG (Asparagaceae); older sources place
+  *Cordyline* in Laxmanniaceae or Agavaceae. Species long known as
+  *Cordyline terminalis* is treated as a synonym of *C. fruticosa* in
+  modern usage.
+images:
+  - id: ki-plant-01
+    role: leaves
+    diagnostic_pointer: "Terminal rosette of glossy lanceolate leaves — the diagnostic monocot habit."
+  - id: ki-habit-01
+    role: habit
+    diagnostic_pointer: "Whole-plant habit — single unbranched stem topped by a leaf rosette."
+diagrams:
+  - file: leaf-lanceolate.svg
+    caption: "Lanceolate leaf outline — kī leaves match this shape."
+  - file: habit-small-tree.svg
+    caption: "Palm-like habit silhouette — placeholder for kī's single unbranched shrub form."
+citations: [1, 2, "B:10", "B:11", "B:13"]
