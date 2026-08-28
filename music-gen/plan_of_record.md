@@ -39,6 +39,22 @@ Execute the Music-Gen campaign defined in music_gen_long_exposure_prompt.md at t
 | M-RULES-1          | G4   | Rules ledger schema (typed JSON/YAML) + first extraction from 1 song's merged score covering harmonic / rhythmic / melodic / form / arrangement rule types. | Schema versioned + documented; ≥5 rules extracted from 1 song with provenance pointers into the transcription; ledger re-read reproduces the same rules.                                       | M-SCORE-1          |
 | M-TEX-1            | G4   | Texture distance panel + first bare-MIDI-vs-original stage-by-stage measurement (bare MIDI → effects layered → texture heuristics). | Panel implemented with multi-scale spectral, dynamics-envelope, and one perceptual-embedding distance side-by-side; measurement table for at least one held-out song shows numbers per stage.  | M-DAW-SPIKE-1, M-SCORE-1 |
 | M-GEN-1            | G5   | First deterministic generation: rules-ledger-driven fresh score pushed through the same score→MIDI→DAW→effects→texture path; ear + heuristics scored. | ≥1 generated song produced end to end with full provenance; ear + heuristics scores recorded; audible artifact stored (not committed).                                                       | M-RULES-1, M-TEX-1, M-EAR-1 |
+| M-INGEST-1/chunker | G1   | Sub-milestone of M-INGEST-1: 30 s / 5 s-overlap chunker with tail-anchored final clip and short-song fallback. | Chunker tests green on all seed clips; sample-accurate boundaries; standard-overlap frames == 5.0 s exactly. | M-INGEST-1 |
+| M-INGEST-1/provenance | G1 | Sub-milestone of M-INGEST-1: append-only JSONL provenance schema v1 with source/clip rows, Python + JSON-schema validators, replay round-trip. | Round-trip clip reconstruction is byte-identical; validator rejects duplicate/append-only violations. | M-INGEST-1 |
+| M-INGEST-1/harvester-parity | G1 | Sub-milestone of M-INGEST-1: two front doors (local folder, YouTube playlist) converge on identical downstream manifests up to source_type/source_ref. | Parity test green; container-invariance test green (fingerprints computed on decoded PCM). | M-INGEST-1 |
+| M-INGEST-1/egress-probe | G1 | Sub-milestone of M-INGEST-1: non-blocking two-stage YouTube-CDN reachability probe (yt-dlp metadata + 1 KiB media range). | ≥1 live probe row logged; probe never blocks other cycle work; two consecutive media_ok=true rows are the ingestion-unblock signal. | M-INGEST-1 |
+
+## Sub-milestones
+
+Registered sub-milestones (used by workers/auditors to attach granular
+validation events; each rolls up into its parent milestone above).
+
+| Milestone ID                  | Parent      | Description                                                    |
+|-------------------------------|-------------|----------------------------------------------------------------|
+| M-INGEST-1/chunker            | M-INGEST-1  | 30 s / 5 s-overlap chunker with tail-anchored final clip.       |
+| M-INGEST-1/provenance         | M-INGEST-1  | Append-only JSONL provenance schema v1 + validator + replay.    |
+| M-INGEST-1/harvester-parity   | M-INGEST-1  | Local ↔ YouTube front doors converge on identical manifests.    |
+| M-INGEST-1/egress-probe       | M-INGEST-1  | Non-blocking two-stage YouTube-CDN reachability probe.          |
 
 ## Out of scope (explicit)
 
