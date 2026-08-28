@@ -1217,6 +1217,160 @@ check(_report.is_file(),
       "M-EAR-1/training-armed: docs/ear_training_armed_report.md present")
 
 
+# =========================================================================
+# §23. M-GEN-1/rule-composition-constraint + M-GEN-1/batch-v1 invariants
+#       (cycle 11, fork ddd71e9bdb0e clone 0)
+# =========================================================================
+# Contract invariants for the coherence gate + 5-song batch. Static /
+# light-runtime only — no rerender, no torch retrain. Byte-determinism SHAs
+# anchor per-song reproducibility.
+
+import re as _re_bv1
+
+# Script presence.
+for _name in ("coherence_gate.py", "batch_v1.py", "plot_batch_v1.py"):
+    _p = WS / "scripts" / "gen" / _name
+    check(_p.is_file(), f"M-GEN-1/batch-v1: scripts/gen/{_name} present")
+
+# Interpreter guard on every new runnable script.
+for _name in ("coherence_gate.py", "batch_v1.py", "plot_batch_v1.py"):
+    _text = (WS / "scripts" / "gen" / _name).read_text(encoding="utf-8")
+    check("assert sys.executable == \"/usr/bin/python3\"" in _text,
+          f"M-GEN-1/batch-v1: {_name} carries /usr/bin/python3 guard")
+
+# PRNG guard extended to cover the new scripts (§21 already scans scripts/gen/,
+# but re-run explicitly on the three new files as a redundant, load-bearing check).
+_prng_bv1 = _re_bv1.compile(
+    r"^\s*(from|import)\s+(random|secrets)\b|^\s*from\s+numpy\s+import\s+random|"
+    r"^\s*import\s+numpy\.random|^\s*from\s+torch\s+import\s+rand"
+)
+for _name in ("coherence_gate.py", "batch_v1.py", "plot_batch_v1.py"):
+    _lines = (WS / "scripts" / "gen" / _name).read_text(encoding="utf-8").splitlines()
+    _hits = [ln for ln in _lines if _prng_bv1.match(ln)]
+    check(not _hits, f"M-GEN-1/batch-v1: {_name} has no PRNG imports")
+
+# Non-factor AST isolation on new files.
+_iso_bv1 = _re_bv1.compile(r"^\s*(from|import)\s+[\w.]*sidecar_nonfactor")
+for _name in ("coherence_gate.py", "batch_v1.py", "plot_batch_v1.py"):
+    _lines = (WS / "scripts" / "gen" / _name).read_text(encoding="utf-8").splitlines()
+    _hits = [ln for ln in _lines if _iso_bv1.match(ln)]
+    check(not _hits, f"M-GEN-1/batch-v1: {_name} has no sidecar_nonfactor imports")
+
+# summary.tsv exists, has expected header + exactly 5 data rows.
+_summary_tsv = WS / "data" / "gen" / "batch_v1" / "summary.tsv"
+check(_summary_tsv.is_file(), "M-GEN-1/batch-v1: data/gen/batch_v1/summary.tsv present")
+if _summary_tsv.is_file():
+    _sumlines = _summary_tsv.read_text().splitlines()
+    check(len(_sumlines) >= 6,
+          f"M-GEN-1/batch-v1: summary.tsv has header + 5 rows (got {len(_sumlines)} lines)")
+    _hdr = _sumlines[0].split("\t")
+    _EXPECT_COLS = {"salt", "sha_musicxml", "sha_midi", "sha_bare_wav",
+                    "sha_effects_wav", "heur_melody", "heur_timbre",
+                    "heur_form", "heur_dynamics", "meta_dynamics_trajectory_db",
+                    "meta_form_coherence", "panel_mel_l1_db",
+                    "panel_spectral_centroid_rmse_hz", "panel_rms_env_rmse",
+                    "panel_lufs_m_rmse_lu", "panel_embedding_cosine",
+                    "panel_embedding_rung", "ear_prediction",
+                    "ear_calibration", "n_coercions", "coercions_json"}
+    check(set(_hdr) == _EXPECT_COLS,
+          f"M-GEN-1/batch-v1: summary.tsv header has all 21 columns (missing={_EXPECT_COLS - set(_hdr)}, extra={set(_hdr) - _EXPECT_COLS})")
+    _salts = sorted(int(row.split("\t")[0]) for row in _sumlines[1:])
+    check(_salts == [0, 1, 2, 3, 4],
+          f"M-GEN-1/batch-v1: summary.tsv covers salts 0..4 (got {_salts})")
+
+# provenance.jsonl exists and has exactly 7 stages × 5 songs = 35 rows.
+_prov_bv1 = WS / "data" / "gen" / "batch_v1" / "provenance.jsonl"
+check(_prov_bv1.is_file(), "M-GEN-1/batch-v1: data/gen/batch_v1/provenance.jsonl present")
+if _prov_bv1.is_file():
+    _rows_bv1 = [json.loads(ln) for ln in _prov_bv1.read_text().splitlines() if ln.strip()]
+    check(len(_rows_bv1) == 35,
+          f"M-GEN-1/batch-v1: provenance has exactly 35 rows (got {len(_rows_bv1)})")
+    for _r in _rows_bv1:
+        check(bool(_r.get("input_shas")) and bool(_r.get("output_shas")),
+              f"M-GEN-1/batch-v1: stage {_r.get('stage')} row has input+output SHAs")
+
+# Per-song artifact SHA anchors (byte-determinism baseline).
+import hashlib as _hs_bv1
+_BV1_SHAS = {
+    "song_0/generated.musicxml":   "bd84406982ce72e7",
+    "song_0/generated.mid":        "77798beadcfd7019",
+    "song_0/bare_midi.wav":        "c539a036cecb83cb",
+    "song_0/effects_layered.wav":  "ccb6e266fa903b37",
+    "song_1/generated.musicxml":   "89a34b86f6396525",
+    "song_1/generated.mid":        "7f6fae8566ccc405",
+    "song_1/bare_midi.wav":        "084fcf46cdfe33b0",
+    "song_1/effects_layered.wav":  "bf685a2d0b064058",
+    "song_2/generated.musicxml":   "485c809386e9b811",
+    "song_2/generated.mid":        "0c6fbb5b608c4664",
+    "song_2/bare_midi.wav":        "739c4f062e34f6f2",
+    "song_2/effects_layered.wav":  "d639bb23373fa76a",
+    "song_3/generated.musicxml":   "b56e7a5a8c2d62a1",
+    "song_3/generated.mid":        "80df622651c95191",
+    "song_3/bare_midi.wav":        "f6385b241dc12b45",
+    "song_3/effects_layered.wav":  "23ec4440b0d1efad",
+    "song_4/generated.musicxml":   "bf16d269bcad60e6",
+    "song_4/generated.mid":        "9e5bf8762277a083",
+    "song_4/bare_midi.wav":        "f10ece6d2be6af95",
+    "song_4/effects_layered.wav":  "7c092db793d10f73",
+}
+for _rel, _pref in _BV1_SHAS.items():
+    _p = WS / "data" / "gen" / "batch_v1" / _rel
+    check(_p.is_file(), f"M-GEN-1/batch-v1: {_rel} present")
+    if _p.is_file():
+        _got = _hs_bv1.sha256(_p.read_bytes()).hexdigest()
+        check(_got.startswith(_pref),
+              f"M-GEN-1/batch-v1: {_rel} SHA-256 anchor (got {_got[:16]}..., expected {_pref}...)")
+
+# Every song non-silent (peak > 1e-4) and every SHA distinct across salts.
+try:
+    import soundfile as _sf_bv1
+    _fx_shas = set()
+    for _s in range(5):
+        for _n in ("bare_midi.wav", "effects_layered.wav"):
+            _p = WS / "data" / "gen" / "batch_v1" / f"song_{_s}" / _n
+            if _p.is_file():
+                _y, _sr = _sf_bv1.read(str(_p), always_2d=True)
+                _pk = float(abs(_y).max())
+                check(_pk > 1e-4, f"M-GEN-1/batch-v1: song_{_s}/{_n} non-silent (peak={_pk:.4f})")
+                if _n == "effects_layered.wav":
+                    _fx_shas.add(_hs_bv1.sha256(_p.read_bytes()).hexdigest())
+    check(len(_fx_shas) == 5,
+          f"M-GEN-1/batch-v1: 5 distinct effects_layered SHAs across salts (got {len(_fx_shas)})")
+except Exception as _exc:
+    check(False, f"M-GEN-1/batch-v1: soundfile inspection failed: {_exc}")
+
+# Salt=0 sampler-level regression: rule_ids match cycle-10 clone-0 anchors.
+_song0_manifest = WS / "data" / "gen" / "batch_v1" / "song_0" / "sampling_manifest.json"
+if _song0_manifest.is_file():
+    _sm0 = json.loads(_song0_manifest.read_text())
+    _ANCHORS = {
+        "arrangement": "rule_67d34b1c927ef33d",
+        "form":        "rule_84816f91e31e50c4",
+        "harmonic":    "rule_0271c7a9f3b5f606",
+        "melodic":     "rule_09f340921fa2d258",
+        "rhythmic":    "rule_88b63bd5e771c045",
+    }
+    _got_ids = _sm0.get("chosen_rule_ids", {})
+    for _rt, _exp in _ANCHORS.items():
+        check(_got_ids.get(_rt) == _exp,
+              f"M-GEN-1/batch-v1: salt=0 {_rt} regression (got {_got_ids.get(_rt)}, expected {_exp})")
+
+# Coherence-gate coercions per salt (documented in §5 of report).
+_EXPECT_N_COERC = {0: 2, 1: 2, 2: 1, 3: 1, 4: 2}
+for _s, _n in _EXPECT_N_COERC.items():
+    _cj = WS / "data" / "gen" / "batch_v1" / f"song_{_s}" / "coercions.json"
+    if _cj.is_file():
+        _cd = json.loads(_cj.read_text())
+        check(_cd.get("n_coercions") == _n,
+              f"M-GEN-1/batch-v1: salt={_s} coercions count (got {_cd.get('n_coercions')}, expected {_n})")
+
+# Report + figure present.
+check((WS / "docs" / "gen_batch_v1_report.md").is_file(),
+      "M-GEN-1/batch-v1: docs/gen_batch_v1_report.md present")
+check((WS / "docs" / "figures" / "gen_batch_v1_grid.png").is_file(),
+      "M-GEN-1/batch-v1: docs/figures/gen_batch_v1_grid.png present")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
