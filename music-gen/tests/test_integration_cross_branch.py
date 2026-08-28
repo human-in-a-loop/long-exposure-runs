@@ -1105,6 +1105,118 @@ for _rel, _sha8 in _bre_shas.items():
               f"(got {_got[:8]}..., expected {_sha8}...)")
 
 
+# =========================================================================
+# §23. M-EAR-1/training-armed invariants (fork ddd71e9bdb0e clone 2)
+# =========================================================================
+# Static contract checks for the training-armed harness: script presence,
+# interpreter guard, non-factor AST isolation, zero-network AST + string
+# grep, state-machine surface (states + legal transitions), and byte-
+# determinism SHA anchors for the synth-valset training artifacts.
+
+for _name in ("train.py", "train_armed_harness.py"):
+    _p = WS / "scripts" / "ear" / _name
+    check(_p.is_file(), f"M-EAR-1/training-armed: scripts/ear/{_name} present")
+
+# Interpreter guard.
+import re as _re_tearm
+for _name in ("train.py", "train_armed_harness.py"):
+    _src = (WS / "scripts" / "ear" / _name).read_text()
+    check(bool(_re_tearm.search(
+              r'assert\s+sys\.executable\s*==\s*[\'"]/usr/bin/python3[\'"]', _src)),
+          f"M-EAR-1/training-armed: {_name} has /usr/bin/python3 interpreter guard")
+
+# Non-factor AST isolation.
+for _name in ("train.py", "train_armed_harness.py"):
+    _src = (WS / "scripts" / "ear" / _name).read_text()
+    _hits = _re_tearm.findall(r"^\s*(?:from|import)\s+\S*sidecar_nonfactor",
+                              _src, _re_tearm.M)
+    check(not _hits,
+          f"M-EAR-1/training-armed: {_name} has no sidecar_nonfactor imports")
+
+# Zero-network: AST + string grep.
+import ast as _ast_tearm
+for _name in ("train.py", "train_armed_harness.py"):
+    _src = (WS / "scripts" / "ear" / _name).read_text()
+    _tree = _ast_tearm.parse(_src)
+    _imps = set()
+    for _n in _ast_tearm.walk(_tree):
+        if isinstance(_n, _ast_tearm.ImportFrom) and _n.module:
+            _imps.add(_n.module.split(".")[0])
+        elif isinstance(_n, _ast_tearm.Import):
+            for _a in _n.names:
+                _imps.add(_a.name.split(".")[0])
+    _forbid = {"urllib", "requests", "socket", "httpx", "aiohttp", "http"}
+    check(not (_imps & _forbid),
+          f"M-EAR-1/training-armed: {_name} imports no network libs "
+          f"(got {_imps & _forbid})")
+    _lower = _src.lower()
+    _string_hits = [w for w in ("urllib", "requests.", "socket(", "httpx",
+                                 "aiohttp") if w in _lower]
+    check(not _string_hits,
+          f"M-EAR-1/training-armed: {_name} has no network string refs "
+          f"(got {_string_hits})")
+
+# State-machine surface.
+import importlib as _il_tearm
+_tah = _il_tearm.import_module("scripts.ear.train_armed_harness")
+for _attr in ("HState", "HTRANSITIONS", "ArmedHarness", "TrainingHooks",
+              "TrainingHookResult", "content_hash_manifest"):
+    check(hasattr(_tah, _attr),
+          f"M-EAR-1/armed-harness: train_armed_harness.{_attr} present")
+_HS = _tah.HState
+_TR = _tah.HTRANSITIONS
+check(_HS.READY in _TR and _HS.TRAINING in _TR[_HS.READY],
+      "M-EAR-1/armed-harness: READY -> TRAINING is a legal edge")
+check(_HS.TRAINING in _TR and _HS.TRAINED in _TR[_HS.TRAINING],
+      "M-EAR-1/armed-harness: TRAINING -> TRAINED is a legal edge")
+check(_HS.TRAINING in _TR and _HS.FAILED in _TR[_HS.TRAINING],
+      "M-EAR-1/armed-harness: TRAINING -> FAILED is a legal edge")
+check(_TR.get(_HS.TRAINED, set()) == set(),
+      "M-EAR-1/armed-harness: TRAINED is terminal (except forced retrain reset)")
+
+# Training-loop surface.
+_tm = _il_tearm.import_module("scripts.ear.train")
+for _attr in ("train", "CornHead", "TrainingResult", "FEATURE_VERSION",
+              "content_hash_manifest", "load_checkpoint"):
+    check(hasattr(_tm, _attr), f"M-EAR-1/training-loop: train.{_attr} present")
+check(_tm.FEATURE_VERSION == "ear-features-v1",
+      f"M-EAR-1/training-loop: FEATURE_VERSION pinned "
+      f"(got {_tm.FEATURE_VERSION!r})")
+check(_tm.FEAT_DIM == 2052,
+      f"M-EAR-1/training-loop: FEAT_DIM=2052 pinned (got {_tm.FEAT_DIM})")
+
+# Byte-determinism anchors for the synth-valset training artifacts.
+import hashlib as _hs_tearm
+_tearm_shas = {
+    "data/ear/training_v1/training_result.json":
+        "1e688c5abf1eea975e9d38f9137a2b430a9e58de8b01b6ea149947439f6bd6ea",
+    "data/ear/training_v1/corn_head_v1.pt":
+        "ae75b7357c751c014b99e2243b9c2a7fd919e1acc6b8d359c733dc4ae515923b",
+    "data/ear/training_v1/synth_ratings_manifest.tsv":
+        "ec7e858760f5f6fb5f6e7e8586bcebf0758523aa008608488af9fb962a5647b4",
+}
+for _rel, _sha in _tearm_shas.items():
+    _p = WS / _rel
+    if _p.is_file():
+        _got = _hs_tearm.sha256(_p.read_bytes()).hexdigest()
+        check(_got == _sha,
+              f"M-EAR-1/training-armed: {_rel} SHA-256 anchor "
+              f"(got {_got[:12]}..., expected {_sha[:12]}...)")
+
+# Test file present with the LE_PARENT shim.
+_tef = WS / "tests" / "test_ear_training.py"
+check(_tef.is_file(), "M-EAR-1/armed-harness: tests/test_ear_training.py present")
+if _tef.is_file():
+    _tef_src = _tef.read_text()
+    check("_LE_PARENT" in _tef_src,
+          "M-EAR-1/armed-harness: test file has _LE_PARENT sys.path shim")
+
+# Report artifact present.
+_report = WS / "docs" / "ear_training_armed_report.md"
+check(_report.is_file(),
+      "M-EAR-1/training-armed: docs/ear_training_armed_report.md present")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

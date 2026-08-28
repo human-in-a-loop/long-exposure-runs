@@ -6,18 +6,30 @@
 # agent: worker (clone-0, fork 00b3ae64444c)
 # milestone: M-GEN-1/first-generation
 # ---
-"""Deterministic rule sampler for M-GEN-1/first-generation.
+"""Deterministic rule sampler for M-GEN-1.
 
 Algorithm (SHA-256 tiebreak, NO PRNG):
   1. Load post-supersede rules via scripts.rules.ledger.effective_rules.
   2. Group by `rule_type`.
-  3. Within each group, sort by sha256(canonical_json(rule_row)) ascending.
+  3. Within each group, rank by SHA-256 ascending using a *salt-parametrized
+     content hash* (see `_content_hash`).
   4. Pick index 0.
 
-The sampling is a pure function of the ledger contents. Same 28-row ledger
-→ same 5 rule_ids on any process, any machine, any Python version that
-respects insertion order (3.7+). No `random`, `numpy.random`, `torch.rand`,
-`secrets` — SHA-256 all the way.
+Salt-parametrized content hash (cycle 11, M-GEN-1/batch-v1):
+  * salt == 0  ->  sha256(canonical_json(rule_row))              # legacy
+  * salt != 0  ->  sha256(canonical_json({"salt": salt,
+                                           "rule": rule_row}))   # envelope
+
+The `salt == 0` branch is defined as the **legacy identity path** so that
+cycle-10 clone-0's `M-GEN-1/first-generation` rule_id selection is
+reproduced byte-identically (regression contract). Salts 1..4 produce
+distinct rankings by envelope-hashing. This design keeps the salt-prepending
+scheme faithful to the brief (a canonical-JSON envelope) while preserving
+the SHA-anchor contract in `tests/test_integration_cross_branch.py` §21.
+
+The sampling is a pure function of (ledger contents, salt). Same 28-row
+ledger + same salt → same 5 rule_ids on any process. No `random`,
+`numpy.random`, `torch.rand`, `secrets` — SHA-256 all the way.
 """
 from __future__ import annotations
 
@@ -44,9 +56,17 @@ def _canonical_json(obj) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
-def _content_hash(row: dict) -> str:
-    """SHA-256 over the canonical JSON of the whole rule row."""
-    return hashlib.sha256(_canonical_json(row).encode()).hexdigest()
+def _content_hash(row: dict, salt: int = 0) -> str:
+    """SHA-256 rank hash for the tiebreak, parametrized by an integer salt.
+
+    salt == 0 : bare canonical JSON of the row (legacy — regression path).
+    salt != 0 : envelope {"salt": salt, "rule": row} canonical JSON.
+    """
+    if salt == 0:
+        payload = _canonical_json(row)
+    else:
+        payload = _canonical_json({"salt": int(salt), "rule": row})
+    return hashlib.sha256(payload.encode()).hexdigest()
 
 
 @dataclass
@@ -58,8 +78,14 @@ class SampledRuleset:
         return {rt: self.rules[rt].get("rule_id") for rt in RULE_TYPES if rt in self.rules}
 
 
-def sample_ruleset(ledger_path: Path) -> SampledRuleset:
-    """Deterministically pick one rule per rule_type."""
+def sample_ruleset(ledger_path: Path, salt: int = 0) -> SampledRuleset:
+    """Deterministically pick one rule per rule_type at the given salt.
+
+    salt=0 preserves the cycle-10 clone-0 selection byte-identically
+    (regression path); salt!=0 uses the envelope-hash and produces a
+    different ranking.
+    """
+    salt = int(salt)
     rules = effective_rules(Path(ledger_path))
     by_type: Dict[str, List[dict]] = {rt: [] for rt in RULE_TYPES}
     for r in rules:
@@ -68,12 +94,17 @@ def sample_ruleset(ledger_path: Path) -> SampledRuleset:
             by_type[rt].append(r)
 
     chosen: Dict[str, dict] = {}
-    manifest: Dict[str, dict] = {"algorithm": "sha256_over_canonical_json_ascending", "prng_used": False}
+    manifest: Dict[str, dict] = {
+        "algorithm": "sha256_over_canonical_json_ascending",
+        "salt": salt,
+        "salt_envelope": ("legacy_bare" if salt == 0 else "canonical_json_envelope"),
+        "prng_used": False,
+    }
     per_type: Dict[str, dict] = {}
     for rt in RULE_TYPES:
         candidates = by_type[rt]
-        # Sort by content hash ascending.
-        scored = [(_content_hash(r), r) for r in candidates]
+        # Sort by content hash ascending under the current salt.
+        scored = [(_content_hash(r, salt=salt), r) for r in candidates]
         scored.sort(key=lambda t: t[0])
         winner_hash, winner = scored[0]
         chosen[rt] = winner
@@ -93,9 +124,10 @@ def _main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ledger", type=Path, default=_REPO / "data" / "rules" / "ledger.jsonl")
     ap.add_argument("--out", type=Path, default=_REPO / "data" / "gen" / "sampling_manifest.json")
+    ap.add_argument("--salt", type=int, default=0)
     args = ap.parse_args(argv)
 
-    rs = sample_ruleset(args.ledger)
+    rs = sample_ruleset(args.ledger, salt=args.salt)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps({
         "chosen_rule_ids": rs.rule_ids(),
