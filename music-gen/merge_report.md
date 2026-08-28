@@ -1,141 +1,100 @@
-# Merge report — fork 3a908edcb241 clone 2 (M-INGEST-1/egress-ready-automation)
+# Post-merge integration report — fork 00b3ae64444c (cycle 10)
 
-**Cycle:** 8
-**Fork:** 3a908edcb241
-**Clone:** 2 of 3
-**Milestone:** M-INGEST-1/egress-ready-automation
-**Status:** validated/high
-**Sibling clones (disjoint file trees):**
-- clone 0 → `scripts/score/*` (M-SCORE-1)
-- clone 1 → `scripts/transcribe/octave_suppression.py` (M-TRANS-1/basic-pitch/octave-suppression)
-- clone 2 → `scripts/egress_ready/*` + `tests/fixtures/egress_status/*` (this branch)
+**Scope:** worker-only post-merge integration for fork `00b3ae64444c`.
+Three clones reconciled into the workspace root:
 
-## Deliverable
+| Clone | Milestone | Verdict | Deliverable |
+|---|---|---|---|
+| 0 | M-GEN-1/first-generation | validated/medium | docs/gen_first_generation_report.md |
+| 1 | M-INGEST-1/breadth-second-seeds | validated/medium | docs/pipeline_breadth_report.md |
+| 2 | _infra/ledger-schema-hardening | validated/high | docs/ledger_schema_hardening.md |
 
-`docs/egress_ready_automation.md` (required output artifact) is on disk with all 10 sections the research brief required: Purpose, Scope, Non-goals, State diagram (mermaid), Trigger rule + falsification criteria, Six-scenario matrix, State persistence, Failure recovery, Human-override API, Isolation, Handoff, Reproduction.
+Zero cross-branch content conflict: the three deliverable trees
+(`scripts/gen` + `data/gen`, `scripts/breadth` + `data/breadth`,
+`tests/test_ledger_writer_validation.py` + upstream `long_exposure/tools/_ledger_schema.py`)
+touch disjoint paths. Clones' own scope-close events were already in
+the workspace root ledger at integration entry — the fanout collapse
+merged the per-clone shadow ledgers back in.
 
-## New files (all under this clone's exclusive subtree)
+## What this integration did
 
-```
-scripts/egress_ready/__init__.py
-scripts/egress_ready/trigger.py           # detect_trigger, TriggerDecision, TriggerKind, load_jsonl
-scripts/egress_ready/state.py             # EgressReadyMachine, State, TRANSITIONS, override API
-scripts/egress_ready/subprocess_hooks.py  # SubprocessHooks + HARVEST_CMD/CHUNKER_CMD/CLASSIFIER_CMD/READY_FLAG_PATH
-scripts/egress_ready/cli.py               # --watch/--status/--force-*/--resume/--reset-failure
-tests/test_egress_ready_state.py          # 62 checks, all PASS
-tests/fixtures/egress_status/all_false.jsonl
-tests/fixtures/egress_status/single_true_then_back.jsonl
-tests/fixtures/egress_status/two_consecutive_triggers.jsonl
-tests/fixtures/egress_status/already_triggered_then_false.jsonl
-tests/fixtures/egress_status/interleaved_then_true_true.jsonl
-tests/fixtures/egress_status/stale_row_does_not_count.jsonl
-docs/egress_ready_automation.md           # REQUIRED OUTPUT ARTIFACT
-```
+Clones had already emitted their own closure events (ledger was at
+186 rows on entry). Integration work reduced to:
 
-## Shared-state touches
+**1. Plan-of-record drift fixes** — added three rows to the Milestones
+table so `promise_check` accepts the pre-existing per-seed events:
 
-- `plan_of_record.md` — added one row to the 5-col Milestones table for
-  `M-INGEST-1/egress-ready-automation` so `promise_check`'s parser resolves
-  the researcher's cycle-8 kickoff event. Same drift-fix pattern as
-  `_plan/register-ear-preparation-milestones` (cycle 6) and
-  `_plan/register-post-merge-integration-milestones` (cycle 7). No other
-  rows touched.
-- `tests/test_integration_cross_branch.py` — appended §17 (52 checks) at the
-  end of the file. Existing sections (§1–§14) untouched. §17 covers:
-  isolation AST/regex scan for `sidecar_nonfactor`; module-level command
-  constants (`HARVEST_CMD`, `CHUNKER_CMD`, `CLASSIFIER_CMD`, `READY_FLAG_PATH`)
-  stability; fixture presence; TRANSITIONS map invariants; docs sections
-  present.
+- `M-INGEST-1/breadth-second-seeds/seed_mid_50s`
+- `M-INGEST-1/breadth-second-seeds/synth_060s`
 
-## Ledger events (shadow ledger, per-clone)
+(Row for `_infra/ledger-schema-hardening` was already added by clone-2.)
 
-Written to `/home/user/music-gen-instance/fork-3a908edcb241/clone-2/promise_ledger.jsonl`:
+**2. Ledger repair (in-place, atomic via `os.replace`)** —
 
-1. `M-INGEST-1/egress-ready-automation` — **validated/high** — 13 artifacts.
-2. `_plan/register-egress-ready-milestone` — validated/high — 1 artifact
-   (`plan_of_record.md`).
-3. `_archive/egress-ready-scratch-fork-3a908edcb241` — validated/high — 3
-   artifacts (three one-shot emitters moved to `tools/stale/`).
+- Line 160: `event_id` was a raw SHA-256 hex string (produced by an
+  ad-hoc emitter under `_plan/register-gen-first-generation-milestone`
+  before the hardened writer landed). Converted to a canonical UUID via
+  `uuid5(uuid.NAMESPACE_NIL, hex)`. Original hex preserved in
+  `event_id_original`.
+- Lines 179–184: six events with `milestone_id: "M-TEST-1/writer"` were
+  round-trip fixtures emitted by clone-2 during ledger-writer testing.
+  Renamed to reserved namespace `_infra/ledger-writer-test-fixtures` so
+  `promise_check` accepts them without diluting the plan. Original
+  `milestone_id` preserved in `milestone_id_original`.
 
-All events schema-valid per `long_exposure.tools.ledger_append._validate_event`
-(required fields: `event_id`, `ts`, `run_id`, `cycle`, `agent`,
-`milestone_id`, `status`, `confidence` (nested `.level`/`.rationale`/`.assessor`),
-`narrative`). See §Notes below on the fix-up that was required.
+**3. Rollup events (5 emitted via the hardened writer)** — ledger
+186 → 191:
 
-## Test results
+| # | milestone_id | status | conf |
+|---|---|---|---|
+| 1 | `_infra/ledger-writer-test-fixtures` | validated | high |
+| 2 | `_infra/repair-ledger-cycle10` | validated | high |
+| 3 | `_plan/register-post-merge-integration-fork-00b3ae64444c` | validated | high |
+| 4 | `_run/post-merge-integration-fork-00b3ae64444c` | validated | high |
+| 5 | `_archive/integration-scratch-fork-00b3ae64444c` | validated | high |
 
-```
-$ PYTHONPATH=. /usr/bin/python3 tests/test_egress_ready_state.py
-... 62 checks, result: PASS (0 failures)
+**4. Hardened-writer live proof-of-life** — every event this
+integration emitted went through `workspace_bootstrap.append_ledger_event()`
+from cycle-2 clone. Two emit-time validation failures caught real
+schema deficiencies in my draft events (missing `status`, `narrative`,
+`confidence.rationale`) — the writer refused them and returned a typed
+`LedgerAppendError` naming the missing fields, exactly as designed.
+Retry after fixing the fields succeeded. This is the tightening from
+cycle-2 doing its job on live traffic in the very cycle it landed.
 
-$ PYTHONPATH=. /usr/bin/python3 tests/test_integration_cross_branch.py
-... section §17 (M-INGEST-1/egress-ready) 52 checks all PASS
-```
+## Verification (all green)
 
-## promise_check state
+| Check | Result |
+|---|---|
+| `promise_check` | **0 ERRORs** (7 pre-existing WARNs unchanged: 5 trailing-slash canonicalization, 1 `M-EAR-1` parent with no events, 1 orphan `data/ear/features/*.npz` cache byproduct from M-GEN-1 ear scoring) |
+| `tests/test_ledger_writer_validation.py` | **PASS** (exit 0) |
+| `tests/test_integration_cross_branch.py` | **PASS (0 failures)** across §1–§22 including new §20 (schema hardening), §21 (M-GEN-1, 39 checks, per-artefact SHA-256 anchors + PRNG-import grep guard + provenance-chain shape), §22 (breadth, per-seed SHA-256 anchors × 2 seeds) |
 
-At the end of this clone's work, `promise_check` reports:
+## Anti-pattern lock preserved
 
-- **0 errors** attributable to this clone.
-  - There is 1 remaining ERROR on ledger line 112 for
-    `M-TRANS-1/basic-pitch/octave-suppression` — that's clone-1's scope; my
-    plan-file edit only added my own milestone row. Post-merge integrator or
-    clone-1 must add its own row.
-- **13 orphan-artifact WARNs** for this clone's files. Expected: my ledger
-  events live in the shadow ledger; `promise_check` reads only the main
-  ledger, so orphans clear only after the harness merges the shadow. Same
-  pattern as prior clones (cycle-6 M-EAR-1/preparation, cycle-6
-  M-RULES-1/schema, cycle-6 M-TRANS-1).
+`M-TRANS-1/basic-pitch/octave-suppression` remains `invalidated/high`
+(cycle 8). None of the three clones re-attempted it; clone-1 explicitly
+names the anti-pattern in its report ("basic-pitch on pure sines — this
+is the same octave-doubling artefact identified in cycle 8; do NOT
+re-attempt").
 
-## Suggested post-merge integrator work
+## Ledger at close: 191 rows
 
-1. Merge this clone's shadow ledger into the main `promise_ledger.jsonl`
-   (all three events are schema-valid).
-2. Reconcile the plan-file: my clone added row for
-   `M-INGEST-1/egress-ready-automation`. Clones 0 and 1 will similarly need
-   their milestones added to the 5-col Milestones table (I did not touch
-   them).
-3. Re-run `promise_check`; the 13 orphan-artifact WARNs from my clone will
-   clear once the shadow ledger merges.
-4. Re-run `tests/test_integration_cross_branch.py`; §17 (52 checks) should
-   remain green.
+## Recommended follow-ups (deferred, out of scope for this integration)
 
-## Non-goals honored (from research brief)
+From the clones' own reports:
 
-- No live network exercised.
-- No writes to `data/ingestion/egress_status.jsonl` (read-only consumer).
-- No imports of `scripts.classifier.sidecar_nonfactor` from any egress_ready
-  module (§17 AST scan green).
-- No plan-of-record edits outside adding my own milestone row.
-- No modifications to `tests/test_integration_cross_branch.py` §1–§14; only
-  appended §17.
-- No changes to sibling-clone paths (`scripts/score/*`,
-  `scripts/transcribe/octave_suppression.py`).
+- `M-GEN-1/rule-composition-constraint`: post-sampling coherence gate
+  flagging arrangement-silences-pitched-Parts and form-granularity-too-fine.
+- CORN-head recalibration on rated audio when `M-INGEST-1/egress-ready-automation` fires.
+- Cheap rules extraction over the two new merged MusicXMLs
+  (`data/breadth/{seed_mid_50s,synth_060s}/merged.musicxml`) to widen
+  the M-RULES-1 corpus without needing new audio.
+- Split `tests/test_integration_cross_branch.py` (now 1110 lines / 413+
+  checks) by milestone; flagged not executed.
+- Shadow-ledger per-line validation at `fanout._concat_clone_ledgers`
+  (clone-2 §Recommended follow-up).
+- Adopt the orphan `data/ear/features/gen_first_gen_d81089d39f31b5ca.npz`
+  under M-GEN-1/first-generation.
 
-## Notes for the auditor
-
-- **Determinism substitution.** The library uses an injected `Clock`
-  (`Clock(now=lambda: FIXED_UTC)` in tests, `Clock.system()` in prod). No
-  `datetime.now()` in library code. This is what makes
-  `transitions.jsonl` byte-identical across runs.
-- **Atomicity primitive.** `tempfile.NamedTemporaryFile` in the state.json's
-  parent directory + `os.fsync` + `os.replace`. Test explicitly monkey-
-  patches `os.replace` to raise mid-write and asserts previous state.json
-  bytes intact.
-- **Isolation is guarded at two layers.** (1) The test module patches
-  `subprocess.run` at import time with `_SubprocessRunForbidden` — if any
-  test unintentionally triggered a real subprocess call, it would raise
-  immediately. (2) The integration test's §17 scans
-  `scripts/egress_ready/*.py` for `sidecar_nonfactor` at line start.
-- **Ledger fix-up.** My first emitter used the wrong field schema
-  (`timestamp_utc`/`rationale` flat instead of `ts`/`narrative`/nested
-  `confidence`). I detected this by inspecting `REQUIRED_EVENT_FIELDS` in
-  `long_exposure.tools.promise_check`. Cleaned up by truncating the
-  shadow ledger and re-writing three schema-valid events. Justified per
-  cycle-7 precedent (`_fix_missing_event_ids.py`): <5 min old, only I had
-  written to this shadow file. The old malformed events never reached the
-  main ledger.
-
-## Exit
-
-Cycle loop terminates naturally after this report. Task complete.
+Ready for next cycle. Ledger clean, tests green.
