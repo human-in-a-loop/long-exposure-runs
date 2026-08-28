@@ -230,7 +230,7 @@ drops the per-type BP from 2.80 to `28 / (10 + H)`. The full sweep:
 ¹ Recommended cycle-15+ target: extract harmonic rules from ≥2 non-F_major
 seed songs (target keys: D_minor to break the 4-clique per cycle-13
 handoff pointer 1; A_minor for a second contrast). At H=10 the total floor
-drops by ~1.9 pairs from BP, and — importantly — the diversity within
+drops by ~1.4 pairs from BP, and — importantly — the diversity within
 harmonic increases so the small-K variance shrinks.
 
 **I4 (stratified rejection sampling) analytics.** With N=8 and every
