@@ -190,41 +190,48 @@ def _strat_key(y: np.ndarray, n_splits: int) -> np.ndarray:
     return np.clip(np.round((y - 1) / 2), 0, 3).astype(int)
 
 
-def _weighted_var_of_bucket_means(x: np.ndarray, nf: np.ndarray) -> tuple[float, float]:
-    """Return (weighted variance of per-nf mean of x, mean of x variance)."""
-    unique = np.unique(nf)
-    means, counts = [], []
-    for v in unique:
+def _eta_squared(x: np.ndarray, nf: np.ndarray) -> float:
+    """ANOVA η²: fraction of x's variance explained by group membership nf.
+
+    η² = SS_between / SS_total in [0, 1]. Independent of the absolute
+    scale of x, so it is comparable across leak and no-leak scenarios
+    where var(x) itself differs a lot.
+    """
+    x = x.astype(np.float64)
+    grand = float(x.mean())
+    ss_total = float(((x - grand) ** 2).sum())
+    if ss_total <= 1e-12:
+        return 0.0
+    ss_between = 0.0
+    for v in np.unique(nf):
         m = nf == v
-        if m.any():
-            means.append(float(x[m].mean()))
-            counts.append(int(m.sum()))
-    if not means:
-        return 0.0, float(x.var()) + 1e-9
-    w = np.asarray(counts, dtype=np.float64)
-    w = w / w.sum()
-    mu = float(np.sum(w * np.asarray(means)))
-    var_w = float(np.sum(w * (np.asarray(means) - mu) ** 2))
-    return var_w, float(x.var()) + 1e-9
+        if not m.any():
+            continue
+        n_v = int(m.sum())
+        mu_v = float(x[m].mean())
+        ss_between += n_v * (mu_v - grand) ** 2
+    return float(ss_between / ss_total)
 
 
 def _leak_stats(y_te: np.ndarray, y_pred: np.ndarray, nf_te: np.ndarray) -> tuple[float, float, float]:
     """Two-sided leak detector:
 
-    - S_model: variance in ŷ_te explained by nf (shortcut *learned*)
-    - S_resid: variance in y_te - ŷ_te explained by nf (shortcut *missed*
-      by a model that could not learn from features)
-    - S: max(S_model, S_resid) — the leak fires either way
+    - S_model: η² of ŷ_te by nf — fraction of model-prediction variance
+      that is explained by nf. Fires when the model has *learned* the
+      shortcut.
+    - S_resid: η² of (y_te - ŷ_te) by nf — fraction of residual variance
+      that is explained by nf. Fires when the target depends on nf but
+      the model cannot follow (orthogonal-plant case).
+    - S: max(S_model, S_resid) — leak fires either way.
 
-    Both normalized by variance(y_te) so the statistic is dimensionless
-    and comparable across seeds. Returns (S, S_model, S_resid).
+    Both statistics are bounded in [0, 1] and scale-free in y_te, so the
+    same τ works across leak-strength and no-leak scenarios where
+    var(y_te) itself differs. Returns (S, S_model, S_resid).
     """
-    resid = y_te.astype(np.float64) - y_pred.astype(np.float64)
     pred = y_pred.astype(np.float64)
-    S_model_var, var_y = _weighted_var_of_bucket_means(pred, nf_te)
-    S_resid_var, _ = _weighted_var_of_bucket_means(resid, nf_te)
-    S_model = S_model_var / var_y
-    S_resid = S_resid_var / var_y
+    resid = y_te.astype(np.float64) - pred
+    S_model = _eta_squared(pred, nf_te)
+    S_resid = _eta_squared(resid, nf_te)
     return max(S_model, S_resid), S_model, S_resid
 
 
