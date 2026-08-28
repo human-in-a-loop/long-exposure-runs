@@ -3112,6 +3112,100 @@ for _rel in (
         _src = _p.read_text()
         check("/usr/bin/python3" in _src, f"hash-adjud §42h: interpreter guard in {_rel}")
 
+# §43. Cycle-30 semantic-cluster-overlap verdict — frozen enum.
+print()
+print("§43 semantic-cluster-overlap verdict is one of the frozen labels (cycle 30)")
+
+import hashlib as _hl43
+import json as _json43
+_SC_VERDICT = WS / "data" / "collision_model" / "semantic_cluster_verdict.json"
+check(_SC_VERDICT.is_file(), "sem-cluster §43a: verdict JSON present")
+if _SC_VERDICT.is_file():
+    _sv = _json43.loads(_SC_VERDICT.read_text())
+    check(
+        _sv.get("verdict") in ("M4_EXPLAINS", "M4_WEAK", "M4_REFUTES"),
+        f"sem-cluster §43b: verdict in frozen set (got {_sv.get('verdict')!r})"
+    )
+    _rh43 = _sv.get("rubric_hash", "")
+    check(len(_rh43) == 64 and all(c in "0123456789abcdef" for c in _rh43),
+          "sem-cluster §43c: rubric_hash is 64-hex SHA-256")
+    check(abs(float(_sv.get("alpha_pinned", 0)) - 0.7469387071101908) < 1e-12,
+          f"sem-cluster §43d: alpha pinned at cycle-26 value")
+    _in = _sv.get("inputs", {})
+    for _k in ("semantic_cluster_fit", "semantic_cluster_thresholds",
+               "effective_k_semantic", "semantic_equivalence_classes",
+               "rule_structural_fingerprints"):
+        check(_k in _in, f"sem-cluster §43e: verdict references input {_k}")
+    # Rubric hash on disk matches recorded hash.
+    _rubric = WS / "docs" / "collision_model_semantic_cluster_overlap_rubric.md"
+    if _rubric.is_file():
+        _actual = _hl43.sha256(_rubric.read_bytes()).hexdigest()
+        check(_actual == _rh43,
+              f"sem-cluster §43f: on-disk rubric SHA matches verdict.rubric_hash")
+
+# All 7 semantic-cluster outputs present.
+for _p in (
+    "data/collision_model/rule_structural_fingerprints.tsv",
+    "data/collision_model/semantic_cluster_thresholds.json",
+    "data/collision_model/semantic_equivalence_classes.tsv",
+    "data/collision_model/effective_k_semantic.tsv",
+    "data/collision_model/semantic_cluster_fit.json",
+    "data/collision_model/semantic_cluster_verdict.json",
+    "data/collision_model/anchor_preservation_semantic.json",
+):
+    check((WS / _p).is_file(), f"sem-cluster §43g: {_p} exists")
+
+check((WS / "docs" / "collision_model_semantic_cluster_overlap_rubric.md").is_file(),
+      "sem-cluster §43h: frozen rubric doc committed")
+
+# Cycle-30 analysis scripts present + interpreter guard.
+for _rel in (
+    "scripts/analysis/rule_structural_fingerprints.py",
+    "scripts/analysis/semantic_cluster_thresholds.py",
+    "scripts/analysis/semantic_equivalence_classes.py",
+    "scripts/analysis/effective_k_semantic.py",
+    "scripts/analysis/semantic_cluster_fit.py",
+    "scripts/analysis/semantic_cluster_verdict.py",
+    "scripts/analysis/anchor_preservation_semantic.py",
+):
+    _p43 = WS / _rel
+    check(_p43.is_file(), f"sem-cluster §43i: script present: {_rel}")
+    if _p43.is_file():
+        _src = _p43.read_text()
+        check("/usr/bin/python3" in _src,
+              f"sem-cluster §43i: interpreter guard in {_rel}")
+
+# Cycle-29 utility SHA anchor guard extension: iterate cycle 29 too.
+_fix43 = _json43.loads((WS / "tests" / "fixtures"
+                        / "cycle28_util_shas.json").read_text())
+_c29 = _fix43.get("cycle_29_utilities", {})
+check(len(_c29) == 4,
+      f"sem-cluster §43j: cycle_29_utilities has 4 entries (got {len(_c29)})")
+for _name, _expect in _c29.items():
+    _p43u = WS / "scripts" / "analysis" / _name
+    _got43 = _hl43.sha256(_p43u.read_bytes()).hexdigest() \
+        if _p43u.is_file() else "<missing>"
+    check(_got43 == _expect,
+          f"sem-cluster §43j: cycle-29 utility {_name} SHA unchanged")
+
+# §44. Deliverable-doc dispatch matches verdict (M4_REFUTES → close-out;
+# else standard report).
+print()
+print("§44 deliverable doc matches verdict (cycle 30)")
+
+_STD_DOC = WS / "docs" / "collision_model_semantic_cluster_overlap.md"
+_CLOSE_DOC = (WS / "docs"
+              / "collision_modeling_arc_close_partial_bp_unresolved_shape.md")
+if _SC_VERDICT.is_file():
+    _sv44 = _json43.loads(_SC_VERDICT.read_text())
+    _v44 = _sv44.get("verdict")
+    if _v44 == "M4_REFUTES":
+        check(_CLOSE_DOC.is_file(),
+              "sem-cluster §44a: M4_REFUTES → PARTIAL_BP close-out doc present")
+    elif _v44 in ("M4_EXPLAINS", "M4_WEAK"):
+        check(_STD_DOC.is_file(),
+              f"sem-cluster §44a: {_v44} → standard report doc present")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

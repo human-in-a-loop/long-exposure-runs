@@ -7,11 +7,11 @@
 # milestone: M-GEN-1/collision-model-semantic-cluster-overlap
 # ---
 """Compute per-rule_type 20th-percentile pairwise-distance threshold
-on the 76-row `ledger.jsonl` ONLY.
+on the 76-row baseline `ledger.jsonl` ONLY.
 
-This script MUST NOT read `ledger_i3_dminor.jsonl` — that would
-break pre-registration integrity. A test asserts the absence of any
-`ledger_i3_dminor` reference in this file's source.
+Pre-registration integrity: this script MUST NOT read the augmented
+86-row I3 ledger. A test asserts absence of any augmented-ledger
+substring in this file's source.
 
 Pairwise distance: 1 - cosine similarity of L2-normalized fingerprint
 vectors within a rule_type.
@@ -126,7 +126,7 @@ def main():
         "note": (
             "20th-percentile per-rule_type pairwise cosine-distance "
             "threshold on the 76-row baseline ledger. Pre-registered; "
-            "does not read ledger_i3_dminor.jsonl."
+            "the augmented I3 ledger is never read here."
         ),
         "threshold_percentile": THRESHOLD_PERCENTILE,
         "per_rule_type": thresholds,

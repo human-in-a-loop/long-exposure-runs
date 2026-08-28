@@ -23,6 +23,12 @@
     "hash_geometry_verdict.py": "7f4df338299c96371fe50291bb774c9a92feb7b59df9e3d8f68b01f65bb413bf",
     "anchor_preservation_hash.py": "7dfe85dba4760f1a0444e965d8cb792d2af739d1838129abcf0bba6672f3ba76"
   },
+  "cycle_29_utilities": {
+    "multiple_testing_correction.py": "011c01a3ae2c7373aeae1ff3fc5465edb5a1384851b8fb8040801111de42150f",
+    "drop_batch_v2_sensitivity.py": "b25095ec0d5b16455e636ba504f26b9d8c449310cd3cc836ad582e626552e2f9",
+    "leave_one_cell_out_contribution.py": "17810f366cc6d5ef0f49a9ea92e3b595b39216e7bffa4f68e5f173f5161f8c13",
+    "hash_geometry_adjudication_verdict.py": "23b761b806adf43eaa24adac17020d9e2e1dbcb7d509b1da933b1b039b0ee5a4"
+  },
   "frozen_batch_shas_cycle26_baseline": {
     "data/gen/batch_v1": "b052",
     "data/gen/batch_v2": "be57",
