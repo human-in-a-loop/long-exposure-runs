@@ -2343,6 +2343,84 @@ if _rep_p.is_file() and _rep:
 _tp = WS / "tests" / "test_ear_stability_audit.py"
 check(_tp.is_file(), "stability-audit §32h: tests/test_ear_stability_audit.py present")
 
+# §33. M-GEN-1/batch-v5-n16 — cycle 23, fork 3fbd8c1ab57c, clone 0.
+# (a) Driver + companion scripts present.
+_v5_dir = WS / "scripts" / "gen"
+for _name in ("batch_v5_n16", "collision_count_batch_v5",
+              "batch_v5_anchor_regression", "batch_v5_hypothesis_verdict"):
+    _p = _v5_dir / f"{_name}.py"
+    check(_p.is_file(), f"batch-v5 §33a: scripts/gen/{_name}.py present")
+
+# (b) Sampler file SHA matches batch-v4's anchor (frozen invariant).
+import hashlib as _hashlib
+def _sha256_file(_p):
+    _h = _hashlib.sha256()
+    with open(_p, "rb") as _f:
+        for _chunk in iter(lambda: _f.read(1 << 20), b""):
+            _h.update(_chunk)
+    return _h.hexdigest()
+
+_sampler_p = WS / "scripts" / "rules" / "sampling" / "i4_stratified.py"
+_v4_anchor = WS / "data" / "gen" / "batch_v4" / ".i4_sampler_anchor_sha256"
+if _sampler_p.is_file() and _v4_anchor.is_file():
+    _live = _sha256_file(_sampler_p)
+    _anchored = _v4_anchor.read_text().strip()
+    check(_live == _anchored,
+          f"batch-v5 §33b: I4 sampler SHA matches batch-v4 anchor (live={_live[:16]})")
+
+# (c) Source-ledger SHA matches i3_dminor_manifest (augmented ledger unchanged).
+_i3_led = WS / "data" / "rules" / "ledger_i3_dminor.jsonl"
+_i3_m = WS / "data" / "rules" / "i3_dminor_manifest.json"
+if _i3_led.is_file() and _i3_m.is_file():
+    _mfst = json.loads(_i3_m.read_text())
+    check(_sha256_file(_i3_led) == _mfst["augmented_ledger_sha256"],
+          "batch-v5 §33c: source ledger SHA matches i3_dminor_manifest")
+
+# (d) Driver SALT range == 16.
+_v5_drv_src = (_v5_dir / "batch_v5_n16.py").read_text() if (_v5_dir / "batch_v5_n16.py").is_file() else ""
+check("SALTS = tuple(range(16))" in _v5_drv_src,
+      "batch-v5 §33d: driver iterates exactly 16 salts")
+
+# (e) Anchor regression 32/32 PASS.
+_v5_root = WS / "data" / "gen" / "batch_v5_n16"
+_ar = _v5_root / "anchor_regression.json"
+if _ar.is_file():
+    _arj = json.loads(_ar.read_text())
+    check(_arj.get("n_cells") == 32, "batch-v5 §33e: anchor_regression n_cells == 32")
+    check(bool(_arj.get("all_pass")),
+          f"batch-v5 §33e: anchor_regression 32/32 PASS ({_arj.get('n_pass')} of {_arj.get('n_cells')})")
+
+# (f) Non-modification of the four prior batch dirs (spot-check batch-v4 manifest).
+_v4_mfst_p = WS / "data" / "gen" / "batch_v4" / "batch_manifest.json"
+if _v4_mfst_p.is_file():
+    _v4_mfst = json.loads(_v4_mfst_p.read_text())
+    check(_v4_mfst.get("verdict") == "CONFIRMS_H0_STRICT",
+          "batch-v5 §33f: batch_v4 manifest verdict unchanged (CONFIRMS_H0_STRICT)")
+    check(_v4_mfst.get("collision_pairs_at_N8") == 0,
+          "batch-v5 §33f: batch_v4 manifest zero-pair anchor unchanged")
+
+# (g) Verdict file schema conformance.
+_hv = _v5_root / "hypothesis_verdict.json"
+if _hv.is_file():
+    _hvj = json.loads(_hv.read_text())
+    for _k in ("observed_pairs", "attribution", "form_arrangement_fraction",
+               "verdict", "frozen_rubric"):
+        check(_k in _hvj, f"batch-v5 §33g: verdict has {_k}")
+    check(_hvj.get("verdict") in
+          ("CONFIRMS_CONSTRUCTION", "PARTIAL_CONFIRM", "CONFIRMS_H2_LARGER"),
+          "batch-v5 §33g: verdict is one of the three frozen rubric options")
+
+# (h) No PRNG imports in any of the four new scripts (AST-checked in unit
+# suite; substring check here).
+for _name in ("batch_v5_n16", "collision_count_batch_v5",
+              "batch_v5_anchor_regression", "batch_v5_hypothesis_verdict"):
+    _p = _v5_dir / f"{_name}.py"
+    if _p.is_file():
+        _src = _p.read_text()
+        for _tok in ("numpy.random", "np.random", "torch.rand", "torch.manual_seed",
+                     "secrets.", "default_rng"):
+            check(_tok not in _src, f"batch-v5 §33h: {_name} has no {_tok}")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
