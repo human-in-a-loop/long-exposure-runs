@@ -2530,6 +2530,181 @@ for _v in ("ridge", "bottleneck", "frozen_projector"):
         check(_rj.get("n_recipes") == 10 and _rj.get("n_clips") == 55,
               f"head-reg §34h: stability_report_v2_{_v}.json has 10 recipes × 55 clips")
 
+# -----------------------------------------------------------------------------
+# §35. M-GEN-1/batch-v6-unconditioned-n16 — cycle 25, fork dc8cba4b79eb, clone 0.
+# Empirical test of the cycle-14 pigeonhole prediction at N=16 using cycle-13's
+# unconditioned SHA-256 sampler on the I3-augmented 86-row ledger. Six checks:
+# driver presence; sampler-file SHA anchor; source-ledger SHA anchor;
+# i4_stratified NOT imported (AST); five prior batches non-modification;
+# verdict-JSON schema shape.
+# -----------------------------------------------------------------------------
+_bv6_scripts = [
+    "scripts/gen/batch_v6_unconditioned_n16.py",
+    "scripts/gen/collision_count_batch_v6.py",
+    "scripts/gen/batch_v6_hypothesis_verdict.py",
+    "scripts/gen/batch_v6_anchor_check.py",
+]
+
+# (a) All four driver scripts + test file present.
+for _rel in _bv6_scripts + ["tests/test_batch_v6_unconditioned.py"]:
+    check((WS / _rel).is_file(),
+          f"bv6 §35a: batch-v6 script present: {_rel}")
+
+# (b) Cycle-13 unconditioned sampler SHA anchor (pinned to cycle-25 pre-flight).
+_bv6_sampler_sha_want = "7dcdcc03d1b3565f1f160a1de48150642218820f2e24fd482c223e12359e2a74"
+if (WS / "scripts/gen/sample_rules.py").is_file():
+    check(_sha256_file(WS / "scripts/gen/sample_rules.py") == _bv6_sampler_sha_want,
+          "bv6 §35b: cycle-13 unconditioned sampler SHA matches anchor")
+
+# (c) I3-augmented source-ledger SHA anchor.
+_bv6_i3_sha_want = "1233efd5fd817141b22b8c625c97819d7534261625a7ed40806fc7b2c9b84645"
+if (WS / "data/rules/ledger_i3_dminor.jsonl").is_file():
+    check(_sha256_file(WS / "data/rules/ledger_i3_dminor.jsonl") == _bv6_i3_sha_want,
+          "bv6 §35c: I3-augmented ledger SHA matches anchor")
+
+# (d) i4_stratified NOT imported anywhere in the batch-v6 scripts.
+_pat_i4 = _re.compile(r"^\s*(?:from|import)\s+.*\bi4_stratified\b", _re.M)
+for _rel in _bv6_scripts:
+    if (WS / _rel).is_file():
+        _src = (WS / _rel).read_text()
+        check(_pat_i4.search(_src) is None,
+              f"bv6 §35d: {_rel} does NOT import i4_stratified")
+
+# (e) Five prior batches non-modification — post_run_anchor_manifest reports all pass.
+_post = WS / "data" / "gen" / "batch_v6" / "post_run_anchor_manifest.json"
+if _post.is_file():
+    _postj = json.loads(_post.read_text())
+    check(bool(_postj.get("all_pass")),
+          "bv6 §35e: post-run anchor manifest reports all_pass=True")
+    for _name in ("batch_v2", "batch_v3_i3", "batch_v3_i4", "batch_v4", "batch_v5_n16"):
+        _ai = _postj.get("per_anchor", {}).get(_name, {})
+        check(bool(_ai.get("pass")),
+              f"bv6 §35e: prior batch {_name} unchanged (post-run)")
+
+# (f) hypothesis_verdict.json schema — required keys + verdict enum member.
+_vd = WS / "data" / "gen" / "batch_v6" / "hypothesis_verdict.json"
+_verdict_enum = {
+    "CONFIRMS_PIGEONHOLE", "PARTIAL_CONFIRM", "PARTIAL_CONFIRM_K15_FAMILY",
+    "REFUTES_PIGEONHOLE", "NULL_RESULT",
+}
+if _vd.is_file():
+    _vdj = json.loads(_vd.read_text())
+    for _k in ("observed_pairs", "attribution", "attribution_any_rt",
+               "form_arrangement_fraction", "k15_union_fraction",
+               "verdict", "frozen_rubric", "K_distribution", "N"):
+        check(_k in _vdj, f"bv6 §35f: verdict JSON has key {_k}")
+    check(_vdj.get("N") == 16, "bv6 §35f: verdict N == 16")
+    check(_vdj.get("verdict") in _verdict_enum,
+          f"bv6 §35f: verdict is one of frozen rubric members "
+          f"(got {_vdj.get('verdict')!r})")
+
+# -----------------------------------------------------------------------------
+# §36. M-EAR-1/feature-representation-audit — cycle 25, fork dc8cba4b79eb, clone 1.
+# Final Path A probe on the ear-model chassis. Feature-representation swap
+# on the cycle-6 CORN head under UNCHANGED cycle-22 harness. Three
+# representations (heur_only 4-D; panns_only 2048-D; vggish_only 128-D,
+# deferred if not cached). Same relaxed rubric as cycle-23.
+# -----------------------------------------------------------------------------
+_fr_scripts = [
+    "scripts/ear/feature_subset_adapter.py",
+    "scripts/ear/stability_audit_v3_representations.py",
+    "scripts/ear/representation_frontier.py",
+]
+
+# (a) Representation adapter + driver + frontier scripts + test file exist.
+for _rel in _fr_scripts + ["tests/test_ear_feature_representation_audit.py"]:
+    check((WS / _rel).is_file(),
+          f"feat-rep §36a: representation script present: {_rel}")
+
+# (b) Harness anchor SHAs still match cycle-22 clone-2 recorded values
+#     (all six — stability_audit, synthetic_labels, stability_metrics,
+#     model, corn, features).
+_anchor_fr = {
+    "scripts/ear/stability_audit.py":
+        "b1ce5137b665a962657f1ee128db4d36abcb6d2174f57101b354a3194ea02e4c",
+    "scripts/ear/synthetic_labels.py":
+        "b71f194ef97e8936bb8942d5fccba899e6efe47e292cca185728d1cd9f41fb4d",
+    "scripts/ear/stability_metrics.py":
+        "6a5cb5183fdc77e80677ef01bb47f777a2662404f737f8aa74287f30cf97dc27",
+    "scripts/ear/model.py":
+        "d4322a95fc2328b201b4040713dfdf8e294d8d0ae31db7e81c6390371492b552",
+    "scripts/ear/corn.py":
+        "5028c58c20f23cd62c94789fad3522f94953417b79dec33b8506704b83a9921b",
+    "scripts/ear/features.py":
+        "5e7cbf33cd81b501368f6334b2e5c67c41172c4d9e60bb34154274897c611f53",
+}
+for _rel, _want in _anchor_fr.items():
+    _got = _sha256_file(WS / _rel)
+    check(_got == _want,
+          f"feat-rep §36b: harness anchor SHA unchanged for {_rel}")
+
+# (c) Feature cache SHA-manifest byte-identical before/after audit run.
+_fc_fr = WS / "data" / "ear" / "feature_representation_audit" / "feature_cache_pre_post_shas.json"
+if _fc_fr.is_file():
+    _fcj_fr = json.loads(_fc_fr.read_text())
+    check(bool(_fcj_fr.get("byte_identical")),
+          "feat-rep §36c: feature cache SHA-manifest unchanged pre/post")
+
+# (d) D_in per representation matches the frozen spec (from adapter constants).
+try:
+    import importlib
+    _fsa = importlib.import_module("scripts.ear.feature_subset_adapter")
+    check(_fsa.HEUR_DIM == 4, "feat-rep §36d: HEUR_DIM == 4")
+    check(_fsa.PANNS_DIM == 2048, "feat-rep §36d: PANNS_DIM == 2048")
+    check(_fsa.VGGISH_DIM == 128, "feat-rep §36d: VGGISH_DIM == 128")
+    check(_fsa.FULL_DIM == 2052, "feat-rep §36d: FULL_DIM == 2052")
+except Exception as _e:
+    check(False, f"feat-rep §36d: adapter import failed: {_e}")
+
+# (e) No sidecar_nonfactor imports in any new representation script.
+for _rel in _fr_scripts:
+    if (WS / _rel).is_file():
+        _src = (WS / _rel).read_text()
+        check(_pat_sidecar.search(_src) is None,
+              f"feat-rep §36e: no sidecar_nonfactor import in {_rel}")
+
+# (f) No PRNG substrings in representation scripts.
+for _rel in _fr_scripts:
+    if (WS / _rel).is_file():
+        _src = (WS / _rel).read_text()
+        for _tok in ("numpy.random", "np.random", "torch.randn", "torch.rand(",
+                     "torch.randint", "torch.randperm",
+                     "secrets.", "default_rng", "import random"):
+            check(_tok not in _src,
+                  f"feat-rep §36f: {_rel} has no {_tok}")
+
+# (g) Per-representation stability_report_v3_<representation>.json non-empty
+#     + representation tag + D_in matches spec (heur_only=4, panns_only=2048).
+for _r, _dim in (("heur_only", 4), ("panns_only", 2048), ("vggish_only", 128)):
+    _p = WS / "data" / "ear" / "feature_representation_audit" / f"stability_report_v3_{_r}.json"
+    if _p.is_file():
+        _rj = json.loads(_p.read_text())
+        check(_rj.get("representation") == _r,
+              f"feat-rep §36g: stability_report_v3_{_r}.json representation tag matches")
+        check(_rj.get("feat_dim") == _dim,
+              f"feat-rep §36g: stability_report_v3_{_r}.json feat_dim == {_dim}")
+        check(_rj.get("n_recipes") == 10 and _rj.get("n_clips") == 55,
+              f"feat-rep §36g: stability_report_v3_{_r}.json has 10 recipes × 55 clips")
+
+# (h) representation_verdicts.json + frontier_summary.json present with schema.
+_rv = WS / "data" / "ear" / "feature_representation_audit" / "representation_verdicts.json"
+if _rv.is_file():
+    _rvj = json.loads(_rv.read_text())
+    for _r in ("heur_only", "panns_only"):
+        # If not deferred, must be verdicted.
+        if _r in _rvj:
+            for _k in ("C1_prime", "C2_prime", "C3_prime", "overall"):
+                check(_k in _rvj[_r], f"feat-rep §36h: {_r} has {_k}")
+
+_fs_fr = WS / "data" / "ear" / "feature_representation_audit" / "frontier_summary.json"
+if _fs_fr.is_file():
+    _fsj_fr = json.loads(_fs_fr.read_text())
+    check(_fsj_fr.get("c2_prime_threshold") == 0.4,
+          "feat-rep §36h: frontier summary carries C2' threshold = 0.4")
+    _row_variants_fr = {r["variant"] for r in _fsj_fr.get("rows", [])}
+    check("cycle6_baseline" in _row_variants_fr,
+          "feat-rep §36h: frontier summary includes cycle-6 reference row")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
