@@ -161,6 +161,29 @@ if _sep_dir.is_dir():
 check(not _seen_nonfactor_import,
       "M-SEP-1: scripts/separation/*.py do NOT import scripts.classifier.sidecar_nonfactor (isolation)")
 
+# 9. M-SEP-1 scope-closure: UMXHQ per-stem RMS matches the pinned baseline
+#    guard against silent regression of the byte-determinism finding (MINOR-2).
+#    Values pinned by scripts/separation/verify_umxhq_determinism.py.
+import math as _math
+import soundfile as _sf
+_pin_path = WS / "data" / "separation" / "runs" / "openunmix" / "synth_030s" / "pinned_rms.json"
+check(_pin_path.is_file(), "M-SEP-1: pinned_rms.json present for UMXHQ synth_030s")
+if _pin_path.is_file():
+    _pin = json.loads(_pin_path.read_text())
+    _tol_db = 0.2  # matches the SI-SDR-cell auditor tolerance in the report
+    for _stem, _meta in _pin["stems"].items():
+        _stem_wav = WS / "data" / "separation" / "runs" / "openunmix" / "synth_030s" / f"{_stem}.wav"
+        _a, _sr = _sf.read(str(_stem_wav), always_2d=True)
+        _rms_now = float((_a.astype("float64") ** 2).mean() ** 0.5)
+        check(_math.isfinite(_rms_now) and _rms_now > 0.0,
+              f"M-SEP-1: UMXHQ synth_030s/{_stem}.wav RMS finite and > 0")
+        _pin_dbfs = _meta["rms_dbfs"]
+        _now_dbfs = 20.0 * _math.log10(_rms_now + 1e-12)
+        _delta = abs(_now_dbfs - _pin_dbfs)
+        check(_delta <= _tol_db,
+              f"M-SEP-1: UMXHQ synth_030s/{_stem}.wav RMS {_now_dbfs:.2f} dBFS "
+              f"within ±{_tol_db} dB of pinned {_pin_dbfs:.2f} (|Δ|={_delta:.3f})")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

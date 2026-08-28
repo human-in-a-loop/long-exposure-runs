@@ -40,7 +40,7 @@ falsely blame the separator (see §2 for the preprocessing rationale).
 | numpy                         | 1.26.4                                                                |
 | torch / torchaudio            | 2.13.0+cpu / 2.11.0+cpu                                               |
 | demucs                        | 4.1.0                                                                 |
-| openunmix                     | 1.3.0                                                                 |
+| openunmix                     | 1.3.0[^umx-version]                                                   |
 | mir_eval                      | 0.8.2 (`bss_eval_sources`; deprecation-warned but still authoritative for SDR/SIR/SAR at this version) |
 | soundfile                     | 0.14.0                                                                |
 | librosa                       | 0.11.0                                                                |
@@ -151,8 +151,26 @@ has a value in every cell.
 **Determinism.** Rerunning `run_htdemucs.py` on `synth_030s` (after
 `torch.manual_seed(0)`) produced a drums stem whose sample-by-sample max-abs diff against the
 first run was **0.000e+00** — htdemucs is bit-deterministic under a fixed seed on this cpu-only
-torch build. UMXHQ was not spot-checked bit-for-bit, but its BLSTM has no dropout or MC
-sampling; the same fixed-seed contract applies.
+torch build.
+
+**UMXHQ determinism — byte-verified.** UMXHQ was promoted from "same fixed-seed contract
+applies" to a direct sample-byte diff via
+[`scripts/separation/verify_umxhq_determinism.py`](../scripts/separation/verify_umxhq_determinism.py).
+Under the hard-pinned single-threaded contract (`OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`,
+`OPENBLAS_NUM_THREADS=1`, `torch.set_num_threads(1)`, `torch.manual_seed(0)`, all set before
+`import torch`), a rerun on `synth_030s` produced stems whose audio samples are **bit-identical**
+to the committed run — `np.array_equal(a, b)` returns True on all four of `{vocals, drums, bass,
+other}`, and the sample-level max-abs diff sits at the −240 dBFS numerical floor (i.e.
+`20·log10(1e-12)`, the deliberate additive floor inside the diff-in-dBFS reduction).
+The raw WAV file **byte** hashes do differ across runs — traced to the WAV `PEAK` chunk at
+offset `0x3c`, which stores a Unix timestamp of when the peak was computed and is written afresh
+by `soundfile.write` every call. The `data`-chunk payload (the audio samples) is identical.
+This confirms the mechanism predicted in the fanout brief: with single-threaded BLAS, all
+reductions inside `torch.nn.functional.conv1d` and the Wiener-filter linear algebra collapse to
+one serial ordering, which mathematically pins the result. Full row-by-stem evidence is at
+[`data/separation/runs/openunmix/synth_030s_verify/determinism_report.tsv`](../data/separation/runs/openunmix/synth_030s_verify/determinism_report.tsv);
+the per-stem RMS values used as the integration-test regression guard are pinned at
+[`data/separation/runs/openunmix/synth_030s/pinned_rms.json`](../data/separation/runs/openunmix/synth_030s/pinned_rms.json).
 
 ## 6. Adopt-or-build verdict
 
@@ -260,8 +278,17 @@ PYTHONPATH=. /usr/bin/python3 tests/test_integration_cross_branch.py   # invaria
 ```
 
 **Auditor tolerance**: per the fanout brief, ±0.2 dB per SI-SDR cell is the acceptable drift.
-Bit-identity was observed on htdemucs's drums stem across two consecutive runs; UMXHQ was not
-spot-diffed at the byte level but its deterministic BLSTM under the fixed seed is expected to
-reproduce within numerical noise (< 0.05 dB).
+Bit-identity was observed on htdemucs's drums stem across two consecutive runs. UMXHQ was
+subsequently promoted to the same bit-identity claim at the audio-sample level (all 4 stems on
+`synth_030s`; see §5, "UMXHQ determinism — byte-verified").
 
 ![M-SEP-1 per-stem SDR by separator (higher is better; naive-copy = mix/3, mean across the three synth mixes {30, 60, 90}s)](../data/separation/results_bar_chart.png)
+
+---
+
+[^umx-version]: `openunmix` does not expose `__version__` at runtime. Version confirmed
+    authoritatively via `pip show openunmix` (dist-info metadata), which reports
+    `Version: 1.3.0` and `Location: /usr/local/lib/python3.11/dist-packages`. The
+    `METADATA` file at `/usr/local/lib/python3.11/dist-packages/openunmix-1.3.0.dist-info/METADATA`
+    is the source of the number and the source of the wheel identity (matches the
+    `openunmix-1.3.0-py3-none-any.whl` cited in §4's fetchability probe row).
