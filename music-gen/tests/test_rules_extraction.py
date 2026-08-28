@@ -102,8 +102,23 @@ def test_ledger_roundtrip_and_provenance():
           f"insertion order tail matches {expected} (got {first_seen})")
 
     # provenance: every pointer must resolve to a recomputable
-    # transcription_event_id from the frozen input files.
+    # transcription_event_id from the frozen input files. Cycle-12
+    # M-RULES-1/extraction/breadth-seeds appended rows keyed to the two
+    # breadth-second-seeds transcriptions; walk each seed context and
+    # collect the recomputable ids.
+    from scripts.rules.extract._common import (
+        set_extraction_context, reset_extraction_context,
+    )
     known_te = {transcription_event_id(t) for t in ("score",) + STEMS}
+    for seed_name in ("seed_mid_50s", "synth_060s"):
+        score_p = _REPO / "data" / "breadth" / seed_name / "merged.musicxml"
+        bp_p = _REPO / "data" / "breadth" / seed_name / "transcriptions"
+        if score_p.is_file() and bp_p.is_dir():
+            set_extraction_context(seed_name, score_p, bp_p)
+            try:
+                known_te.update(transcription_event_id(t) for t in ("score",) + STEMS)
+            finally:
+                reset_extraction_context()
     n_ok = n_total = 0
     for r in rows:
         for p in r.get("provenance_pointers", []):

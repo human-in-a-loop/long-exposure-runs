@@ -40,21 +40,81 @@ def file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+# ---------------------------------------------------------------------------
+# Extraction context (cycle-12, M-RULES-1/extraction/breadth-seeds).
+#
+# The default context points at the frozen cycle-9 synth_030s inputs
+# (SCORE_PATH + BP_DIR above). The breadth-seed orchestrator temporarily
+# overrides this via ``set_extraction_context()`` so extractors emit
+# provenance_pointers keyed to the alternate seed's merged.musicxml and
+# per-stem basic-pitch JSONLs. When ``reset_extraction_context()`` is
+# called (or the context was never set) behavior is byte-identical to
+# cycle-9 — the cycle-9 anchor rule_ids remain reproducible.
+# ---------------------------------------------------------------------------
+
+_ACTIVE_SCORE_PATH: Path = SCORE_PATH
+_ACTIVE_BP_DIR: Path = BP_DIR
+_ACTIVE_SEED_NAME: str = "synth_030s"
+
+
+def set_extraction_context(seed_name: str, score_path, bp_dir) -> None:
+    """Redirect ``transcription_event_id`` to alternate seed inputs."""
+    global _ACTIVE_SCORE_PATH, _ACTIVE_BP_DIR, _ACTIVE_SEED_NAME
+    _ACTIVE_SCORE_PATH = Path(score_path)
+    _ACTIVE_BP_DIR = Path(bp_dir)
+    _ACTIVE_SEED_NAME = str(seed_name)
+
+
+def reset_extraction_context() -> None:
+    """Restore cycle-9 default context (synth_030s)."""
+    global _ACTIVE_SCORE_PATH, _ACTIVE_BP_DIR, _ACTIVE_SEED_NAME
+    _ACTIVE_SCORE_PATH = SCORE_PATH
+    _ACTIVE_BP_DIR = BP_DIR
+    _ACTIVE_SEED_NAME = "synth_030s"
+
+
+def active_seed_name() -> str:
+    return _ACTIVE_SEED_NAME
+
+
 def transcription_event_id(tag: str) -> str:
     """Deterministic 32-hex id derived from stem/source content sha.
 
     Resolvability: given the stem tag we recompute the same value.
+
+    The path resolution honors the currently-active extraction context.
+    When no context has been set, defaults match cycle-9 synth_030s
+    (SCORE_PATH / BP_DIR) — byte-identical anchor reproduction.
     """
     if tag in STEMS:
-        p = BP_DIR / f"{tag}.jsonl"
+        p = _ACTIVE_BP_DIR / f"{tag}.jsonl"
     elif tag == "score":
-        p = SCORE_PATH
+        p = _ACTIVE_SCORE_PATH
     else:
         raise ValueError(f"unknown transcription tag: {tag}")
     if not p.exists():
         raise FileNotFoundError(str(p))
     sha = file_sha256(p)
     return hashlib.sha256(f"transcription::{tag}::{sha}".encode("utf-8")).hexdigest()[:32]
+
+
+class NullWithReason:
+    """Marker returned by extractors when content is incompatible.
+
+    Not emitted to the ledger; consumed by the orchestrator to populate
+    ``breadth_expansion_summary.json`` honestly rather than fabricating a
+    fake rule row.
+    """
+
+    __slots__ = ("rule_type", "reason", "detail")
+
+    def __init__(self, rule_type: str, reason: str, detail: str = ""):
+        self.rule_type = rule_type
+        self.reason = reason
+        self.detail = detail
+
+    def to_dict(self) -> dict:
+        return {"rule_type": self.rule_type, "reason": self.reason, "detail": self.detail}
 
 
 def clip_id(tag: str) -> str:

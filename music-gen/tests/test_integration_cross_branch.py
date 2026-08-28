@@ -1371,6 +1371,117 @@ check((WS / "docs" / "figures" / "gen_batch_v1_grid.png").is_file(),
       "M-GEN-1/batch-v1: docs/figures/gen_batch_v1_grid.png present")
 
 
+# ---------------------------------------------------------------------------
+# §24. M-RULES-1/extraction/breadth-seeds (cycle 12, fork ed041ef4c1dc, clone-0)
+# ---------------------------------------------------------------------------
+# Invariants:
+#   (a) orchestrator + regression harness scripts present with interpreter guard
+#   (b) non-factor AST isolation preserved
+#   (c) cycle-9 anchor rule_ids byte-identical (prefix of the expanded ledger)
+#   (d) ledger has ≥ 15 new rows beyond the 28-row cycle-9 baseline
+#   (e) byte-determinism SHA anchor on the post-expansion ledger
+#   (f) report + figure + salt-collision TSV present
+_orch = WS / "scripts" / "rules" / "extract" / "breadth_seeds.py"
+check(_orch.is_file(), "M-RULES-1/extraction/breadth-seeds: orchestrator script present")
+if _orch.is_file():
+    _src = _orch.read_text()
+    check("assert sys.executable == \"/usr/bin/python3\"" in _src,
+          "M-RULES-1/extraction/breadth-seeds: orchestrator has /usr/bin/python3 guard")
+    import re as _re_bs
+    _sidecar_hits = _re_bs.findall(r"(?m)^(?:from|import)\s+.*sidecar_nonfactor", _src)
+    check(len(_sidecar_hits) == 0,
+          f"M-RULES-1/extraction/breadth-seeds: orchestrator has 0 sidecar_nonfactor imports (got {len(_sidecar_hits)})")
+
+# Cycle-9 anchor rule_ids reproduce byte-identically as the ledger prefix.
+_lp = WS / "data" / "rules" / "ledger.jsonl"
+if _lp.is_file():
+    _all_rows = [json.loads(_l) for _l in _lp.read_text().splitlines() if _l.strip()]
+    _n_rule_rows = sum(1 for _r in _all_rows if _r.get("event_type") == "rule")
+    _n_new_rows = _n_rule_rows - 28
+    check(_n_new_rows >= 15,
+          f"M-RULES-1/extraction/breadth-seeds: ≥15 new rule rows appended (got {_n_new_rows})")
+    _cycle9_anchor_ids = {
+        "rule_0271c7a9f3b5f606",  # harmonic
+        "rule_88b63bd5e771c045",  # rhythmic
+        "rule_09f340921fa2d258",  # melodic
+        "rule_84816f91e31e50c4",  # form
+        "rule_67d34b1c927ef33d",  # arrangement
+    }
+    _prefix_ids = {_r["rule_id"] for _r in _all_rows[:28] if _r.get("event_type") == "rule"}
+    _missing = _cycle9_anchor_ids - _prefix_ids
+    check(not _missing,
+          f"M-RULES-1/extraction/breadth-seeds: cycle-9 anchor rule_ids in prefix (missing={sorted(_missing)})")
+
+    import hashlib as _hs_bs
+    _got_sha = _hs_bs.sha256(_lp.read_bytes()).hexdigest()
+    _EXP_SHA_PREFIX = "a6fd53e9bf9a10f6"
+    check(_got_sha.startswith(_EXP_SHA_PREFIX),
+          f"M-RULES-1/extraction/breadth-seeds: post-expansion ledger SHA anchor "
+          f"(got {_got_sha[:16]}..., expected {_EXP_SHA_PREFIX}...)")
+
+# Report + figure + salt-collision artifacts.
+check((WS / "docs" / "rules_extraction_breadth_report.md").is_file(),
+      "M-RULES-1/extraction/breadth-seeds: docs/rules_extraction_breadth_report.md present")
+check((WS / "docs" / "figures" / "rules_extraction_breadth_growth.png").is_file(),
+      "M-RULES-1/extraction/breadth-seeds: figure PNG present")
+check((WS / "data" / "rules" / "breadth_expansion_summary.json").is_file(),
+      "M-RULES-1/extraction/breadth-seeds: breadth_expansion_summary.json present")
+check((WS / "data" / "rules" / "salt_collision_before_after.tsv").is_file(),
+      "M-RULES-1/extraction/breadth-seeds: salt_collision_before_after.tsv present")
+check((WS / "data" / "rules" / "salt_collision_before_after.json").is_file(),
+      "M-RULES-1/extraction/breadth-seeds: salt_collision_before_after.json present")
+
+
+# ---------------------------------------------------------------------------
+# §24. _infra/fanout-concat-hardening — cycle 12, fork ed041ef4c1dc, clone 1.
+# Concat SSoT `is`-identity across writer + concat + checker;
+# LedgerConcatError MRO; full-ledger regression on the current ledger.
+# ---------------------------------------------------------------------------
+
+from long_exposure.tools import _ledger_schema as _ls_concat
+from long_exposure.tools import promise_check as _pc_concat
+from long_exposure import workspace_bootstrap as _wb_concat
+from long_exposure.workspace_bootstrap import concat_clone_ledgers as _concat_fn
+
+check(
+    _pc_concat.REQUIRED_EVENT_FIELDS is _ls_concat.REQUIRED_EVENT_FIELDS,
+    "_infra/fanout-concat-hardening: promise_check REQUIRED_EVENT_FIELDS is the SSoT object",
+)
+check(
+    issubclass(_ls_concat.LedgerConcatError, _ls_concat.LedgerSchemaError),
+    "_infra/fanout-concat-hardening: LedgerConcatError subclasses LedgerSchemaError",
+)
+check(
+    issubclass(_ls_concat.LedgerConcatError, ValueError),
+    "_infra/fanout-concat-hardening: LedgerConcatError subclasses ValueError",
+)
+check(
+    hasattr(_ls_concat, "content_hash_tiebreak"),
+    "_infra/fanout-concat-hardening: content_hash_tiebreak exported from _ledger_schema",
+)
+check(
+    "content_hash_tiebreak" in Path(_wb_concat.__file__).read_text(),
+    "_infra/fanout-concat-hardening: workspace_bootstrap imports content_hash_tiebreak",
+)
+
+# Full-ledger regression: current promise_ledger.jsonl re-validates end-to-end
+# through the tightened concat, empty fork_dir, 0 rows added, byte-identical.
+import shutil as _shutil_concat, tempfile as _tf_concat
+_ws_concat = Path(_tf_concat.mkdtemp(prefix="concat_regression_"))
+_shutil_concat.copy(WS / "promise_ledger.jsonl", _ws_concat / "promise_ledger.jsonl")
+_before_concat = (_ws_concat / "promise_ledger.jsonl").read_bytes()
+_n_concat = _concat_fn(_ws_concat, _ws_concat / "does_not_exist")
+_after_concat = (_ws_concat / "promise_ledger.jsonl").read_bytes()
+check(
+    _n_concat == 0,
+    f"_infra/fanout-concat-hardening: 0 new rows on empty-fork regression (got {_n_concat})",
+)
+check(
+    _before_concat == _after_concat,
+    "_infra/fanout-concat-hardening: main ledger byte-identical after empty-fork concat",
+)
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
