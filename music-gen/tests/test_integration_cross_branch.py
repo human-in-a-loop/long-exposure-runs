@@ -378,6 +378,70 @@ if _axes_p.is_file():
     check(_need_axes.issubset(_have),
           f"M-TRANS-1: coverage matrix has all axes (missing: {sorted(_need_axes - _have)})")
 
+
+# 13. M-EAR-1/preparation cross-branch invariants
+#     (a) scripts/ear/*.py NEVER import sidecar_nonfactor (isolation).
+#     (b) synthetic-non-factor plant lives at data/ear/synth_nonfactor_plant.json
+#         (naming discipline distinct from data/classifier/_nonfactor/).
+#     (c) leak-test success bars: detection ≥ 0.90 at α=1.0 per leak type
+#         and FPR ≤ 0.10 per leak type.
+_ear_dir = WS / "scripts" / "ear"
+_seen_ear_nonfactor_import = False
+if _ear_dir.is_dir():
+    for _pyfile in sorted(_ear_dir.glob("*.py")):
+        _mod = ast.parse(_pyfile.read_text())
+        for _node in ast.walk(_mod):
+            if isinstance(_node, ast.ImportFrom) and _node.module and "sidecar_nonfactor" in _node.module:
+                _seen_ear_nonfactor_import = True
+            if isinstance(_node, ast.Import):
+                for _n in _node.names:
+                    if "sidecar_nonfactor" in _n.name:
+                        _seen_ear_nonfactor_import = True
+check(not _seen_ear_nonfactor_import,
+      "M-EAR-1: scripts/ear/*.py do NOT import scripts.classifier.sidecar_nonfactor (isolation)")
+
+_plant_p = WS / "data" / "ear" / "synth_nonfactor_plant.json"
+check(_plant_p.is_file(), "M-EAR-1: synth_nonfactor_plant.json present at data/ear/")
+if _plant_p.is_file():
+    _plant = json.loads(_plant_p.read_text())
+    for _k in ("clip_ids", "synth_artist", "synth_genre", "synth_era"):
+        check(_k in _plant, f"M-EAR-1: plant carries key {_k!r}")
+    if "synth_artist" in _plant:
+        check(len(_plant["synth_artist"]) == len(_plant["clip_ids"]),
+              "M-EAR-1: synth_artist aligned with clip_ids")
+
+_leak_sum_p = WS / "data" / "ear" / "leak_test_summary.json"
+check(_leak_sum_p.is_file(), "M-EAR-1: leak_test_summary.json present")
+if _leak_sum_p.is_file():
+    _sum = json.loads(_leak_sum_p.read_text())
+    _det = _sum.get("summary_detection", {})
+    _fpr = _sum.get("summary_fpr", {})
+    for _kind in ("artist", "genre", "era"):
+        _key = f"{_kind}@alpha=1.0"
+        _rate = float(_det.get(_key, 0.0))
+        check(_rate >= 0.90,
+              f"M-EAR-1: detection rate {_key} = {_rate:.3f} ≥ 0.90")
+        _fpr_v = float(_fpr.get(_kind, 1.0))
+        check(_fpr_v <= 0.10,
+              f"M-EAR-1: false-positive rate {_kind} = {_fpr_v:.3f} ≤ 0.10")
+
+_sanity_p = WS / "data" / "ear" / "model_sanity.json"
+check(_sanity_p.is_file(), "M-EAR-1: model_sanity.json present")
+if _sanity_p.is_file():
+    _sanity = json.loads(_sanity_p.read_text())
+    _corn_mae = float(_sanity["summary"]["mae"]["mean"])
+    _maj_mae = float(_sanity["summary"]["majority_mae"]["mean"])
+    _mn_mae = float(_sanity["summary"]["mean_int_mae"]["mean"])
+    check(_corn_mae < _maj_mae,
+          f"M-EAR-1: CORN MAE {_corn_mae:.3f} < majority-class MAE {_maj_mae:.3f}")
+    check(_corn_mae < _mn_mae,
+          f"M-EAR-1: CORN MAE {_corn_mae:.3f} < mean-integer MAE {_mn_mae:.3f}")
+
+# 13z. Feature cache carries all 55 valset clips.
+_feat_dir = WS / "data" / "ear" / "features"
+_n_feats = len(list(_feat_dir.glob("*.npz"))) if _feat_dir.is_dir() else 0
+check(_n_feats >= 55, f"M-EAR-1: {_n_feats} cached feature files under data/ear/features/ (≥55)")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
