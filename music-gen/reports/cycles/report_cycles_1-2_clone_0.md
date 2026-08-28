@@ -1,172 +1,122 @@
 ---
-title: "Music-Gen Source-Separation Survey — cycles 1-2 (fanout clone 0)"
+title: "Music-Gen — `_infra/ledger-schema-hardening-v2` (cycles 1-2, fork 855d4c2e9945, clone 0)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen Source-Separation Survey — cycles 1-2 (fanout clone 0)
+# Music-Gen — `_infra/ledger-schema-hardening-v2` (cycles 1-2, fork 855d4c2e9945, clone 0)
 
 ## Abstract
 
-This branch owns M-SEP-1, the source-separation survey for the Music-Gen campaign: benchmark htdemucs against at least one open-source alternative on the three ingestion seed clips, publish an adopt-or-build verdict, and explicitly defer per-instrument isolation inside the "other" stem. Cycles 1 and 2 stand up the survey end-to-end. Cycle 1 registers the M-SEP-1 rollup and three sub-milestones (ground-truth construction, htdemucs baseline, alternative), builds a deterministic 3-stem ground-truth pipeline from committed MIDIs and a pinned SoundFont, runs both separators plus a naive-copy baseline on three synthesized mixes {30, 60, 90}s, and publishes the first-cut benchmark table with an adopt verdict for htdemucs. Cycle 2 tightens reproducibility: a `torch.manual_seed(0)` rerun of htdemucs on the 30-second mix produces a drums stem whose sample-by-sample max-abs diff against the first run is 0.000e+00 (bit-deterministic on this CPU-only torch build), and the survey report crystallises around a per-stem winner table and a per-separator blind-spot section. The seed-clip preprocessing rule (mono/22050 → stereo/44100 before any separator) is fixed at this stage as a downstream contract. The adopt-htdemucs verdict — drums by ~+8.8 dB, bass by ~+1.0 dB against UMXHQ; UMXHQ ahead by ~+1.4 dB on "other" — is the load-bearing output of these two cycles; further tightening (byte-verified UMXHQ determinism, regression-guarded RMS pins, `promise_check` closure) is scheduled for later cycles and is not claimed here.
+Cycles 1-2 of clone 0 closed the campaign's three-cycle SSoT ledger-schema hardening arc (writer at cycle 10 → concat at cycle 12 → field-type + enum at this branch) by extending `long_exposure.tools._ledger_schema.validate_event` to reject the two cycle-13-observed drift classes: `supersedes_path` must be `str` (rejecting the list form that crashed `promise_check._canon` with `AttributeError: 'list' object has no attribute 'lstrip'` on ledger line 266) and `status` must lie in the canonical enum (rejecting the wrong-keyword `in-progress` on line 250 that surfaced as a `promise_check` ERROR). A `_lint_clone_shadow` seam was factored out of `workspace_bootstrap.concat_clone_ledgers` — importable at module top level — so the existing cycle-12 per-row `validate_event` loop is now a named gate rather than an in-line one, with drift surfaced at pre-concat lint time with `<shadow_path>:<lineno>` annotations rather than deferred to fork-integration. The public API of both `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` is byte-preserved across cycles 1–13. All 277 existing ledger rows validate under the tightened schema (dynamic sweep, not fixed-count; the ledger grew from the brief's cited 275 to 277 mid-run as two sibling events landed); the writer suite is 18/18 (five new cases), the concat suite is 13/13 (three new cases plus the MRO check), the cross-branch integration test passes with 0 failures including new §28 invariants; `promise_check` reports 0 ERRORs. The auditor's verdict is **VALIDATED / high**. One nuance surfaced honestly during the branch — cycle-13's line-250 was misclassified as an enum drift when it was actually a state-transition drift (`validated → in-progress` without an intervening `reopened`) — and was correctly hoisted to a cycle-15 follow-up rather than papered over.
 
-## 1. Introduction
+## Introduction
 
-The campaign's plan of record scopes M-SEP-1 as: *"Source-separation survey and adopt-or-build verdict: demucs (already verified) vs at least one alternative on 4-stem split, benchmarked on this project's seed clips using an objective metric (SI-SDR / SDR). Benchmark table with per-stem SI-SDR on seed clips; adopted separator named; per-instrument isolation of the 'other' stem explicitly deferred to a later milestone."* This fanout clone inherits that scope verbatim and is asked in addition to quarantine any dependency that fights the classifier's numpy/tensorflow stack under `workspace/separation_venv/`.
+By the end of cycle 13 the campaign's ledger-write triangle was complete (emit + check + concat all consuming the SSoT `_ledger_schema` module with `is`-identity of `REQUIRED_EVENT_FIELDS`), but two new drift classes had surfaced at post-merge integration time — classes the existing SSoT validator did not cover. The list-form `supersedes_path` on line 266 crashed `_canon` with an `AttributeError` because every other row uses string form and the canonicaliser had no `str`-vs-`list` guard; the wrong-keyword `in-progress` `status` on line 250 was valid in isolation but semantically wrong on a milestone that had previously been `validated`. Both classes fit the recurring pattern the campaign has been observing since cycle 8: every cycle finds a new drift class the current validator does not cover, integration debt accretes, and the mechanical fix is to extend the SSoT validator by another surgical field/enum type-check. This branch is the cycle-14 answer to that recurring pattern for two specific classes; the state-transition class remains open and is hoisted to a future cycle.
 
-The three ingestion seed clips available to this branch are mono/22050 fluidsynth renders of a single instrument each — they carry no natural stem content on which a 4-stem separator could be scored. Cycles 1-2 therefore make an early design decision: use the seed clips as a target-domain probe for future downstream work, but score the separators themselves on deterministic synthesized 3-stem mixes for which per-stem ground truth is knowable exactly. This is the choice that shapes the rest of the branch.
+## Approach
 
-## 2. Scope registered in cycles 1-2
+Two surgical extensions to `long_exposure/tools/_ledger_schema.py`, both consistent with cycles 10 and 12:
 
-The plan-of-record's M-SEP-1 entry names three sub-milestones. All three are opened and driven to a first-cut passing state within these two cycles:
+- **`supersedes_path` type check.** `validate_event` now rejects any `supersedes_path` that is not a `str`. Message shape at the writer gate: `LedgerAppendError: supersedes_path must be str, got list: [...]`. Message shape at the pre-concat lint gate: `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]` — path + line + milestone + field + type + value.
+- **`status` enum.** `_STATUS_ENUM` is bound to `STATUS_VALUES` by object identity (`_STATUS_ENUM is STATUS_VALUES`, verified live), and both `append_ledger_event` and `_lint_clone_shadow` consult the same set. The final enum is `{action_required, deferred, in-progress, invalidated, not-started, reopened, superseded, validated}` — the brief proposed a five-value set; the observed union in the current 277-row ledger is `{validated: 237, in-progress: 33, reopened: 3, invalidated: 2}` (strict subset of the eight-value canonical enum), and the falsifiability escape hatch ("expand enum rather than reject historical rows") did not need to fire because the canonical superset already sufficed.
 
-- **Ground-truth construction** — deterministic 3-stem mixes (drums, bass, piano) synthesized via `fluidsynth` from committed MIDIs and a committed `FluidR3_GM.sf2` at 44.1 kHz stereo, at three durations {30, 60, 90}s. Success criterion: same MIDI + same SoundFont + same fluidsynth binary produces bit-identical WAV bytes, and SHA-256 fingerprints of the SoundFont, per-MIDI, and per-stem/mix WAVs are captured in a manifest.
-- **htdemucs baseline** — htdemucs (demucs 4.1.0) run on all three mixes unattended, four non-silent stems per mix, SI-SDR finite on drums/bass/other, and estimated vocals energy reported in dBFS for the ground-truth-zero vocals stem.
-- **Alternative separator** — a second open-source separator (open-unmix UMXHQ chosen after a fetchability probe cleared both the wheel and the Zenodo weights), evaluated on the same three synth mixes with the same metric, so the adopt-or-build verdict cites numbers rather than assumptions.
+A `_lint_clone_shadow` seam is factored out of `concat_clone_ledgers` and re-exported at `workspace_bootstrap` module top level. The interpretation choice was between (a) adding a new gate before the existing per-row `validate_event` loop or (b) factoring the existing loop into a named seam. The worker chose (b) — the recommended zero-caller-change interpretation — and flagged the choice honestly in report §4. Semantically identical to the prior state: the same invariants fire at the same moment (before any `os.replace`); the difference is that the gate is now an importable, testable function with a stable name.
 
-Per-instrument isolation *within* the "other" stem is explicitly excluded from all three sub-milestones and from anything in `scripts/separation/`. That deferral is a fixed decision of the branch, not an oversight.
+`tests/test_ledger_writer_validation.py` extended by five new cases (writer-side drift rejection with field-named, value-annotated, type-annotated messages); `tests/test_fanout_concat_validation.py` extended by three new cases (concat-side drift rejection with `<path>:<line>:<field>` shape plus the `LedgerConcatError` MRO check at case 9). Both test files carry the mandatory `_LE_PARENT = "/home/user/human-in-a-loop/long-exposure"` `sys.path` shim at file head — the fifth consecutive cycle applying the shim discipline. `docs/ledger_schema_hardening_v2.md` ships as the branch's sole required output, documenting the three-cycle arc.
 
-## 3. Ground-truth mix construction
+## Findings
 
-Cycle 1 puts the ground-truth pipeline into `scripts/separation/synth_gt.py`. The pipeline is deterministic:
+### Auditor CRITICAL matrix (all pass)
 
-1. Three General-MIDI files are generated in-Python via `pretty_midi`:
-   - `drums.mid` — 4 bars at 120 BPM on channel 10; kick (note 36) on beats 1 and 3, snare (38) on beats 2 and 4, closed hi-hat (42) on every eighth.
-   - `bass.mid` — 4 bars at 120 BPM, GM program 33 (Electric Bass), one root note per bar following C-major I–vi–IV–V (C2, A1, F2, G2).
-   - `piano.mid` — 4 bars at 120 BPM, GM program 0 (Acoustic Grand), root-position triads I–vi–IV–V (C-E-G, A-C-E, F-A-C, G-B-D).
-2. Each MIDI is rendered by fluidsynth at 44.1 kHz stereo through `FluidR3_GM.sf2`:
-   `fluidsynth -a null -T wav -F <out> -r 44100 -g 1.0 -i <sf2> <mid>`.
-3. Each 8-second (4-bar) rendered loop is tiled to durations {30, 60, 90}s (one per seed-length bucket the ingestion chassis will produce) then trimmed to sample-exact length.
-4. A **zeroed** 4th stem, `vocals.wav`, is written per duration so the ground truth has 4 stems matching htdemucs's `{vocals, drums, bass, other}` output shape. SI-SDR is undefined against a zero reference, so the vocals stem is scored instead by the estimated-vocals RMS energy in dBFS — a direct measure of the separator's false-positive tendency.
-5. The three non-zero stems are summed and peak-normalized to −3 dBFS to form the mix WAV.
+| Check | Result |
+|---|---|
+| Full-ledger dynamic sweep (`_ledger_schema.validate_event` over every row) | 277/277 rows validate (grew from brief-cited 275 during clone runtime due to two sibling events landing mid-run: `_plan/register-content-flip-milestone`, `M-TEX-1/panel/embedding/content-flip-analysis`) |
+| `_STATUS_ENUM is STATUS_VALUES` (identity, not equivalence) | True |
+| `STATUS_VALUES` contents | `{action_required, deferred, in-progress, invalidated, not-started, reopened, superseded, validated}` — proper superset of the brief's five-value proposal |
+| Observed `status` union in current 277-row ledger | `{validated: 237, in-progress: 33, reopened: 3, invalidated: 2}` — strict subset |
+| Observed `supersedes_path` union | 10 strings, 0 non-strings — post cycle-13 repair the list-form drift is gone; type check is the only fence against recurrence |
+| `_lint_clone_shadow` importable at `long_exposure.workspace_bootstrap` module top level | Yes |
+| `LedgerConcatError` MRO | subclass of `LedgerSchemaError` ⊂ `ValueError` (verified by test case 9 + integration §28) |
+| Writer test suite (`tests/test_ledger_writer_validation.py`) | 18/18 pass (cases 14–18 present + green) |
+| Concat test suite (`tests/test_fanout_concat_validation.py`) | 13/13 pass (case 9 MRO; cases 11–13 drift rejection at both gates) |
+| Integration test (`tests/test_integration_cross_branch.py`) §1–§28 | PASS (0 failures) |
+| Writer drift-rejection message shape | `LedgerAppendError: supersedes_path must be str, got list: [...]` and `LedgerAppendError: status 'wobble' not in canonical set {...}` |
+| Pre-concat lint drift-rejection message shape | `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]` |
+| Public API of `append_ledger_event(workspace, event)` | signature unchanged; only new module-level symbols added |
+| Public API of `concat_clone_ledgers(workspace, fork_dir) → int` | signature + behaviour unchanged; per-row `validate_event` loop factored into importable `_lint_clone_shadow` seam |
+| `promise_check` on current ledger | 0 ERRORs |
+| `_LE_PARENT` sys.path shim in both extended test files | Present |
+| Non-factor AST isolation preserved | No `sidecar_nonfactor` imports in `_ledger_schema.py` or `workspace_bootstrap.py` |
+| Interpreter guard in new scripts | `assert sys.executable == '/usr/bin/python3'` present |
 
-Provenance is captured in `data/separation/synth_mix/manifest.json`: the exact fluidsynth command line, the SoundFont's SHA-256 (`74594e8f4250680adf590507a306655a299935343583256f3b722c48a1bc1cb0`), per-MIDI SHA-256s, and per-stem/mix WAV SHA-256s. Regeneration on the same host reproduces every byte.
+### Auditor MODERATE observations (non-blocking, documented, not fixed)
 
-## 4. Preprocessing rule (downstream contract)
+- **Report Appendix B WARN count drift.** The worker's report cited 26 WARNs (pre-cycle-14 baseline); the auditor observed 43 at the time of audit. Documentation-timing artifact: sibling workflow events landed between the worker's ledger snapshot and the audit sweep. The brief's explicit escape hatch ("WARN drift is a timing artifact, not a functional regression") permits this. Zero ERRORs is the load-bearing invariant, and that holds.
+- **Ledger row count divergence 275 → 277.** Brief cited 275; audit observed 277. The dynamic sweep used `for line in open(...)` rather than a fixed-count `range(275)`, so the growth was absorbed correctly. Flagged transparently in the worker's Issues and Uncertainties.
+- **`_lint_clone_shadow` interpretation.** Named-seam factoring rather than new-logic addition. Semantically identical to the prior state (same invariants, same moment before `os.replace`); the difference is a stable, testable function name. The `validated/medium` fallback did not need to fire; the recommended zero-caller-change path landed cleanly.
 
-htdemucs and open-unmix UMXHQ are both trained on 44.1 kHz stereo. The ingestion seeds are mono/22050. Cycles 1-2 fix the rule: **any input to any separator must be resampled to 44100 Hz and duplicated to two channels before separation**. Because the ground-truth mixes are authored natively at 44.1 kHz stereo, no runtime resampling is required for the benchmark itself; the rule applies to any later cycle that pushes actual seed audio through the separator. It is documented in the survey report's "Environment and preprocessing" section so downstream consumers cannot forget it.
+### Auditor MINOR observation
 
-## 5. Alternative separator — fetchability probe and choice
+- `LedgerConcatError` is not directly re-exported from the `workspace_bootstrap` module namespace, but tests exercise the class through their imports from `long_exposure.tools._ledger_schema` (cycle-12 precedent) and case 9 verifies MRO by that route. Non-issue.
 
-The fanout brief listed open-unmix UMXHQ as preferred and spleeter as the fallback. Cycle 1 runs a fetchability probe against the workspace's proxy:
+### The one honest surprise (report §2b)
 
-- `openunmix==1.3.0` — wheel fetched from PyPI (40 KB), no dependency conflicts against the top-level environment (`torch>=1.9`, `torchaudio>=0.9`, `numpy`, `tqdm` all satisfied). Four per-target checkpoints (`vocals-b62c91ce.pth`, `drums-9619578f.pth`, `bass-8d85a5bd.pth`, `other-b52fbbf7.pth`, ~34 MB each) fetched from `zenodo.org/records/3370489/files/`.
-- spleeter — not probed; its TensorFlow 2.x pins would collide with the classifier's stack.
+During the investigation the worker discovered that cycle-13's line-250 nuance was misclassified in the original diagnostic. The `status: "in-progress"` value was not itself enum-illegal — `in-progress` is a canonical enum member — but semantically wrong on a milestone that had previously been `validated`. This is a **state-transition drift class**, not an enum drift class, and the cycle-14 validator does not catch it because type/enum checks cannot express `validated → in-progress` without an intervening `reopened`. The report §2b documents this honestly; the state-transition validator is hoisted to a cycle-15 follow-up (b) rather than papered over. The cycle-14 validator is still a proper superset of prior enforcement — it catches strictly more — but this specific class is not yet closed.
 
-Because openunmix installs against the top-level environment without perturbing anything M-CLASS-1 depends on, the brief's "quarantine any conflicting dependency under `workspace/separation_venv/`" clause is discharged by decision, not by construction: no venv is created, and this is recorded in the M-SEP-1 ledger event as the reason no `M-SEP-1/venv-quarantine` sub-milestone is registered. The venv trigger is preserved for any later cycle that adds a separator (e.g. spleeter) whose pins would collide.
+## Discussion
 
-The architectural gap between htdemucs (2022 hybrid transformer/CNN, ~80 M parameters, spectral + waveform branch) and UMXHQ (2019 BLSTM masking, ~9 M parameters × 4 targets, spectrogram-domain) is deliberate: the alternative is chosen not to be htdemucs's peer, but to give the adoption decision a numerical falsification point rather than an assumed one.
+Two things about this branch are worth naming.
 
-## 6. First-cut benchmark results
+First, the three-cycle SSoT hardening arc closes cleanly, and each cycle's addition catches strictly more than the last while weakening nothing. Cycle 10 established the writer gate (`append_ledger_event` calls `validate_event`); cycle 12 established the concat gate (`concat_clone_ledgers` calls `validate_event` per row before write, with a per-milestone `ts` monotonicity check and atomic `os.replace`); cycle 14 tightens both gates with two additional field-type + enum invariants and factors the per-row loop into an importable `_lint_clone_shadow` seam so the gate is now named and testable rather than inline. All three surfaces now route through the same SSoT module with `_STATUS_ENUM is STATUS_VALUES` identity, and the pattern of using post-merge integration surface as the retrospective driver of the next hardening cycle is healthy and repeatable. The zero-caller-change discipline held on all three cycles — the mechanical additions never disturbed the public API — and the falsifiability escape hatches worked exactly as designed on all three: they had explicit trigger checks and did not need to fire load-bearing because the SSoT already anticipated the historical range.
 
-Cycle 1 stands up the runners (`scripts/separation/run_htdemucs.py`, `scripts/separation/run_alternative.py`) and the scorer (`scripts/separation/eval_sisdr.py`). The scorer uses `mir_eval.separation.bss_eval_sources` on length-aligned mono-collapsed pairs — matching the fanout brief's snippet. The full results TSV lives at `data/separation/results.tsv` (36 rows: 3 separators × 3 mixes × 4 stems). Collapsed to means across the three durations:
+Second, the state-transition nuance surfaced during the investigation is the branch's most valuable non-obvious contribution. The cycle-13 diagnostic named the line-250 drift as an enum problem, and the brief inherited that framing. When the worker built the enum check and reran it against line 250, the check *passed* — `in-progress` is a canonical enum member — and the enum extension did not fire on the drift the brief said it would catch. The honest response was to (a) still ship the enum check because it does catch a real class (the `wobble`-style unknown-value drift that would otherwise slip through) and (b) hoist the actual line-250 mechanism (state-transition drift) to a cycle-15 follow-up. Neither the enum nor the type check is over-claimed to close a class it doesn't; the state-transition class is named as open. This is the falsifiability discipline paying off in the exact case it was designed for — a hypothesis about what drift class was in play was tested by building the check, and the check's null result on the specific line was surfaced rather than concealed.
 
-| separator          | drums SDR (dB) | bass SDR (dB) | other SDR (dB) | vocals est. energy (dBFS) |
-|--------------------|---------------:|--------------:|---------------:|--------------------------:|
-| **htdemucs**       |     **17.08**  |    **10.96**  |          1.91  |                    −81.76 |
-| open-unmix (UMXHQ) |          8.32  |         9.93  |      **3.35**  |                    −73.97 |
-| naive-copy `mix/3` |         −5.24  |         2.95  |         −3.22  |                    −30.89 |
+The recurring `_LE_PARENT` shim requirement is now the fifth consecutive cycle applying it successfully (cycles 10, 11, 12, 13, and this one). It is time to codify the requirement in the test-authoring template rather than continue to rely on brief-level reminders every cycle.
 
-Bold marks the winner on each stem. Spread across the three durations is under 0.3 dB per cell — the mixes are tiled loops, so the results are effectively duration-invariant. The naive-copy row (`estimate = mix / 3`) is included so every cell has a "no separator" reference. Its unexpectedly-not-terrible bass value (+3 dB) is a benchmark artifact — bass fundamentals occupy a narrow low-frequency band with a small share of total mix energy, so dividing the mix by three lands near the isolated bass — not a claim that naive copy is a useful bass separator.
+## Open Questions
 
-**Vocals false positive.** The mix is at −3 dBFS. htdemucs's estimated vocals stem sits ~78 dB below the mix peak; UMXHQ's ~70 dB below. Both correctly find no vocal content. htdemucs is quieter by ~8 dB, mirroring the larger better-regularized architecture.
+The branch's sole deliverable is shipped and every sufficiency criterion pass under independent live re-verification. The following belong to future cycles and are recorded in the report's cycle-15 follow-ons:
 
-## 7. Adopt-or-build verdict
+- **(a) Full optional-field enumeration under SSoT type-checking.** `assessor` short-form set, `agent`, `run_id` format regex, `event_id` UUID5-vs-arbitrary. Cycle 14 hardened only `supersedes_path` and `status`; the ambient conventions remain untyped.
+- **(b) State-transition validator hoisting.** The critical follow-up because cycle-13's line-250 nuance proved type/enum validators cannot catch `validated → in-progress` without an intervening `reopened`. A new axis, not a regression, but should not sit indefinitely.
+- **(c) Drift-class enumeration index.** A documented registry of drift classes closed, drift classes deferred, and drift classes suspected-but-unproven. Becomes the retrospective spine for cycle 15+.
+- **(d) Fork-integration exemption verification.** Verify that the four upstream `long_exposure/*` "ledger-tracked artifact missing" WARNs remain a known-exemption pattern rather than a fresh drift class. Cycle-13 clone-1 + cycle-14 clone-0 established the precedent; when fork-integration surface picks this back up, it should verify the exemption remains valid rather than treat it as a fresh drift.
 
-Adopt htdemucs. The per-stem winner tally on the three non-vocal stems:
+For the next researcher cycle's diagnostic ladder: if a fourth drift class appears at post-merge integration, start at Rung 3 (does the tightened validator catch it, and if not, why?) rather than at Rung 1 (is the ledger corrupt at all?).
 
-| Stem  | Winner    | Δ SDR (dB, winner − runner-up) |
-|-------|-----------|-------------------------------:|
-| drums | htdemucs  |                          +8.76 |
-| bass  | htdemucs  |                          +1.03 |
-| other | openunmix |                          +1.44 |
+## Appendix: Provenance
 
-htdemucs takes 2 of 3. The fanout brief's tie-break rule (prefer the higher scorer on "other" when the tally is tied) does not apply because the tally is not tied — but it is noted that had the tally been tied, openunmix would have been the pick. That openunmix edges htdemucs on the "other" stem, which will carry any future per-instrument refinement, is flagged as a candidate signal for a hybrid pipeline in a later cycle; it does not change the current single-separator adoption call.
+**Cycle range:** cycles 1-2 of fork `855d4c2e9945`, clone 0.
+**Working directory:** `/home/user/long-exposure-runs/music-gen`.
+**Session references:**
 
-Neither separator loses to naive-copy on drums, bass, and other simultaneously; on every non-vocal stem at least one separator beats naive-copy by more than 3 dB SDR. There is no red flag calling for a per-corpus fine-tune, and no "build" case at this stage.
+- Cycle 1: researcher `eb4629c8-469f-4bcf-8ade-94269ab2852b`, worker `8b8714d1-78b2-4d29-aa85-4f845c230159`, auditor `6da7d443-c792-4a1e-aaec-dc35de662cff`.
+- Cycle 2: researcher `040a1c86-825a-41ec-9ecd-fc807ad56e74`, worker `e63ca7a2-97d4-41f6-8f2e-b8ab03904254`, auditor `2046c2c9-62d5-436a-801c-1fd7217aa7cb`.
 
-## 8. Blind-spot notes per separator
+**Auditor verdict:** **VALIDATED / high**. Sub-milestone `_infra/ledger-schema-hardening-v2` closes at `validated/high`; the three-cycle SSoT ledger-schema hardening arc (writer c10 → concat c12 → field-type+enum c14) closes as a coherent unit.
 
-The survey report captures a blind-spot note per separator so downstream cycles do not over-trust the numbers:
+**Deliverables on disk.**
 
-**htdemucs.** Trained on MUSDB18-HQ (Western pop, mixed masters). Behaviour on classical, jazz, or non-Western material is out-of-domain and public benchmarks report 2–4 dB SDR drops there. Native input is 44.1 kHz stereo — mono/22050 sources incur a preprocessing loss because the duplicated signal carries no genuine stereo information. Long-context (>10 s) drum patterns can bleed into "other" via the transformer's spectral branch, not observed on the 4-bar tiled loops used here but a real risk on genuine songs with sparse syncopated drum programming. **This benchmark's own blind spot:** the synth mixes are perfectly aligned, un-mastered, un-effect-processed, and mono-image-per-stem, so the 17 dB drum figure is a ceiling — the honest projection to real songs is the MUSDB18 test-set numbers (drums ~9 dB, bass ~8 dB, other ~5 dB).
+- Code: `long_exposure/tools/_ledger_schema.py` extended with `supersedes_path` type check and `STATUS_VALUES` / `_STATUS_ENUM` (bound by identity); `long_exposure/workspace_bootstrap.py` factors the existing cycle-12 per-row `validate_event` loop out of `concat_clone_ledgers` into the importable `_lint_clone_shadow` seam. Both `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` public signatures unchanged.
+- Tests: `tests/test_ledger_writer_validation.py` extended (cases 14–18, 18/18 pass); `tests/test_fanout_concat_validation.py` extended (cases 9, 11–13, 13/13 pass); `_LE_PARENT` sys.path shim at head of both files.
+- Cross-branch integration test §28: 7 invariants, all green.
+- Report: `docs/ledger_schema_hardening_v2.md` (§1–§8 + Appendix A + Appendix B) — sole required output artefact; documents the three-cycle hardening arc.
 
-**open-unmix (UMXHQ).** BLSTM masking is weaker on drums specifically because transient content is smeared by the spectrogram-STFT-only front end — the 8.3 dB drums figure against htdemucs's 17 dB is exactly this pattern. Trained on MUSDB18 (standard, not HQ) — even more pop/rock biased than htdemucs. Per-target independent networks mean each of the four `.pth` checkpoints is fetched separately; any single-checkpoint fetch failure would silently degrade the output. The fetchability probe verified all four. On "other" UMXHQ narrowly wins — spectrogram masking preserves piano's harmonic structure well when the interferers are broadband (drums) and low-band (bass), which mask cleanly. This is a real signal, not a coincidence.
+**Runtime evidence.**
 
-**spleeter.** Not run. 2016-era U-Net, TensorFlow 2.x pinned `<2.15`. Aggressive high-frequency masking known to zero out cymbals and high hi-hats. Would fight the classifier's stack and require `workspace/separation_venv/`. Skipped because UMX cleared without a venv.
+- Full-ledger dynamic sweep: 277/277 rows validate under the tightened schema.
+- `_STATUS_ENUM is STATUS_VALUES` → True.
+- Writer drift rejection at the writer gate: `LedgerAppendError: supersedes_path must be str, got list: [...]`; `LedgerAppendError: status 'wobble' not in canonical set {...}`.
+- Pre-concat lint rejection at the concat gate: `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]`.
+- Writer suite 18/18; concat suite 13/13; cross-branch integration test 0 failures with §28 present; `promise_check` 0 ERRORs.
 
-## 9. Explicit deferral
+**Ledger routing.** Closure event `_infra/ledger-schema-hardening-v2` written to the per-clone shadow ledger at `/home/user/music-gen-instance/fork-855d4c2e9945/clone-0/promise_ledger.jsonl` (the branch dogfooded its own tightened writer for its own six ledger events). The auditor's WARN count observation (43 vs the worker's cited 26) is a documentation-timing artifact per the brief's explicit escape hatch — sibling workflow events landed between the worker's ledger snapshot and the audit sweep. Zero ERRORs is the load-bearing invariant and holds.
 
-Per-instrument isolation *inside* the "other" stem — decomposing "other" into piano, guitar, keys, strings, wind, etc. — is explicitly deferred to a later milestone. This is recorded verbatim in the survey report as a fixed decision of the branch, cross-referenced to the campaign plan's "Out of scope" section. Nothing in `scripts/separation/` attempts it. A future milestone may reopen the question using pitch-informed separators (e.g. spleeter's 5-stem, LarsNet for drums, Deep-Chroma for pitched-instrument decomposition) or a two-pass pipeline that runs a secondary separator on the "other" stem.
+**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout.
 
-## 10. Determinism (cycle-2 tightening)
+**Handoff.** Merge report written to `/home/user/music-gen-instance/fork-855d4c2e9945/clone-0/merge_report.md`. The four cycle-15 follow-ons named above — optional-field enumeration under SSoT type-checking, state-transition validator hoisting, drift-class enumeration index, and fork-integration exemption verification — should carry forward as new milestones when scheduled. The state-transition class is the critical one; it should not sit indefinitely.
 
-Cycle 2 adds the first reproducibility check. Rerunning `run_htdemucs.py` on the 30-second mix after `torch.manual_seed(0)` produced a drums stem whose sample-by-sample max-abs diff against the first run was **0.000e+00** — htdemucs is bit-deterministic under a fixed seed on this CPU-only torch build. UMXHQ is left with the same fixed-seed contract stated but not yet independently sample-diffed at this point; sample-byte identity for UMXHQ under a hard-pinned single-threaded BLAS contract is a scheduled follow-up, not a claim of these two cycles.
-
-## 11. Non-factor discipline
-
-Nothing in `scripts/separation/` imports or reads `scripts.classifier.sidecar_nonfactor`, `data/classifier/_nonfactor/`, or the `NonFactorValue` type. The branch reads only its own synthesized mix ground truth and (indirectly, only to know the shape of mono/22050 audio) the ingestion manifests — no audio bytes cross from the ingestion branch into the separator. This isolation is a load-bearing decision because separator outputs will flow into the trained-ear pipeline, where a leaked non-factor signal would silently corrupt the ear model.
-
-## 12. Sufficiency against branch objective (cycles 1-2 state)
-
-| Objective criterion | Status (cycles 1-2) | Evidence |
-|---|---|---|
-| Benchmark table with per-stem SI-SDR on the three seed-length mixes | Met | `data/separation/results.tsv` (36 rows); §6 table. |
-| ≥1 open-source alternative benchmarked against htdemucs | Met | open-unmix UMXHQ; §5 fetchability probe. |
-| Ground truth per stem constructed | Met | Deterministic 3-stem synth via fluidsynth; §3; `data/separation/synth_mix/manifest.json`. |
-| Adopt-or-build verdict published with numbers | Met | Adopt htdemucs; §7 winner tally. |
-| Blind-spot notes per separator | Met | §8. |
-| Per-instrument-in-"other" deferral explicit | Met | §9. |
-| Quarantine venv provisioned iff conflicts | Met by decision | UMX installed without conflict; venv not created; rationale recorded in the ledger event. |
-| htdemucs determinism spot-check | Met (partial) | Fixed-seed rerun on 30 s mix; sample max-abs diff 0.000e+00. |
-| UMXHQ byte-verified determinism | Scheduled | Not attempted in cycles 1-2. |
-| Regression-guarded per-stem RMS pins | Scheduled | Not attempted in cycles 1-2. |
-| `promise_check` fully clean under M-SEP-1 | Scheduled | Shadow-ledger fanout WARNs remain expected until the fork conductor adopts clone events. |
-
-The three primary sub-milestones (`ground-truth`, `htdemucs-baseline`, `alternative`) all reach a passing first-cut state within these two cycles.
-
-## 13. Downstream unblock notice
-
-Downstream milestones may consume the adopted separator (htdemucs, demucs 4.1.0) and the per-stem outputs it produces. The preprocessing rule (mono/22050 → stereo/44100 before separation) is fixed and must be honoured by any caller that feeds native seed audio in. The transcription milestone (M-TRANS-1) inherits `htdemucs` as its stem provider and can proceed once its own dependency posture is resolved.
-
-## 14. Carry-forward for later cycles
-
-The scope opened in cycles 1-2 is discharged as a first-cut. The remaining tightening — none of which is a defect against the branch objective — is:
-
-- UMXHQ sample-byte determinism under a hard-pinned single-threaded BLAS contract, with the mechanism (single-thread → serial reduction ordering → mathematically pinned output) either ruled in or ruled out by direct sample-array equality.
-- Per-stem RMS values pinned in an integration-test regression guard at a documented tolerance so silent environment drift is caught.
-- Adoption of the clone's shadow-ledger events into the workspace-level ledger by the fork conductor at merge, which will clear the expected M-SEP-1 "no ledger events yet" warnings and any orphan-artifact warnings on `scripts/separation/` files.
-- A MUSDB18 spot-check as an out-of-domain second data point, at the maintainer's discretion.
-- A future milestone for per-instrument decomposition inside the "other" stem (deliberately not opened here).
-
-## 15. Conclusions
-
-Two cycles suffice to reach an adopt verdict for htdemucs backed by numerical evidence rather than by prior belief. The load-bearing constructions delivered are: a deterministic 3-stem ground-truth pipeline whose bytes are reproducible from committed MIDIs and a pinned SoundFont; two separator runners driven from the same interface; a shared SI-SDR scorer that produces a single TSV with a naive-copy row in every cell; a per-stem winner table with a majority-wins tally; a preprocessing rule fixed as a downstream contract; and a blind-spot note per separator plus an explicit deferral of per-instrument work inside "other". The htdemucs determinism check (max-abs diff 0.000e+00 on the 30 s mix drums stem) is the first reproducibility rung; further rungs are scheduled and openly named as scheduled rather than claimed.
-
-## Appendix: Implementation Details
-
-**Scripts (`scripts/separation/`).** `synth_gt.py` (ground-truth mix construction), `run_htdemucs.py` (baseline separator runner), `run_alternative.py` (open-unmix UMXHQ runner), `eval_sisdr.py` (mir_eval `bss_eval_sources` scorer producing `results.tsv` and the bar chart). One later-cycle addition, `verify_umxhq_determinism.py`, is out of scope for this report (it belongs to the cycle that promotes UMXHQ from fixed-seed contract to byte-verified). A superseded `stale/_determinism_check.py` remains on disk under `scripts/separation/stale/` for provenance.
-
-**Data (`data/separation/`).** `synth_mix/manifest.json` records SoundFont SHA-256, per-MIDI SHA-256s, and per-stem/mix WAV SHA-256s for all three durations. `synth_mix/midi/{drums,bass,piano}.mid` are the committed inputs. `synth_mix/gt/synth_{030s,060s,090s}/{drums,bass,piano,vocals}.wav` are the ground-truth stems (vocals stem is zero-signal by construction). `runs/htdemucs/` and `runs/openunmix/` hold per-run outputs. `results.tsv` (36 rows) and `results_bar_chart.png` are the survey outputs.
-
-**Environment.** Interpreter `/usr/bin/python3`. Key pins: numpy 1.26.4, torch 2.13.0+cpu, torchaudio 2.11.0+cpu, demucs 4.1.0, openunmix 1.3.0, mir_eval 0.8.2, soundfile 0.14.0, librosa 0.11.0, fluidsynth `/usr/bin/fluidsynth`, SoundFont `/usr/share/sounds/sf2/FluidR3_GM.sf2` (SHA-256 above).
-
-**Rerun recipe** (from workspace root, in order):
-
-```
-/usr/bin/python3 scripts/separation/synth_gt.py
-/usr/bin/python3 scripts/separation/run_htdemucs.py
-/usr/bin/python3 scripts/separation/run_alternative.py
-/usr/bin/python3 scripts/separation/eval_sisdr.py
-```
-
-**Sub-milestones opened.** `M-SEP-1/ground-truth`, `M-SEP-1/htdemucs-baseline`, `M-SEP-1/alternative`. All three reach a first-cut passing state within cycles 1-2. `M-SEP-1/venv-quarantine` is deliberately not registered because open-unmix installs cleanly against the top-level environment; the trigger is preserved for any later cycle that adds a separator whose pins conflict.
-
-**Session traceability (fork 22b8c654f616, clone 0).**
-
-- Cycle 1 — researcher `3e736039-a982-4aeb-8f95-8f0257072d24`; worker `9fbf67cd-d02a-4606-8812-11c575f091fb`; auditor `cb2a436f-5bb7-4452-b1dd-95c142203586`.
-- Cycle 2 — researcher `6eb60eca-b29d-4482-a84a-3786682d5755`; worker `24bfdfb0-e4d8-42b4-b7b6-5d118438497c`; auditor `e9bd5a3a-c297-44a8-8152-063465dae3f6`.
-
-**Cross-reference map.** `scripts/separation/synth_gt.py` produces the ground-truth mixes that both `run_htdemucs.py` and `run_alternative.py` consume; both runners write per-stem WAVs that `eval_sisdr.py` scores against the ground-truth stems using `mir_eval.separation.bss_eval_sources`, producing `data/separation/results.tsv` and the bar chart. Downstream, M-TRANS-1 will consume the adopted separator (htdemucs) but nothing in this branch depends on M-TRANS-1 or vice versa.
+<verdict>validated</verdict>
