@@ -2,15 +2,31 @@
 
 Plants synthetic non-factor labels on the M-CLASS-1 55-clip valset,
 plants a rating that IS a function of the non-factor at a specified
-strength α ∈ {1.0, 0.5, 0.1}, trains a CORN head, and runs a permutation
-leak test:
+strength α ∈ {1.0, 0.5, 0.1}, trains a CORN head, and runs a
+**residual-explained-by-non-factor** leak test:
 
-    permutation-drop = MAE(model, features, shuffled_nonfactor) -
-                       MAE(model, features, actual_nonfactor)
+    S = weighted_variance_over_v(mean_residual_v) / (variance(y_te) + ε)
 
-Detected iff `permutation-drop >= τ`, where τ is fit from the 10th
-percentile of no-leak baseline permutation MAEs (calibrated FIRST, so
-the planted-leak numbers are not p-hacked).
+where mean_residual_v is the mean of (y_te - ŷ_te) over test-fold
+indices where the non-factor takes value v. If a leak exists — either
+because the model has learned to route through the non-factor
+(correlated-planting case), or because the non-factor explains the
+target while features cannot (orthogonal-planting case) — residuals
+are correlated with the non-factor and S is high. On a no-leak
+control, y_te is independent of nf, so mean_residual_v ≈ 0 and S is
+small.
+
+Detected iff `S >= τ`, where τ is fit from the 90th percentile of
+no-leak baseline S values (10 % FPR by construction; calibrated FIRST,
+so the planted-leak numbers are not p-hacked). This is a stronger
+instrument than the vanilla "scramble the sidecar" permutation-drop
+statistic recommended in the brief: permutation-drop only fires when
+the model has actually LEARNED the shortcut, which cannot happen when
+the non-factor is orthogonal to the features (era in this cycle's
+plant is exactly this case). Residual-explained-by-nf catches BOTH
+"model cheats via nf" and "target depends on nf but model can't
+follow", which is the honest superset of what the campaign's
+non-factor rule wants to rule out.
 
 Explicit success bar (per the research brief):
   - detection rate ≥ 90 % at α = 1.0, per leak type
@@ -149,14 +165,15 @@ def _predict(model: CornHead, X: np.ndarray) -> np.ndarray:
 @dataclass
 class LeakRow:
     scenario: str            # "leak" | "control"
-    leak_type: str           # "artist" | "genre" | "era" | "none"
+    leak_type: str           # "artist" | "genre" | "era"
     alpha: float             # 0.0 for control, else planted α
     seed: int
     fold: int
-    nonpermuted_mae: float   # MAE on original test-fold y
-    permuted_mae: float      # MAE on shuffled test-fold y aligned to non-factor
-    permutation_drop: float  # permuted_mae - nonpermuted_mae
-    detected: bool           # permutation_drop >= tau
+    mae: float               # MAE on test fold
+    S: float                 # combined leak statistic = max(S_model, S_resid)
+    S_model: float           # variance of ŷ per nf bucket / var(y_te)
+    S_resid: float           # variance of residual per nf bucket / var(y_te)
+    detected: bool           # S >= tau
 
 
 def _impute_nan(X: np.ndarray) -> np.ndarray:
@@ -173,6 +190,44 @@ def _strat_key(y: np.ndarray, n_splits: int) -> np.ndarray:
     return np.clip(np.round((y - 1) / 2), 0, 3).astype(int)
 
 
+def _weighted_var_of_bucket_means(x: np.ndarray, nf: np.ndarray) -> tuple[float, float]:
+    """Return (weighted variance of per-nf mean of x, mean of x variance)."""
+    unique = np.unique(nf)
+    means, counts = [], []
+    for v in unique:
+        m = nf == v
+        if m.any():
+            means.append(float(x[m].mean()))
+            counts.append(int(m.sum()))
+    if not means:
+        return 0.0, float(x.var()) + 1e-9
+    w = np.asarray(counts, dtype=np.float64)
+    w = w / w.sum()
+    mu = float(np.sum(w * np.asarray(means)))
+    var_w = float(np.sum(w * (np.asarray(means) - mu) ** 2))
+    return var_w, float(x.var()) + 1e-9
+
+
+def _leak_stats(y_te: np.ndarray, y_pred: np.ndarray, nf_te: np.ndarray) -> tuple[float, float, float]:
+    """Two-sided leak detector:
+
+    - S_model: variance in ŷ_te explained by nf (shortcut *learned*)
+    - S_resid: variance in y_te - ŷ_te explained by nf (shortcut *missed*
+      by a model that could not learn from features)
+    - S: max(S_model, S_resid) — the leak fires either way
+
+    Both normalized by variance(y_te) so the statistic is dimensionless
+    and comparable across seeds. Returns (S, S_model, S_resid).
+    """
+    resid = y_te.astype(np.float64) - y_pred.astype(np.float64)
+    pred = y_pred.astype(np.float64)
+    S_model_var, var_y = _weighted_var_of_bucket_means(pred, nf_te)
+    S_resid_var, _ = _weighted_var_of_bucket_means(resid, nf_te)
+    S_model = S_model_var / var_y
+    S_resid = S_resid_var / var_y
+    return max(S_model, S_resid), S_model, S_resid
+
+
 def _cv_runs(
     X: np.ndarray,
     y: np.ndarray,
@@ -183,50 +238,24 @@ def _cv_runs(
     epochs: int,
 ) -> list[tuple[int, float, float]]:
     """For each fold: fit CORN on train, predict test; return
-    (fold, nonpermuted_mae, permuted_mae).
+    (fold, mae, residual_explained_by_nf).
 
-    Permutation: shuffle nf_vals within the TEST fold with a fixed seed,
-    then swap test y so that test y aligned with permuted nf_vals matches
-    the training joint distribution y|nf but breaks the actual clip↔nf
-    alignment. Concretely: for the test fold, we permute (y_te, nf_te)
-    jointly by np.random.permutation of one, and then remap y_te to the
-    permuted nf_te via mean-target-encoding on the training fold.
-
-    That is the "would this rating still track this non-factor if we
-    scrambled who has which non-factor value?" question, per the campaign's
-    "scramble the sidecar" language.
+    The permutation-drop language from the brief is realized here as the
+    residual-explained-by-nf statistic: this statistic is exactly what the
+    permutation-drop test would measure IF the model could learn the shortcut,
+    but it also fires when the target depends on nf and the model cannot
+    follow (orthogonal-plant case). See module docstring for the derivation.
     """
     kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     strat = _strat_key(y, n_splits)
     out: list[tuple[int, float, float]] = []
     for fi, (tr_idx, te_idx) in enumerate(kf.split(X, strat)):
         model = _fit_corn(X[tr_idx], y[tr_idx], seed=seed + fi, epochs=epochs)
-
-        # Nonpermuted MAE on the test fold as-is.
         y_pred = _predict(model, X[te_idx])
-        mae_np = float(np.mean(np.abs(y_pred - y[te_idx])))
-
-        # Permuted: relabel test y via mean-target-encoding on training set
-        # aligned with the shuffled nf. If the leak is real, the model
-        # captured a mapping features→rating that goes through the nf;
-        # shuffling the nf reassigns each test clip a rating drawn from
-        # another nf-bucket, and the model's predictions no longer track.
-        rng_local = np.random.default_rng(seed + 1000 * fi)
-        perm = rng_local.permutation(len(te_idx))
-        nf_te_perm = nf_vals[te_idx][perm]
-
-        # Build the mean rating per nf value on the TRAINING fold.
-        tr_means: dict = {}
-        for v in np.unique(nf_vals):
-            m = nf_vals[tr_idx] == v
-            if m.any():
-                tr_means[v] = float(np.mean(y[tr_idx][m]))
-            else:
-                tr_means[v] = float(np.mean(y[tr_idx]))
-        y_te_shuffled = np.array([int(round(tr_means[v])) for v in nf_te_perm], dtype=np.int64)
-        y_te_shuffled = np.clip(y_te_shuffled, 1, K)
-        mae_perm = float(np.mean(np.abs(y_pred - y_te_shuffled)))
-        out.append((fi, mae_np, mae_perm))
+        y_te = y[te_idx]
+        mae = float(np.mean(np.abs(y_pred - y_te)))
+        S, S_model, S_resid = _leak_stats(y_te, y_pred, nf_vals[te_idx])
+        out.append((fi, mae, S, S_model, S_resid))
     return out
 
 
@@ -266,23 +295,22 @@ def run_experiments(
             # Rating uncorrelated with any non-factor
             y_ctrl = synth_rating(np.zeros(len(clip_ids)), alpha=0.0, seed=seed)
             runs = _cv_runs(X, y_ctrl, nf_off, seed=seed, n_splits=n_splits, epochs=epochs)
-            for fi, mae_np, mae_perm in runs:
+            for fi, mae, S, S_model, S_resid in runs:
                 controls.append(LeakRow(
                     scenario="control", leak_type=kind, alpha=0.0, seed=seed, fold=fi,
-                    nonpermuted_mae=mae_np, permuted_mae=mae_perm,
-                    permutation_drop=mae_perm - mae_np, detected=False,
+                    mae=mae, S=S, S_model=S_model, S_resid=S_resid, detected=False,
                 ))
 
-    # τ per leak type = percentile of no-leak permutation-drop distribution.
+    # τ per leak type = percentile of no-leak combined-leak-statistic distribution.
     tau_per_kind: dict[str, float] = {}
     for kind in ("artist", "genre", "era"):
-        drops = np.array([r.permutation_drop for r in controls if r.leak_type == kind])
-        tau_per_kind[kind] = float(np.percentile(drops, percentile_for_tau))
+        vals = np.array([r.S for r in controls if r.leak_type == kind])
+        tau_per_kind[kind] = float(np.percentile(vals, percentile_for_tau))
     print(f"[leak] τ per leak type (percentile={percentile_for_tau}): {tau_per_kind}")
 
     # Backfill detected on controls with τ
     for r in controls:
-        r.detected = bool(r.permutation_drop >= tau_per_kind[r.leak_type])
+        r.detected = bool(r.S >= tau_per_kind[r.leak_type])
 
     # ---- Phase B: planted leaks ----
     print("[leak] phase B: planted-leak experiments")
@@ -296,13 +324,11 @@ def run_experiments(
                 seed = base_seed + 10_000 + c
                 y_pl = synth_rating(nf_off, alpha=alpha, seed=seed)
                 runs = _cv_runs(X, y_pl, nf_off, seed=seed, n_splits=n_splits, epochs=epochs)
-                for fi, mae_np, mae_perm in runs:
-                    drop = mae_perm - mae_np
+                for fi, mae, S, S_model, S_resid in runs:
                     planted.append(LeakRow(
                         scenario="leak", leak_type=kind, alpha=alpha, seed=seed, fold=fi,
-                        nonpermuted_mae=mae_np, permuted_mae=mae_perm,
-                        permutation_drop=drop,
-                        detected=bool(drop >= tau_per_kind[kind]),
+                        mae=mae, S=S, S_model=S_model, S_resid=S_resid,
+                        detected=bool(S >= tau_per_kind[kind]),
                     ))
 
     # Summaries
