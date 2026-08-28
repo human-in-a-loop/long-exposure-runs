@@ -431,9 +431,17 @@ def merge_stems_to_score(
 ) -> Path:
     """Identity-merge per-stem MIDIs into a single MusicXML score.
 
-    Each stem becomes a parallel <part>. Note events are preserved to
-    sub-tick precision (no quantization, no snapping). Empty stems are
-    represented as a whole-measure rest so mscore3 accepts them.
+    Each stem becomes one or more parallel <part> elements (one per
+    voice partition; see _stem_to_parts for the mscore3 per-part
+    MIDI-voice-cap workaround). Note counts are preserved exactly; note
+    onsets and durations are snapped to the 1/64-quarter grid
+    (~7.8 ms at 120 BPM) so music21 can serialize with standard
+    note values (no deep tuplets). The resulting maximum shift
+    (~3.9 ms) is well under mir_eval's 50 ms onset tolerance, so
+    downstream note-level F1 measurements are unaffected. See
+    docs/score_bridge_report.md §3a for the rationale and empirical
+    check. Empty stems are represented as a whole-measure rest so
+    mscore3 accepts them.
     """
     out_xml_path = Path(out_xml_path)
     out_xml_path.parent.mkdir(parents=True, exist_ok=True)
