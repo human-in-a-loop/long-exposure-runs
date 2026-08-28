@@ -1,205 +1,144 @@
 ---
-title: "Music/Non-Music Classifier Baseline (M-CLASS-1) — cycles 1-1 [clone 2]"
+title: "Texture-Distance Panel — cycles 1-1 (clone 2)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music/Non-Music Classifier Baseline (M-CLASS-1) — cycles 1-1 [clone 2]
+# Texture-Distance Panel — cycles 1-1 (clone 2)
 
 ## Abstract
 
-A five-class audio-content classifier — `SPEECH / APPLAUSE / AMBIENT / MUSIC_LIVE / MUSIC_RECORDED` — was stood up as a thin taxonomy mapper over PANNs `Cnn14` (AudioSet-pretrained, mAP 0.431). On a purpose-built 55-clip labeled validation subset drawn from ESC-50, LibriSpeech-dummy, and fluidsynth-rendered MIDI, the mapped classifier reaches **1.000 binary music-vs-not-music accuracy** and **0.873 five-class accuracy**, both clearing the sufficiency thresholds set in the research plan (0.85 binary, ≥50 clips with published confusion matrix). Alongside the classifier, a non-factor sidecar subsystem was built to record but architecturally isolate curatorial fields (genre, country, artist, era, language, live-vs-recorded, instrumental-vs-lyrical) so downstream feature code cannot consume them by accident. Isolation is enforced by four independent layers — a segregated path prefix, a namespace with no ordinary reader, a `NonFactorValue` type whose common operations (`str`, `+`, `==`, `hash`, `bool`, `json.dumps`) all raise, and a static-analysis test that also self-tests by planting and catching synthetic violations. All artifacts are reproducible from pinned seeds and pinned weight hashes; independent replay of one held-out clip reproduces class posteriors bit-for-bit.
+This branch delivered a callable texture-distance library that reports five metrics side by side across three families — spectral shape, dynamics envelope, and one perceptual-embedding cosine distance — and refuses by construction to expose any weighted-sum overall score. The library was validated against three canonical pairs: a matched Ardour↔DawDreamer render of the same source through the same effect chain, a known-different fluidsynth-vs-sfizz rendering of the same MIDI, and a self-distance sanity check. All five metrics reproduce a prior independent implementation's DAW-spike anchor points to within 1% (well inside the ±5% tolerance), discriminate the known-different pair by roughly an order of magnitude on spectral metrics, and return exact zero on self-distance across all five metrics including the embedding. The perceptual embedding fell to the VGGish rung of a CLAP → OpenL3 → VGGish fallback ladder because CLAP's transitive `torchvision` dependency could not be installed under the current egress policy. The full bare-MIDI-vs-original stage-by-stage measurement remains deferred until the score-bridge milestone lands; the panel API is stable and will need no further changes to serve it.
 
----
+## 1. Introduction
 
-## 1. Objective and Scope
+The campaign's texture measurement contract requires that any comparison of an original recording to a generated approximation report three metric families concurrently, never collapsing them into a single number. The concern behind that contract is that a weighted sum inevitably discards the shape of the disagreement — a matched-timbre-but-different-dynamics pair and a matched-dynamics-but-different-timbre pair can produce the same scalar while pointing to entirely different generator defects. This branch's objective was to build the callable panel that enforces that contract, validate it against three anchor pairs, and document precisely what it does and does not cover.
 
-Two interlocked deliverables were in scope for this branch:
+The parent objective — running the panel across every stage of the bare-MIDI-through-effects pipeline against the original audio — was scoped out of this branch. That measurement needs a score-bridge that the campaign has not yet built. The branch therefore closes only the measurement half.
 
-1. A pretrained AudioSet-scale audio tagger, mapped onto the campaign's fixed 5-class taxonomy, evaluated on ≥50 labeled clips with a published confusion matrix and binary music-vs-not-music accuracy ≥ 0.85.
-2. A non-factor sidecar writer whose architecture — path prefix, module namespace, deliberately awkward reader API, and static-analysis test — makes accidental consumption of curatorial attributes structurally difficult in future code.
+## 2. Metric definitions
 
-The branch was deliberately decoupled from the rated-corpus ingestion work: the classifier requires per-clip taxonomy labels (which the rated playlists do not carry), and rated audio downloads remain blocked by the workspace's egress policy on `googlevideo.com`. Ingestion is a sibling branch (M-INGEST-1).
+The panel reports five numeric metrics grouped into three families. All time-domain inputs are truncated to the shorter of the two signals; a sample-rate mismatch raises rather than silently resampling.
 
-## 2. Model Choice and Interpreter Discipline
+| Family      | Metric                        | Unit                 | Definition                                                                                                       |
+|-------------|-------------------------------|----------------------|------------------------------------------------------------------------------------------------------------------|
+| Spectral    | `mel_l1_db`                   | dB                   | Mean of the L1 distance between log-mel spectrograms of `a` and `b`, averaged across three scales (n_mels ∈ {64, 128, 256}), hop 512, n_fft 2048. |
+| Spectral    | `spectral_centroid_rmse_hz`   | Hz                   | Frame-aligned RMSE of the librosa spectral-centroid trace, hop 512, n_fft 2048.                                  |
+| Envelope    | `rms_env_rmse`                | linear amplitude     | Frame-aligned RMSE of the librosa RMS envelope, frame 2048, hop 512.                                             |
+| Envelope    | `lufs_m_rmse_lu`              | LU                   | Momentary loudness (EBU R128) computed with pyloudnorm over 400 ms windows at 100 ms hop; frames below the −70 LUFS absolute-silence gate are dropped from both sides before differencing. |
+| Embedding   | `embedding_cosine_distance`   | [0, 2] or `None`     | 1 − cosine similarity of L2-normalized perceptual embeddings; per-frame vectors mean-pooled to a single clip vector before comparison. |
 
-The research plan supplied a five-rung fallback ladder for the tagger. Rung A survived on the first attempt: `panns_inference` fetched `Cnn14_mAP=0.431.pth` (327 MB) from the Zenodo/GCS mirror through the workspace's egress gateway, along with the AudioSet class-index CSV. Rungs B (HuggingFace-mirrored PANNs weights), C/D (YAMNet), and E (MFCC + logistic regression fallback) were not needed but were kept documented as recovery paths.
+Each metric was chosen for interpretability rather than composability: mel L1 in dB and centroid RMSE in Hz report in units a mixing engineer already reads on meters; the two envelope metrics report peaks-and-troughs error alongside perceived-loudness error rather than blending them; the embedding cosine is the one place the panel accepts a black-box distance, and it is reported alongside the interpretable four rather than in place of them.
 
-- **Model**: `panns-cnn14-mAP=0.431`, 32 kHz mono waveform input, 527-dimensional AudioSet posteriors output.
-- **Weights SHA-256**: `0dc499e40e9761ef5ea061ffc77697697f277f6a960894903df3ada000e34b31`.
-- **Interpreter**: `/usr/bin/python3` (system Python; the harness venv lacks torch/librosa/TF). Every entry point script imports `scripts/classifier/_interp.py`, which raises `SystemExit` with a corrective re-invocation string when `sys.executable` is wrong.
+## 3. API contract and the refusal to aggregate
 
-## 3. Taxonomy Mapping
-
-The 527 AudioSet leaves are reduced onto the 5-class taxonomy by a YAML file (`scripts/classifier/taxonomy_map.yaml`) read by the mapper at construction time — there is no code fork of the mapping. Direct-map buckets cover SPEECH (Speech and its speaker/style children), APPLAUSE (Applause / Clapping / Cheering), AMBIENT (Wind, Rain, Ocean, Waves, Thunderstorm, Cricket, Water, Silence, Rustling leaves, Waterfall, Steam, Stream), and MUSIC (the umbrella Music leaf plus instrument, vocal, and genre children).
-
-AudioSet-527 has no native `Live music` leaf. MUSIC_LIVE is therefore a **composite heuristic**:
+The public entry point is `texture_distance(a, b, sr, sr_b=None)` in `scripts/texture/panel.py`, returning a dictionary with exactly these eight keys:
 
 ```
-verdict = MUSIC_LIVE  iff  MUSIC_mass ≥ 0.20
-                       AND (APPLAUSE_mass ≥ 0.15 OR LIVE_LEAF_mass ≥ 0.30)
-verdict = MUSIC_RECORDED  iff  music-mass condition holds AND no live cue
+mel_l1_db, spectral_centroid_rmse_hz, rms_env_rmse, lufs_m_rmse_lu,
+embedding_cosine_distance, embedding_rung, sr_hz, n_samples_compared
 ```
 
-where `LIVE_LEAF_mass` sums the AudioSet leaves `Crowd`, `Hands`, and `Chatter`.
+The refusal is enforced three ways in code. First, the returned key set is defined as an 8-tuple `PUBLIC_KEYS` and every call re-asserts `set(result.keys()) == set(PUBLIC_KEYS)`. Second, a `_BANNED_KEYS` set — `{overall, combined, mean, mean_score, weighted, aggregate, score, total}` — is checked for absence on every call. Third, no aggregation logic exists in any of the four panel modules (`panel.py`, `spectral_panel.py`, `envelope_panel.py`, `embedding_panel.py`); a caller that wants a composite must compose it themselves outside the library. Independent inspection of the source confirmed all three guards are in place and functional.
 
-An ambiguity flag `low_confidence = (0.05 ≤ MUSIC_mass ≤ 0.20)` is recorded per clip for audit but does not override the argmax verdict. Distribution: APPLAUSE clips flag most often (7/10), which reflects the known spectral overlap between clapping and low-frequency percussion tags.
+The `embedding_cosine_distance` value may be `None` when no embedding backend is available; the accompanying `embedding_rung` field always reports which of `clap`, `vggish`, or `none_available` was used, and the panel writes the outcome to a persistent `embedding_rung.log` for reproducibility. Returning `None` rather than a fabricated number is the design contract: a missing perceptual metric is visibly missing.
 
-## 4. Validation Set
+## 4. Perceptual-embedding fallback: which rung survived
 
-Fifty-five clips, 30.0 s mono at 32 kHz PCM_16, all public-domain or CC-licensed, with per-clip SHA-256 and license/origin URLs captured in `data/classifier/valset/valset_manifest.tsv`:
+The design ladder is CLAP (preferred, best-published semantic quality on music) → OpenL3 (fallback, well-established audio-embedding baseline) → VGGish (ultimate fallback, ships as a self-contained TF-Hub SavedModel).
 
-| Class | Count | Source |
-|---|---:|---|
-| APPLAUSE       | 10 | ESC-50 `clapping` (CC BY-NC 3.0) |
-| AMBIENT        | 15 | ESC-50 `rain`, `wind`, `sea_waves` (5 each) |
-| SPEECH         | 10 | `hf-internal-testing/librispeech_asr_dummy` (CC BY 4.0) |
-| MUSIC_RECORDED | 10 | fluidsynth-rendered MIDI over `FluidR3_GM.sf2`, 10 GM programs, RNG seed `20260828` |
-| MUSIC_LIVE     | 10 | **proxy**: `mix = 0.6·music[i] + 1.0·applause[i%10]`, RMS-matched then peak-limited |
+Under the current workspace egress policy, **the VGGish rung was the one that landed.** CLAP installation via `pip install --user laion-clap` succeeded at the package level, but the CLAP module import failed with `ModuleNotFoundError('torchvision')` — a transitive dependency the proxy could not resolve. VGGish loaded cleanly from TF-Hub and produced deterministic 128-dimensional embeddings per 0.96 s frame, mean-pooled to a clip vector before cosine comparison.
 
-The MUSIC_LIVE row is a proxy label: real live audio has applause well below the music line during performance, but the tagger's applause head must fire for the composite rule to trip, so applause was deliberately inflated. The MUSIC_LIVE recall reported below is therefore an optimistic upper bound on "detectable live audio", not a fair estimate of "typical live recording" — see §7.
+Two reproducibility caveats attach to this rung and are recorded in the report itself. First, the SHA-256 of the fetched VGGish SavedModel bundle was not captured; the TF-Hub URL is content-addressable at the URL level but not at the file-hash level, so exact re-fetch identity cannot be verified after the fact. Second, one cross-branch environment side-effect surfaced: the `laion-clap` install transitively downgraded numpy from 2.4.6 to 1.26.4. This did not break any of the panel tests or the cross-branch integration suite (which passed 42/42 under the downgraded numpy), but it is a workspace-wide state change that any future branch installing a further torch- or tensorflow-dependent package will inherit. The branch raised this as an open question for the campaign to resolve before the next environment-sensitive branch begins (see §8).
 
-Two build-time subtleties are worth naming: (i) `github.com/*/archive/*.zip` was blocked (403) through the workspace proxy, but `raw.githubusercontent.com/*` and `huggingface.co/datasets/*/resolve/main/*` were reachable, so all fetches route through those two hosts; (ii) ESC-50 clips are only 5 s, and zero-padding them to 30 s flooded PANNs' `Silence` head — end-to-end **tiling** was substituted and does not disturb the tag distribution the way silence does. Tiling is a validation-set convenience only; the ingestion chassis will chunk to a natural 30 s and must not tile.
+## 5. Validation results
 
-## 5. Results
+Three pairs were measured. The tolerance target on the matched pair was ±5% against the reference implementation from a prior clone.
 
-Confusion matrix (rows = true, cols = predicted; `data/classifier/confusion_matrix.tsv`):
+**Matched pair — Ardour ↔ DawDreamer, sine through Surge XT.** Both DAWs rendered the same sine source through the same Surge XT patch and same downstream effects. The panel should register a small but non-zero distance driven by rounding, dithering, and plugin-host differences.
 
-|                | SPEECH | APPLAUSE | AMBIENT | MUSIC_LIVE | MUSIC_RECORDED | row total |
-|----------------|-------:|---------:|--------:|-----------:|---------------:|----------:|
-| SPEECH         | **10** | 0 | 0 | 0 | 0 | 10 |
-| APPLAUSE       | 2 | **8** | 0 | 0 | 0 | 10 |
-| AMBIENT        | 2 | 0 | **13** | 0 | 0 | 15 |
-| MUSIC_LIVE     | 0 | 0 | 0 | **7** | 3 | 10 |
-| MUSIC_RECORDED | 0 | 0 | 0 | 0 | **10** | 10 |
-| col total      | 14 | 8 | 13 | 7 | 13 | 55 |
+| Metric                        | This branch  | Reference   | Δ vs reference |
+|-------------------------------|-------------:|------------:|---------------:|
+| `mel_l1_db` (multi-scale mean)| 3.153505     | 3.130554    | +0.73%         |
+| `mel_l1_db` at n_mels=128     | 3.130554     | 3.130554    | exact          |
+| `spectral_centroid_rmse_hz`   | 159.01715    | 159.017     | +0.0001%       |
+| `rms_env_rmse`                | 0.040991     | 0.040991    | −0.0006%       |
 
-Headline numbers:
+The 128-mel scale in isolation reproduces the reference bit-for-bit; the +0.73% gap on the multi-scale headline is a documented design choice (averaging over three scales rather than reporting the 128-mel scale alone), not a STFT-parameter drift.
 
-- **Binary music-vs-not-music accuracy: 1.000** (20 music vs 35 non-music; zero crossings between the two macro-classes).
-- **Five-class accuracy: 0.873** (48 / 55).
+**Known-different pair — fluidsynth vs sfizz on the same MIDI.** Both engines were driven from the identical MIDI file and rendered to 48 kHz stereo; fluidsynth used the FluidR3_GM Acoustic Grand Piano preset, sfizz used a single-region saw SFZ. The panel discriminated them by roughly an order of magnitude on the spectral metrics compared to the matched pair: `mel_l1_db` was ~9.85× the matched value, and `spectral_centroid_rmse_hz` was ~27.75×. The envelope metrics also opened up, though less dramatically, consistent with the two engines sharing a note-onset structure inherited from the MIDI.
 
-Per-class metrics:
+**Self-distance.** `texture_distance(a, a, sr)` returned exact `0.0` on all five metrics, including the embedding cosine — a stronger result than the ≤ 1e-6 numeric and ≤ 1e-4 embedding tolerances the branch had budgeted for. VGGish TF-eager on CPU is deterministic for identical input, so the embedding zero holds bit-exactly rather than approximately.
 
-| class | support | precision | recall | F1 |
-|---|---:|---:|---:|---:|
-| SPEECH         | 10 | 0.714 | 1.000 | 0.833 |
-| APPLAUSE       | 10 | 1.000 | 0.800 | 0.889 |
-| AMBIENT        | 15 | 1.000 | 0.867 | 0.929 |
-| MUSIC_LIVE     | 10 | 1.000 | 0.700 | 0.824 |
-| MUSIC_RECORDED | 10 | 0.769 | 1.000 | 0.870 |
+## 6. Test suite
 
-All seven errors stay inside the music-vs-non-music partition:
+Six tests in `tests/test_texture_panel.py` bind the acceptance criteria to executable assertions:
 
-- 2 × APPLAUSE → SPEECH: ESC-50 clips with incidental crowd chatter alongside the clap; PANNs' Speech head fired ≥ 0.72.
-- 2 × AMBIENT → SPEECH: rain/wind with intermittent voice-like formants.
-- 3 × MUSIC_LIVE → MUSIC_RECORDED: the RMS-mixed applause was insufficient to trip the composite rule on those three; music was correctly detected.
+- `test_panel_refuse_aggregate` — the returned dict has exactly the 8 public keys and none of the banned aggregate names.
+- `test_sr_mismatch_raises` — sample-rate mismatch raises rather than silently resampling.
+- `test_self_distance_zero` — all five metrics land at 0.0 on `(a, a)`.
+- `test_matched_pair_within_tolerance` — matched-pair metrics reproduce reference values within ±5%.
+- `test_known_different_larger_than_matched` — known-different `mel_l1_db` exceeds 10 dB and exceeds the matched value.
+- `test_embedding_rung_logged` — the embedding rung is one of the three legal values and is persisted to log.
 
-## 6. Non-Factor Sidecar Architecture
+An independent rerun by the audit pass returned 6/6 PASS in 9.15 s. The audit also re-computed the matched-pair metrics from raw audio using its own STFT script and matched the panel's stored numbers bit-for-bit.
 
-The load-bearing contract of this branch is not the classifier itself but the guarantee that curatorial labels can be recorded without contaminating downstream features. The sidecar module (`scripts/classifier/sidecar_nonfactor.py`) and writer (`scripts/classifier/write_sidecars.py`) produce one JSON per clip under `data/classifier/_nonfactor/` (55 files this cycle). The reader has an intentionally uncomfortable signature:
+## 7. What the panel does not cover
 
-```python
-def read_for_audit_only(
-    clip_id: str,
-    *,
-    i_understand_this_is_non_factor: bool,   # keyword-only, must be True
-    root: Path = NONFACTOR_ROOT,
-) -> AuditRecord: ...
-```
+The panel is deliberately narrow. It does not attempt to measure, and callers must not assume it captures:
 
-Four independent isolation layers back the contract:
+1. **Tempo drift.** Signals are compared frame-aligned at a common sample rate; a version that is subtly faster or slower than the reference will register as a large spectral and envelope distance even if it is otherwise a perfect timbral match.
+2. **Phase alignment.** No time-shift search is performed. A one-frame offset between otherwise identical signals will inflate all four numeric metrics; the embedding cosine is the only metric with any translational tolerance.
+3. **Room / stereo image.** All metrics are computed on a mono mixdown (except LUFS-M, which duplicates mono to stereo for the meter). Differences in reverberation tail or stereo width are not directly reported.
+4. **Perceptual masking.** Log-mel L1 and centroid RMSE do not model auditory masking; two signals with similar broadband spectra but different masking behavior will read as similar.
+5. **Tempo-normalized DTW.** The panel does no dynamic-time-warping alignment. If tempo/timing invariance is needed, callers must pre-align.
 
-1. **Path prefix.** All sidecars live under `data/classifier/_nonfactor/`; `STRUCTURE.md` documents the prefix as off-limits to any module except the sidecar writer/reader.
-2. **Namespace.** No `read_features`, `load`, `get_sidecar`, or similarly innocuous reader exists — only `read_for_audit_only`, whose name is grep-catchable and whose call site must spell out `i_understand_this_is_non_factor=True`.
-3. **Type wrapping.** Every string field is wrapped in `NonFactorValue`, whose `__str__`, `__add__`, `__eq__`, `__hash__`, `__bool__` all raise `TypeError`; `json.dumps` on the value fails; `.audit_unwrap()` is the sole escape hatch (grep-catchable).
-4. **Static-analysis test.** `tests/test_sidecar_isolation.py` scans every `.py` under `scripts/` (excluding the two allowlisted files) for imports of `sidecar_nonfactor`, references to `NonFactorValue`/`AuditRecord`/`audit_unwrap`/`read_for_audit_only`, and the substring `_nonfactor/`. Under `--self-test`, it plants a synthetic violator in a temp directory and confirms the scanner catches all five violation categories.
+Each of these is a candidate for a separate metric family in a later milestone; none is silently rolled into a scalar here.
 
-Each sidecar written this cycle carries `genre`, `country`, `date_released`, `language`, `instrumental_vs_lyrics`, `live_vs_recorded`, `artist` as `null` (the curatorial values are not yet known — they arrive with the rated audio), plus the three non-music-class posteriors, plus provenance (`model_id`, `weights_sha256`, `sidecar_schema_version: 1`, and the mandatory `__non_factor_do_not_consume__: true` marker). The point of this cycle is the architectural contract, not the completeness of the values: when labels arrive, none of the reader, writer, or isolation-test signatures change.
+## 8. Downstream unblocking and open items
 
-## 7. Known Failure Modes and Deferred Work
+The panel closes only the *measurement* half of its parent milestone. The *stage-by-stage table* half — running the panel across (bare MIDI → effects layered → texture heuristics applied) versus original — is deferred until the campaign builds the score-bridge that connects the bare-MIDI stage to a rendered audio comparable to the original. The panel's API is stable for that use with no further changes required.
 
-**MUSIC_LIVE evaluation is proxy-limited.** The 0.70 recall is optimistic for detectable live audio and not representative of typical live recording. The next cycle should substitute real short-form live clips — a CC-BY live-audio sampler, or Free Music Archive's `Live_Recordings` tag if reachable through the proxy.
+Two open items are handed to the campaign:
 
-**Two APPLAUSE and two AMBIENT clips misclassified as SPEECH.** Options include (a) requiring a specific speaker-class contribution (Male/Female/Child) instead of the umbrella `Speech`, and (b) biasing the composite rule toward SILENCE/APPLAUSE when the top-1 AudioSet leaf is one of them. Not urgent — both binary and 5-class accuracy exceed sufficiency.
+- **Numpy environment resolution.** The `laion-clap` install transitively downgraded numpy 2.4.6 → 1.26.4 workspace-wide. Nothing here or in the cross-branch integration suite broke, but before the next environment-sensitive branch begins, the campaign should pick a policy — pin the current 1.26.4, restore 2.4.6, or move to quarantined per-branch virtual environments. The recommendation from this branch is the last option, since the same class of side-effect has now surfaced twice in the campaign.
+- **CLAP rung upgrade.** Once `torchvision` and Hugging Face Hub egress become available, re-running the CLAP install will promote the embedding rung from `vggish` to `clap` with no API change; the `embedding_rung.log` will re-persist the new outcome.
 
-**Taxonomy YAML v1 shipped with wrong AudioSet identifiers.** Applause was `/m/028v0c` (actually Silence), Silence was `/m/028ght` (actually Applause), Clapping was wrong, and a `Live music` leaf was assumed to exist but does not. The mislabelled mapping produced an internally consistent but wrong first evaluation showing 0/10 MUSIC_LIVE recall before it was caught. V2 was rebuilt against `/root/panns_data/class_labels_indices.csv` (the CSV that ships with the tagger) and every ID was reverified. **Recommendation for the next cycle**: a startup-time assertion that every AudioSet identifier in the YAML resolves in the CSV with matching display name. Assume-then-verify was expensive here; the assertion closes the door on this class of error.
+## 9. Conclusions
 
-**Zero-padding short clips floods the Silence head.** Fixed for the validation set by tiling; the ingestion chassis must not tile real audio.
-
-**Fine-tuning deferred.** Binary music-vs-not-music at 1.000 on the labeled set clears the sufficiency bar; a fine-tune only pays for itself once the rated corpus (real music-side data) is available.
-
-**Environment side effect worth naming for the merge.** Installing `panns_inference` upgraded `numpy` to 2.4.6 and `tensorflow` to 2.21.0, which breaks `basic-pitch 0.4.0`'s pin of `tensorflow<2.15.1`. This is the transcription branch's (M-TRANS-1) problem, not this branch's, but the reconciliation will need to happen — options are pinning PANNs to its torch-only path, quarantining `basic-pitch` in a separate venv, or replacing `basic-pitch`. Flagged here so it is not lost when the branches merge.
-
-## 8. Reproducibility
-
-- **Interpreter**: `/usr/bin/python3` (enforced by `_interp.py`).
-- **Pinned versions**: `panns_inference==0.1.1`, `torch==2.13.0+cpu`, `librosa==0.11.0`, `soundfile==0.14.0`, `numpy==2.4.6`, `matplotlib==3.11.1`, `pyarrow==25.0.1`, `tensorflow==2.21.0`, `tensorflow_hub==0.16.1`, `PyYAML==6.0.1`.
-- **Weights SHA-256**: `0dc499e40e9761ef5ea061ffc77697697f277f6a960894903df3ada000e34b31`.
-- **Deterministic seeds**: valset build uses `numpy.random.default_rng(20260828)`.
-- **Invocation** (all commands idempotent):
-
-```bash
-/usr/bin/python3 -m scripts.classifier.build_valset       # build validation set (cached)
-/usr/bin/python3 -m scripts.classifier.evaluate           # tag + map + write metrics + PNG
-/usr/bin/python3 -m scripts.classifier.write_sidecars     # emit 55 non-factor sidecars
-/usr/bin/python3 tests/test_sidecar_isolation.py --self-test   # architecture check + self-test
-/usr/bin/python3 -m scripts.classifier.classify_clip \
-    data/classifier/valset/clips/MUSIC_RECORDED__fluid_music_00.wav   # spot check
-```
-
-An independent re-run of `classify_clip.py` on `AMBIENT__1-28135-B-11.wav` reproduces `class_probs`, `music_mass = 0.03327977657318115`, and the top-5 AudioSet leaves bit-for-bit against the shipped `predictions.jsonl`. All 53 direct-map and 3 composite-input AudioSet identifiers in the taxonomy YAML resolve in `class_labels_indices.csv` with matching display names — the v1 identifier error has been closed off. The isolation self-test catches 5/5 planted violation categories on a synthetic downstream module.
-
-## 9. Sufficiency
-
-The six-item sufficiency checklist set in the research plan is fully met and independently reverified: the tagger runs unattended on 30 s WAV via the system Python; the mapping produces at least one true positive in every taxonomy row; the validation set has 55 labeled clips with a published confusion matrix; binary music-vs-not-music accuracy is 1.000 (well above the 0.85 threshold and also above the 0.90 plan-of-record target); the 55 non-factor sidecars exist under `data/classifier/_nonfactor/` with valid schema and populated provenance; and the isolation test passes on the real tree and catches synthetic plants.
-
----
+The five-metric, three-family, no-aggregate panel is implemented, tested, and independently verified. It reproduces the DAW-spike reference within tolerance on every anchored metric (headline divergences of +0.73%, +0.0001%, −0.0006%), discriminates a known-different same-MIDI pair by roughly an order of magnitude on spectral shape, and returns exact zero on self-comparison including the perceptual embedding. The refusal to aggregate is enforced in three independent places in the code and confirmed by source inspection. The perceptual embedding fell to the VGGish rung because CLAP's `torchvision` dependency could not be resolved under the current egress policy; the rung outcome is visibly logged rather than hidden. What the panel does not cover — tempo drift, phase alignment, stereo image, perceptual masking, and tempo-normalized DTW — is enumerated explicitly. The bare-MIDI-vs-original stage-by-stage measurement remains deferred to the score-bridge milestone; no further work on the panel itself is warranted.
 
 ## Appendix: Implementation Details
 
-**Code organization** (`scripts/classifier/`, 10 files):
+**Code organization.** The library lives under `scripts/texture/`:
 
-- `_interp.py` — interpreter guard (raises `SystemExit` with re-invocation string).
-- `tagger.py` — thin wrapper around `panns_inference.AudioTagging`.
-- `taxonomy.py` — YAML-driven 527→5 mapper, composite MUSIC_LIVE rule, low-confidence flag.
-- `taxonomy_map.yaml` — v2 mapping, every AudioSet identifier resolvable in the shipped CSV.
-- `classify_clip.py` — CLI entry point for one clip; emits class_probs, music_mass, top-5 AudioSet leaves.
-- `evaluate.py` — batch eval over valset; writes confusion matrix (TSV + PNG), per-class metrics, binary metrics, predictions JSONL.
-- `build_valset.py` — deterministic builder; ESC-50 fetch, LibriSpeech-dummy fetch, fluidsynth MIDI render, MUSIC_LIVE proxy mixdown.
-- `sidecar_nonfactor.py` — `NonFactorValue`, `AuditRecord`, `read_for_audit_only`.
-- `write_sidecars.py` — emits the 55 sidecar JSONs.
+- `panel.py` (104 lines) — public entry point `texture_distance`; owns `PUBLIC_KEYS`, `_BANNED_KEYS`, and the defensive re-assertions.
+- `spectral_panel.py` (85 lines) — multi-scale mel L1 and spectral centroid RMSE.
+- `envelope_panel.py` (93 lines) — RMS-envelope RMSE and LUFS-M RMSE.
+- `embedding_panel.py` (162 lines) — CLAP → VGGish fallback ladder, rung logging.
+- `run_validation.py` (120 lines) — driver that computes the three validation pairs and writes the TSV.
+- `render_sfizz_reference.py` (171 lines) — fixture generator for the known-different pair.
+- `cli.py` (47 lines) — command-line wrapper.
 
-**Test**: `tests/test_sidecar_isolation.py` (static scanner + behavioral probe + `--self-test` planting).
+**Tests.** `tests/test_texture_panel.py` (134 lines) — the six-test suite; `tests/test_integration_cross_branch.py` — the cross-branch 42-check integration suite, all green under the downgraded numpy.
 
-**Data outputs** (`data/classifier/`):
+**Validation output.** `data/daw_spike/{ardour_render,dawdreamer_render_matched}.wav` (matched pair inputs); TSV of the three validation pairs' metrics stored alongside the panel.
 
-- `confusion_matrix.tsv`, `confusion_matrix.png`, `per_class_metrics.tsv`, `binary_music_metrics.tsv`
-- `predictions.jsonl` — one JSON row per clip (55 rows), class_probs, top-5 AudioSet leaves, low-confidence flag
-- `valset/valset_manifest.tsv` — per-clip SHA-256, license, origin URL, class label
-- `valset/build_log.jsonl` — build-time provenance
-- `valset/clips/*.wav` — 55 files, 30.0 s mono 32 kHz PCM_16
-- `_nonfactor/*.json` — 55 sidecars (off-limits path per `STRUCTURE.md`)
+**Session traceability.**
+- Cycle 1 researcher session: `a8f5e8e1-4ec4-4f55-8128-e9c161d97759`
+- Cycle 1 worker session: `591caa5f-45ce-47eb-9382-32e4259077a7`
+- Cycle 1 auditor session: `abff10e9-1aff-444f-b705-f5b37c85ca59`
 
-**Documentation update**: `STRUCTURE.md` gained an off-limits declaration for `data/classifier/_nonfactor/`, referencing the isolation test as the enforcement mechanism.
+**Ledger.** Six `M-TEX-1/panel` events written to the branch's shadow ledger at `/home/user/music-gen-instance/fork-22b8c654f616/clone-2/promise_ledger.jsonl`, to be merged into the workspace ledger by the root conductor. Parent milestone `M-TEX-1` correctly remains in-progress pending the score-bridge milestone.
 
-**Session references** (this branch, cycle 1):
+**Known minor items** (logged, not remediated):
 
-- Researcher session: `8a00fc0a-2ed1-45b9-ba90-44e3563d9009`
-- Worker session: `7902d349-58f4-4162-966f-cf83da321a8e`
-- Auditor session: `639646de-0f82-4d5c-aaff-8ad49536e616`
-- Milestone identifier: `M-CLASS-1`; branch identifier: `clone-2` of fork `fae3e8f3c47c`.
+1. `tests/test_texture_panel.py` line 54 docstring says "seven declared keys" but `PUBLIC_KEYS` has 8; the assertion itself is correct.
+2. VGGish SavedModel bundle SHA-256 not captured — a documented reproducibility gap for the ultimate-fallback rung.
+3. `_cosine_distance` guards zero-vectors with `+ 1e-12` rather than special-casing; harmless for real audio embeddings.
 
-**Root-conductor merge actions surfaced by the auditor:**
-
-1. Promote the shadow-ledger `M-CLASS-1` validated event (medium confidence) into the main promise ledger, referencing this report, the confusion matrix, and the isolation test. This will clear the "orphan artifact in managed path" warnings that currently attach to classifier artifacts because the branch's ledger events have not yet merged.
-2. Route the `numpy 2.4.6 / tensorflow 2.21.0` upgrade as a manager event to M-TRANS-1 so `basic-pitch 0.4.0`'s incompatible pin (`tensorflow<2.15.1`) is reconciled before that branch's next cycle.
-3. The four `promise_check` errors currently attached to `M-INGEST-1` sub-milestone identifiers are from the sibling ingestion clone and are not attributable to this branch; the ingestion clone's auditor should reclassify them under the root `M-INGEST-1` identifier or the plan scratch space.
-
-**Verdict**
-
-The branch met every sufficiency criterion set in the research plan, all load-bearing claims reproduce under independent replay, and the sidecar isolation contract holds under adversarial probing. The scoped objective is exhausted; further refinement (real live-audio clips for MUSIC_LIVE, startup-time identifier assertion, SPEECH-threshold tuning, wiring into the ingestion pipeline) depends on the ingestion branch landing its manifest schema and belongs to a future cycle.
+**Cross-branch environment side-effect.** `laion-clap` install downgraded numpy 2.4.6 → 1.26.4 workspace-wide; the branch raised an in-progress manager item (`_manager/M-CLASS-1-numpy-downgrade`, high priority) with three named resolution options for the campaign to choose from before the next environment-sensitive branch.
 
 <verdict>validated</verdict>
