@@ -442,6 +442,153 @@ _feat_dir = WS / "data" / "ear" / "features"
 _n_feats = len(list(_feat_dir.glob("*.npz"))) if _feat_dir.is_dir() else 0
 check(_n_feats >= 55, f"M-EAR-1: {_n_feats} cached feature files under data/ear/features/ (≥55)")
 
+# =========================================================================
+# §14. M-TRANS-1/basic-pitch/octave-suppression invariants (fork 3a908edcb241 clone 1)
+# =========================================================================
+_os_dir = WS / "data" / "transcribe" / "octave_suppression"
+_os_tsv = _os_dir / "grid_search.tsv"
+_os_png = _os_dir / "heatmap.png"
+_os_sup = WS / "scripts" / "transcribe" / "octave_suppression.py"
+_os_grid = WS / "scripts" / "transcribe" / "octave_grid_search.py"
+_os_plot = WS / "scripts" / "transcribe" / "octave_grid_plot.py"
+
+check(_os_sup.is_file(), "M-TRANS-1/octave-suppression: octave_suppression.py present")
+check(_os_grid.is_file(), "M-TRANS-1/octave-suppression: octave_grid_search.py present")
+check(_os_plot.is_file(), "M-TRANS-1/octave-suppression: octave_grid_plot.py present")
+
+# Interpreter-guard assert present in every new module.
+for _p in (_os_sup, _os_grid, _os_plot):
+    _src = _p.read_text() if _p.is_file() else ""
+    check("wrong interpreter" in _src,
+          f"M-TRANS-1/octave-suppression: {_p.name} carries /usr/bin/python3 interpreter guard")
+
+# Isolation contract: AST scan for sidecar_nonfactor.
+import ast as _ast
+for _p in (_os_sup, _os_grid, _os_plot):
+    _bad = False
+    if _p.is_file():
+        _tree = _ast.parse(_p.read_text(), filename=str(_p))
+        for _node in _ast.walk(_tree):
+            if isinstance(_node, _ast.ImportFrom):
+                if (_node.module or "").find("sidecar_nonfactor") != -1:
+                    _bad = True
+            elif isinstance(_node, _ast.Import):
+                for _n in _node.names:
+                    if "sidecar_nonfactor" in _n.name:
+                        _bad = True
+    check(not _bad,
+          f"M-TRANS-1/octave-suppression: {_p.name} does NOT import sidecar_nonfactor")
+
+# TSV shape: header + 40 data rows (3 baseline + 27 per-cell + 9 aggregate + 1 aggregate baseline).
+check(_os_tsv.is_file(), "M-TRANS-1/octave-suppression: grid_search.tsv present")
+if _os_tsv.is_file():
+    _lines = _os_tsv.read_text().splitlines()
+    check(len(_lines) == 41,
+          f"M-TRANS-1/octave-suppression: TSV has 41 lines (1 header + 40 data), got {len(_lines)}")
+    _hdr = _lines[0].split("\t")
+    for _col in ("mix_id", "T_min_ms", "overlap_min", "bass_F1_uplift",
+                 "drums_F1_delta", "other_F1_delta", "passes_harmless"):
+        check(_col in _hdr, f"M-TRANS-1/octave-suppression: TSV header has {_col!r}")
+
+# Heatmap PNG exists and is non-empty.
+check(_os_png.is_file() and _os_png.stat().st_size > 0,
+      "M-TRANS-1/octave-suppression: heatmap.png present and non-empty")
+
+# Harmless-to-others: every cell must satisfy drums_delta >= -0.02 AND other_delta >= -0.02.
+if _os_tsv.is_file():
+    import csv as _csv
+    _rows = list(_csv.DictReader(_os_tsv.open(), delimiter="\t"))
+    _all_harmless = True
+    for _r in _rows:
+        if _r["mix_id"] != "aggregate" or _r["T_min_ms"] == "baseline":
+            continue
+        if float(_r["drums_F1_delta"]) < -0.02 or float(_r["other_F1_delta"]) < -0.02:
+            _all_harmless = False
+    check(_all_harmless,
+          "M-TRANS-1/octave-suppression: every aggregate cell honors harmless-to-others")
+
+# Report exists with all 7 required sections.
+_os_report = WS / "docs" / "basic_pitch_octave_refinement.md"
+check(_os_report.is_file(), "M-TRANS-1/octave-suppression: docs/basic_pitch_octave_refinement.md present")
+if _os_report.is_file():
+    _rtext = _os_report.read_text()
+    for _sec in ("## Problem", "## Method", "## Results",
+                 "## Interpretation", "## Determinism", "## Isolation",
+                 "## Limitations", "## Reproduction"):
+        check(_sec in _rtext, f"M-TRANS-1/octave-suppression: report has {_sec!r}")
+
+# =========================================================================
+# §17. M-INGEST-1/egress-ready-automation invariants (fork 3a908edcb241 clone 2)
+# =========================================================================
+# (a) scripts/egress_ready/*.py NEVER import sidecar_nonfactor (isolation).
+# (b) module-level command constants are stable (single source of truth).
+# (c) test suite exists and is invocable.
+import re as _re_er
+_er_dir = WS / "scripts" / "egress_ready"
+_er_pat = _re_er.compile(
+    r"^\s*(?:from\s+\S*\bsidecar_nonfactor\b|import\s+\S*\bsidecar_nonfactor\b)",
+)
+_er_bad = 0
+if _er_dir.is_dir():
+    for _pyfile in sorted(_er_dir.glob("*.py")):
+        for _line in _pyfile.read_text(encoding="utf-8").splitlines():
+            if _er_pat.match(_line):
+                _er_bad += 1
+check(_er_bad == 0,
+      "M-INGEST-1/egress-ready: scripts/egress_ready/*.py do NOT import sidecar_nonfactor (isolation)")
+
+# Command constants are stable (single-source-of-truth for future refactors).
+try:
+    from scripts.egress_ready.subprocess_hooks import (
+        HARVEST_CMD, CHUNKER_CMD, CLASSIFIER_CMD, READY_FLAG_PATH,
+    )
+    check(HARVEST_CMD == ["bash", "workspace/harvest_playlists.sh"],
+          "M-INGEST-1/egress-ready: HARVEST_CMD is the two-token bash invocation")
+    check(CHUNKER_CMD[0] == "/usr/bin/python3" and "scripts.ingest.chunker" in CHUNKER_CMD,
+          "M-INGEST-1/egress-ready: CHUNKER_CMD invokes /usr/bin/python3 -m scripts.ingest.chunker")
+    check(CLASSIFIER_CMD[0] == "/usr/bin/python3" and "scripts.classifier.classify_batch" in CLASSIFIER_CMD,
+          "M-INGEST-1/egress-ready: CLASSIFIER_CMD invokes /usr/bin/python3 -m scripts.classifier.classify_batch")
+    check(READY_FLAG_PATH == "data/ear/rated_ready.flag",
+          "M-INGEST-1/egress-ready: READY_FLAG_PATH points at data/ear/rated_ready.flag")
+except ImportError as _e:
+    check(False, f"M-INGEST-1/egress-ready: subprocess_hooks import failed: {_e}")
+
+# Test suite exists and imports.
+_er_tests = WS / "tests" / "test_egress_ready_state.py"
+check(_er_tests.is_file(),
+      "M-INGEST-1/egress-ready: tests/test_egress_ready_state.py present")
+
+# Fixtures (all six named scenarios) present.
+_fx_dir = WS / "tests" / "fixtures" / "egress_status"
+for _fx in ("all_false.jsonl", "single_true_then_back.jsonl",
+            "two_consecutive_triggers.jsonl", "already_triggered_then_false.jsonl",
+            "interleaved_then_true_true.jsonl", "stale_row_does_not_count.jsonl"):
+    check((_fx_dir / _fx).is_file(),
+          f"M-INGEST-1/egress-ready: fixture {_fx} present")
+
+# TRANSITIONS map has the promised legal edges (single-source-of-truth check).
+from scripts.egress_ready.state import TRANSITIONS as _T, State as _S
+check(_S.HARVESTING in _T[_S.TRIGGERED], "M-INGEST-1/egress-ready: TRIGGERED->HARVESTING legal")
+check(_S.CHUNKING in _T[_S.HARVESTING],  "M-INGEST-1/egress-ready: HARVESTING->CHUNKING legal")
+check(_S.CLASSIFYING in _T[_S.CHUNKING], "M-INGEST-1/egress-ready: CHUNKING->CLASSIFYING legal")
+check(_S.READY in _T[_S.CLASSIFYING],    "M-INGEST-1/egress-ready: CLASSIFYING->READY legal")
+check(_S.FAILED in _T[_S.HARVESTING],    "M-INGEST-1/egress-ready: HARVESTING->FAILED legal")
+check(_S.FAILED in _T[_S.CHUNKING],      "M-INGEST-1/egress-ready: CHUNKING->FAILED legal")
+check(_S.FAILED in _T[_S.CLASSIFYING],   "M-INGEST-1/egress-ready: CLASSIFYING->FAILED legal")
+check(_S.IDLE in _T[_S.FAILED],          "M-INGEST-1/egress-ready: FAILED->IDLE legal (via --reset-failure)")
+
+# Docs artifact present.
+_er_report = WS / "docs" / "egress_ready_automation.md"
+check(_er_report.is_file(), "M-INGEST-1/egress-ready: docs/egress_ready_automation.md present")
+if _er_report.is_file():
+    _rtext = _er_report.read_text(encoding="utf-8")
+    for _sec in ("## Purpose", "## Non-goals", "## State diagram",
+                 "## Trigger rule", "## Six-scenario matrix",
+                 "## State persistence", "## Failure recovery",
+                 "## Human-override API", "## Isolation", "## Reproduction"):
+        check(_sec in _rtext, f"M-INGEST-1/egress-ready: report has {_sec!r}")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
