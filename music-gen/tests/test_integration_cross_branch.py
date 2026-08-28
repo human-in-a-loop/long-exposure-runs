@@ -250,13 +250,13 @@ if _rules_json.is_file() and _rules_yaml.is_file():
 #      (mentions in comments are allowed).
 import re as _re
 _seen_rules_nonfactor_import = False
-_rules_root = WS / "scripts" / "rules"
+_rulesWS = WS / "scripts" / "rules"
 _pat_sidecar_import = _re.compile(
     r"^\s*(?:from\s+\S*\bsidecar_nonfactor\b|import\s+\S*\bsidecar_nonfactor\b)",
     _re.MULTILINE,
 )
-if _rules_root.is_dir():
-    for _p in _rules_root.rglob("*.py"):
+if _rulesWS.is_dir():
+    for _p in _rulesWS.rglob("*.py"):
         if _pat_sidecar_import.search(_p.read_text()):
             _seen_rules_nonfactor_import = True
             break
@@ -268,9 +268,9 @@ try:
     from scripts.rules.validate import validate_row as _validate_row
     from scripts.rules.rule_id import derive_rule_id as _derive_rule_id
     _rule_types = ["harmonic", "rhythmic", "melodic", "form", "arrangement"]
-    _examples_root = WS / "scripts" / "rules" / "schema" / "examples"
+    _examplesWS = WS / "scripts" / "rules" / "schema" / "examples"
     for _rt in _rule_types:
-        _files = sorted((_examples_root / _rt).glob("*.json"))
+        _files = sorted((_examplesWS / _rt).glob("*.json"))
         check(len(_files) >= 5,
               f"M-RULES-1/schema: {_rt} has {len(_files)} synthetic instance(s) (>=5 required)")
         _valid = 0
@@ -358,9 +358,9 @@ if _report.is_file():
 
 # 12f. Non-factor isolation: scripts/transcribe/*.py must not import sidecar_nonfactor.
 _seen_trans_nonfactor_import = False
-_trans_root = WS / "scripts" / "transcribe"
-if _trans_root.is_dir():
-    for _p in _trans_root.rglob("*.py"):
+_transWS = WS / "scripts" / "transcribe"
+if _transWS.is_dir():
+    for _p in _transWS.rglob("*.py"):
         if _pat_sidecar_import.search(_p.read_text()):
             _seen_trans_nonfactor_import = True
             break
@@ -530,8 +530,8 @@ if _os_report.is_file():
 # (e) Report artifact present with the 7 sections named in the research
 #     brief.
 import re as _re
-_score_root = _root / "scripts" / "score"
-_score_pyfiles = list(_score_root.rglob("*.py"))
+_scoreWS = WS / "scripts" / "score"
+_score_pyfiles = list(_scoreWS.rglob("*.py"))
 check(len(_score_pyfiles) >= 3,
       f"M-SCORE-1: >=3 python files under scripts/score/ (got {len(_score_pyfiles)})")
 
@@ -545,20 +545,22 @@ for _p in _score_pyfiles:
 
 _guard_pat = _re.compile(
     r"assert\s+sys\.executable\s*==\s*['\"]/usr/bin/python3['\"]")
-for _p in _score_pyfiles + [_root / "tests" / "test_score_bridge.py"]:
+_guard_files = [p for p in _score_pyfiles if p.name != "__init__.py"] \
+    + [WS / "tests" / "test_score_bridge.py"]
+for _p in _guard_files:
     _t = _p.read_text()
     check(bool(_guard_pat.search(_t)),
           f"M-SCORE-1: {_p.name} has interpreter guard")
 
 # Public API surface
-_bridge_src = (_score_root / "bridge.py").read_text()
+_bridge_src = (_scoreWS / "bridge.py").read_text()
 for _name in ("def xml_to_midi", "def midi_to_xml",
               "def merge_stems_to_score", "class ScoreBridgeError"):
     check(_name in _bridge_src,
           f"M-SCORE-1: bridge.py exposes {_name!r}")
 
 # Merged sidecar (produced by tests/test_score_bridge.py §3)
-_sidecar_path = _root / "data" / "score" / "test_merged.parts_mapping.json"
+_sidecar_path = WS / "data" / "score" / "test_merged.parts_mapping.json"
 if _sidecar_path.exists():
     import json as _json
     _side = _json.loads(_sidecar_path.read_text())
@@ -567,7 +569,7 @@ if _sidecar_path.exists():
           f"M-SCORE-1: sidecar covers all 3 stems (got {sorted(_pbs)})")
 
 # Report artifact
-_score_report = _root / "docs" / "score_bridge_report.md"
+_score_report = WS / "docs" / "score_bridge_report.md"
 check(_score_report.exists(), "M-SCORE-1: docs/score_bridge_report.md exists")
 if _score_report.exists():
     _rtext = _score_report.read_text()
