@@ -1,263 +1,130 @@
 ---
-created: 2026-08-28T21:05:00+00:00
-cycle: 25
+created: 2026-08-28T22:00:00Z
+cycle: 26
 run_id: run-2026-08-28T040704Z
 agent: worker
-milestone: _run/post-merge-integration-fork-dc8cba4b79eb
-supersedes_path: merge_report.md (cycle 24, fork 3fbd8c1ab57c)
+milestone: _run/post-merge-integration-fork-8f3344880d29
 ---
 
-# Post-Merge Integration Report — Fork dc8cba4b79eb (cycle 25)
+# Post-Merge Integration — Fork `8f3344880d29` (cycle 26)
 
-## Scope
-
-Worker-only integration cycle for fork `dc8cba4b79eb` (2 clones). Both
-sub-cycles declared `done | deliverable=exists`. Researcher and auditor
-were skipped per parallel_cycle_fanout collapse protocol.
+**Fork:** `8f3344880d29` · **Clones:** 2 · **Both:** `done | deliverable=exists`
+**Conductor phase:** worker-only mechanical merge (researcher / auditor skipped).
+**Final ledger:** 396 → **400 rows** · **0 ERRORs / 10 WARNs** (all pre-existing carry-over).
 
 ## Clone verdicts
 
-| Clone | Milestone | Verdict |
-|---|---|---|
-| 0 | `M-GEN-1/batch-v6-unconditioned-n16` | **validated/high** — verdict `REFUTES_PIGEONHOLE` |
-| 1 | `M-EAR-1/feature-representation-audit` | **invalidated/high** — both audited representations FAIL C2' |
+| Clone | Milestone                                       | Deliverable                                                     | Verdict            |
+|-------|-------------------------------------------------|-----------------------------------------------------------------|--------------------|
+| 0     | `M-GEN-1/collision-model-birthday-paradox`      | `docs/collision_generation_model_birthday_paradox.md`           | **validated/high** — `CONFIRMS_BP_SCALED` (α̂ = 0.7469, R²_scaled = 0.9588); `SHAPE_REFUTES` per-rule_type (R² = −0.869, first-class positive finding) |
+| 1     | `_manager/M-EAR-1-path-B-commit`                | `docs/ear_path_b_commitment.md`                                 | **validated/high** — Path B commitment for M-EAR-1 with three frozen real-label success bars (SB1/SB2/SB3); rolls M-EAR-1 parent to `in_progress/high` clearing cycle-25 handoff #8 |
 
-### Clone 0 — batch-v6 unconditioned N=16
+## What clone-0 delivered
 
-Used cycle-13's unconditioned SHA-256-tiebreak sampler
-(`scripts/gen/sample_rules.py`, no exclusion loop, no rejection) on the
-86-row `data/rules/ledger_i3_dminor.jsonl` (live K distribution:
-H=20, R=18, M=18, F=15, A=15 — cycle-12 breadth-expansion actuals, not
-the brief's stated H=20/R=15/M=15/F=15/A=15). Rendered 16 songs (salts
-0..15) through cycle-13's batch-v2 render pipeline verbatim. Cycle-15
-`i4_stratified.py` NOT imported (AST + grep verified).
+Retrospective empirical fit of a birthday-paradox (BP) collision-generation model against all six validated M-GEN-1 batch outcomes (v1 N=5, v2 N=8, v3-i3 N=8, v3-i4 N=8, v4 N=8, v6 N=16). Frozen 4-verdict rubric locked pre-run.
 
-- **26 collision pairs** at N=16.
-- Only **26.9%** ({form, arrangement}) — below the 60% PARTIAL bar.
-- **76.9%** ({form, arrangement, rhythmic, melodic}) — below the 90%
-  K15-FAMILY bar.
-- **6/26 pairs are harmonic K=20 collisions** — pigeonhole-forbidden
-  by strict pigeonhole prediction, present here anyway.
-- Pattern is hash-birthday-shaped, not pigeonhole-concentrated.
+- **Aggregate verdict:** `CONFIRMS_BP_SCALED` — α̂ = **0.7469387071101908** (closed-form LS), R²_pure = 0.7558, **R²_scaled = 0.9588**.
+- **Per-rule_type shape verdict:** `SHAPE_REFUTES` (R² = −0.869) — BP over-predicts small-K types (form, arrangement) and under-predicts large-K types (harmonic, rhythmic, melodic) on batch-v6. Honest first-class positive finding for cycle-27, not softened.
+- **Cycle-25 REFUTES_PIGEONHOLE finding quantitatively closed:** batch-v6's 6 harmonic collisions at K=20 > N=16 that pigeonhole forbade are exactly what BP predicts (E[harmonic pairs] = α·6 = 4.48).
+- **Auditor sensitivity probe:** excluding the 2 I4 stratified batches (trivial (0,0) points), R²_scaled stays at 0.9308 with α unchanged; verdict robust to the stratified-inclusion modeling choice.
 
-Cycle-14's collision-floor **construction proof** survives as a lower
-bound (form ≥ 1, arrangement ≥ 1) but **fails as a distributional-shape
-predictor**. This is a first-class positive empirical falsification of
-the cycle-14 pigeonhole-shape hypothesis at N=16 under the unconditioned
-sampler.
+**Cycle-25 handoff item closed:** `scripts/analysis/canonical_aggregate_sha.py` ships as the single anchor-invariance ground truth (byte-lex-sorted files → tab-delimited path\tSHA-256 concat → SHA-256 → full 64-hex). Retires cycle-24/25 aggregation-method drift as an ongoing hazard.
 
-Notable discovered facts:
-- **K-distribution drift** vs the brief (see above). Verdict is
-  unaffected because the rubric union is fixed rule_types, but cycle-26
-  briefs must cite the live K distribution.
-- **Salts 9 and 15 render collapse**: distinct MusicXML SHAs but
-  byte-identical MIDI/bare/effects — mscore3 MIDI export collapses
-  different scores to the same event stream. Attribution counts
-  rule_ids, not render bytes, so not counted as a rule-collision.
-- **Aggregation-method drift** on `data/gen/batch_v2/`: cycle-24
-  formatter gets `2a2a30db5d3d9a76`; clone-0's formatter got
-  `912e07feeb81c8b6`; this cycle's formatter gets
-  `be5726ab1cc843cf`. **Per-file SHAs unchanged across all three**
-  (9 aggregation formats probed by clone-0). Anchor-preservation
-  contract satisfied.
+## What clone-1 delivered
 
-### Clone 1 — feature-representation audit
+Durable Path B commitment for M-EAR-1 after three-cycle Path A exhaustion under N=55 synthetic labels (c22 chassis, c23 head-regularization, c25 feature-representation — all invalidated). Ships an 8-section commitment doc + synthetic-fixture armed-harness verification.
 
-Last cheap Path A probe on the ear-model chassis. Cycle-22 falsified
-the cycle-6 CORN head chassis at τ ≥ 0.7 on N=55 synthetic labels;
-cycle-23 falsified three orthogonal regularized head variants at the
-relaxed τ ≥ 0.4 bar. This branch tested the mirror hypothesis: whether
-the cycle-6 head over a slimmer feature representation would produce
-recipe-invariant rank predictions under the same frozen instrument.
+- **Three frozen real-label success bars** (numeric thresholds derived from cycle-22 recipe-envelope IQR, not fabricated):
+  - **SB1 (MAE):** CORN MAE < min(majority-class=0.8750, mean-integer=0.6250) − IQR (0.5909) = **0.0341**.
+  - **SB2 (τ):** mean pairwise Kendall τ ≥ 0.4 across 10 stratified bootstrap resamples (per cycle-23 threshold; not softened).
+  - **SB3 (leak):** detection ≥ 0.90 at α=1.0 AND FPR ≤ 0.10 per non-factor (per cycle-6 protocol).
+- **Non-factor leak protocol reality check:** `ratings_manifest.tsv` carries `rating / playlist_id / video_id / title / duration_s / url` — no explicit artist / genre / era columns. artist derived from title regex (fallback `__UNPARSED__` + `video_id[:6]`); **genre DEFERRED** (playlist_id is perfectly aliased with rating band); **era DEFERRED** (yt-dlp `upload_date` metadata post-egress; 5-year bins anchored at 1960). Section 8 caps SB3 at PARTIAL if any channel is DEFERRED.
+- **Corpus-size honesty caveat:** 80 rated songs vs 55-clip synthetic valset ≈ 1.45× proximity — SB1's strict 0.0341 margin may realistically resolve to PARTIAL; do not silently promote PARTIAL to PASS.
+- **Armed harness** already on disk from cycle-11; 8 synthetic-fixture cases exercise READY→TRAINING→TRAINED transitions with zero live network.
+- **M-EAR-1 parent** rolled to `in_progress/high` — clears cycle-25 handoff #8.
 
-- **HEUR-only 4-D**: C1' PASS (best MAE 0.782 < cycle-6 anchor 0.891);
-  **C2' FAIL** (mean τ = **−0.076**, bimodal span [−0.958, +0.951]);
-  C3' PASS (`ec429bdf…5e8c`). Overall **FAIL**.
-- **PANNs-only 2048-D**: C1' FAIL; **C2' FAIL** (mean τ = +0.006);
-  C3' PASS (`f98a498c…d39e`). Overall **FAIL**.
-- **VGGish-only 128-D**: **R3 DEFERRED** — cache has `has_vggish=False`
-  (cycle-6 clone-2 chose not to invoke `use_vggish=True`); running the
-  extractor over 55 clips is out-of-scope per the brief §2. Frontier
-  plot carries a deferral marker.
+## Shadow-ledger auto-concat verification (4th consecutive fork)
 
-The HEUR-only C1' PASS is scientifically interesting but **not a Path A
-rescue**: mean τ near zero with symmetric bimodal span is the
-underdetermined-regressor signature at extreme low D (4 features can fit
-any per-recipe ordering the labels generate, and the fit picks a
-different direction each time). The auditor's report frames this
-correctly and does not spin it as a partial positive.
+Shadow ledgers auto-merged into main via the cycle-22 harness-namespacing fix, no manual repair required. Ledger went 380 → 396 rows on merge (11 shadow events across both clones), then 396 → **400** after this cycle's 4 integration events.
 
-**Pre-registered interpretation rule 2 fires cleanly**: no representation
-passes C2', so cycle 26 commits **Path B** (defer all ear calibration to
-post-egress real labels). Path A on the ear-model chassis at N=55
-synthetic labels is now closed comprehensively across three orthogonal
-design axes:
+## Test-suite verification
 
-| Cycle | Axis | Result |
-|---|---|---|
-| 22 | chassis (cycle-6 CORN head) | FAIL (mean τ = 0.059) at τ ≥ 0.7 |
-| 23 | head-regularization (ridge / bottleneck / frozen-projector) | 3/3 FAIL at τ ≥ 0.4 |
-| 25 | feature-representation (HEUR-4 / PANNs-2048) | 2/2 FAIL at τ ≥ 0.4 |
+All six suites run with `PYTHONPATH=.:/home/user/human-in-a-loop/long-exposure /usr/bin/python3`.
 
-Six design points, all under the same frozen SHA-anchored / byte-det × 2
-instrument, all failing the relaxed C2' bar. The pattern is not a
-chassis choice, not a regularization choice, not a feature-dimension
-choice — it is that N=55 synthetic labels do not carry recipe-invariant
-ordinal information for any reasonable head over any reasonable slice
-of the frozen cache.
+| Suite                                              | Result       |
+|----------------------------------------------------|--------------|
+| `tests/test_collision_model_bp.py`                 | **11/11**    |
+| `tests/test_ear_armed_harness_synthetic_trigger.py`| **8/8**      |
+| `tests/test_integration_cross_branch.py` (§37 BP + §38 Path-B) | **0 failures** |
+| `tests/test_ledger_writer_validation.py`           | **21/21**    |
+| `tests/test_fanout_concat_validation.py`           | **17/17**    |
+| `tests/test_harness_report_namespacing.py`         | **7/7**      |
 
-## Cross-branch integration
+## Batch-anchor preservation (canonical-aggregate-SHA utility)
 
-**Disjoint file trees. Zero conflicts.**
+Verified live via the new `scripts/analysis/canonical_aggregate_sha.canonical_aggregate_sha(root)` — the single anchor-invariance ground truth going forward:
 
-| Branch | Files touched |
-|---|---|
-| clone-0 | `scripts/gen/batch_v6_*.py`, `scripts/gen/collision_count_batch_v6.py`, `scripts/gen/plot_batch_v6.py`, `tests/test_batch_v6_unconditioned.py`, `docs/gen_batch_v6_unconditioned_n16_report.md`, `docs/figures/batch_v6_{grid,collision_heatmap,attribution}.png`, `data/gen/batch_v6/*`, `tests/test_integration_cross_branch.py §35` |
-| clone-1 | `scripts/ear/{feature_subset_adapter,representation_frontier,stability_audit_v3_representations}.py`, `tests/test_ear_feature_representation_audit.py`, `docs/ear_feature_representation_audit_report.md`, `docs/figures/ear_representation_{frontier,tau_per_variant}.png`, `data/ear/feature_representation_audit/*`, `tests/test_integration_cross_branch.py §36` |
+| Batch          | Canonical aggregate SHA (full 64-hex)                                |
+|----------------|-----------------------------------------------------------------------|
+| `batch_v1`     | `b052d76716ca990dc402b42c3dc81cafa1e9c7fd89bb4c61a299330d74532e05` |
+| `batch_v2`     | `be5726ab1cc843cf4b0f4b73c788d26669bca91134a69e59476b63b8df1b9336` |
+| `batch_v3_i3`  | `42bdc33d33987f4e9fa222c416d63d1190f1bac272ea1dc23b369714c00d16d7` |
+| `batch_v3_i4`  | `b07c231b9373818a6df7a342f6f231ccd18cc543f98a72116b31f168b6079703` |
+| `batch_v4`     | `9e9444af3af4b5c17b8df3a5f4bea6c6d22969119bd3c1af90cd47db35c18680` |
+| `batch_v5_n16` | `2f17ab559c37881f10f02d86821ff394aaa3ac773fa714b602b3e87757596469` |
+| `batch_v6`     | `eeff1663d600a21dd271d2bd74405288d0881b20db920856c5002a90dbc499ed` |
 
-Shared file `tests/test_integration_cross_branch.py` — clones extend
-distinct sections; no merge conflict.
-
-## Test suite results
-
-All green:
-
-| Suite | Result |
-|---|---|
-| `tests/test_batch_v6_unconditioned.py` | 7/7 PASS |
-| `tests/test_ear_feature_representation_audit.py` | 7/7 PASS |
-| `tests/test_integration_cross_branch.py` (§1–§36, incl. §35 batch-v6, §36 feat-rep) | 0 failures |
-| `tests/test_ledger_writer_validation.py` | 21/21 PASS |
-| `tests/test_fanout_concat_validation.py` | 17/17 PASS |
-| `tests/test_harness_report_namespacing.py` | 7/7 PASS |
-
-All run with `PYTHONPATH=.:/home/user/human-in-a-loop/long-exposure` and
-`/usr/bin/python3`.
-
-## Batch-anchor invariance
-
-File counts of prior batch directories unchanged since cycle 24:
-
-| Batch | Files | Aggregate SHA (cycle-25 method) |
-|---|---|---|
-| `data/gen/batch_v2` | 62 | `be5726ab1cc843cf` |
-| `data/gen/batch_v3_i3` | 62 | `42bdc33d33987f4e` |
-| `data/gen/batch_v3_i4` | 62 | `b07c231b9373818a` |
-| `data/gen/batch_v4` | 74 | `9e9444af3af4b5c1` |
-| `data/gen/batch_v5_n16` | 129 | `2f17ab559c37881f` |
-| `data/gen/batch_v6` (new) | 138 | `eeff1663d600a21d` |
-
-Aggregate SHAs differ from cycle-24's recorded values because the
-aggregation method differs (relative-path + SHA + newline + concat, then
-SHA-256); per-file SHAs are unchanged. Clone-0's own harness
-independently verified 5 batch anchors + 2 ledgers pre/post (7/7 PASS)
-during its run.
-
-## Shadow-ledger auto-concat
-
-**Cycle-22 harness-auto-write-namespacing fix continues to work.**
-13 shadow events (6 clone-0 + 7 clone-1) at
-`/home/user/music-gen-instance/fork-dc8cba4b79eb/clone-{0,1}/promise_ledger.jsonl`
-auto-concat'd into the main ledger. **0 shadow events missing** from the
-main ledger. Third consecutive fork (after cc548ca0c2e5 and
-3fbd8c1ab57c) auto-concat'd cleanly. Cycle-21 workaround remains
-retired.
-
-Ledger row count: 380 → 384 after this cycle's 4 integration events.
+`batch_v6` matches clone-0's shipped anchor SHA byte-for-byte. Aggregate-SHA drift across cycles is a closed class going forward.
 
 ## Ledger events emitted this cycle
 
-Via SSoT writer `long_exposure.workspace_bootstrap.append_ledger_event`:
+1. `_infra/adopt-fanout-artifacts-fork-8f3344880d29` — adopts the 1 orphan (`docs/clone_0_cycle_26_merge_report.md`, per-clone documentation); clone shadow ledgers already listed all substantive artifacts.
+2. `_infra/cross-branch-integration-test-cycle26` — all 6 test suites green.
+3. `_run/post-merge-integration-fork-8f3344880d29` — rollup.
+4. `_archive/integration-scratch-fork-8f3344880d29` — one-shot emitter archived to `tools/stale/`.
 
-1. `_infra/adopt-fanout-artifacts-fork-dc8cba4b79eb` — validated/high,
-   29 orphans adopted (22 `gen_first_gen_*.npz` feature-cache
-   side-writes from clone-0 batch-v6 render including 16 pre-existing +
-   6 new this cycle; 5 `stability_audit_c3check/*` pre-existing carry-over;
-   1 `tools/_audit_inspect.py` new this cycle; 1 `tools/_audit_probe.py`
-   pre-existing carry-over).
-2. `_infra/cross-branch-integration-test-cycle25` — validated/high.
-3. `_run/post-merge-integration-fork-dc8cba4b79eb` — validated/high.
-4. `_archive/integration-scratch-fork-dc8cba4b79eb` — validated/high.
+## Final workspace state
 
-## promise_check final state
+- **Ledger:** **400 rows** (was 380 pre-cycle-26; +16 shadow, +4 this cycle).
+- **`promise_check`:** **0 ERRORs / 10 WARNs**, all pre-existing carry-over:
+  - 6 trailing-slash artifact-path canonicalization WARNs (cycles 1/4/6/9/13 — cosmetic; scheduled for a dedicated canonicalization sweep).
+  - 4 exempted long_exposure/* & `reports/cycles/report_cycles_13-15_clone_1.md` handoff carryover (cycle-24 handoff).
+- **New deliverables on disk:** `docs/collision_generation_model_birthday_paradox.md`, `docs/ear_path_b_commitment.md`, `docs/clone_0_cycle_26_merge_report.md`, `scripts/analysis/{canonical_aggregate_sha, anchor_preservation_bp, collision_model_bp, collision_model_verdict, plot_bp_fit, run_bp_fit}.py`, `scripts/ear/path_b_success_bar_reference.py`, `tests/test_collision_model_bp.py`, `tests/test_ear_armed_harness_synthetic_trigger.py`, `data/collision_model/*`.
 
-**0 ERRORs / 11 WARNs** (down from 40 pre-adoption).
+## Handoff to cycle 27
 
-All 11 remaining WARNs are pre-existing carry-over from prior cycles:
-- 6 trailing-slash canonicalization (lines 10, 17, 88, 161, 265 — plus
-  the second line-10 entry) — pre-existing artifact-path drift from
-  early cycles.
-- 1 `M-EAR-1` parent has no ledger events yet (roll-up event pending
-  until real-label training loop fires post-egress).
-- 4 `long_exposure/*` + `reports/cycles/report_cycles_13-15_clone_1.md`
-  ledger-tracked-artifact-missing (established WARN exemption for
-  upstream / prior-clone handoff artifacts).
+### Priority items
 
-## Handoff to cycle 26
+1. **Cycle-27 shape-mechanism probe** for the SHAPE_REFUTES finding (clone-0 first-class positive result). Two directly testable candidates on frozen artifacts (no rendering, no new corpus):
+   - **Coherence-gate coercion-rate per rule_type** on batch-v6's provenance — if the gate rejects candidate collisions at a type-dependent rate, it deforms effective K per type without breaking aggregate BP scaling.
+   - **Effective-K probe** — enumerate rule-selection frequency at N=16 unconditioned; if the hash lottery structurally over-selects certain small-K rules, that reproduces the observed pattern of BP over-predicting small-K and under-predicting large-K.
+   - Either mechanism (or both) → two-parameter collision-generation model (aggregate BP scale + per-type deformation) closing the shape question.
 
-1. **Path B commit for M-EAR-1.** Researcher should emit a
-   `_plan/*` event superseding any assumption that Path A refinement
-   remained open; commit to real-label ear calibration behind the
-   egress-ready trigger. This is the pre-registered outcome of the
-   feature-representation audit interpretation rules.
-2. **Anti-patterns to lock for cycle 26** (per clone-1 report §Open
-   Questions):
-   - No 5th regularized head.
-   - No further feature slicing.
-   - No re-runs of cycle-22 harness with same features + head.
-   - No synthetic-label re-audit variants.
-   - The two-VALIDATED-audits × two-INVALIDATED-verdicts × orthogonal
-     design axes structure is the strongest possible negative-finding
-     structure without real labels. Additional Path A cycles produce
-     diminishing information.
-3. **Optional VGGish (R3) closure.** Cheap sanity probe if egress remains
-   blocked and cycle 26 has spare budget. Would either strengthen the
-   Path B commit or unexpectedly reveal a mid-D representation that
-   passes. Low expected information; only if truly cheap.
-4. **Cycle-26 batch-v7 candidates** (per clone-0 report §9,
-   priority-ordered):
-   1. **N=32 same sampler same ledger** — strict-pigeonhole
-      fully-forced regime.
-   2. **Per-K sensitivity sweep at N=16** — test whether primary
-      attribution tracks ~N(N−1)/(2K) per rule_type.
-   3. **Distributional-shape null model** — simulate SHA-256 tiebreak
-      with synthetic ledger of controlled K; compare vs birthday null.
-5. **Post-egress next step.** When `data/ear/rated_ready.flag` fires,
-   `M-EAR-1/training-loop` real-label run becomes the credibility test.
-   **Start from the cycle-6 chassis with the original 2052-D features**;
-   do not inherit cycle-23 or cycle-25 negative findings into the
-   real-label recipe. Those are chassis-stability findings under
-   synthetic labels at N=55, not statements about the real-label recipe.
-6. **Cosmetic documentation nits** (from clone-1 auditor MINOR):
-   - `docs/ear_feature_representation_audit_report.md` §1.2 phrasing on
-     `n_files = 84` covering the 55-clip valset (imprecise given
-     disclosed concurrent-clone writes).
-   - Front-matter cycle-6 baseline row's τ/MAE context (mixes
-     cycle-22-observed τ with cycle-6-anchor MAE — labelled clearly
-     in `frontier_summary.json` but a reader could conflate contexts).
-   - Report references `docs/figures/ear_feature_representation_tau_{mae_frontier,per_representation}.png`
-     but actual on-disk figure names are `docs/figures/ear_representation_{frontier,tau_per_variant}.png`
-     (per PoR). Doc-drift only; figure files exist and are correct.
-   - Neither of these is a correctness issue.
-7. **Trailing-slash artifact canonicalization sweep.** 6 pre-existing
-   WARNs from early cycles still open — mechanical fix, low priority.
-8. **Cycle-24 handoff items** (still open):
-   - Researcher's Path A vs B decision for M-EAR-1 (now definitively
-     resolved by this cycle — Path B).
-   - Cosmetic fix to `docs/ear_head_regularization_audit_report.md` §7
-     line 241 (C1' methodology sentence conflation).
-   - Clone-0's two paths for N > K construction proof (subsumed by
-     this cycle's REFUTES_PIGEONHOLE finding — construction proof
-     shown to be lower-bound only, not shape predictor).
-   - Add `min_K < N` pre-flight guard to future batch-vN drivers.
-   - Real-label re-run of cycle-23 variants when rated audio unblocks;
-     don't inherit synthetic success bar.
-   - Cycle-22 handoff items 1, 5 + cycle-21 items 2, 3, 5, 6, 7, 9.
+2. **Anti-patterns to lock for cycle 27:**
+   - No re-fit of BP with additional data unless new batches actually land.
+   - No k-fold cross-validation tuning of α (closed-form LS is the correct estimator; verdict is robust to stratified-inclusion probe).
+   - No spinning SHAPE_REFUTES as partial-positive on the aggregate.
+   - **M-EAR-1 side:** no 5th regularized head; no further feature slicing; no cycle-22 harness re-runs with same features + head; no synthetic-label re-audit variants (per cycle-25 anti-pattern set now durable in `docs/ear_path_b_commitment.md`).
 
-## Environment (unchanged)
+3. **Optional cross-branch integration extensions** (not required for merge, would harden future cycles):
+   - **§37** as a permanent guard around `scripts/analysis/canonical_aggregate_sha.py` + the four analysis scripts (BP fit / verdict / anchor-preservation / plot).
+   - Cross-branch §37 & §38 are already exercised via the integration test (0 failures); the optional item is making them stand-alone guards independent of the sub-suite tests.
 
-Python 3.11.15, torch 2.13.0+cpu, numpy 1.26.4, mscore3 3.2.3,
-DawDreamer 0.9.0, basic-pitch 0.4.0 in `workspace/basic_pitch_venv`,
-SF2 pin `74594e8f…1cb0`, VGGish rung with cycle-14 content-caveat,
-single-thread BLAS pins (OMP/MKL/OPENBLAS=1). Rated audio remains
-egress-blocked (`corpus/CORPUS_STATUS.md`); neither branch required it.
+### Post-egress next step (unattended)
+
+When `data/ear/rated_ready.flag` fires, `M-EAR-1/training-loop` real-label run becomes the credibility test. Follow **§7 trigger conditions + §8 post-trigger validation checklist** in `docs/ear_path_b_commitment.md`. **Do NOT** inherit cycle-23/25 negative findings; start from cycle-6 chassis with original 2052-D features. If SB2 fails at N=80, instantiate the **§5.2 corpus-expansion-ticket** template — do NOT respond by reopening chassis / head / feature-slice work.
+
+### Cosmetic doc nits (not blocking)
+
+- `docs/clone_0_cycle_26_merge_report.md` — the on-disk artifact matches; adoption event catalogs it.
+
+### Cycle-24 handoff items still open
+
+- **Trailing-slash artifact canonicalization sweep** (6 pre-existing WARNs, cosmetic, non-blocking).
+- `long_exposure/*` & `reports/cycles/report_cycles_13-15_clone_1.md` — exempted per cycle-24 handoff.
+
+## Provenance
+
+**Working directory:** `/home/user/long-exposure-runs/music-gen`
+**Merge cycle event:** `_run/post-merge-integration-fork-8f3344880d29` (validated/high)
+**Fork shadow ledgers:** `/home/user/music-gen-instance/fork-8f3344880d29/clone-{0,1}/promise_ledger.jsonl` — both fully absorbed into main via auto-concat.
