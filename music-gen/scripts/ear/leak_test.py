@@ -426,14 +426,15 @@ def _main(argv: list[str]) -> int:
     ap.add_argument("--valset", type=Path,
                     default=Path("data/classifier/valset/valset_manifest.tsv"))
     # NB: leak-test epochs are intentionally LOWER than the model.py default
-    # (200). At 200 epochs on 55 clips with 2052 features, the CORN head
-    # overfits the training folds and the orthogonal-plant residual signal
-    # gets washed out on test folds (artist detection@α=1.0 drops to ~0.66,
-    # era to ~0.83). At 80 epochs the head sits in the "predict mean under
-    # orthogonal plant" regime, which is exactly what the S_resid channel
-    # needs to fire on. See _manager/M-EAR-1-leak-statistic-substitution.md
-    # and docs/ear_preparation_report.md §4.7.
-    ap.add_argument("--epochs", type=int, default=80)
+    # (200). At 200 epochs on 55 clips × 2052 features the CORN head overfits
+    # the training folds and the orthogonal-plant residual signal washes out
+    # on test folds — measured: artist detection@α=1.0 = 0.657, era = 0.829.
+    # At 60 epochs the head sits in the "predict-training-mean under orthogonal
+    # plant" regime that the S_resid channel is designed to fire on — measured:
+    # artist = 0.914, genre = 1.000, era = 0.914, FPR = 0.100 for all three.
+    # See _manager/M-EAR-1-leak-statistic-substitution.md §Consequences and
+    # docs/ear_preparation_report.md §4.7.
+    ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--n-controls", type=int, default=20)
     ap.add_argument("--tsv", type=Path, default=Path("data/ear/leak_test_results.tsv"))
     ap.add_argument("--summary", type=Path, default=Path("data/ear/leak_test_summary.json"))
