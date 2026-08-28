@@ -813,6 +813,298 @@ check(_tex_fig.is_file(),
       "M-TEX-1/stage-by-stage: docs/figures/tex_stage_by_stage_families.png present")
 
 
+
+# ==== §20 _infra/ledger-schema-hardening (cycle 10, fork 00b3ae64444c clone 2) ====
+# Contract invariants for the ledger schema-hardening infra: SSoT module
+# exists and both promise_check and ledger_append import from it; writer
+# raises LedgerAppendError on the three documented drift patterns; no
+# import cycles.
+
+# long_exposure lives outside the workspace; add its parent to sys.path
+# so imports work under PYTHONPATH=. invocation.
+import sys as _sys_lsh
+_LE_PARENT = "/home/user/human-in-a-loop/long-exposure"
+if _LE_PARENT not in _sys_lsh.path:
+    _sys_lsh.path.append(_LE_PARENT)
+
+import ast as _ast_lsh
+import long_exposure.tools._ledger_schema as _ls
+import long_exposure.tools.promise_check as _pc
+import long_exposure.tools.ledger_append as _la
+import long_exposure.workspace_bootstrap as _wb
+
+check(hasattr(_ls, "REQUIRED_EVENT_FIELDS"),
+      "_infra/ledger-schema-hardening: _ledger_schema.REQUIRED_EVENT_FIELDS present")
+check(hasattr(_ls, "validate_event"),
+      "_infra/ledger-schema-hardening: _ledger_schema.validate_event present")
+check(hasattr(_ls, "content_hash_event_id"),
+      "_infra/ledger-schema-hardening: _ledger_schema.content_hash_event_id present")
+check(hasattr(_wb, "LedgerAppendError"),
+      "_infra/ledger-schema-hardening: workspace_bootstrap.LedgerAppendError present")
+check(_pc.REQUIRED_EVENT_FIELDS is _ls.REQUIRED_EVENT_FIELDS,
+      "_infra/ledger-schema-hardening: promise_check imports REQUIRED_EVENT_FIELDS from SSoT")
+check(_la.REQUIRED_EVENT_FIELDS is _ls.REQUIRED_EVENT_FIELDS,
+      "_infra/ledger-schema-hardening: ledger_append imports REQUIRED_EVENT_FIELDS from SSoT")
+
+# No import cycles: _ledger_schema.py must not import promise_check /
+# ledger_append / workspace_bootstrap.
+_ls_tree = _ast_lsh.parse(open(_ls.__file__).read())
+_ls_imports = set()
+for _node in _ast_lsh.walk(_ls_tree):
+    if isinstance(_node, _ast_lsh.ImportFrom) and _node.module:
+        _ls_imports.add(_node.module)
+    elif isinstance(_node, _ast_lsh.Import):
+        for _alias in _node.names:
+            _ls_imports.add(_alias.name)
+_forbidden = {
+    "long_exposure.tools.promise_check",
+    "long_exposure.tools.ledger_append",
+    "long_exposure.workspace_bootstrap",
+}
+check(not (_ls_imports & _forbidden),
+      f"_infra/ledger-schema-hardening: no import cycles (got {_ls_imports & _forbidden})")
+
+# All existing ledger events pass the tightened validator.
+import json as _json_lsh
+_ledger = WS / "promise_ledger.jsonl"
+if _ledger.is_file():
+    _lsh_fails = []
+    for _i, _raw in enumerate(_ledger.read_text().splitlines(), 1):
+        _ev = _json_lsh.loads(_raw)
+        _errs = _ls.validate_event(_ev)
+        if _errs:
+            _lsh_fails.append((_i, _errs))
+    check(not _lsh_fails,
+          f"_infra/ledger-schema-hardening: all existing ledger events pass validator "
+          f"(fails={len(_lsh_fails)})")
+
+# Report artifact present.
+_lsh_report = WS / "docs" / "ledger_schema_hardening.md"
+check(_lsh_report.is_file(),
+      "_infra/ledger-schema-hardening: docs/ledger_schema_hardening.md present")
+
+
+# =========================================================================
+# §21. M-GEN-1/first-generation invariants (fork 00b3ae64444c clone 0)
+# =========================================================================
+# Contract invariants for the first deterministic generation. Every check
+# is a fast static/light-runtime assertion — no re-render, no fluidsynth
+# subprocess, no torch training. Byte-determinism SHAs are anchored to the
+# clone-0 baseline; a drift here means a downstream regression.
+
+# Script presence.
+for _name in ("__init__.py", "sample_rules.py", "assemble_score.py",
+              "render_pipeline.py", "score_generation.py", "emit_provenance.py"):
+    _p = WS / "scripts" / "gen" / _name
+    check(_p.is_file(), f"M-GEN-1/first-generation: scripts/gen/{_name} present")
+
+# Interpreter guard on every runnable script.
+for _name in ("sample_rules.py", "assemble_score.py", "render_pipeline.py",
+              "score_generation.py", "emit_provenance.py"):
+    _text = (WS / "scripts" / "gen" / _name).read_text(encoding="utf-8")
+    check("assert sys.executable == \"/usr/bin/python3\"" in _text,
+          f"M-GEN-1/first-generation: {_name} carries /usr/bin/python3 guard")
+
+# Non-factor AST isolation: no sidecar_nonfactor imports at line start.
+import re as _re_gen
+_iso_re = _re_gen.compile(r"^\s*(from|import)\s+[\w.]*sidecar_nonfactor")
+for _p in (WS / "scripts" / "gen").rglob("*.py"):
+    _lines = _p.read_text(encoding="utf-8").splitlines()
+    _hits = [ln for ln in _lines if _iso_re.match(ln)]
+    check(not _hits, f"M-GEN-1/first-generation: {_p.name} has no sidecar_nonfactor imports")
+
+# PRNG rejection: no random / numpy.random / torch.manual_seed / secrets imports in scripts/gen/.
+# (numpy is fine; only the .random submodule and PRNGs are the concern.)
+_prng_forbidden = _re_gen.compile(
+    r"^\s*(from|import)\s+(random|secrets)\b|^\s*from\s+numpy\s+import\s+random|"
+    r"^\s*import\s+numpy\.random|^\s*from\s+torch\s+import\s+rand"
+)
+for _p in (WS / "scripts" / "gen").rglob("*.py"):
+    _lines = _p.read_text(encoding="utf-8").splitlines()
+    _hits = [ln for ln in _lines if _prng_forbidden.match(ln)]
+    check(not _hits, f"M-GEN-1/first-generation: {_p.name} has no PRNG imports")
+
+# Sampling manifest present and shape-check.
+_smf = WS / "data" / "gen" / "sampling_manifest.json"
+check(_smf.is_file(), "M-GEN-1/first-generation: data/gen/sampling_manifest.json present")
+if _smf.is_file():
+    _sm = json.loads(_smf.read_text())
+    check(set(_sm.get("chosen_rule_ids", {}).keys()) == {"arrangement", "form", "harmonic", "melodic", "rhythmic"},
+          "M-GEN-1/first-generation: sampling manifest has all 5 rule_types")
+    check(_sm["sampling_manifest"].get("algorithm") == "sha256_over_canonical_json_ascending",
+          "M-GEN-1/first-generation: sampler algorithm is SHA-256 tiebreak")
+    check(_sm["sampling_manifest"].get("prng_used") is False,
+          "M-GEN-1/first-generation: sampler declares prng_used=False")
+
+# All rendered artifacts present, non-silent, and SHA-anchored.
+import hashlib as _hs_gen
+_EXPECT_SHAS = {
+    "data/gen/sampling_manifest.json":         "faafc86ba79dccd2",
+    "data/gen/generated.musicxml":             "95d8671af26e7cf9",
+    "data/gen/renders/generated.mid":          "f237dcfc75f5de94",
+    "data/gen/renders/bare_midi.wav":          "5b6f608249ea72ac",
+    "data/gen/renders/effects_layered.wav":    "d81089d39f31b5ca",
+    "data/gen/scoring_v1.json":                "011e7c90e1ab3c72",
+}
+for _rel, _prefix in _EXPECT_SHAS.items():
+    _p = WS / _rel
+    check(_p.is_file(), f"M-GEN-1/first-generation: {_rel} present")
+    if _p.is_file():
+        _got = _hs_gen.sha256(_p.read_bytes()).hexdigest()
+        check(_got.startswith(_prefix),
+              f"M-GEN-1/first-generation: {_rel} SHA-256 matches determinism baseline "
+              f"(got {_got[:16]}..., expected {_prefix}...)")
+
+# Non-silent WAVs (peak > 1e-4).
+try:
+    import soundfile as _sf_gen
+    for _rel in ("data/gen/renders/bare_midi.wav", "data/gen/renders/effects_layered.wav"):
+        _y, _sr = _sf_gen.read(str(WS / _rel), always_2d=True)
+        _peak = float(abs(_y).max())
+        check(_peak > 1e-4, f"M-GEN-1/first-generation: {_rel} non-silent (peak={_peak:.4f})")
+        check(_sr == 44100, f"M-GEN-1/first-generation: {_rel} SR=44.1 kHz (got {_sr})")
+        check(_y.shape[1] == 2, f"M-GEN-1/first-generation: {_rel} stereo (got {_y.shape[1]} ch)")
+except Exception as _exc:
+    check(False, f"M-GEN-1/first-generation: soundfile inspection failed: {_exc}")
+
+# Scoring JSON contract: 8-key panel, 4 heuristics, ear prediction present with calibration sentinel.
+_scoring = WS / "data" / "gen" / "scoring_v1.json"
+if _scoring.is_file():
+    _sc = json.loads(_scoring.read_text())
+    _panel = _sc.get("texture_panel_bare_vs_effects", {})
+    _PANEL_KEYS = {"mel_l1_db", "spectral_centroid_rmse_hz", "rms_env_rmse",
+                   "lufs_m_rmse_lu", "embedding_cosine_distance",
+                   "embedding_rung", "sr_hz", "n_samples_compared"}
+    check(set(_panel.keys()) == _PANEL_KEYS,
+          f"M-GEN-1/first-generation: panel returns exactly 8 keys (got {sorted(_panel.keys())})")
+    _heur = _sc.get("heuristics", {})
+    check(set(_heur.keys()) == {"melody_quality", "timbre_quality", "form_quality", "dynamics_quality"},
+          "M-GEN-1/first-generation: heuristics has all 4 mess-scale keys")
+    _ear = _sc.get("ear", {})
+    check(_ear.get("calibration") == "synthetic_labels_only",
+          "M-GEN-1/first-generation: ear result carries synthetic_labels_only calibration sentinel")
+    _pred = _ear.get("prediction")
+    check(isinstance(_pred, int) and 1 <= _pred <= 7,
+          f"M-GEN-1/first-generation: ear prediction is int in [1,7] (got {_pred!r})")
+
+# Provenance chain: exactly 6 stages present, each with input_shas and output_shas.
+_prov = WS / "data" / "gen" / "provenance_v1.jsonl"
+check(_prov.is_file(), "M-GEN-1/first-generation: data/gen/provenance_v1.jsonl present")
+if _prov.is_file():
+    _rows = [json.loads(ln) for ln in _prov.read_text().splitlines() if ln.strip()]
+    check(len(_rows) == 6, f"M-GEN-1/first-generation: provenance has exactly 6 stages (got {len(_rows)})")
+    _EXPECT_STAGES = ["sample_rules", "assemble_score", "xml_to_midi",
+                      "render_bare", "render_effects", "score_generation"]
+    check([r.get("stage") for r in _rows] == _EXPECT_STAGES,
+          "M-GEN-1/first-generation: provenance stages match canonical order")
+    for _r in _rows:
+        check(bool(_r.get("input_shas")) and bool(_r.get("output_shas")),
+              f"M-GEN-1/first-generation: stage {_r.get('stage')} has input+output SHAs")
+
+# Report + manifest present.
+check((WS / "docs" / "gen_first_generation_report.md").is_file(),
+      "M-GEN-1/first-generation: docs/gen_first_generation_report.md present")
+
+
+# =========================================================================
+# §22. M-INGEST-1/breadth-second-seeds invariants (fork 00b3ae64444c clone 1)
+# =========================================================================
+# Contract invariants for the pipeline-breadth cycle. Static / light-runtime
+# only — no htdemucs, basic-pitch, fluidsynth, or panel calls (those are
+# covered by their own single-source-of-truth milestones and would multiply
+# CI wall-clock). Byte-determinism SHAs anchor per-seed reproducibility.
+
+import re as _re_bre
+
+# Script presence (§3 script-inventory contract).
+for _name in ("__init__.py", "enumerate_seeds.py", "run_seed.py",
+              "summarize.py", "plot_summary.py"):
+    _p = WS / "scripts" / "breadth" / _name
+    check(_p.is_file(), f"M-INGEST-1/breadth-second-seeds: scripts/breadth/{_name} present")
+
+# Interpreter guard on every runnable script (excluding __init__).
+for _name in ("enumerate_seeds.py", "run_seed.py", "summarize.py", "plot_summary.py"):
+    _text = (WS / "scripts" / "breadth" / _name).read_text(encoding="utf-8")
+    check("assert sys.executable == '/usr/bin/python3'" in _text
+          or 'assert sys.executable == "/usr/bin/python3"' in _text,
+          f"M-INGEST-1/breadth-second-seeds: {_name} carries /usr/bin/python3 guard")
+
+# Non-factor AST isolation: no sidecar_nonfactor imports at line start.
+_bre_pat = _re_bre.compile(r"^(from|import) .*sidecar_nonfactor", _re_bre.MULTILINE)
+for _name in ("enumerate_seeds.py", "run_seed.py", "summarize.py", "plot_summary.py"):
+    _text = (WS / "scripts" / "breadth" / _name).read_text(encoding="utf-8")
+    check(not _bre_pat.search(_text),
+          f"M-INGEST-1/breadth-second-seeds: {_name} does NOT import sidecar_nonfactor at line start")
+
+# Per-seed artifact set present.
+for _seed in ("seed_mid_50s", "synth_060s"):
+    _sd = WS / "data" / "breadth" / _seed
+    for _sub in ("original.wav", "stems/drums.wav", "stems/bass.wav",
+                 "stems/other.wav", "stems/vocals.wav",
+                 "transcriptions/drums.mid", "transcriptions/bass.mid",
+                 "transcriptions/other.mid",
+                 "merged.mid", "merged.musicxml", "bare_midi.wav",
+                 "panel.tsv", "stage_manifest.jsonl", "summary.json"):
+        _p = _sd / _sub
+        check(_p.is_file(),
+              f"M-INGEST-1/breadth-second-seeds: {_seed}/{_sub} present")
+
+# summary.tsv + seed_enumeration.tsv + determinism_baselines.txt present.
+for _n in ("summary.tsv", "seed_enumeration.tsv", "determinism_baselines.txt"):
+    _p = WS / "data" / "breadth" / _n
+    check(_p.is_file(), f"M-INGEST-1/breadth-second-seeds: data/breadth/{_n} present")
+
+# Report + figure present.
+check((WS / "docs" / "pipeline_breadth_report.md").is_file(),
+      "M-INGEST-1/breadth-second-seeds: docs/pipeline_breadth_report.md present")
+check((WS / "docs" / "figures" / "pipeline_breadth_panel.png").is_file(),
+      "M-INGEST-1/breadth-second-seeds: docs/figures/pipeline_breadth_panel.png present")
+
+# Per-seed panel 8-key contract on the panel.tsv header.
+_panel_keys = {"a_stage", "b_stage", "mel_l1_db", "spectral_centroid_rmse_hz",
+               "rms_env_rmse", "lufs_m_rmse_lu", "embedding_cosine_distance",
+               "embedding_rung", "sr_hz", "n_samples_compared"}
+for _seed in ("seed_mid_50s", "synth_060s"):
+    _tsv = WS / "data" / "breadth" / _seed / "panel.tsv"
+    if _tsv.is_file():
+        _hdr = _tsv.read_text().splitlines()[0].split("\t")
+        check(set(_hdr) == _panel_keys,
+              f"M-INGEST-1/breadth-second-seeds: {_seed} panel.tsv has exact 10 columns "
+              f"(a_stage, b_stage + 8 panel keys)")
+
+# Byte-determinism SHA anchors (frozen from clone-1 run).
+_bre_shas = {
+    "seed_mid_50s/original.wav":               "1d8eca66",
+    "seed_mid_50s/stems/drums.wav":            "bddfea47",
+    "seed_mid_50s/stems/bass.wav":             "1f533f48",
+    "seed_mid_50s/stems/other.wav":            "8220e311",
+    "seed_mid_50s/transcriptions/drums.mid":   "71ffce62",
+    "seed_mid_50s/transcriptions/bass.mid":    "209e0a02",
+    "seed_mid_50s/transcriptions/other.mid":   "38c70a5b",
+    "seed_mid_50s/merged.mid":                 "a48242f4",
+    "seed_mid_50s/bare_midi.wav":              "cea3e3b4",
+    "seed_mid_50s/panel.tsv":                  "b10d2a0c",
+    "synth_060s/original.wav":                 "9c64045c",
+    "synth_060s/stems/drums.wav":              "05db247a",
+    "synth_060s/stems/bass.wav":               "32ad1be5",
+    "synth_060s/stems/other.wav":              "15915ffd",
+    "synth_060s/transcriptions/drums.mid":     "4b1e68e5",
+    "synth_060s/transcriptions/bass.mid":      "82ba631f",
+    "synth_060s/transcriptions/other.mid":     "236e2e15",
+    "synth_060s/merged.mid":                   "60c88c24",
+    "synth_060s/bare_midi.wav":                "07a9d0b7",
+    "synth_060s/panel.tsv":                    "cc0acb5f",
+}
+import hashlib as _hs_bre
+for _rel, _sha8 in _bre_shas.items():
+    _p = WS / "data" / "breadth" / _rel
+    if _p.is_file():
+        _got = _hs_bre.sha256(_p.read_bytes()).hexdigest()
+        check(_got.startswith(_sha8),
+              f"M-INGEST-1/breadth-second-seeds: {_rel} SHA-256 anchor "
+              f"(got {_got[:8]}..., expected {_sha8}...)")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
