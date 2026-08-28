@@ -1,136 +1,121 @@
 ---
-title: "Music-Gen — M-INGEST-1/breadth-second-seeds (cycle 1, fork 00b3ae64444c, clone 1)"
+title: "Music-Gen — `_infra/fanout-concat-hardening` (cycle 1, fork ed041ef4c1dc, clone 1)"
 date: "2026-08-28"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — M-INGEST-1/breadth-second-seeds (cycle 1, fork 00b3ae64444c, clone 1)
+# Music-Gen — `_infra/fanout-concat-hardening` (cycle 1, fork ed041ef4c1dc, clone 1)
 
 ## Abstract
 
-Cycle 1 of clone 1 exercised the eight-stage Music-Gen pipeline (chunker → prepare-audio → M-CLASS-1 → M-SEP-1 htdemucs → M-TRANS-1 basic-pitch → M-SCORE-1 merge_stems_to_score → render_bare_midi → M-TEX-1 panel) end-to-end on two additional seeds beyond the cycle-9 `synth_030s` baseline, chosen to maximise informational contrast within the on-disk corpus: `seed_mid_50s` (50 s / 22 050 Hz mono / pure-sine content) and `synth_060s` (60 s / 44 100 Hz stereo / fluidsynth ground-truth). Both seeds passed 8/8 stages with per-seed byte-determinism verified across two independent runs (24 / 24 SHA-256 anchors matched on the twelve frozen contract artefacts × two seeds), and the cross-seed panel comparison yields genuine variation that reveals the pipeline is correctly content-discriminating rather than content-agnostic. The verdict is **`validated/medium`** under the brief's explicit downgrade rule for the corpus state: no non-synth audio is on disk (the 80-song rated corpus remains a metadata-only registration behind the egress deny of `*.googlevideo.com`), so pipeline generalisation is demonstrated across `seed_id` and across two provenance sub-classes (`synth_seed_gen` vs `synth_ground_truth`) but *not* across the natural-recording ↔ synth boundary. All eight artefact classes (WAV, per-stem WAV × 4, per-stem MIDI × 3, merged MIDI, merged MusicXML, bare-MIDI render, panel TSV) are byte-stable per seed under the campaign's single-thread BLAS + `torch.manual_seed(0)` + TF-deterministic-ops contract. Cross-branch integration test §22 (per-seed SHA-256 anchors and breadth-invariant checks) is green.
+Cycle 1 of clone 1 closed the last drift surface on the campaign's ledger-write side by tightening the fanout concat seam so every merged row now validates against the cycle-10 SSoT `_ledger_schema.validate_event` and every candidate stream enforces per-milestone timestamp monotonic ordering with a content-hash tiebreak on `ts` collision. A typed `LedgerConcatError` subclass of `LedgerSchemaError` is raised on drift with field-named messages, and the public API surface `(workspace: Path, fork_dir: Path) -> int` on `long_exposure.workspace_bootstrap.concat_clone_ledgers` (the actual seam — the brief's `long_exposure.tools.fanout._concat_clone_ledgers` was a renamed reference the worker handled by documenting the discrepancy rather than fabricating a module) is byte-preserved. All ten sufficiency criteria pass under the auditor's live re-verification: 222 existing ledger rows pass the tightened concat with zero schema grandfathering; the two documented drift patterns (missing `event_id` from cycle 10's ad-hoc emitter; per-milestone `ts` ordering fault from cycle 11) are rejected at concat time with specific messages; concat is idempotent (re-running produces byte-identical output via atomic `os.replace`); no caller-side signature changed across cycles 1–11; and every existing worker-side test suite remains green (writer 13/13, integration 587 PASS, only a single pre-existing unrelated `M-RULES-1/extraction: provenance 28/76 resolvable` FAIL that predates this branch). A new `tests/test_fanout_concat_validation.py` (341 lines, 10 named cases) runs cleanly under three PYTHONPATH invocation flavors via the mandatory `_LE_PARENT` `sys.path` shim, closing the recurring cycles 10/11 lesson.
 
 ## Introduction
 
-By the end of cycle 9 the pipeline had been demonstrated end-to-end on exactly one seed — the 30 s fluidsynth-rendered M-SEP-1 ground-truth mix. That is a workable proof-of-life but a poor proof-of-generalisation: a chain that only ever runs on one input can silently encode assumptions about sample rate, channel count, note density, or content class that break on the second input. The brief for this branch asks the pipeline to be exercised on additional on-disk seeds and honestly reports what happens at each stage, without fabricating seeds or attempting the network fetches the workspace still refuses. The success bar was at least one additional seed (target two) passing end-to-end, byte-determinism per seed, panel numbers for original-vs-bare-MIDI on each seed compared against the baseline, and candid failure reporting per stage; the brief pre-authorises a `/medium` grade if all seeds available are synth-derived.
+The campaign's ledger-write side has been progressively hardened over three cycles: cycle 10 introduced the SSoT schema module `long_exposure/tools/_ledger_schema.py` and enforced it at the `append_ledger_event` call site (write-time), cycle 11 tightened the `promise_check` invariants so that the checker consumes the *same* module (`is`-identity of `REQUIRED_EVENT_FIELDS`), and this branch closes the remaining seam — the fanout concat step that folds a per-clone shadow ledger into the workspace root ledger during post-merge integration. Prior to this branch, `concat_clone_ledgers` performed a bytes-level append of the shadow rows without re-validating them, so a shadow ledger written by an ad-hoc emitter (cycle 10's raw-hex `event_id`) or a shadow ledger whose per-milestone rows were out of `ts` order (cycle 11's ordering fault) landed on the main ledger and produced post-merge repair debt one cycle later. The brief scoped this branch precisely to closing that seam. The success bar was tightening the concat seam without changing the public API, catching both documented drift patterns with field-named messages, preserving byte-determinism and idempotence, and re-verifying that no existing test suite regressed.
 
 ## Approach
 
-**Seed enumeration.** `scripts/breadth/enumerate_seeds.py` swept `corpus/seed/`, `corpus/ratings/`, `data/ingestion/seed/`, and `data/separation/synth_mix/` and wrote the full 18-row table to `data/breadth/seed_enumeration.tsv`. The provenance summary:
+The concat seam is `long_exposure.workspace_bootstrap.concat_clone_ledgers(workspace: Path, fork_dir: Path) -> int`. Two mechanics were folded in:
 
-| provenance_class | count | source |
-|---|---:|---|
-| `synth_seed_gen` | 3 | `data/ingestion/seed/` — CC-0 sines from `scripts/ingest/seed_gen.py`, mono 22 050 Hz, durations {22, 50, 87} s |
-| `synth_ground_truth` | 15 (5 × 3 mixes) | `data/separation/synth_mix/gt/` — fluidsynth-rendered stems and summed mix, 44.1 kHz stereo, durations {30, 60, 90} s |
-| `unknown` (real recording) | **0** | egress blocked; `corpus/ratings/` holds manifest TSVs only |
+- **Row-level SSoT validation.** Every candidate row read from a shadow ledger under `fork_dir` is passed through `_ledger_schema.validate_event` before being written to the main ledger. Validation failures raise `LedgerConcatError` (subclass of `LedgerSchemaError`, subclass of `ValueError`, MRO verified live by the auditor) with a field-named message pointing at the offending row. The write is transactional: `NamedTemporaryFile` + `fsync` + `os.replace` in the ledger's own directory, so a mid-concat failure leaves the prior main ledger byte-identical to its pre-call state.
+- **Per-milestone `ts` monotonicity with content-hash tiebreak.** Within the candidate stream, rows are grouped by `milestone_id` and asserted to be non-decreasing in `ts`; on exact `ts` collision the tiebreak is the SSoT `content_hash_tiebreak` helper (exported from `_ledger_schema` and imported by `workspace_bootstrap`) — *not* file line number, which was the specific mechanism cycle 11's bug. The invariant scope is candidate-stream-only: main ledger rows are grandfathered against monotonicity (see Discussion) but *not* against schema.
 
-No non-synth audio is on disk. Per the campaign's Fixed Decision that acquisition never blocks downstream work, the cycle proceeded on what is present.
-
-**Seed selection.** Priority order was (a) non-synth, (b) ≥ 30 s, (c) not the M-SEP-1 30 s baseline. With no (a) candidates available, (b) and (c) admit four seeds; the two picked were one from each provenance sub-class for maximum informational contrast: `seed_mid_50s` for the `synth_seed_gen` class (which exercises the sample-rate and upmix paths and tests classifier discrimination) and `synth_060s` for the `synth_ground_truth` class (content-family match with baseline, longer duration, tests pipeline stability under scaling on the same content class).
-
-**Orchestrator.** `scripts/breadth/run_seed.py` walks the eight stages, writes a per-seed `stage_manifest.jsonl` recording the SHA-256, elapsed time, and diagnostic notes for each stage, and drops all outputs into `data/breadth/<seed_id>/`. The interpreter guard `assert sys.executable == '/usr/bin/python3'` fires at import; basic-pitch is invoked in its quarantined venv (`workspace/basic_pitch_venv/bin/python3`) via subprocess with the cycle-6 environment pins passed in the child env; determinism relies on `torch.manual_seed(0)` for htdemucs, TF seed 0 in the basic-pitch venv, `librosa.resample(res_type='soxr_hq')` for the deterministic rate conversion, fluidsynth with the pinned SF2 SHA `74594e8f…1cb0`, `scipy.io.wavfile.write` for timestamp-free WAVs, and the M-SCORE-1 `_scrub_musicxml` for timestamp-free MusicXML.
+A new `_LE_PARENT` `sys.path` shim at the top of `tests/test_fanout_concat_validation.py` inserts the `long_exposure` package parent into `sys.path` under all three documented PYTHONPATH invocation flavors (`PYTHONPATH=.:/…`, `PYTHONPATH=/…:.`, `PYTHONPATH=/…`), closing the recurring cycles 10/11 lesson that new tests must remain runnable regardless of how the test harness is invoked. `docs/fanout_concat_hardening.md` (185 lines, 7 required sections: Pain-point, Contract, Drift-matrix, Test coverage, Full-ledger regression, Migration, Follow-up) ships as the branch's sole required output artefact.
 
 ## Findings
 
-### Per-seed pipeline pass table
+### Sufficiency-matrix verification (all ten criteria met)
 
-Both seeds passed 8/8 stages. Per-stage timing and diagnostics are recorded in each seed's `data/breadth/<seed_id>/stage_manifest.jsonl`.
+Auditor spot-verified live in workspace:
 
-| Stage | seed_mid_50s | synth_060s |
-|---|---|---|
-| chunker | ✅ 2 clips (30 s + 30–50 s anchored tail) | ✅ 3 clips (0–30, 25–55, 30–60 s anchored tail) |
-| prepare_audio | ✅ mono → stereo (L=R), 22 050 → 44 100 via soxr HQ | ✅ 44 100 stereo pass-through |
-| classifier (M-CLASS-1) | ✅ `Sine wave` p = 0.9431 | ✅ `Music` p = 0.8770 |
-| htdemucs (M-SEP-1) | ✅ peaks drums=0.256, bass=0.132, other=0.545, vocals=0.048 | ✅ peaks drums=0.443, bass=0.309, other=0.361, vocals=0.023 |
-| basic-pitch (M-TRANS-1) | ✅ 55 drums / 80 bass / 10 other notes | ✅ 57 drums / 60 bass / 194 other notes |
-| merge_stems_to_score (M-SCORE-1) | ✅ 3 stems merged | ✅ 3 stems merged |
-| render_bare_midi (M-TEX-1) | ✅ peak = 0.470, 2 205 000 samples | ✅ peak = 0.503, 2 646 000 samples |
-| texture_panel (M-TEX-1/panel) | ✅ 8 keys finite, VGGish rung | ✅ 8 keys finite, VGGish rung |
+| Criterion | Evidence |
+|---|---|
+| Concat seam located and modified in place; public API unchanged | `inspect.signature(concat_clone_ledgers)` returns `(workspace: Path, fork_dir: Path) -> int` |
+| `LedgerConcatError(LedgerSchemaError)` — real subclass, MRO verified | `issubclass(LedgerConcatError, LedgerSchemaError)` and `issubclass(LedgerConcatError, ValueError)` both True |
+| All existing ledger rows pass tightened concat with no schema grandfathering | Case 8 + live re-verification 228 rows |
+| Two documented drift patterns rejected with field-named messages | Case 2 (missing `event_id`, cycle-10 pattern) + Case 5 (per-milestone `ts` monotonicity, cycle-11 pattern) |
+| Concat byte-deterministic and idempotent | Cases 6 + 7 + live dogfood on real shadow ledger (4 rows first run, 0 rows second) |
+| All existing worker-side test suites remain green | Writer 13/13; integration 587 PASS (1 pre-existing unrelated FAIL) |
+| New test file runnable in 3 PYTHONPATH flavors via `_LE_PARENT` shim | All three flavors 10/10 |
+| SSoT `is`-identity check | `promise_check.REQUIRED_EVENT_FIELDS is _ledger_schema.REQUIRED_EVENT_FIELDS` |
+| `docs/fanout_concat_hardening.md` with all 7 required sections | Grep confirms all 7 headers |
+| `_infra/fanout-concat-hardening` registered in `plan_of_record.md` 5-column Milestones table | Ledger events resolve; no plan-file drift ERROR |
 
-### Panel numbers across seeds + baseline
+### Drift-matrix
 
-Original-vs-bare-MIDI panel from `data/breadth/summary.tsv`:
+| Drift | Origin | Detection at concat | Message field |
+|---|---|---|---|
+| Missing `event_id` | cycle 10 ad-hoc emitter | `validate_event` rejects on missing required field | `event_id` |
+| Missing `status` / `narrative` | cycle 10 pre-hardening drift | `validate_event` rejects | `status`, `narrative` |
+| Missing `confidence.rationale` | cycle 10 pre-hardening drift | `validate_event` rejects | `confidence.rationale` |
+| Non-canonical `confidence` shape (bare string) | cycle 10 pre-hardening drift | `validate_event` rejects | `confidence` |
+| Per-milestone `ts` decrease | cycle 11 ordering fault | monotonicity check rejects | `ts` + `milestone_id` |
+| `ts` collision without content-hash tiebreak | cycle 11 mechanism | `content_hash_tiebreak` reorders deterministically or rejects | `event_id` |
 
-| seed_id | mel_l1_db | sc_rmse_hz | rms_env_rmse | lufs_m_rmse_lu | embed_cos | rung | provenance |
-|---|---:|---:|---:|---:|---:|:---:|---|
-| **synth_030s** (baseline, cycle 9) | **9.906** | **2804.9** | **0.02759** | **2.682** | **0.1234** | vggish | synth_ground_truth |
-| synth_060s (this cycle) | 10.755 | 2764.9 | 0.02887 | 2.843 | 0.1619 | vggish | synth_ground_truth |
-| seed_mid_50s (this cycle) | 15.808 | 601.0 | 0.30918 | 20.837 | 0.1593 | vggish | synth_seed_gen |
+### The one honest carve-out (§5 of the docs)
 
-![Original-vs-bare-MIDI texture panel per seed (grouped bars, one panel per family, no aggregate)](docs/figures/pipeline_breadth_panel.png)
+Applying the tightened per-milestone-file-order `ts` monotonicity retroactively to the main ledger *as a candidate stream* surfaces 7 pre-existing cycle-1-era violations plus 11 `ts` collisions. The worker resolved this by scoping the monotonicity invariant to the candidate stream only: main ledger rows are grandfathered against monotonicity but *not* against schema (all 222 rows pass schema; live-verified). This matches real tool usage — no fan-out re-ingests the main ledger as a candidate — avoids the fabricate-repair-`ts` trap that cycle 11 fell into, and preserves the brief's "no schema grandfathering" rule. The auditor's judgment on this: "invariant working, not a defect", documented transparently in §5.
 
-Reading the table:
+### Test coverage
 
-- **`synth_060s` vs `synth_030s` baseline (same content family, 2× duration).** Mel L1 drifts +8.6 %, spectral centroid RMSE −1.4 %, RMS-env RMSE +4.6 %, LUFS-M RMSE +6.0 %, embedding cosine +31 %. The three energy/spectral metrics track the baseline closely — a stability check the pipeline passes. The larger embedding drift is consistent with VGGish's known sensitivity to duration-dependent global summarisation (`mean_over_frames` is not scale-invariant when the underlying content distribution shifts even slightly between mixes).
-- **`seed_mid_50s` vs `synth_030s` baseline (disjoint content class).** Every metric diverges dramatically. Spectral centroid RMSE *drops* from 2 805 Hz to 601 Hz because the seed is pure sines and its bare-MIDI transcription is also near-tonal, so both spectra concentrate in narrow bands and the RMSE between two narrow-band spectra is small. Mel L1 goes the other way (+60 %) because it is a log-domain L1 that rewards spectral overlap, and the sine → basic-pitch → SF2-render chain deposits energy in mel bands outside the seed's tone. LUFS-M RMSE is 7.8× the baseline because bare-MIDI from GM piano at velocity 60–80 is much louder than the −7 dBFS sines. RMS-env RMSE = 0.309 is the largest divergence in the table — a *feature* of the panel, not a bug — because pure sines have `seed_gen.py`'s per-note attack-decay envelope while SF2 piano samples have a hard attack and long decay tail, and RMS envelope is directly sensitive to that attack-shape mismatch.
+`tests/test_fanout_concat_validation.py` — 10 named cases, all PASS in each of three PYTHONPATH flavors: (1) empty fork; (2) missing `event_id`; (3) missing `status`; (4) missing `narrative` and nested `confidence.rationale`; (5) per-milestone `ts` decrease; (6) byte-determinism across two runs; (7) idempotence (second run appends zero rows); (8) all 222 existing ledger rows re-validate cleanly under the tightened concat with no schema grandfathering; (9) `LedgerConcatError` real subclass of `LedgerSchemaError`; (10) SSoT `is`-identity between `promise_check.REQUIRED_EVENT_FIELDS` and `_ledger_schema.REQUIRED_EVENT_FIELDS`.
 
-**Family-disagreement recurrence.** On `synth_060s` three of the four numeric metrics sit within 10 % of the baseline while VGGish embedding cosine drifts 31 %. This is a milder but real recurrence of the cycle-9 family-disagreement finding on M-TEX-1/stage-by-stage (where envelope + mel-L1 ranked one direction and VGGish inverted), and it reinforces the panel's aggregation-refusal design: the families genuinely carry different information about the original ↔ bare-MIDI relationship.
+Cross-branch integration test §24 adds 4 checks including per-milestone monotonicity behaviour on the candidate stream and the `is`-identity assertion; all live-verified PASS.
 
-### Byte-determinism
+### Validators at branch exit
 
-Two independent runs of `scripts/breadth/run_seed.py` (out-dirs `data/breadth/<seed>/` vs `stale/breadth_determinism/_det/<seed>/`) produce SHA-256-identical outputs on 12 frozen contract artefacts × 2 seeds. Result: **24 / 24 PASS**, table at `data/breadth/determinism_baselines.txt`. Per-seed short SHA-256 prefixes:
-
-| Artefact | seed_mid_50s | synth_060s |
-|---|---|---|
-| `original.wav` | 1d8eca66 | 9c64045c |
-| `stems/drums.wav` | bddfea47 | 05db247a |
-| `stems/bass.wav` | 1f533f48 | 32ad1be5 |
-| `stems/other.wav` | 8220e311 | 15915ffd |
-| `stems/vocals.wav` | 9c68c415 | 716e3c6f |
-| `transcriptions/drums.mid` | 71ffce62 | 4b1e68e5 |
-| `transcriptions/bass.mid` | 209e0a02 | 82ba631f |
-| `transcriptions/other.mid` | 38c70a5b | 236e2e15 |
-| `merged.mid` | a48242f4 | 60c88c24 |
-| `merged.musicxml` | e86da1f2 | 9b88ca1b |
-| `bare_midi.wav` | cea3e3b4 | 07a9d0b7 |
-| `panel.tsv` | b10d2a0c | cc0acb5f |
-
-Cross-branch integration test §22 re-verifies these SHAs at test time (not just at generation time) and passes with zero failures. The AST scan for `sidecar_nonfactor` across `scripts/breadth/` returns empty.
-
-### Honest failure reporting
-
-No stage failed on either selected seed. The `/medium` cap is a corpus fact, not a stage-level defect. Two "quiet passes worth calling out" are named on the report:
-
-- **htdemucs on pure sines (`seed_mid_50s`).** The model produced four non-silent stems, but the energy distribution is heavily skewed to `other` (peak 0.545) and away from drums, bass, and vocals (0.256, 0.132, 0.048). This is the model doing the correct thing on atypical content — a sinusoid has no drum transients, no bass fundamental in htdemucs's bass band, and no vocal formants — but "non-silent" is a low bar for calling the split informative. A follow-up cycle could add a SI-SDR-vs-mixture baseline to catch pathologically-thin separations.
-- **basic-pitch on pure sines (`seed_mid_50s`).** The seed content is a decaying C-E-G triad repeated over 50 s, so the ground-truth note count is O(30); basic-pitch emitted 55 + 80 + 10 = 145 notes, ≈ 5× the truth. This is the same octave-doubling artefact identified in cycle 8 (`M-TRANS-1/basic-pitch/octave-suppression`, closed `invalidated/high`); do **not** re-attempt octave-suppression on this data. The anti-pattern lock is binding.
+- `promise_check`: 0 ERRORs, 26 pre-existing WARNs, zero new WARNs introduced by this branch except one MINOR orphan-artifact WARN on `tests/test_fanout_concat_validation.py` that clears automatically at fork-conductor merge under the shadow-ledger collapse pattern.
+- `org_check`: zero new WARNs from this branch.
 
 ## Discussion
 
-Two things about this branch are worth naming. First, the classifier discrimination (`Sine wave` p = 0.94 vs `Music` p = 0.88) plus the panel-metric divergence between `seed_mid_50s` and the baseline together falsify the "content-agnostic extractor" hypothesis the research brief posed as one of its Key Questions. The pipeline is doing content-appropriate things at every stage — the sine seed correctly gets classified as a sine, correctly routes most of its energy to `other` under htdemucs, correctly produces a bare-MIDI render whose RMS envelope is very different from the seed's, and correctly reports that difference as a large RMS-env RMSE. The panel is signal-preserving; it is not smoothing over content class.
+Two things about this branch are worth naming.
 
-Second, the `/medium` verdict is a textbook application of the brief's own downgrade rubric rather than a hedge. Every additional bit of engineering that could tighten this branch further — a richer separation baseline, more elaborate panel weighting, a longer basic-pitch grid — would produce numbers that do not answer the question the corpus limitation forces open. The single missing axis is natural-recording provenance, and that is governed by the egress boundary, not by any code the campaign has authored. The value-add of a real-audio arrival grows with each cycle that pre-wires the automation: `scripts/breadth/run_seed.py` is a drop-in-ready orchestrator for the moment `M-INGEST-1/egress-ready-automation` fires, and no code change is required to point it at a newly-arrived audio path.
+First, the tightening now completes the ledger-write triangle. Cycle 10 hardened the emit surface (`append_ledger_event` calls `validate_event` before write, catching missing `event_id` / `status` / `narrative` / `confidence.rationale` at the boundary). Cycle 11 hardened the check surface (`promise_check` consumes the same SSoT module rather than a duplicated field list, catching schema drift between the checker and the writer). This branch hardens the concat surface (`concat_clone_ledgers` validates every candidate row before appending, catching pre-hardening drift or renegade shadow-side emitters). All three surfaces now route through the same SSoT `_ledger_schema` module, and `is`-identity of `REQUIRED_EVENT_FIELDS` holds across all three. A future drift can only enter the ledger through a caller that bypasses all three surfaces, which the campaign's tooling makes progressively harder — the `_repair_and_emit_*` direct-append pattern from cycle 10 is now the only remaining bypass, and its retirement is queued as a §7 follow-up.
 
-The natural cheapest follow-up to widen the M-RULES-1 corpus without new audio is to run the rules extractor over the two new merged MusicXMLs (`data/breadth/seed_mid_50s/merged.musicxml` and `data/breadth/synth_060s/merged.musicxml`), emitting `M-RULES-1/extraction/breadth-<seed_id>` per seed. Both files are on disk and consumable by `scripts/rules/extract/from_score.py` with no code change; this is called out in the auditor's guidance and is the recommended next follow-up.
+Second, the honest handling of the retroactive-monotonicity carve-out is the discipline that made cycles 10 and 11 recoverable and now makes cycle 12 clean. When cycle 11 attempted to fabricate a repair for its own `ts` ordering drift, the repair itself introduced new drift; the lesson was that append-only ledgers cannot re-order rows without breaking their append-only contract, and any monotonicity invariant must be scoped to streams that have not yet been appended. This branch scopes exactly there — candidate-stream only — and surfaces the pre-existing main-ledger violations as a positive finding in §5 rather than manufacturing a fake repair. The invariant works; the historical rows retain their audit trail; the future rows are constrained tighter than the past. That asymmetry is the append-only ledger's honest reality.
+
+The recurring pattern that the brief's expected module name is not always the actual seam name (cycle 10, cycle 11, and now cycle 12: brief said `long_exposure.tools.fanout._concat_clone_ledgers`; actual is `long_exposure.workspace_bootstrap.concat_clone_ledgers`) is worth registering as a small correctness-of-briefs concern for future cycles — the worker handled it correctly here by documenting the discrepancy rather than fabricating a `long_exposure.tools.fanout` module, but a cheap defence would be a pre-flight brief-linter that resolves every seam name against the actual module tree before the researcher's cycle even fires.
 
 ## Open Questions
 
-- **Rules extraction per breadth seed.** Cheapest way to widen the M-RULES-1 corpus without new audio; both merged MusicXMLs are on disk.
-- **SI-SDR-vs-mixture baseline on M-SEP-1.** Would catch pathologically-thin htdemucs splits on atypical content classes like pure sines, without requiring re-training.
-- **`/high` promotion.** Blocked entirely on natural-recording audio arrival. When `M-INGEST-1/egress-ready-automation` fires, the same `run_seed.py` orchestrator can be pointed at any newly-arrived audio path with zero code change.
-- **VGGish `mean_over_frames` scale-sensitivity.** The 31 % embedding cosine drift between `synth_030s` and `synth_060s` under otherwise-matched content is a known artefact of the global summarisation; a CLAP-rung swap on M-TEX-1/panel/embedding remains the orthogonal path to a more scale-invariant perceptual measure.
-- **Shadow-ledger adoption at post-merge integration.** `_infra/adopt-fanout-artifacts-m-ingest-1-breadth-second-seeds` covering `data/breadth/**`, `docs/pipeline_breadth_report.md`, `docs/figures/pipeline_breadth_panel.png`, `scripts/breadth/*.py`, and the §22 integration-test delta.
+Branch scope is genuinely exhausted. All ten sufficiency criteria pass under independent live re-verification; the honest carve-out is transparently documented; the follow-ups belong to future cycles:
+
+- **Retire the `_repair_and_emit_*` direct-append callers** so the concat, emit, and check surfaces are the only three ways a row enters the ledger. Queued in §7 of the docs.
+- **Tighten manually-set `event_id` against content-hash mismatch.** A row whose `event_id` does not derive from its own content is currently accepted; catching that at concat time is the next legibility win.
+- **Multi-fork parallel concat race.** The atomic `os.replace` protects the write, but two concurrent concat calls on the same workspace with disjoint fork directories currently have no cross-lock; low priority, no known live occurrence.
+- **Pre-flight brief-linter** that resolves every named seam against the actual module tree before the researcher fires (the recurring cycles-10/11/12 lesson).
+
+The suggested next research direction for the fork's next cycle is *not* this milestone; it is either `M-EAR-1/training-loop` armed-harness follow-through, `M-INGEST-1/breadth-second-seeds` continuation, or the deferred `_repair_and_emit_*` audit if plan-of-record cleanliness is prioritised. This branch does not need to be re-opened.
 
 ## Appendix: Provenance
 
-**Cycle range:** cycle 1 of fork `00b3ae64444c`, clone 1.
+**Cycle range:** cycle 1 of fork `ed041ef4c1dc`, clone 1.
 **Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** researcher `ed73c585-23ab-449c-9562-8a3ac46e5887`, worker `4d1aea55-0e21-43e0-ac6d-78fe877a7bb6`, auditor `44175d82-39e4-43ff-96a8-4084644a6b86`.
-**Auditor verdict:** **VALIDATED** at grade `/medium` under the brief's explicit downgrade rule for the on-disk corpus state.
+**Session references:** researcher `b1a99d47-7d78-4c5c-b3df-4532291a64fc`, worker `2703c070-3f84-4339-928e-596684aef14a`, auditor `4bba1416-da3b-4976-9e82-7ff95e786e36`.
+**Auditor verdict:** **VALIDATED**. Sub-milestone `_infra/fanout-concat-hardening` closes at `validated/high`.
 
 **Deliverables on disk:**
 
-- Code: `scripts/breadth/{enumerate_seeds.py, run_seed.py, …}` — interpreter-guarded, zero `sidecar_nonfactor` imports (AST-verified).
-- Data: `data/breadth/{seed_mid_50s, synth_060s}/{original.wav, stems/{drums,bass,other,vocals}.wav, transcriptions/{drums,bass,other}.{mid,jsonl}, merged.{mid,musicxml}, bare_midi.wav, panel.tsv, stage_manifest.jsonl, classification.json, clips/*.wav}`; `data/breadth/{summary.tsv, seed_enumeration.tsv, determinism_baselines.txt}`.
-- Figure: `docs/figures/pipeline_breadth_panel.png` (113 521 B).
-- Report: `docs/pipeline_breadth_report.md` (281 lines, 9 sections).
-- Test: `tests/test_integration_cross_branch.py §22` — per-seed SHA-256 anchors + breadth invariants; 0 failures.
+- Code: seam tightening in `long_exposure/workspace_bootstrap.py` (`concat_clone_ledgers` now invokes `_ledger_schema.validate_event`, enforces per-milestone `ts` monotonicity with `content_hash_tiebreak`, raises `LedgerConcatError(LedgerSchemaError)` with field-named messages, writes atomically via `NamedTemporaryFile` + `fsync` + `os.replace`); `LedgerConcatError` and `content_hash_tiebreak` added to `long_exposure/tools/_ledger_schema.py` and re-exported to `workspace_bootstrap`.
+- Test: `tests/test_fanout_concat_validation.py` (341 lines, 10 named cases; `_LE_PARENT` `sys.path` shim at file head; runnable under all three documented PYTHONPATH invocation flavors).
+- Cross-branch integration test §24: 4 checks including per-milestone monotonicity on the candidate stream and the `is`-identity assertion.
+- Documentation: `docs/fanout_concat_hardening.md` (185 lines, 7 required sections — Pain-point, Contract, Drift-matrix, Test coverage, Full-ledger regression, Migration, Follow-up).
+- Plan of record: `_infra/fanout-concat-hardening` registered in the 5-column Milestones table.
 
-**Environment stack unchanged since cycle 9:** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`; htdemucs via `torch.manual_seed(0)`; VGGish rung on the texture panel; DawDreamer + Surge XT for effects (not exercised here). Single-thread BLAS pins throughout.
+**Test state at branch exit:** `tests/test_fanout_concat_validation.py` 10/10 PASS × 3 PYTHONPATH flavors. `tests/test_ledger_writer_validation.py` 13/13 PASS (writer regression clean). `tests/test_integration_cross_branch.py` 587 PASS (one pre-existing unrelated `M-RULES-1/extraction: provenance 28/76 resolvable` FAIL that predates this branch and traces to the cycle-12 breadth expansion's provenance-resolution surface).
 
-**Ledger routing.** Closure events landed in the per-clone shadow ledger at `/home/user/music-gen-instance/fork-00b3ae64444c/clone-1/promise_ledger.jsonl`; workspace `promise_check` shows ~55 orphan-artifact WARNs on the new files. Clears at post-merge integration under the standard `_infra/adopt-fanout-artifacts-m-ingest-1-breadth-second-seeds` pattern from cycles 3, 5, 7. `org_check` shows a WARN for the figure under `docs/figures/`, consistent with the campaign convention (`rules_extraction_coverage.png`, `tex_stage_by_stage_families.png`, `gen_first_generation_provenance.png`).
+**Public API preserved.** `inspect.signature(concat_clone_ledgers)` returns `(workspace: Path, fork_dir: Path) -> int` byte-for-byte with cycles 1–11. Zero caller-side changes across the campaign.
 
-**Handoff.** Merge report written to `/home/user/music-gen-instance/fork-00b3ae64444c/clone-1/merge_report.md`. The recommended next research step is either the standard post-merge integration for fork `00b3ae64444c` (adopt the breadth artefacts and re-run `promise_check`) or the cheap follow-up of running `scripts/rules/extract/from_score.py` over the two new merged MusicXMLs to widen the M-RULES-1 corpus without new audio.
+**SSoT identity verified live.** `promise_check.REQUIRED_EVENT_FIELDS is _ledger_schema.REQUIRED_EVENT_FIELDS` returns True (emit + check + concat now consume the same schema module).
+
+**Ledger routing.** Closure event `_infra/fanout-concat-hardening` written to the per-clone shadow ledger at `/home/user/music-gen-instance/fork-ed041ef4c1dc/clone-1/promise_ledger.jsonl` with the new test file listed in the `artifacts` field. The single MINOR `promise_check` orphan-artifact WARN on `tests/test_fanout_concat_validation.py` clears automatically when the fork conductor collapses the shadow ledger via this branch's own tightened concat — which is a satisfying dogfood confirmation of the transparent-migration claim.
+
+**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout.
+
+**Handoff.** Merge report written to `/home/user/music-gen-instance/fork-ed041ef4c1dc/clone-1/merge_report.md`. The fork conductor should collapse the shadow ledger via the tightened concat (dogfooding — proves the transparent-migration claim on live traffic) and verify the `tests/test_fanout_concat_validation.py` orphan-artifact WARN clears post-merge.
 
 <verdict>validated</verdict>
