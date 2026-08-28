@@ -650,6 +650,169 @@ if _er_report.is_file():
         check(_sec in _rtext, f"M-INGEST-1/egress-ready: report has {_sec!r}")
 
 
+# §18. M-RULES-1/extraction invariants (fork f1bae241bde9 clone 0)
+_ext_dir = WS / "scripts" / "rules" / "extract"
+for _mod in ("__init__.py", "_common.py", "from_score.py",
+             "harmonic.py", "rhythmic.py", "melodic.py",
+             "form.py", "arrangement.py", "plot_coverage.py"):
+    check((_ext_dir / _mod).is_file(),
+          f"M-RULES-1/extraction: module {_mod} present")
+
+# Interpreter guard on every non-__init__ module.
+import re as _re_rules
+_guard_pat = _re_rules.compile(r'sys\.executable\s*==\s*"/usr/bin/python3"')
+for _mod in ("_common.py", "from_score.py", "harmonic.py", "rhythmic.py",
+             "melodic.py", "form.py", "arrangement.py", "plot_coverage.py"):
+    _p = _ext_dir / _mod
+    if _p.is_file():
+        check(bool(_guard_pat.search(_p.read_text(encoding="utf-8"))),
+              f"M-RULES-1/extraction: {_mod} has /usr/bin/python3 guard")
+
+# Non-factor AST isolation (line-start match).
+_nf_pat = _re_rules.compile(r"^\s*(?:from|import)\s+scripts\.classifier\.sidecar_nonfactor",
+                            _re_rules.MULTILINE)
+for _p in sorted(_ext_dir.glob("*.py")):
+    _hits = _nf_pat.findall(_p.read_text(encoding="utf-8"))
+    check(len(_hits) == 0,
+          f"M-RULES-1/extraction: {_p.name} has 0 sidecar_nonfactor imports")
+
+# Test suite runs green.
+import subprocess as _sub_rules
+import os as _os_rules
+_res = _sub_rules.run(
+    ["/usr/bin/python3", str(WS / "tests" / "test_rules_extraction.py")],
+    env={**_os_rules.environ, "PYTHONPATH": str(WS)},
+    capture_output=True, text=True, timeout=180,
+)
+check(_res.returncode == 0,
+      f"M-RULES-1/extraction: test_rules_extraction.py exits 0 (got {_res.returncode})")
+
+# Ledger + deliverables present.
+_lp = WS / "data" / "rules" / "ledger.jsonl"
+check(_lp.is_file(), "M-RULES-1/extraction: data/rules/ledger.jsonl present")
+if _lp.is_file():
+    _n_rows = sum(1 for _ln in _lp.read_text(encoding="utf-8").splitlines() if _ln.strip())
+    check(_n_rows >= 25, f"M-RULES-1/extraction: ledger has {_n_rows} rows (>=25)")
+
+_report = WS / "docs" / "rules_extraction_report.md"
+check(_report.is_file(), "M-RULES-1/extraction: docs/rules_extraction_report.md present")
+_fig = WS / "docs" / "figures" / "rules_extraction_coverage.png"
+check(_fig.is_file(), "M-RULES-1/extraction: coverage figure present")
+
+# Determinism re-run: build in a temp ledger and confirm rule_id set unchanged.
+if str(WS) not in sys.path:
+    sys.path.insert(0, str(WS))
+from scripts.rules.extract.from_score import run as _rules_run
+import tempfile as _tf_rules, hashlib as _hs_rules
+with _tf_rules.TemporaryDirectory() as _td:
+    _a = Path(_td) / "a.jsonl"
+    _b = Path(_td) / "b.jsonl"
+    _s1 = _rules_run(ledger_path=_a)
+    _s2 = _rules_run(ledger_path=_b)
+    check(_s1["rule_ids"] == _s2["rule_ids"],
+          "M-RULES-1/extraction: determinism: rule_id sequences equal across runs")
+    check(_hs_rules.sha256(_a.read_bytes()).hexdigest() ==
+          _hs_rules.sha256(_b.read_bytes()).hexdigest(),
+          "M-RULES-1/extraction: determinism: ledger files byte-identical")
+
+
+# §19. M-TEX-1/stage-by-stage invariants (fork f1bae241bde9 clone 1)
+# Script presence.
+_tex_scripts = [
+    WS / "scripts" / "tex" / "render_bare_midi.py",
+    WS / "scripts" / "tex" / "render_effects_layered.py",
+    WS / "scripts" / "tex" / "measure_across_stages.py",
+    WS / "scripts" / "tex" / "stage_by_stage.py",
+    WS / "scripts" / "tex" / "plot_stage_by_stage.py",
+]
+for _p in _tex_scripts:
+    check(_p.is_file(), f"M-TEX-1/stage-by-stage: {_p.relative_to(WS)} present")
+
+# Interpreter guard on each new script.
+for _p in _tex_scripts:
+    if _p.is_file():
+        _txt = _p.read_text(encoding="utf-8")
+        check("sys.executable == \"/usr/bin/python3\"" in _txt,
+              f"M-TEX-1/stage-by-stage: {_p.name} interpreter-guarded")
+
+# Non-factor AST isolation across scripts/tex/.
+import re as _re_tex
+_bad = []
+for _p in (WS / "scripts" / "tex").glob("*.py"):
+    for _ln in _p.read_text(encoding="utf-8").splitlines():
+        if _re_tex.match(r"^\s*(from|import)\s+.*sidecar_nonfactor", _ln):
+            _bad.append(f"{_p.name}:{_ln}")
+check(not _bad, f"M-TEX-1/stage-by-stage: non-factor AST isolation preserved ({_bad})")
+
+# 8-key panel contract preserved end-to-end via TSV header shape.
+_tsv = WS / "data" / "tex" / "stage_by_stage_synth_030s.tsv"
+check(_tsv.is_file(), "M-TEX-1/stage-by-stage: TSV present at data/tex/stage_by_stage_synth_030s.tsv")
+if _tsv.is_file():
+    _rows_tex = [ln for ln in _tsv.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    check(len(_rows_tex) == 4,
+          f"M-TEX-1/stage-by-stage: TSV has 4 lines (1 header + 3 pairs), got {len(_rows_tex)}")
+    _header = _rows_tex[0].split("\t")
+    _expected_cols = [
+        "a_stage", "b_stage",
+        "mel_l1_db", "spectral_centroid_rmse_hz",
+        "rms_env_rmse", "lufs_m_rmse_lu",
+        "embedding_cosine_distance", "embedding_rung",
+        "sr_hz", "n_samples_compared",
+    ]
+    check(_header == _expected_cols,
+          f"M-TEX-1/stage-by-stage: TSV header matches 8-key contract "
+          f"(got {_header})")
+    for banned in ("overall", "combined", "aggregate", "mean_score", "weighted", "total"):
+        check(banned not in _header,
+              f"M-TEX-1/stage-by-stage: no banned aggregate column '{banned}' in TSV")
+    # 24 numeric cells finite.
+    import math as _math_tex
+    _numeric_cols = ["mel_l1_db", "spectral_centroid_rmse_hz", "rms_env_rmse",
+                     "lufs_m_rmse_lu", "embedding_cosine_distance"]
+    _n_finite = 0
+    for _row in _rows_tex[1:]:
+        _vals = dict(zip(_header, _row.split("\t")))
+        for _k in _numeric_cols:
+            _v = float(_vals[_k])
+            if _math_tex.isfinite(_v):
+                _n_finite += 1
+    check(_n_finite == 15,
+          f"M-TEX-1/stage-by-stage: 15 numeric cells finite (3 pairs × 5 numeric keys), got {_n_finite}")
+
+# Byte-determinism SHA reproduction on all three stage WAVs.
+_render_dir = WS / "data" / "tex" / "renders" / "synth_030s"
+_expected_shas = {
+    "original.wav":        "153997a829f2b42c57c48730500c3e61aa5a9a46e7c1624e1bf63acef3222ac6",
+    "bare_midi.wav":       "fc8c3eccbff073d2399210845fc06a0802508d0dd53ef831da7f6c788eb6aadd",
+    "effects_layered.wav": "13d7238637d1ee31420ede73934a1ed98282f92084c0151ea1576461678e3e9a",
+}
+import hashlib as _hs_tex
+for _name, _sha in _expected_shas.items():
+    _p = _render_dir / _name
+    check(_p.is_file(), f"M-TEX-1/stage-by-stage: {_p.relative_to(WS)} present")
+    if _p.is_file():
+        _got = _hs_tex.sha256(_p.read_bytes()).hexdigest()
+        check(_got == _sha,
+              f"M-TEX-1/stage-by-stage: {_name} SHA-256 matches determinism baseline "
+              f"(got {_got[:16]}..., expected {_sha[:16]}...)")
+
+# TSV byte-determinism SHA.
+if _tsv.is_file():
+    _expected_tsv_sha = "b3570a795c8c3e7a5f59ddefbd20096e8221cabef8d4d1fad5a621a3ba0fece2"
+    _got_tsv = _hs_tex.sha256(_tsv.read_bytes()).hexdigest()
+    check(_got_tsv == _expected_tsv_sha,
+          f"M-TEX-1/stage-by-stage: TSV SHA-256 matches determinism baseline "
+          f"(got {_got_tsv[:16]}...)")
+
+# Report + figure present.
+_tex_report = WS / "docs" / "tex_stage_by_stage_report.md"
+check(_tex_report.is_file(),
+      "M-TEX-1/stage-by-stage: docs/tex_stage_by_stage_report.md present")
+_tex_fig = WS / "docs" / "figures" / "tex_stage_by_stage_families.png"
+check(_tex_fig.is_file(),
+      "M-TEX-1/stage-by-stage: docs/figures/tex_stage_by_stage_families.png present")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

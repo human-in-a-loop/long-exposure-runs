@@ -1,0 +1,4 @@
+a_stage	b_stage	mel_l1_db	spectral_centroid_rmse_hz	rms_env_rmse	lufs_m_rmse_lu	embedding_cosine_distance	embedding_rung	sr_hz	n_samples_compared
+original	bare_midi	9.90605927	2804.9113	0.027585797	2.68216133	0.123415341	vggish	44100	1323000
+original	effects_layered	10.9374558	2743.48942	0.04875011	5.37231541	0.0951316701	vggish	44100	1323000
+bare_midi	effects_layered	6.53297249	211.788932	0.0449221246	5.41356421	0.0671502517	vggish	44100	1323000

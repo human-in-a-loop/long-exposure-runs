@@ -1,0 +1,18 @@
+{
+  "duration_s": 30.0,
+  "effects_rung": "dawdreamer",
+  "merged_midi_path": "data/score/merged_synth030s.mid",
+  "merged_midi_sha256": "a2124b613164dd5c5008a6796cd0e3503437423205677e2c5835f7e72640be54",
+  "original_is_synth_caveat": true,
+  "seed_id": "synth_030s",
+  "sf2_path": "/usr/share/sounds/sf2/FluidR3_GM.sf2",
+  "sf2_sha256": "74594e8f4250680adf590507a306655a299935343583256f3b722c48a1bc1cb0",
+  "sr_hz": 44100,
+  "stage_sha256": {
+    "bare_midi": "fc8c3eccbff073d2399210845fc06a0802508d0dd53ef831da7f6c788eb6aadd",
+    "effects_layered": "13d7238637d1ee31420ede73934a1ed98282f92084c0151ea1576461678e3e9a",
+    "original": "153997a829f2b42c57c48730500c3e61aa5a9a46e7c1624e1bf63acef3222ac6"
+  },
+  "tsv_path": "tmp_audit/measure.tsv",
+  "tsv_sha256": "b3570a795c8c3e7a5f59ddefbd20096e8221cabef8d4d1fad5a621a3ba0fece2"
+}
