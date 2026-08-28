@@ -585,6 +585,52 @@ def test_21_state_transitions_frozenset_shape():
         assert not errs, f"validate_history flagged the historical ledger: {errs[:3]}"
 
 
+# ------------------------------------------------------------------ cycle-29 archived-emitter backfill
+
+def test_22_archived_emitter_resolves_workspace_root_from_stale():
+    """Case 22 (cycle-29): the archived cycle-28 emitter under tools/stale/
+    must resolve the workspace root (the directory containing
+    promise_ledger.jsonl) rather than tools/ (which its previous
+    `Path(__file__).resolve().parent.parent` produced when invoked
+    from tools/stale/).
+
+    Regression for the shadow-ledger writer bug documented in the
+    cycle-28 handoff.
+    """
+    import importlib.util as _iu
+
+    workspace = Path("/home/user/long-exposure-runs/music-gen")
+    emitter = workspace / "tools" / "stale" / "_emit_cycle28_events.py"
+    assert emitter.exists(), f"archived emitter missing at {emitter}"
+
+    src = emitter.read_text()
+    # No naive parent.parent module-level ROOT expression.
+    assert "pathlib.Path(__file__).resolve().parent.parent" not in src, (
+        "archived emitter still contains the cycle-28 parent.parent bug"
+    )
+    # A walk-up helper is present.
+    assert "_find_workspace_root" in src, (
+        "archived emitter missing _find_workspace_root walk-up helper"
+    )
+    assert "promise_ledger.jsonl" in src, (
+        "archived emitter missing promise_ledger.jsonl marker check"
+    )
+
+    # Import the module in isolation and confirm its resolved root is the
+    # workspace root, not tools/.
+    spec = _iu.spec_from_file_location("_emit_cycle28_events_c29test", str(emitter))
+    mod = _iu.module_from_spec(spec)  # type: ignore[arg-type]
+    assert spec is not None and spec.loader is not None
+    spec.loader.exec_module(mod)  # type: ignore[attr-defined]
+    resolved = Path(mod._HERE).resolve()
+    assert resolved == workspace, (
+        f"archived emitter resolved workspace to {resolved} (expected {workspace})"
+    )
+    assert (resolved / "promise_ledger.jsonl").exists(), (
+        f"resolved root {resolved} lacks promise_ledger.jsonl"
+    )
+
+
 # ------------------------------------------------------------------ runner
 
 TESTS = [
@@ -612,6 +658,8 @@ TESTS = [
         test_20_transition_reopened_bridge_accepted),
     ("test_21_state_transitions_frozenset_shape",
         test_21_state_transitions_frozenset_shape),
+    ("test_22_archived_emitter_resolves_workspace_root_from_stale",
+        test_22_archived_emitter_resolves_workspace_root_from_stale),
 ]
 
 

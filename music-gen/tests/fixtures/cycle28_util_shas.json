@@ -15,6 +15,14 @@
     "shape_mechanism_fit.json": "ca13f7088a39f3558dce3d21d9b2f40d1d26c307a59f371bdb6efb711166b42a",
     "shape_mechanism_verdict.json": "0cc4bd9045be9c0c7276f7295b3a9ac3ab3f88b642070529b4ebd2338840e598"
   },
+  "cycle_28_utilities": {
+    "plot_shape_mechanism_scatter.py": "5cde2b4e57b09ce75c0d2187727211f1a52f1800c4a4ae15abefb9a2969737bb",
+    "hash_uniformity_per_rule_type.py": "69a3b4e5f416e530c0654f2be398d34453e2e4089b0caa984d9d4d9086b893b7",
+    "effective_k_hash.py": "1c3d2c38326cf7cda81d47df0ad4c8dc161ef5d07326c25b547bdc16425a0928",
+    "hash_geometry_fit.py": "cd55c564358dff7249f70b49a9ea7bc47a035077bf03e507ddfe5f074fb58e35",
+    "hash_geometry_verdict.py": "7f4df338299c96371fe50291bb774c9a92feb7b59df9e3d8f68b01f65bb413bf",
+    "anchor_preservation_hash.py": "7dfe85dba4760f1a0444e965d8cb792d2af739d1838129abcf0bba6672f3ba76"
+  },
   "frozen_batch_shas_cycle26_baseline": {
     "data/gen/batch_v1": "b052",
     "data/gen/batch_v2": "be57",

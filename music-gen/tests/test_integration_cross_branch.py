@@ -3023,6 +3023,95 @@ for _fig in ("docs/figures/shape_mechanism_M1_correction.png",
     check(_fp.is_file() and _fp.stat().st_size > 4096,
           f"hash-geom §40h: figure present and non-trivial: {_fig}")
 
+# §41. Cycle-28 utility SHA anchor guard — cycle 29 adjudication read-only invariant.
+print()
+print("§41 cycle-28 hash-geometry utilities are byte-identical to committed hashes (cycle 29)")
+
+import hashlib as _hl41
+import json as _json41
+
+_HASH_UTIL_FIXTURE = WS / "tests" / "fixtures" / "cycle28_util_shas.json"
+if _HASH_UTIL_FIXTURE.is_file():
+    _base41 = _json41.loads(_HASH_UTIL_FIXTURE.read_text())
+    _cycle28_scripts = (
+        "plot_shape_mechanism_scatter.py",
+        "hash_uniformity_per_rule_type.py",
+        "effective_k_hash.py",
+        "hash_geometry_fit.py",
+        "hash_geometry_verdict.py",
+        "anchor_preservation_hash.py",
+    )
+    # We asserted cycle-26/27 utility anchors in §40b. §41 anchors the cycle-28
+    # hash-geometry utilities themselves — they are read-only for cycle-29.
+    _cycle28_util_shas = _base41.get("cycle_28_utilities")
+    if _cycle28_util_shas is None:
+        # Backfill from live filesystem on first run (baseline for future cycles).
+        # NOTE: we don't rewrite the fixture here — worker step wrote it — but we
+        # tolerate absence gracefully.
+        for _s in _cycle28_scripts:
+            _p = WS / "scripts" / "analysis" / _s
+            check(_p.is_file(), f"hash-adjud §41: {_s} present (no anchor recorded)")
+    else:
+        for _name, _expect in _cycle28_util_shas.items():
+            _p41 = WS / "scripts" / "analysis" / _name
+            _got41 = _hl41.sha256(_p41.read_bytes()).hexdigest() if _p41.is_file() else "<missing>"
+            check(
+                _got41 == _expect,
+                f"hash-adjud §41: cycle-28 utility {_name} SHA unchanged"
+            )
+
+# §42. Cycle-29 hash-geometry adjudication verdict — frozen enum.
+print()
+print("§42 hash-geometry adjudication verdict is one of the frozen labels (cycle 29)")
+
+_ADJ_VERDICT = WS / "data" / "collision_model" / "hash_geometry_adjudication_verdict.json"
+check(_ADJ_VERDICT.is_file(), "hash-adjud §42a: adjudication verdict JSON present")
+if _ADJ_VERDICT.is_file():
+    _av = _json41.loads(_ADJ_VERDICT.read_text())
+    check(
+        _av.get("verdict") in ("M3_STANDS", "M3_COLLAPSES_TO_REFUTES", "MIXED"),
+        f"hash-adjud §42b: verdict in frozen set (got {_av.get('verdict')!r})"
+    )
+    # Rubric hash present and non-empty.
+    _rh = _av.get("rubric_hash", "")
+    check(len(_rh) == 64 and all(c in "0123456789abcdef" for c in _rh),
+          "hash-adjud §42c: rubric_hash is 64-hex SHA-256")
+    # Alpha still pinned.
+    check(abs(float(_av.get("alpha_pinned", 0)) - 0.7469387071101908) < 1e-12,
+          f"hash-adjud §42d: alpha pinned at cycle-26 value (got {_av.get('alpha_pinned')})")
+    # Three input JSONs referenced.
+    _inputs = _av.get("inputs", {})
+    for _k in ("multiple_testing_correction", "drop_batch_v2_sensitivity", "leave_one_cell_out"):
+        check(_k in _inputs, f"hash-adjud §42e: verdict references input {_k}")
+
+# All four adjudication JSON outputs are present.
+for _p in (
+    "data/collision_model/multiple_testing_correction.json",
+    "data/collision_model/drop_batch_v2_sensitivity.json",
+    "data/collision_model/leave_one_cell_out.json",
+    "data/collision_model/hash_geometry_adjudication_verdict.json",
+):
+    check((WS / _p).is_file(), f"hash-adjud §42f: {_p} exists")
+
+# Rubric doc present.
+check(
+    (WS / "docs" / "collision_model_hash_space_geometry_adjudication_rubric.md").is_file(),
+    "hash-adjud §42g: frozen rubric doc committed"
+)
+
+# Adjudication scripts present + interpreter guard.
+for _rel in (
+    "scripts/analysis/multiple_testing_correction.py",
+    "scripts/analysis/drop_batch_v2_sensitivity.py",
+    "scripts/analysis/leave_one_cell_out_contribution.py",
+    "scripts/analysis/hash_geometry_adjudication_verdict.py",
+):
+    _p = WS / _rel
+    check(_p.is_file(), f"hash-adjud §42h: script present: {_rel}")
+    if _p.is_file():
+        _src = _p.read_text()
+        check("/usr/bin/python3" in _src, f"hash-adjud §42h: interpreter guard in {_rel}")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
