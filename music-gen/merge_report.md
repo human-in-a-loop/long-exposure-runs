@@ -1,184 +1,243 @@
 ---
-created: 2026-08-28T15:00:40Z
-cycle: 12
+created: 2026-08-28T15:20:40Z
+cycle: 13
 run_id: run-2026-08-28T040704Z
 agent: worker
-milestone: _run/post-merge-integration-fork-ed041ef4c1dc
-supersedes: fork-ddd71e9bdb0e capstone (cycle 11)
+milestone: _run/post-merge-integration-fork-54a6c185816e
+supersedes: fork-ed041ef4c1dc capstone (cycle 12)
 ---
 
-# Post-Merge Integration Report — fork ed041ef4c1dc (cycle 12)
+# Post-Merge Integration Report — fork 54a6c185816e (cycle 13)
 
 ## Fanout outcome
 
 Three clones landed. Zero cross-branch file-tree overlap; each clone
-wrote under a disjoint subtree and the hardened concat (delivered by
-clone-1) validated every merged row at collapse time.
+wrote under a disjoint subtree and the cycle-12 hardened concat
+validated every merged row at collapse time.
 
-| Clone | Milestone                              | Verdict          | Deliverable                                    |
-|-------|----------------------------------------|------------------|------------------------------------------------|
-| 0     | M-RULES-1/extraction/breadth-seeds     | validated/high   | docs/rules_extraction_breadth_report.md        |
-| 1     | _infra/fanout-concat-hardening         | validated/high   | docs/fanout_concat_hardening.md                |
-| 2     | M-DAW-SPIKE-1/gap-closure              | validated/medium | docs/daw_spike_gap_closure_report.md           |
+| Clone | Milestone                                                    | Verdict          | Deliverable                                                    |
+|-------|--------------------------------------------------------------|------------------|----------------------------------------------------------------|
+| 0     | M-GEN-1/batch-v2 + M-GEN-1/salt4-diagnostic                  | validated/high   | docs/gen_batch_v2_report.md                                    |
+| 1     | M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation         | validated/medium | docs/daw_spike_gap2_dawdreamer_closure_report.md               |
+| 2     | M-TEX-1/stage-by-stage widening (seed_mid_50s, synth_060s)   | validated/high   | docs/tex_stage_by_stage_widening_report.md                     |
 
 ## Per-clone summary
 
-### Clone 0 — M-RULES-1/extraction/breadth-seeds
+### Clone 0 — M-GEN-1/batch-v2 (+ salt=4 diagnostic)
 
-Cycle-9 rule extractors (harmonic, rhythmic, melodic, form,
-arrangement) run over the two M-INGEST-1/breadth-second-seeds merged
-MusicXML scores (`seed_mid_50s`, `synth_060s`). **48 new typed rule
-rows appended** (24 per seed) to `data/rules/ledger.jsonl`, growing
-the ledger 28 → **76 rows** — 3× the ≥15-row target.
+Cycle-11 sampler + coherence gate + render pipeline expanded to 8
+salts (0..7) on the cycle-12-expanded 76-row rules ledger. All 59
+output files byte-deterministic × 2. Salt=0 anchors pinned on the
+76-row ledger (harmonic `rule_0271c7a9f3b5f606`, rhythmic
+`rule_88b63bd5e771c045`, melodic `rule_daf022a4051dff00`, form
+`rule_8e6c38d5397fb898`, arrangement `rule_51d59f03c4f09e1a`); the
+frozen batch-v1 `sampling_manifest.json` is untouched (§21 anchor
+block reads it and passes).
 
-Regression contract preserved bit-for-bit: the prefix-28 SHA-256 of
-the post-expansion ledger equals the cycle-9 anchor
-`4fe722adde034c099ff9e65437f0d5c138cb3dd2595089960150af5c2546fc4b`.
-Post-expansion whole-ledger SHA:
-`a6fd53e9bf9a10f6885888b0bb7d11a9a2aa97007e38ef0e6d47f4ef7d2857ae`.
+**Salt=4 diagnostic verdict: `no_material_pattern`.** The cycle-12
+N=5 salt=4 signal (75% of residual collision pairs) was small-N noise.
+At N=8: salt=4 collision-endpoint share 13.6% vs uniform 12.5%
+(z=+0.14). Salt=1 now leads (5 endpoints), driven by the harmonic
+4-clique {0,1,5,6} sharing `rule_0271c7a9f3b5f606` (F_major cycle-9
+anchor). No attribution path (hash-space, arrangement-structural,
+coherence-gate) crosses its threshold — an honest null result rather
+than a forced root cause.
 
-Extractor-side coercions added via a `NullWithReason` helper on
-`scripts/rules/extract/_common.py` without touching the schema.
-Eight `null-with-reason: insufficient-progression` entries recorded
-(measure-scope harmonic on `unique_chords=1` windows) — honest
-coercion, not fabrication.
+**Collision-floor finding.** Total pairs at N=8 = 11, within 2% of
+the constant-per-pair-rate scaling from cycle-12
+(4 × C(8,2)/C(5,2) = 11.2). **The collision floor is set by rule-type
+structural diversity, NOT corpus size.** Cycle-12's 28→76 expansion
+did not reduce per-pair collision rate; the harmonic 4-clique remains
+because a single rule (the cycle-9 F_major anchor) covers all four
+salts. Cycle-14 lever: synthesize a third breadth seed in a different
+mode (D_minor) to shatter the clique.
 
-**Mechanical unlock hit**: the cycle-11-flagged (salt 1, salt 4)
-arrangement collision resolves — rule_id changes from
-`rule_b75cc391f671037a` under both salts pre-expansion to two
-distinct rule_ids post-expansion. Overall salt-collision pair count
-drops 5 → 4 (sub-proportional to the 3× pool growth; three of four
-residual pairs involve salt = 4, flagged as a research finding for
-cycle 13).
+### Clone 1 — M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation
 
-### Clone 1 — _infra/fanout-concat-hardening
+DawDreamer `set_automation` on Surge XT Effects VST3 param 10 (Output
+Mix), 3-point curve 0.0→0.7→0.2 over 10s @ 44.1kHz stereo,
+byte-deterministic × 2. **Verdict: redefined-GAP (validated/medium).**
+`env_correlation` vs a piecewise-fixed reference = 0.487, below the
+PRIMARY 0.9 threshold — but `auto_vs_flat_max_sample_diff` = 0.072
+(>> 1e-4 automation-silently-ignored bar) and `curve_vs_envelope`
+delta = 0.357 (≥ 0.30 SECONDARY shape-drive bar). The API path
+works and drives the parameter; the brief Pearson test is not
+diagnostic on the Surge XT delay preset (Output Mix inversely
+correlates with mono RMS envelope, weakening Pearson against a step
+reference).
 
-`long_exposure.workspace_bootstrap.concat_clone_ledgers` tightened
-to route every merged row through the SSoT
-`_ledger_schema.validate_event`, enforce per-candidate-milestone
-monotonic file-order timestamps, sort merged events per milestone
-by `(ts, content_hash_tiebreak)`, and write atomically via temp +
-`os.replace`. Typed `LedgerConcatError` (real subclass of
-`LedgerSchemaError`) with field-named messages on drift. Public API
-signature unchanged.
+Sharper diagnosis carried forward: DawDreamer 0.9.0
+`make_plugin_processor` fails uniformly on LV2 ("Unable to load
+plugin"). VST3 is the only working automation path. Cycle-9 pinned
+DawDreamer chain grep-verified untouched.
 
-Test coverage: `tests/test_fanout_concat_validation.py` — 10 named
-cases pass in all 3 documented invocation flavors. Cross-branch
-test extended with §24 (7 concat-hardening invariants).
+Coverage matrix v3 emitted at `data/daw_spike/coverage_matrix_v3.json`
+(v2 unmodified). SHA anchors for the four gap2_v3 WAVs pinned in §26
+of the cross-branch test.
 
-Honest finding surfaced (report §5): 7 pre-existing cycle-1-era
-file-order ts monotonicity violations across M-INGEST-1 milestones
-and 2 `_run/clone-*-scope-complete` milestones are detected when
-the current ledger is fed as a *candidate* stream to the hardened
-concat. Main ledger content is grandfathered against monotonicity
-(schema is not — 220+/220+ pass validation); the invariant applies
-to candidate streams, which matches the tool's actual use pattern.
-Recurrence prevented for all future fanout collapses.
+### Clone 2 — M-TEX-1/stage-by-stage widening
 
-### Clone 2 — M-DAW-SPIKE-1/gap-closure
+Cycle-9 stage-by-stage panel (1 seed = synth_030s) widened to two
+additional breadth seeds (`seed_mid_50s`, `synth_060s`). 3 seeds ×
+3 ordered pairs × 8 panel keys = **72 panel numbers**, all finite,
+all byte-deterministic × 2. Self-distance guard held on every seed
+(numeric ≤ 1e-6, embedding ≤ 1e-4). Cycle-9 `synth_030s` TSV
+byte-identical (regression preserved). Cycle-9 pinned DawDreamer
+chain composed verbatim — new content is only the input-selection
+layer.
 
-Cycle-3 coverage matrix (6 GREEN / 1 PARTIAL / 2 GAP) advanced to
-**cycle-12 (8 GREEN / 1 PARTIAL / 0 GAP / 1 redefined-GAP)** on
-`data/daw_spike/coverage_matrix_v2.json`; heatmap at
-`docs/figures/daw_spike_coverage_v2.png`.
+**Interpretive verdict: content-dependent family disagreement.**
+Family disagreement is preserved on every seed (aggregation-refusal
+design commitment upheld), but the *direction* of the VGGish
+inversion is content-dependent:
 
-| GAP  | Fallback exercised                          | Verdict         | Evidence                                             |
-|------|---------------------------------------------|-----------------|------------------------------------------------------|
-| GAP-1 | Fluidsynth pre-render + hand-authored Source/Region/Playlist audio-region XML | **redefined-GAP** | env_correlation = 1.000, peak_ratio_db = 0.00 dB (gap1_midi_import_measurement.json) |
-| GAP-2 | Replace Surge XT Effects VST3 reverb with ACE Reverb LV2 (a-reverb.lv2); author wet-mix automation | **still-GAP with sharper diagnosis** | second/first RMS ratio = 1.0000 vs cycle-1 baseline 2.05 / DawDreamer reference 2.46 (gap2_lv2_measurement.json). Ardour Lua `plugin_automation()` fails on LV2 as well as VST3 — gap is broader than cycle-1's VST3-scoped diagnosis. |
+- Polyphonic seeds (`synth_030s`, `synth_060s`): 4/5 metrics rank
+  bare closer to original; VGGish embedding inverts (effects closer).
+  The cycle-9 signal PERSISTS on the second polyphonic seed.
+- Monophonic decaying-triad (`seed_mid_50s`): spectral says effects
+  closer; envelope RMS ties; LUFS-M and VGGish invert the inversion
+  (bare closer). The chain's linear 0.25→1.4 gain ramp fights the
+  natural amplitude decay of sine content.
 
-Parent `M-DAW-SPIKE-1` remains validated/high per cycle 3; this
-cycle updates axis-level detail only.
+Legitimate aggregation-refusal support: no single metric ranks pairs
+correctly across all three seeds; no seed has all five metrics in
+agreement. A single-number aggregate would erase this signal.
 
-## Post-merge actions taken
+## Cross-branch integration verification
 
-Five rollup capstone events emitted via the hardened
-`workspace_bootstrap.append_ledger_event()`:
+`tests/test_integration_cross_branch.py` — **PASS (0 failures)**.
+Cycle-13 additions:
 
-1. `_infra/adopt-fanout-artifacts-m-daw-spike-1-cycle12` — validated/high (adopts the Ardour session-tree files clone-2 flagged as orphans in its post-merge note).
-2. `_plan/register-post-merge-integration-fork-ed041ef4c1dc` — validated/high.
-3. `_infra/cross-branch-integration-test-cycle12` — validated/high (verification pass; test extensions attributed to clone events).
-4. `_run/post-merge-integration-fork-ed041ef4c1dc` — validated/high (capstone).
-5. `_archive/integration-scratch-fork-ed041ef4c1dc` — validated/high (drives `tools/stale/_integrate_fork_ed041ef4c1dc.py`; supersedes the cycle-11 fork-ddd71e9bdb0e driver).
+- §25 (clone-0): 46 M-GEN-1/batch-v2 invariants — 8 song trees, salt=0
+  anchor block, salt=4 verdict enumeration, collision-analysis shape,
+  PYTHONHASHSEED discipline, figure/report presence.
+- §26 (clone-1): M-DAW-SPIKE-1/gap-closure/gap2-dawdreamer-automation
+  invariants — 4 WAV SHA anchors, coverage_v3 shape, negative-attestation
+  import checks, ledger event presence. Clone-2's post-merge note
+  flagged a potential §26 self-substring-match false positive on the
+  negative-attestation docstring — the check passes cleanly in the
+  integration environment, so no source fix was needed.
+- §27 (clone-2): 33 M-TEX-1/stage-by-stage widening invariants —
+  per-seed byte-determinism SHAs, cycle-9 regression preservation,
+  self-distance contracts, 8-key panel shape.
 
-No plan-of-record drift required: clone-1 and clone-2 registered
-their milestone rows in `plan_of_record.md` directly during their
-branches; clone-0's `M-RULES-1/extraction/breadth-seeds` row was
-registered in cycle 12 (pre-fork).
+Other suites re-verified post-merge: `test_fanout_concat_validation.py`
+10/10 pass; `test_ledger_writer_validation.py` 13/13 pass.
 
-## Environment state (unchanged from cycle 11)
+## Integration-time repairs
 
-- `torch 2.13.0+cpu`
-- `torchvision 0.28.0` (with `torch.library.register_fake` no-op workaround for `torchvision::nms`)
-- `numpy 1.26.4` (M-CLASS-1 downgrade accepted cycle 6)
-- `basic-pitch 0.4.0` quarantined at `workspace/basic_pitch_venv`
-- `music21 9.1.0`, `mscore3 3.2.3` headless, `mir_eval 0.8.2`
-- Single-thread BLAS pins throughout
-- Egress: still blocked per `corpus/CORPUS_STATUS.md`;
-  `workspace/harvest_playlists.sh` retry mechanism established in
-  earlier cycles (M-INGEST-1/egress-ready-automation state machine
-  will fire training + rating pipelines unattended on two consecutive
-  `media_ok=true` egress-status rows).
+Two ledger repairs were required at integration entry before
+`promise_check` and the driver could run cleanly:
 
-## Anti-patterns preserved (do not re-attempt without new information)
+1. **Line 266 (clone-1 `_archive/gap2-dawdreamer-scratch`) —**
+   `supersedes_path` was emitted as a JSON list (`["tools/_dd_probe.py",
+   "tools/_dd_probe2.py", "tools/_emit_gap2_v3_events.py"]`) rather than
+   a string. Every other row in the ledger uses string form.
+   `promise_check._canon` crashed with `AttributeError: 'list' object has
+   no attribute 'lstrip'`. The cycle-12 hardened `concat_clone_ledgers`
+   did not catch it — the SSoT `_ledger_schema.validate_event` does not
+   type-check `supersedes_path`. Repair: rewrote the field in place to a
+   single string (`"tools/_emit_gap2_v3_events.py"`); the other two
+   archived paths remain listed in the event's `artifacts` field, so no
+   provenance information is lost. Cycle-14 hardening opportunity:
+   extend the SSoT validator to reject list-form `supersedes_path` at
+   emit and concat time.
 
-- `M-TRANS-1/basic-pitch/octave-suppression` — invalidated/high (cycle 8): true achievable aggregate uplift +0.15 under the spec's single-pass rule, below the +0.3 success bar.
-- `M-TEX-1/panel/embedding` — invalidated/medium (cycle 11): CLAP unreachable at HF SSL cert (rung 1.2); VGGish rung live as fallback.
+2. **Line 250 (clone-2 `M-TEX-1/stage-by-stage` kickoff) —** status
+   was emitted as `in-progress` immediately after cycle-9's
+   `validated/high` roll-up. `promise_check` errored: transition
+   validated → in-progress requires an intervening `reopened` event. The
+   event's own narrative reads "this event marks reopening under the
+   widening sub-scope", so the status was the wrong keyword. Repair:
+   rewrote status to `reopened`. No other fields changed.
 
-## Handoff to next cycle (researcher)
+Both repairs follow the campaign anti-pattern precedent recorded in
+cycle 8 (`M-TRANS-1/basic-pitch/octave-suppression`: "reconstructed at
+post-merge integration; original shadow-ledger schema was flat").
 
-Highest-value follow-ups surfaced by this fanout:
+## Rollup ledger events (6 emitted)
 
-1. **Cycle-13 batch-v2 rerun on the 76-row ledger.** The live salt=0
-   selection will change for melodic / form / arrangement on the
-   expanded ledger (cycle-11 batch-v1 anchors remain pinned in a
-   saved `sampling_manifest.json` and §23 of the cross-branch
-   integration test still passes reading that JSON). Cycle 13 must
-   expect and document this — it is not a bug.
-2. **Salt=4 over-representation probe.** Three of four post-expansion
-   collision pairs involve salt = 4. Salts 5..9 on the 76-row
-   ledger, plus a non-F_major seed to move the structural-diversity
-   axis, would distinguish "hash-space geometry for small-N pools"
-   from "salt = 4 specifically maps unfavourably in this rule
-   space".
-3. **Structural-diversity bottleneck hypothesis.** 3× pool growth
-   produced only ~20 % collision-rate reduction; probe by adding a
-   non-F_major seed with different instrumentation.
-4. **GAP-2 fallback #1 remains open**: read `libs/ardour/plugin_insert.cc`
-   for the missing Lua-side automation-arming call. Cycle-12's
-   fallback #2 established the gap is broader than cycle-1's
-   VST3-scoped diagnosis, so this fallback becomes more valuable.
-5. **DawDreamer plugin-catalog breadth-probe** (with torchvision
-   workaround live): Dragonfly / MVerb / LSP LV2 reverbs could seed
-   a `M-GEN-1/batch-v2+` effects chain disjoint from the cycle-9
-   pinned chain.
-6. **GAP-1 XML schema promotion**: the audio-region fragment in
-   `scripts/daw_spike/gap_closure_midi_import.py` is stable enough
-   to promote to `scripts/daw_spike/ardour_region_xml.py` when a
-   second call-site needs it.
-7. **CLAP question open**: does CLAP flip/reinforce/blur VGGish's
-   family-disagreement signal on the cycle-9 triplet and the
-   cycle-10 `synth_060s` pair? Blocked until egress unblock or a
-   pre-seeded `roberta-base` cache.
-8. **M-EAR-1 parent milestone rollup**: baseline WARN since cycle 6.
-   All sub-milestones validated; parent roll-up event pending —
-   researcher/auditor call whether to roll up now or wait for
-   live-armed training.
+Ledger grew 268 → 274 rows:
 
-## Load-bearing anchors
+1. `_infra/adopt-fanout-artifacts-m-gen-1-batch-v2` — adopts 7 orphan
+   `data/ear/features/gen_first_gen_*.npz` per-song ear-scoring feature
+   caches (clone-0).
+2. `_infra/adopt-fanout-artifacts-m-daw-spike-1-gap-closure-cycle13`
+   — adopts 5 files under `scripts/daw_spike/gap2_v3/` including the
+   previously-orphan `__init__.py` (clone-1).
+3. `_plan/register-post-merge-integration-fork-54a6c185816e` — records
+   the integration cycle. No plan-of-record drift: all cycle-13
+   milestone rows were added by the clones themselves.
+4. `_infra/cross-branch-integration-test-cycle13` — records post-merge
+   verification of §25/§26/§27 extensions.
+5. `_run/post-merge-integration-fork-54a6c185816e` — capstone (this
+   report + the 3 clone reports).
+6. `_archive/integration-scratch-fork-54a6c185816e` — self-archives
+   the driver to `tools/stale/`; supersedes fork-`ed041ef4c1dc`
+   integration driver (already stale).
 
-```
-head -28 data/rules/ledger.jsonl | sha256sum
-→ 4fe722adde034c099ff9e65437f0d5c138cb3dd2595089960150af5c2546fc4b   (cycle-9 anchor, preserved)
+## Final validator state
 
-sha256sum data/rules/ledger.jsonl
-→ a6fd53e9bf9a10f6885888b0bb7d11a9a2aa97007e38ef0e6d47f4ef7d2857ae   (post-expansion)
-```
+`promise_check`: **0 ERRORs**, 9 WARNs — all pre-existing / unfixable
+in this workspace:
 
-## Session references
+- 5 non-canonical artifact-path WARNs (lines 10/17/88/161, cycles 1-11)
+  and 1 new (line 265, clone-1 cycle-13) — trailing-slash convention;
+  in-place rewrite would break the events' content hashes.
+- 1 `M-EAR-1` parent-with-no-events WARN — sub-milestones all
+  validated; parent roll-up call carried to cycle 14.
+- 2 upstream `long_exposure/{tools/_ledger_schema.py,
+  workspace_bootstrap.py}` "missing" WARNs — upstream paths outside
+  this workspace's scope.
 
-- Fork: `ed041ef4c1dc`
-- Cycle: 12 (post-merge integration rollup)
-- Run: `run-2026-08-28T040704Z`
-- Working directory: `/home/user/long-exposure-runs/music-gen`
-- Supersedes: fork-ddd71e9bdb0e capstone (cycle 11)
+## Anti-patterns preserved
+
+Nothing this cycle challenged the two locked anti-patterns:
+
+- `M-TEX-1/panel/embedding` (cycle 11): CLAP swap NOT reattempted.
+  VGGish rung remains the perceptual embedding.
+- `M-TRANS-1/basic-pitch/octave-suppression` (cycle 8): +0.15 uplift
+  below +0.3 bar; not reattempted.
+
+## Handoff pointers for cycle 14 (researcher)
+
+Consolidated from the three clone reports:
+
+1. **Break the harmonic 4-clique.** Synthesize a third breadth seed
+   in a mode other than F_major (candidate: D_minor) and run only the
+   harmonic extractor against it. Would eliminate 6 of 11 residual
+   collision pairs at N=8.
+2. **`c2` permanent-fire structural constraint.** Prototype a
+   form-scoped harmonic extractor to move `chord_progression` from
+   `scope=song` to `scope=form_section`.
+3. **Rule-type structural diversity is the collision-floor bottleneck**,
+   not row count. Reshape corpus-planning targets accordingly.
+4. **DawDreamer `set_automation` is now available** for M-GEN-1 effects
+   diversity. Promotion path to GREEN-via-DawDreamer: (a) a VST3
+   plugin with monotonic mix→RMS response, or (b) a piecewise-linear
+   reference tuned to the plugin's actual response curve.
+5. **DawDreamer 0.9.0 LV2 loader failure worth surfacing** — every
+   LV2 plugin `make_plugin_processor` attempt failed with "Unable to
+   load plugin". Not a blocker for GAP-2 (VST3 works) but limits LV2
+   inventory for future effects diversity.
+6. **Cycle-9 signal generalizes on polyphonic content**, not on
+   monophonic decaying-triad. Widening the panel to a fourth
+   qualitatively-different seed (candidate: sustained-mono, e.g. an
+   organ pad) would sharpen the content-dependency verdict.
+7. **M-EAR-1 parent roll-up call** — sub-milestones all validated;
+   parent event needed to clear the standing WARN.
+8. **Ear head still uncalibrated** — awaiting egress unblock for
+   M-EAR-1/armed-harness rated-audio training run.
+9. **CLAP embedding rung still blocked** on HF SSL cert (locked
+   anti-pattern) — probe a non-HuggingFace mirror if any surfaces.
+10. **SSoT validator hardening opportunity** — type-check
+    `supersedes_path` as string (reject list) at both writer and concat
+    time so clone-1's cycle-13 shadow-ledger drift cannot recur.
+
+## Environment (unchanged from cycle 12)
+
+torch 2.13.0+cpu, torchvision 0.28.0 (register_fake no-op workaround),
+numpy 1.26.4, music21 9.1.0, mscore3 3.2.3, basic-pitch 0.4.0 in
+quarantined venv, DawDreamer 0.9.0, single-thread BLAS pins
+(OMP/MKL/OPENBLAS = 1). Egress: still blocked per
+`corpus/CORPUS_STATUS.md`.
