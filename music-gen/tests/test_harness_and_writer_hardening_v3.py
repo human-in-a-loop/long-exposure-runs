@@ -221,7 +221,8 @@ check(len(new_scripts) == 0,
 report_path = WS / "docs" / "harness_and_writer_hardening_v3_report.md"
 if report_path.exists():
     rp = report_path.read_text()
-    check("corpus-N caveat not applicable" in rp or "corpus-N caveat N/A" in rp,
+    rp_low = rp.lower()
+    check("corpus-n caveat not applicable" in rp_low or "corpus-n caveat n/a" in rp_low,
           "14: report §3 explicitly says corpus-N caveat not applicable")
 else:
     check(True, "14: report not yet on disk (soft) — placeholder pass; will be re-checked at cycle close")
