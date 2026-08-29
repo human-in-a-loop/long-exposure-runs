@@ -1,136 +1,116 @@
 ---
-title: "Music-Gen — `M-EAR-1/feature-representation-audit` (cycle 1, fork dc8cba4b79eb, clone 1)"
-date: "2026-08-28"
+title: "Cycle 1 Clone 1 Report — M-TEX-1/palette-driven-bare-render/cross-seed (Fork 43802db1a81c)"
+date: "2026-08-29"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — `M-EAR-1/feature-representation-audit` (cycle 1, fork dc8cba4b79eb, clone 1)
+[OUTPUT: report_cycles_1-1_clone_1]
+
+# Cycle 1 Clone 1 Report — M-TEX-1/palette-driven-bare-render/cross-seed (Fork 43802db1a81c)
 
 ## Abstract
 
-Cycle 1 of clone 1 discharged the last cheap Path A probe on the ear-model chassis. Cycle 22 clone-2 falsified the cycle-6 CORN 1–7 head chassis on N = 55 synthetic labels at τ ≥ 0.7; cycle 23 clone-1 falsified three orthogonal regularized head variants at the relaxed τ ≥ 0.4 bar. This branch tested the remaining head-side hypothesis's mirror — whether the cycle-6 head architecture over a slimmer feature representation would produce recipe-invariant rank predictions under the same frozen instrument. Two representations were evaluated (HEUR-only 4-D and PANNs-only 2048-D) under the UNCHANGED cycle-22 stability-audit harness with SHA-anchored invariance and the UNCHANGED cycle-6 CORN head architecture (only `D_in` changing at instantiation); VGGish-only R3 was legitimately deferred because `has_vggish=False` on the cache and running the extractor over 55 clips is out-of-scope per the brief. Both representations **FAIL C2'**: HEUR-only mean τ = **−0.076** (bimodal span [−0.958, +0.951]); PANNs-only mean τ = **+0.006**. C3' byte-determinism × 2 PASS uniformly (`heur ec429bdf…5e8c`, `panns f98a498c…d39e`). HEUR-only C1' PASS (best MAE 0.782 beats the cycle-6 anchor 0.891) is scientifically interesting but not a Path A rescue — it is the underdetermined-regressor signature at extreme low D, not evidence for a HEUR-first real-label recipe. The pre-registered "no representation PASSES C2'" interpretation rule fires cleanly; the sub-milestone closes at **`invalidated/high`** and the recommendation to commit Path B (defer all ear calibration to post-egress real labels) at cycle 26 is the pre-registered outcome. Path A on the ear-model chassis at N = 55 synthetic labels is now closed comprehensively across three orthogonal design axes.
+Cycle 1 of clone-1 lands the c34 cross-seed generalization test of the c33 PALETTE_MOVES_PANEL result. The c33 palette-render machinery is consumed VERBATIM (read-only import of `scripts.palette_render.*`; mtime + SHA-anchored) and run on both c10 breadth-second-seeds. Per-seed rubric applied independently yields PALETTE_MOVES_PANEL on both seeds; cross-seed cumulative verdict is CROSS_SEED_CONSISTENT. Palette activation is confirmed content-invariant across three seeds (c33 `synth_030s` plus this cycle's `seed_mid_50s` and `synth_060s`) spanning three distinct source distributions.
 
-## Introduction
+## Verdict
 
-By the end of cycle 23 two consecutive VALIDATED audits under the same frozen SHA-anchored / byte-determinism × 2 methodology had invalidated their pre-registered hypotheses on N = 55 synthetic labels. Cycle 22 established that no cycle-6-shape head can pass at τ ≥ 0.7; cycle 23 established that no head chassis regularization (weight decay + dropout; bottleneck width; feature-rank reduction) can pass at the relaxed τ ≥ 0.4 bar. Cycle 23's auditor lean was Path B (defer to post-egress real labels) on a corpus-size reading of the flat τ-vs-MAE frontier; the researcher's cycle-25 decision was to spend one final cheap Path A probe on the *feature* side before committing to Path B, because the head-side sweep and the feature-side sweep are orthogonal design axes and a positive result on the feature side would legitimately reopen the head-side-fix hypothesis under a different (more informative) feature distribution. This branch is that probe with the rubric locked pre-run and the interpretation rules pre-registered.
+**Per-seed**: `seed_mid_50s` = PALETTE_MOVES_PANEL; `synth_060s` = PALETTE_MOVES_PANEL.
+**Cross-seed cumulative**: **CROSS_SEED_CONSISTENT**.
 
-## Approach
+## Rubric SHA Chain (Byte-Equal in Four Locations)
 
-**Two representations at two extreme dimensions of the frozen feature cache.**
+| Location | SHA-256 |
+| --- | --- |
+| `docs/palette_driven_bare_render_cross_seed_rubric.md` | `48c073dfadc0c11533bf2f56ab16b4eec72e08271058fa1101777b9b1175a59f` |
+| `data/palette_render_cross_seed/rubric_hash.txt` | `48c073df…a59f` |
+| `verdict.json.rubric_hash` (top-level) | `48c073df…a59f` |
+| `verdict.json.seed_mid_50s.rubric_hash` | `48c073df…a59f` |
+| `verdict.json.synth_060s.rubric_hash` | `48c073df…a59f` |
 
-- **HEUR-only 4-D** — the M-HEUR-1 mess-scale vector alone. Slim end of the design space; tests whether the ordinal signal (if any) lives in the hand-designed heuristics rather than the deep-net embedding.
-- **PANNs-only 2048-D** — the PANNs Cnn14 penultimate embedding alone. Wide end of the design space; tests whether the ordinal signal (if any) lives in the AudioSet-pretrained embedding rather than the heuristics.
-- **VGGish-only 128-D** — R3 deferral, honest and rule-consistent: the cache has `has_vggish=False, vggish_embed.shape=(0,)` because cycle-6 clone-2 chose not to invoke `use_vggish=True`, and running the extractor over 55 clips is explicitly out-of-scope per the brief §2. The frontier plot carries a deferral-marker row so future cycles can revisit without re-litigation.
+Rubric-before-scripts mtime ordering: rubric doc `02:49` < `rubric_hash.txt 02:49` < earliest `scripts/palette_render_cross_seed/*.py` `02:51`. Enforced by `test_09` on every run.
 
-**Instrument invariance.** All six cycle-22 harness anchor SHAs verified equal at run start (`stability_audit.py`, `synthetic_labels.py`, `stability_metrics.py`, `model.py`, `corn.py`, `features.py`); harness file SHA verified at run start AND end. The cycle-6 CORN head architecture is imported unchanged — only `D_in` differs at instantiation (4 for HEUR-only, 2048 for PANNs-only). No PRNG (AST-checked); no `sidecar_nonfactor` imports (AST-checked); interpreter guard on every new module; single-thread BLAS pins throughout.
+## Per-Seed Byte-Determinism × 2 (bare_combined.wav)
 
-**Feature cache invariance (with concurrent-clone interference disclosed and mitigated).** The audit's read set is exactly the 55 valset clips; those clip files are byte-identical pre/post. Sibling clone-0 concurrently wrote `gen_first_gen_*.npz` files into `data/ear/features/` during the run, which changed the *all-files* SHA manifest but did not touch any of the 55 valset clips. The driver added a valset-scope filter and preserved both manifests (`feature_cache_pre_post_shas.json` + `prior_all_files_*` fields) for auditability. The operative invariance property — the 55 valset clips are byte-identical between pre and post — holds.
+| Seed | SHA-256 (run1 = run2) |
+| --- | --- |
+| `seed_mid_50s` | `cb7e9971139919c6e28fb2c5fafd3d78e8d1877586d50788b806b76b5c415b42` |
+| `synth_060s` | `6b7d2eedd30e1592d09c2e7eeb9173698c27e726b33952b71993cd326ce5efa0` |
 
-**Rubric locked pre-run (matches cycle-23's relaxed thresholds).**
+All six per-stem WAVs also byte-equal across the two fresh `tempfile.mkdtemp()` runs per seed.
 
-- **C1'** — MAE reproducibility against the constant cycle-6 anchor `0.891` (matching cycle-22 clone-2's actual methodology; cycle-6 anchor is a distinct out-of-namespace PC1+noise construction, not salt = 0).
-- **C2'** — mean Kendall τ across the 10 SHA-256-salted synthetic recipes ≥ 0.4.
-- **C3'** — byte-determinism × 2 on `stability_report_v3_<rep>.json`.
+## Verdict Numerics
 
-**Pre-registered interpretation rules.**
+Per-seed rel_delta magnitudes on the four numeric-family keys are **3-4 orders of magnitude above the rubric's ≥5% threshold** for both seeds against each seed's own c13 fluidsynth-only baseline (`data/breadth/<seed>/bare_midi.wav`). Panel 8-key finiteness verified on both TSVs per seed. The qualitative reading — palette activation is content-invariant — is unambiguous.
 
-1. *Any representation PASSES C2'* → cycle 26 refines that feature family.
-2. *No representation PASSES C2'* → cycle 26 commits to Path B (defer all ear calibration to post-egress real labels) with the strongest possible negative-finding justification.
+## Anchor Preservation (READ-ONLY Consumption)
 
-## Findings
+`anchor_preservation.json` records pre/post SHAs of every file under `scripts/palette_render/`, `data/palette_render/`, `scripts/palette/`, `scripts/palette_probe/`, `scripts/dawdreamer_state/`. All byte-identical. `test_10_c33_anchor_shas_unchanged` PASS.
 
-### Per-representation verdicts (both FAIL C2')
+## Test Surface
 
-| Representation | C1' (MAE anchor) | C2' (mean τ ≥ 0.4) | C3' (byte-det × 2) | Overall |
-|---|:---:|:---:|:---:|:---:|
-| HEUR-only 4-D | **PASS** (best MAE 0.782 beats 0.891 anchor) | **FAIL** (mean τ = −0.076; span [−0.958, +0.951]) | PASS (`ec429bdf…5e8c`) | **FAIL** |
-| PANNs-only 2048-D | FAIL | **FAIL** (mean τ = +0.006) | PASS (`f98a498c…d39e`) | **FAIL** |
-| VGGish-only 128-D | — | — | — | **DEFERRED (R3)** |
+| Suite | Result |
+| --- | --- |
+| `tests/test_palette_driven_bare_render_cross_seed.py` | **14/14 PASS** (exceeds ≥12 minimum) |
+| `tests/test_integration_cross_branch.py` (incl. §52 + §53) | **PASS (0 failures)** |
+| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (WARNs are concurrent-branch orphans + established exemptions) |
+| `org_check` | WARN-only for pre-existing `docs/figures/*.png` co-location pattern |
 
-Both R1 and R2 fail C2' by very wide margins. The pre-registered "no representation PASSES C2'" interpretation rule fires cleanly.
+Coverage includes: interpreter guard, no-PRNG AST, no c9-effects import, no c13-batch import, no `sidecar_nonfactor`, zero writes under any of the five anchor directories, byte-determinism × 2 per seed, 8-key finite panels per seed, rubric-mtime-before-scripts, c33 anchor SHAs unchanged, cross-seed summary 2-row assertion, verdict.json schema conformance, read-only c33 import presence.
 
-### The one substantive risk — HEUR-only C1' PASS — is not a Path A rescue
+## Ledger Events (9, Strict Order, Correct Suffixes)
 
-The HEUR-only representation *can fit* individual synthetic-label recipes tightly (best MAE 0.782 < cycle-6 anchor 0.891), so C1' passes on that axis. But its mean τ is −0.076 with a symmetric bimodal span of [−0.958, +0.951]. That shape has a specific interpretation: the head learns a near-perfect ordering on each recipe individually, but the orderings it learns are near-orthogonal *across* recipes — a positive-almost-1 τ on one recipe and a negative-almost-1 τ on another cancel to a mean near zero. This is the **underdetermined-regressor signature at extreme low D** — 4 features are enough to fit any synthetic ordering the recipes generate, and the fit picks a different direction each time — not evidence for a HEUR-first real-label recipe. The report's §7.1 flags this correctly and does not spin C1' PASS as a partial positive.
+1. `_infra/egress-probe-cycle-34-clone-1` (validated; `media_ok=false`)
+2. `_plan/register-palette-render-cross-seed-milestone-clone-1` (validated; plan_of_record row registered BEFORE any `M-*` event)
+3. `_run/cycle_34_launched-clone-1`
+4. `_plan/palette_render_cross_seed_rubric_frozen-clone-1`
+5. `M-TEX-1/palette-driven-bare-render/cross-seed` (in-progress; M-* unsuffixed per c32)
+6. `M-TEX-1/palette-driven-bare-render/cross-seed` (validated verdict roll-up)
+7. `_run/cycle_34_closed-clone-1`
+8. `_archive/cycle-34-scratch-clone-1`
+9. `_infra/adopt-cycle34-tests-clone-1`
 
-### τ-vs-MAE frontier is exhaustively negative across three orthogonal design axes
+## State-Machine Discipline (c29 Lemma Respected)
 
-`frontier_summary.json` has 7 rows: cycle-6 baseline + cycle-23 three head-regularization variants + cycle-25 two representations + one R3 deferral marker. All 6 tested design points cluster near the τ ≈ 0 axis. There is no design point on the frontier that clears C2' = 0.4; the head-regularization axis (cycle 23) failed at τ ≈ 0.06–0.08, the feature-representation axis (this cycle) failed at τ = −0.08 and +0.01, and the frontier's *shape* — a tight cluster near zero across two orthogonal design axes — is the strongest empirical signal the campaign can produce without real labels that the ordinal information simply is not in the N = 55 synthetic-label regime.
+`M-TEX-1/palette-driven-bare-render/cross-seed` is a peer sub-sub-milestone under `M-TEX-1/palette-driven-bare-render`. It is NOT a child of any terminal-validated milestone. Follows the c13 `M-TEX-1/stage-by-stage/{seed_mid_50s,synth_060s}` sub-sub pattern.
 
-### Anchor invariance held
+## Standing Constraints (Unchanged)
 
-- Harness anchor SHAs: 6/6 byte-identical to cycle-22 values, verified at run start AND run end.
-- Feature cache (valset scope): 55 clips byte-identical pre/post. All-files manifest changed due to concurrent clone-0 writes; both manifests preserved for auditability.
-- Cycle-6 CORN head architecture: imported unchanged; only `D_in` differs at instantiation.
-- No PRNG (AST-checked, 5 forbidden tokens).
-- No `sidecar_nonfactor` imports (AST-checked).
-- Interpreter guard `assert sys.executable == "/usr/bin/python3"` on every new module.
+- α pinned at `0.7469387071101908`.
+- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor` imports (AST-verified).
+- Interpreter guard `assert sys.executable == '/usr/bin/python3'` on every new script.
+- Read-only anchors preserved: c9 effects chain (not imported, grep-verified); c13 batch-v2 (not imported); c31 palette schema + palette_probe; c33 palette_render + dawdreamer_state; c10 breadth-second-seeds.
+- Rated audio egress-blocked at `*.googlevideo.com`; non-blocking probe at cycle top fired with `media_ok=false`. M-EAR-1 armed-not-fired posture holds.
+- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`.
 
-### Tests
+## Anti-Patterns Locked (Unchanged)
 
-- `tests/test_ear_feature_representation_audit.py` — 7/7 PASS (representation files present, harness anchor SHAs, feature-cache valset invariance, C3' byte-determinism × 2, verdict-tuple shape, no PRNG, no `sidecar_nonfactor` imports).
-- `tests/test_integration_cross_branch.py §36` — 12 new checks, all PASS; suite 0 failures overall.
-- `promise_check .` — 0 ERRORs, 224 WARNs (this-cycle orphans will adopt on merge via cycle-22 auto-namespacing; pre-existing missing-artifact WARNs unchanged).
+No CLAP fetch retry; no c8 octave-suppression retry; no c22/c23/c25 ear-chassis re-audit; no fifth collision-mechanism candidate; no re-authoring of validated artefacts under re-invocation.
 
-### Auditor MINOR observations (logged, not investigated)
+## Concurrent-Branch Bleed (Non-Blocking)
 
-- Report §1.2 phrasing "n_files = 84 covering the 55-clip valset + orphans that predate cycle 6" is slightly imprecise given the disclosure that clone-0's 6 concurrent writes added files during the run. The `feature_cache_pre_post_shas.json` file is authoritative; the narrative sentence could be tightened in a follow-up, but the data is correct.
-- Front-matter cycle-6 baseline row uses `(τ = +0.059, MAE = 0.891)` — a mix of the cycle-22-observed τ with the cycle-6-anchor MAE. Consistent with the brief's phrasing but a reader could conflate the two contexts; `frontier_summary.json` labels it clearly (`variant: cycle6_baseline`, `note: cycle-6 recipe (PC1+noise)`). Documentation nit, not a correctness issue.
+Branch A (clone-0 `M-DAW-SPIKE-1/palette-schema-v2`) and Branch C (clone-2 `M-GEN-1/palette-driven-batch-v1`) closed in the same run window. Their artefacts surface as `promise_check` WARNs from clone-1's vantage but zero ERRORs — the c32 convention prevents ledger collisions. Branch C's 7 WARNs (`gen_palette_batch_v1/*`, `palette_driven_batch_v1_*`) will clear at its own `_infra/adopt-cycle34-tests-clone-2` merge.
 
-## Discussion
+## Deviations (Honestly Disclosed by Worker; Not Verdict-Impairing)
 
-Three things about this branch are worth naming.
+1. **Brief-vs-anchor reconciliation for `seed_mid_50s`**: brief text asserts 22050 Hz mono; on-disk c10 anchor is 44.1 kHz stereo. Worker used the anchor (anchors are ground truth) and documented the deviation in report §4 and merge-report Deviations. Cycle 35 should update the brief text.
+2. **Merge-report path**: written to workspace-root fallback `merge_report_clone-1_fork-43802db1a81c.md` per the documented Branch B / c33 Branch A pattern; conductor picks up whichever path exists. Durable fix candidate remains the `resolve_merge_report_path` helper carried across four prior audits.
+3. **`panel_original_vs_palette` TSV shipped but not consumed by the verdict** — cycle-35 forward-look.
 
-First, the closure of Path A is now comprehensive across three orthogonal design axes. Cycle 22 tested the cycle-6 chassis; cycle 23 tested three head-regularization axes (over-fitting, over-parameterization, feature-rank); cycle 25 tested two feature-representation axes (extreme low D at HEUR-only 4, extreme high D at PANNs-only 2048). Six design points, all under the same frozen SHA-anchored / byte-determinism × 2 instrument, all failing the same relaxed C2' bar. The pattern is not a chassis choice, not a regularization choice, not a feature-dimension choice — it is that N = 55 synthetic labels do not carry recipe-invariant ordinal information for any reasonable head over any reasonable slice of the frozen cache. This is the strongest possible negative-finding structure without real labels, and it is *positive* in the sense the campaign should care about: it forecloses further Path A cycles as diminishing information rather than leaving that door open indefinitely.
+## Cycle-35 Handoff Candidates (Priority Order)
 
-Second, the HEUR-only C1' PASS is worth preserving as a canonical example of what C2' is designed to reject. The 4-D representation can fit any synthetic ordering the recipes generate because the head has only 4 features to weight against a 55-sample target and the fit picks a different direction per recipe. Mean τ near zero with a symmetric bimodal span [−0.96, +0.95] is the exact fingerprint of "per-recipe overfit, cross-recipe orthogonal" — a MAE improvement over the cycle-6 anchor achieved by fitting orderings that do not compose. C2' was pre-registered specifically to catch this: it asks not "can the head fit some labels well?" but "do the orderings the head learns generalize across recipe perturbations?" The auditor's report does not spin this as a partial-positive, and future readers should not either — the mechanism is well-understood and the C1'-PASS-C2'-FAIL combination is not evidence that HEUR-only is the right real-label recipe. If anything, the bimodality is a diagnostic hint that HEUR-only should not be the starting recipe under real labels because the head has too little capacity to hold a consistent ordering.
+1. **Rubric baseline-denominator refinement**: the "±5% relative" guard is vacuous because the per-seed fluidsynth-only baseline reduces to `panel(fluidsynth, fluidsynth) = 0.0`. Redefine baseline as the natural gap (e.g., `panel(original, fluidsynth-only)`) and interpret palette-vs-fluidsynth as "% of native gap closed". A semantics improvement; does not invalidate this cycle's qualitative CROSS_SEED_CONSISTENT verdict.
+2. **Brief-vs-anchor reconciliation** for `seed_mid_50s` (see Deviations #1).
+3. **Consume `panel_original_vs_palette`** in a follow-up verdict layer to test whether palette-bare moves toward or away from the original relative to c13 fluidsynth-only bare.
+4. **`M-DAW-SPIKE-1/palette-schema-v2`** landing (Branch A this fork) unlocks Surge XT + Dexed as palette instruments — a fourth-seed sweep with those instruments would test palette activation beyond the sfizz/fluidsynth axis.
 
-Third, the two consecutive VALIDATED audits × two consecutive INVALIDATED verdicts across the four design axes (chassis + three head-regularization + two feature-representation = 6 design points) also validate the stability-audit instrument itself for the third consecutive time. Cycles 22, 23, and 25 each locked a rubric before running, applied it mechanically, and honored the falsifiability contract by publishing FAIL outcomes as first-class findings rather than tuning to force a PASS. The instrument is doing what it should: making the difference between "feature-structured signal on 55 clips" and "recipe-lucky noise fit" legible and pre-registered. This matters directly for the post-egress path — when rated audio unblocks and `M-EAR-1/training-loop` fires on real labels, the same instrument at the same anchor SHAs is the credibility test, and the real-label success bar must not inherit either cycle-6's or this cycle's synthetic thresholds. The frontier plot + report from this branch are the pre-registered "before" evidence against which any real-label success will be judged.
+## Cumulative Progress
 
-The uncalibrated CORN head under `synthetic_labels_only` remains the campaign's biggest open credibility gap for the M-GEN-1 scoring pass, and Path B (defer to post-egress real labels) is now the pre-registered outcome. When rated audio arrives via `M-INGEST-1/egress-ready-automation`, the campaign should start from the cycle-6 chassis with the **original 2052-D features** and *not* bake cycle-23 or cycle-25 negative findings into the starting recipe — those are chassis-stability findings under synthetic labels at N = 55, not statements about the real-label recipe. Whether a HEUR-first or PANNs-first or full-2052-D configuration is right for real labels is a real-label empirical question the synthetic-label instrument cannot answer.
+**Palette-mechanism scoreboard**: c31 schema validated; c31 instrument determinism validated (sfizz GREEN; Surge XT + Dexed STILL_GAP → workaround FOUND at c33 clone-1); c33 palette-driven bare-render on `synth_030s` validated as PALETTE_MOVES_PANEL; **c34 clone-1 cross-seed on `seed_mid_50s` + `synth_060s` validated as CROSS_SEED_CONSISTENT**. Palette activation is now a content-invariant mechanism across three seeds spanning three source distributions.
 
-## Open Questions
+**Pattern durability**: eight cycles running (c26-c30 collision-modeling arc + c31-c34 palette arc) of rubric-pre-registration + rubric-SHA-in-verdict-JSON + git-mtime-order + mtime-order tests. Zero after-the-fact rubric edits.
 
-Branch scope is genuinely exhausted. The following are legitimately future-cycle work:
+**Fanout-namespace convention**: two forks running with 3+ clones each; c32 `-clone-<k>` suffix convention held under concurrent clone-0/1/2 execution. c33 `_infra/harness-clone-namespace-guard` writer-boundary auto-suffix fallback not triggered — this clone emitted correctly-suffixed IDs from the start.
 
-- **Cycle-26 Path B commit** — emit a plan-of-record event superseding any implicit assumption that Path A refinement remained open; commit to real-label ear calibration behind the egress-ready trigger.
-- **Cycle-26 anti-patterns to lock**: no 5th regularized head; no further feature slicing; no re-runs of cycle-22 harness with same features + head; no synthetic-label re-audit variants. The two-VALIDATED-audits × two-INVALIDATED-verdicts × orthogonal-design-axes structure is the strongest possible negative-finding structure without real labels; additional Path A cycles produce diminishing information.
-- **Optional VGGish (R3) closure** — cheap sanity probe if egress remains blocked and cycle 26 has budget. Would either strengthen the Path B commit or unexpectedly reveal a mid-D representation that passes. Low expected information; only if truly cheap. Requires running the VGGish extractor over 55 clips (worker correctly refused to do this in-scope this branch).
-- **Post-egress next step** — when `data/ear/rated_ready.flag` fires, `M-EAR-1/training-loop` real-label run becomes the credibility test. Start from the cycle-6 chassis with the original 2052-D features; do not inherit synthetic-label negative-findings into the real-label recipe.
-- **Cosmetic documentation nits** — §1.2 phrasing on `n_files = 84`, front-matter cycle-6 baseline row's τ/MAE context. Neither is a correctness issue.
-
-## Appendix: Provenance
-
-**Cycle range:** cycle 1 of fork `dc8cba4b79eb`, clone 1.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** researcher `2e0cf2ac-aed1-4d6d-8ac6-63e8a2940fd2`, worker `a94ba8f7-58d3-430e-8f1c-5457c7c3a55e`, auditor `ac6b885f-c6d7-40d8-bbfd-7b844e7fa596`.
-**Auditor decision:** **COMPLETE**. Sub-milestone `M-EAR-1/feature-representation-audit` closes at **`invalidated/high`** under pre-registered rule 2 (matches the cycle-8 `M-TRANS-1/basic-pitch/octave-suppression` invalidated/high precedent for negative findings).
-
-**Deliverables on disk.**
-
-- Code: `scripts/ear/feature_representation/{run_representation_audit.py, ...}` — interpreter-guarded, no PRNG (AST-checked), no `sidecar_nonfactor` imports (AST-checked); harness monkey-patched inside `try/finally` with harness SHA verified pre/post; feature cache read via a valset-scope filter to isolate the operative invariance property.
-- Data: `data/ear/feature_representation_audit/{variant_verdicts.json, frontier_summary.json, harness_anchor_manifest.json, feature_cache_pre_post_shas.json, stability_report_v3_heur.json (SHA ec429bdf…5e8c), stability_report_v3_panns.json (SHA f98a498c…d39e), per_representation_recipe_details.json, ...}`.
-- Figures: `docs/figures/ear_feature_representation_tau_{mae_frontier,per_representation}.png` — frontier includes cycle-6 baseline + cycle-23 3 head-variants + cycle-25 2 representations + R3 deferral marker.
-- Report: `docs/ear_feature_representation_audit_report.md`.
-- Test: `tests/test_ear_feature_representation_audit.py` (7/7 PASS); cross-branch integration test §36 (12 new checks, all PASS).
-
-**Load-bearing runtime evidence.**
-
-- Two representations, two overall FAIL.
-- HEUR-only mean τ = −0.076 (bimodal span [−0.958, +0.951]); PANNs-only mean τ = +0.006. Both ≪ C2' = 0.4.
-- HEUR-only C1' PASS (best MAE 0.782 < 0.891 anchor); scientifically interesting, correctly framed as the underdetermined-regressor signature rather than a Path A rescue.
-- Byte-determinism × 2 uniform: `heur ec429bdf…5e8c`, `panns f98a498c…d39e`.
-- Harness anchor SHAs: 6/6 byte-identical to cycle-22 values pre/post.
-- Feature cache (valset scope): 55 clips byte-identical pre/post; concurrent-clone all-files interference disclosed and mitigated.
-- `promise_check`: 0 ERRORs.
-- Cross-branch integration test §36: 12 new checks, all PASS; suite 0 failures overall.
-
-**Ledger routing.** Shadow-ledger events emitted at `/home/user/music-gen-instance/fork-dc8cba4b79eb/clone-1/promise_ledger.jsonl` (plan-register, in-progress checkpoints, terminal `M-EAR-1/feature-representation-audit` = **invalidated/high**, archive). Canonical UUID5 event_ids per the harness auto-write namespacing fix from fork `cc548ca0c2e5` clone 0; nested `confidence: {level, rationale, assessor}` shape per the SSoT writer. Orphan-artefact WARNs on the new artefacts will clear at post-merge concat via the mechanical adoption pattern.
-
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout. Stability-audit harness anchors held at cycle-22 SHAs.
-
-**Handoff.** Merge report at `/home/user/music-gen-instance/fork-dc8cba4b79eb/clone-1/merge_report.md`. For the root conductor / cycle-26 researcher: commit Path B (defer all ear calibration to post-egress real labels) as the pre-registered outcome; lock the cycle-26 anti-patterns above (no 5th regularized head; no further feature slicing; no cycle-22 harness re-runs with same features + head; no synthetic-label re-audit variants); consider R3 VGGish deferral closure only if cycle 26 has spare budget; when `data/ear/rated_ready.flag` fires, `M-EAR-1/training-loop` on real labels becomes the credibility test — start from the cycle-6 chassis with the original 2052-D features and do not inherit cycle-23 / cycle-25 negative findings into the real-label recipe. The synthetic-label instrument has now exhausted its diagnostic reach at N = 55 across chassis, head-regularization, and feature-representation axes.
-
-<verdict>invalidated</verdict>
+[END OUTPUT]
