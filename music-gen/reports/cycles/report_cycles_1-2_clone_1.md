@@ -1,150 +1,130 @@
 ---
-title: "Music-Gen — Rules Schema v1 (clone-1 merge)"
-date: "2026-08-28"
+title: "Cycles 1-2 Clone 1 Report — M-GEN-1/palette-driven-batch-v2-sampler-diversified (Fork 07063458736e)"
+date: "2026-08-29"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Rules Schema v1 (clone-1 merge)
+[OUTPUT: report_cycles_1-2_clone_1]
+
+# Cycles 1-2 Clone 1 Report — M-GEN-1/palette-driven-batch-v2-sampler-diversified (Fork 07063458736e)
 
 ## Abstract
 
-This branch designs and lands the version-1 rule schema that will carry every extracted musical pattern from score analysis into the generation stage of the Music-Gen pipeline. The schema covers five rule categories — harmonic, rhythmic, melodic, form, and arrangement — and fixes the contract that every rule instance, whatever its category, must expose: a stable identifier, a typed parameter block, an explicit time-and-place scope, pointers back to the transcription events it was derived from, and a numeric confidence in the closed interval [0, 1]. A companion Python validator enforces the contract, a small append-only ledger records rule instances and their supersessions, and a synthetic-instance suite plus a planted-invalid suite together demonstrate that the contract behaves as specified.
+Cycles 1-2 of clone-1 (fork `07063458736e`) close the cycle-35 Branch B sampler-side diversification response to c34 `BATCH_SPREAD_COLLAPSED` at **SPREAD_STILL_COLLAPSED** — a first-class negative finding under the pre-registered 3-verdict rubric. Cycle 1 executed the full pipeline and produced a mechanism-precise diagnosis: the c33 `render_stem(stem, instrument, out_dir)` API surface **never consumes `pinned_state`**, so even validated per-salt-distinct rule triples and distinct v2 pinned-state payloads collapse to a single byte-identical `bare_combined.wav`. Cycle 2 is c30-codified re-invocation-as-verification standby (single-paragraph declaration; zero writes; auditor decision **COMPLETE**). Handoff to c36 as `M-GEN-1/palette-driven-batch-v3` with Options A (extend `render_stem`) and B (author c33-peer VST3 renderer).
 
-The deliverable stands ready to consume real rules the moment a merged full-song score becomes available upstream. No part of it depends on rated audio, so the branch was not blocked by the workspace's current egress restriction on YouTube downloads.
+## Verdict
 
-## 1. Goal and scope
+**SPREAD_STILL_COLLAPSED** (rubric-satisfied first-class negative finding; VALIDATED at cycle 1; **COMPLETE** at cycle 2).
 
-The upstream campaign plan divides the rule-mining stage into two halves: a *schema* half (define the on-disk shape and the invariants) and an *extraction* half (populate it from real scores). This branch owns the schema half only. The extraction half is deliberately out of scope: it cannot begin until an earlier milestone produces a merged full-song score on at least one seed piece, and that milestone itself waits on transcription. The consumer interface documented here is the seam at which extraction will plug in.
+## Rubric SHA Anchor Chain
 
-The five rule categories were fixed by the campaign prompt. The concrete design choices — what fields are common to all rules, what parameters each category carries, how identifiers are generated, and how a wrong rule is retracted — are the substantive content of this branch.
+| Location | SHA-256 |
+| --- | --- |
+| `docs/palette_driven_batch_v2_sampler_diversified_rubric.md` | `749973025e5fa4c18c745eb0aedfda3773be003b72eab390754ba21e18aaeb6c` |
+| `data/gen_palette_batch_v2/rubric_hash.txt` | `749973…aeb6c` |
+| `verdict.json.rubric_hash` | `749973…aeb6c` |
 
-## 2. The common envelope
+Byte-equal across all three locations; rubric-before-scripts mtime ordering enforced by test.
 
-Every rule instance, regardless of category, carries the same envelope of fields:
+## Mechanism-Precise Diagnosis (Load-Bearing Finding)
 
-- **`rule_id`** — a content-addressed 16-hex-character identifier (see §4). Rules with identical content collapse to the same id; rules that differ in any observable field get different ids.
-- **`rule_type`** — one of the five closed category names: `harmonic`, `rhythmic`, `melodic`, `form`, `arrangement`. Any other value is rejected at validation time (see §6).
-- **`schema_v`** — the schema major version. Fixed at `1` for this release. A future breaking change increments this and forks the schema file.
-- **`extractor_version`** — a free-form string identifying the extractor build that produced the rule. Recorded, never interpreted, so that a downstream reader can trace a rule back to the code that made it.
-- **`scope`** — one of three shapes: `song` (whole piece), `section` (named span with start/end seconds), or `measure` (measure-range with start/end measure numbers and start/end seconds). The two temporal coordinates are both required and both bounded — measure numbers are integers ≥ 1 with end ≥ start; seconds are non-negative reals with end ≥ start.
-- **`provenance_pointers`** — a non-empty list of pointers into the transcription output. Each pointer names one or more transcription event ids (the atomic notes and downbeats produced by the transcriber) and, optionally, a measure range. A rule with no provenance is rejected: the audit-trail invariant is structural, not advisory.
-- **`confidence`** — a real number in the closed interval [0, 1]. Values outside this range are rejected.
-- **`parameters`** — a typed block whose shape depends on `rule_type`; see §3.
-- **`superseded_by`** — optional pointer to a successor `rule_id`. Absent for live rules; set exactly once when a rule is retracted (see §5).
+The c33 render dispatcher signature `render_stem(stem, instrument, out_dir)` does not accept or consume the `pinned_state` field. Even when the assignment builder correctly diversifies per-salt rule triples and computes distinct v2 iterated_params pinned-state payloads (via deterministic per-rule perturbation from SHA-256 of `(rule_id, param_name)` → typed delta table; no PRNG), the pinned-state information is discarded at the render-dispatch boundary. Metadata-layer diversification is real; audio-layer diversification is impossible without changing the render API.
 
-## 3. The five typed parameter blocks
+Metadata-layer diversification empirically confirmed at cycle 1:
+- **3 distinct assignment SHAs** across salts 0/1/2.
+- **3 distinct rule-id triples** across salts (via SHA-256 tiebreak over full K=20 harmonic + K=18 rhythmic + K=15 arrangement pre-i3 pools).
+- **6 distinct v2 payload SHAs** (3 salts × 2 instruments Surge XT + Dexed; drums remain fluidsynth-static per spec).
 
-Each `rule_type` corresponds to a distinct sub-schema for `parameters`. The categories were chosen to partition the space of musical patterns the generation stage will eventually need to sample from:
+Audio-layer collapse: universal `bare_combined.wav` SHA `a8c1557c…2ba794` cross-salt (identical to the c33 single-seed anchor), with `IQR = 0` and `max−min = 0` on 4 numeric-family keys × 2 panels (both `panel_original` and `panel_fluidsynth`).
 
-**Harmonic rules** carry a chord-quality vocabulary, a root sequence, and an optional key/mode. Example instances in the suite include a ii–V–I cadence pattern, a modal borrow from parallel minor, and a functional prolongation across a section.
+## Cycle Disposition
 
-**Rhythmic rules** carry a meter, a beat subdivision, and either an accent pattern (positional) or a groove template (a probability vector over sixteenth-note positions). Example instances include a straight-eighth backbeat, a 3-3-2 clave, and a swung-eighth pattern with a specified swing ratio.
+| Cycle | Researcher Directive | Worker Action | Auditor Decision |
+| --- | --- | --- | --- |
+| 1 | Ship the milestone under frozen 3-verdict rubric | Full pipeline; SPREAD_STILL_COLLAPSED with mechanism structurally characterized; ledger events emitted | VALIDATED |
+| 2 | Verification-only standby | Single-paragraph declaration; zero writes; canonical rubric SHA cited; no re-computation, no re-emission | **COMPLETE** (no-null-cycle rule satisfied) |
 
-**Melodic rules** carry an interval-class contour, a range in semitones, and an optional pivot-note anchor. Example instances include a stepwise-descent contour bounded by a fifth and a leaping arpeggiation of the underlying chord.
+Cycle 2 respected all 12/12 verification-only criteria: no new files; no re-computation; no re-rendered/re-measured artefacts; no re-emitted ledger events; no writes under `docs/`, `scripts/gen_palette_batch_v2/`, `data/gen_palette_batch_v2/`, or `tests/`; no perturbation-surface tweak attempts; no extension of c33 `render_stem` or c33-peer VST3 renderer author (both c36 scope); no read of `ledger_i3_dminor.jsonl` or import of `i4_stratified.py`; no read of sibling clone-0/clone-2 shadow ledgers; no new mechanism claim or falsification criterion.
 
-**Form rules** carry a labeled-section sequence (e.g. `A B A B C B`), section-length statistics, and repetition/variation flags between labeled sections. Example instances cover verse–chorus alternation, a modified-repeat outro, and a through-composed span.
+## Test Surface (Established at Cycle 1)
 
-**Arrangement rules** carry a per-section instrument-family activity map (each instrument marked `active` / `sparse` / `silent`) and, optionally, a density envelope. Example instances include a "drop the drums for the second verse" pattern and a "strings enter on the bridge" pattern.
+| Suite | Result |
+| --- | --- |
+| `tests/test_palette_driven_batch_v2.py` | **20/20 PASS** (exceeds ≥14 minimum) |
+| `tests/test_integration_cross_branch.py` §55 | **PASS**; whole suite 0 failures |
+| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs**, 114 WARN (merge-clearable or established-exemption) |
 
-Each parameter block is validated by its own JSON-schema sub-object. The validator dispatches on `rule_type` and applies the matching sub-object; a mismatch between the declared `rule_type` and the parameter-block shape is a validation error.
+Per-salt byte-determinism × 2 holds across salts 0/1/2 (each salt's two runs into fresh `tempfile.mkdtemp()` dirs yield byte-identical WAV). Per-salt distinctness FAILS at audio bytes (the rubric's SPREAD_STILL_COLLAPSED trigger); metadata layer distinctness PASSES.
 
-## 4. `rule_id` — content addressing
+## Anchor Preservation
 
-Rule ids are derived from a canonical serialization of the rule's observable content: `rule_type`, `schema_v`, `scope`, `provenance_pointers`, `parameters`. The `extractor_version`, `confidence`, and `superseded_by` fields are deliberately excluded from the hash — they are metadata about the observation, not part of the observation.
+`anchor_preservation.json`: `unchanged=True` across all five READ-ONLY anchor families — c34 palette_v2; c33 palette_render; c33 dawdreamer_state; c31 palette_v1; c26/c27/c28/c29/c30 analytical utilities; c22 stability harness. c9 chain, c13 pipeline, c15 `i4_stratified.py` not imported (grep-verified).
 
-The canonical serialization sorts object keys, normalizes numeric representations, and encodes as UTF-8 JSON with no whitespace. The id is the first 16 hex characters of the SHA-256 digest of that byte sequence, prefixed with `rule_`. Two extractors that observe the same pattern at the same scope with the same provenance will therefore emit the same `rule_id`; a difference in any of those fields produces a different id.
+## Ledger Events (Cycle 1: 8 shadow rows under `-clone-1` suffix; Cycle 2: 0)
 
-Determinism was checked directly: the twenty-five synthetic instances were written to disk, re-read, and re-hashed; every id reproduced exactly. This is the `round-trip determinism` invariant called for by the branch objective.
+Six named + two housekeeping, per spec:
 
-## 5. Supersede semantics — append-only, never in-place
+1. `_run/cycle_35_launched-clone-1` (`status: validated` per c35 Branch C newly-codified convention)
+2. `_plan/palette_driven_batch_v2_sampler_diversified_rubric_frozen-clone-1`
+3. `_infra/egress-probe-cycle-35-clone-1`
+4. `M-GEN-1/palette-driven-batch-v2-sampler-diversified` (in-progress; M-* unsuffixed per c32)
+5. `M-GEN-1/palette-driven-batch-v2-sampler-diversified` (validated verdict roll-up, `SPREAD_STILL_COLLAPSED`)
+6. `_run/cycle_35_closed-clone-1`
+7. `_archive/cycle-35-scratch-clone-1`
+8. `_infra/adopt-cycle35-tests-clone-1`
 
-Rules are corrected by appending, never by editing. When an extractor decides that an earlier rule was wrong (say, because a later pass produced a better analysis of the same span), it appends a new rule with a new `rule_id` and then writes a supersede entry to the ledger. The old rule's `superseded_by` field points to the new rule's id; the old rule's content is otherwise untouched.
+Cycle 2: zero. `validated → in_progress` forbidden per c29 lesson. No `M-EAR-1/*` events (armed harness stays dormant per spec).
 
-The rationale is auditability: any downstream consumer can reconstruct the full history of an analysis by replaying the ledger in append order. Chained supersessions are permitted — rule A → rule B → rule C — and the ledger walk resolves them transitively. Cycles are rejected at ledger-append time.
+## State-Machine Discipline (c29 Lemma Respected)
 
-The ledger itself is a JSON-Lines file (`data/rules/ledger.jsonl`). Each line records either a rule-emit event or a supersede event, with wall-clock timestamp and the emitting extractor's version. Append-only is enforced by convention (single-writer during the campaign loop); a future change to concurrent extractors would need file locking, and that is noted for the merge report but not implemented here.
+`M-GEN-1/palette-driven-batch-v2-sampler-diversified` is a peer sub-milestone under M-GEN-1. NOT a child of terminal-validated `M-GEN-1/palette-driven-batch-v1` or `M-GEN-1/batch-v{1..6}`.
 
-## 6. What the validator rejects
+## Standing Constraints (Unchanged)
 
-The validator was written as a two-layer object: a JSON-Schema (2020-12) layer that catches structural errors, and a Python layer that catches invariants JSON Schema cannot express (id determinism, supersede-cycle detection, and cross-field consistency between `rule_type` and `parameters` shape).
+- α pinned at `0.7469387071101908`.
+- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor` imports.
+- Interpreter guard `assert sys.executable == '/usr/bin/python3'` on every new script.
+- Read-only anchors preserved (see Anchor Preservation above).
+- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403 from c34 baseline). M-EAR-1 armed-not-fired posture holds.
+- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`.
 
-Four classes of planted-invalid instances were checked, all rejected as expected:
+## Anti-Patterns Locked (5-Count Stable)
 
-- **Unknown `rule_type`** — a rule with `rule_type: "dynamics"` (not one of the five). Rejected at the enum check. The policy is *reject*, not *ignore*: an unknown type is treated as a possible schema-version drift and must be resolved by the emitter, not silently dropped by the reader.
-- **Missing provenance** — a rule with an empty `provenance_pointers` list. Rejected at the min-length check. There is no such thing as a valid rule without a pointer back to the observation that produced it.
-- **Out-of-range confidence** — instances with `confidence: 1.5` and `confidence: -0.1`. Both rejected at the numeric-range check.
-- **Duplicate `rule_id`** — a second rule appended to the ledger with the same id as an existing live rule. Rejected at ledger-append time. (A duplicate that resolves to the same content is *silently deduplicated* rather than rejected; the failure case above uses a duplicate id whose content has been tampered with, which is a stronger signal of corruption.)
+c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted.
 
-Additional invariants checked by the Python layer: scope bounds (`end ≥ start` for both measures and seconds), non-negativity of second-valued fields, and the rule/parameter type match.
+## Cycle-36 Handoff (Published in Report; Reproduced Here)
 
-## 7. Consumer interface
+**New peer sub-milestone**: `M-GEN-1/palette-driven-batch-v3` under M-GEN-1 (c29 lemma respected; NOT a child of terminal-validated `palette-driven-batch-v{1, 2-sampler-diversified}` or `batch-v{1..6}`).
 
-The seam at which the extraction half of this milestone (and, later, the generation stage) will plug in is small and explicit:
+- **Option A (minimal audio-surface change)**: extend c33 `scripts.palette_render.render_stem` to consume `pinned_state.parameter_dict` for fluidsynth/sfizz dispatchers; thread per-rule parameters through the existing CLI invocation. Uses this cycle's validated v2 payloads at `data/gen_palette_batch_v2/per_song/<salt>/v2_perturbed/{surge_xt,dexed}.json` as ready-made inputs.
+- **Option B (strategic, palette-v2 payoff)**: author a new c33-peer renderer for Surge XT / Dexed VST3 consuming `v2_iterated_params`. Subject to c35 Branch A's `RENDER_FAILS` VST3 nondeterminism finding — may push behind auditor's alternate `M-DAW-SPIKE-1/{dexed-preset-hydration, surge-xt-fxp-load, vst3-render-nondeterminism-characterization}` line.
+- **Preserve locks**: α = `0.7469387071101908`; NO PRNG; SHA-256 tiebreak only; 5 anti-patterns locked; `get_state()`/`save_state(filepath)`/`set_state(bytes)` remain c31 STILL_GAP surface; `ledger_i3_dminor.jsonl` NOT read from this branch's descendants.
+- **Merge-time housekeeping** (root-conductor scope): 114 orphan-artifact WARNs clear via `_infra/adopt-fanout-artifacts-cycle35-batch-v2-clone-1`; sibling artefact clusters reconcile under their own adoption events.
 
-- **Read path:** load the schema (`scripts/rules/schema/rules_v1.json`), load the ledger (`data/rules/ledger.jsonl`), and walk it to produce the current live rule set (rules with no `superseded_by` still active at ledger head).
-- **Write path:** construct a rule object matching the envelope in §2 and the parameter block for its `rule_type` (§3); compute its `rule_id` with the helper in `scripts/rules/rule_id.py`; validate with `scripts/rules/validate.py`; append via `scripts/rules/ledger.py`.
-- **Supersede path:** as §5. The helper emits both the new rule and the supersede pointer in a single ledger transaction so partial writes cannot leave the ledger inconsistent.
+## Merge Disposition
 
-The extraction half of the milestone, once unblocked upstream, will import these three helpers unchanged. Nothing about the extractor's internal design is exposed on this seam.
+Merge report at `/home/user/music-gen-instance/fork-07063458736e/clone-1/merge_report.md` (spec path; workspace-root fallback also acceptable per c31/c34 pattern). Eight shadow-ledger rows (cycle 1) ready for `concat_clone_ledgers`; zero cross-clone collisions under c32 `-clone-1` suffixes. Cycle 2 contributes zero shadow rows.
 
-## 8. Test suite
+## Cumulative Progress
 
-Twenty-five synthetic instances were authored — five per rule type — and stored under `scripts/rules/schema/examples/<type>/`. Each instance is a small, hand-audited example intended to exercise a distinct sub-pattern within its category. The suite is not a corpus for training; it is a set of fixtures for the validator and for downstream consumers to test against.
+**M-GEN-1 palette line** — three-cycle mechanism-focused convergence chain (textbook honest-negative-finding chain):
 
-The `tests/test_rules_schema.py` file (413 lines) runs the following checks on every push:
+| Cycle | Milestone | Verdict | Structural Finding |
+| --- | --- | --- | --- |
+| c33 | `M-TEX-1/palette-driven-bare-render` | PALETTE_MOVES_PANEL | Palette contract activates on real renders (single-song). |
+| c34 | `M-GEN-1/palette-driven-batch-v1` | BATCH_SPREAD_COLLAPSED | Dispatcher `build_assignment_row` is `rule_id`-invariant. |
+| c35 (this) | `M-GEN-1/palette-driven-batch-v2-sampler-diversified` | **SPREAD_STILL_COLLAPSED** | Fixing the dispatcher alone doesn't move audio bytes: c33 `render_stem` API surface never consumes `pinned_state`. |
 
-1. All twenty-five synthetic instances validate.
-2. Each instance round-trips: write → read → identical bytes.
-3. Each of the four planted-invalid classes above is rejected with a specific, non-empty error message.
-4. `rule_id` determinism reproduces from scratch on every run.
-5. Supersede transitivity (A → B → C) resolves correctly on a fresh temp ledger.
-6. A duplicate-id append is rejected at ledger level.
+Each cycle carries a specific, falsifiable, pre-registered rubric, converging on the exact API surface that must change in c36.
 
-The audit trail records `25/25` synthetic instances passing and `11` planted-invalid checks rejected, with the additional five planted invalids exercising edge cases within the four documented classes (e.g. a negative measure number, a `section` scope with `end_sec < start_sec`).
+**Pattern durability**: **seven consecutive cycles** of rubric-first pre-registration discipline (c26-c30 mechanism probes + c31/c32/c33/c34/c35). Zero rubric-edit-after-analysis incidents. `SPREAD_STILL_COLLAPSED` is the first-class negative finding pre-registration is designed to accept — not a rubric failure.
 
-At branch merge, the cross-branch integration suite grew from 68 to 90 checks with the rules-schema material folded in; all 90 pass.
+**c29 state-machine lemma** respected: every c35 fanout branch (A: palette-schema-v2-hydration-render; B: this — palette-driven-batch-v2-sampler-diversified; C: `_infra/anchor-manifest-v1`) is a NEW peer sub-milestone, not a child of terminal-validated ancestors. Ledger topology stays a DAG, not a lineage tree.
 
-## 9. What this branch does not attempt
+**c32 fanout-namespace convention** held under c33 harness-clone-namespace-guard: infra families auto-suffixed `-clone-1`, substantive `M-*` unsuffixed — no `LedgerConcatError` risk at merge.
 
-- **Extraction from real scores.** Blocked upstream by transcription and full-score merge. When those land, the seam in §7 is the entry point.
-- **Concurrent writers on the ledger.** The single-writer assumption is enforced by convention only. If the campaign later runs multiple extractors in parallel, file locking is the small change required — noted, not implemented.
-- **A binary or columnar encoding.** JSON-Lines is chosen for auditability and diff-friendliness. If read throughput ever becomes a bottleneck, a derived index can be built without changing the on-disk contract.
-- **Rated-audio-dependent work.** The rated-playlists corpus is registered with full provenance but audio downloads remain blocked by workspace egress policy. Nothing in this branch touches audio, so nothing here is affected. The harvest script should continue to be retried in case egress opens.
+**M-EAR-1 armed-harness Path B**: dormant/armed pending audio-egress unblock (still 403 as of c35; retry per policy is non-blocking). **Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
 
-## 10. Open items handed to the root conductor
-
-The following items are surfaced to the parent so they can be picked up at the next appropriate stage:
-
-- **Schedule the extraction half** once the full-score-merge milestone completes. Its consumer interface is §7 above.
-- **Two pre-existing errors in the plan-consistency checker** (at the two ledger lines that name this milestone and the ear-training preparation milestone) are a parser-side mismatch in the checker itself — both plan entries are present at the expected locations. This belongs to a future infrastructure-owner cycle; it is not urgent and did not affect this branch.
-- **Orphan-artifact warnings** on the new `scripts/rules/**` and companion test file are the expected artifact of running inside a fan-out clone; they resolve automatically when the shadow ledger is folded back into the main ledger at merge.
-- **Reusable pattern.** The shape that landed here — a schema file, a two-layer validator, a synthetic-instance matrix, a planted-invalid matrix, and a small documented consumer seam — is a clean template for any future schema-first branch in this campaign. Noted for reuse; not itself a task.
-
-## Appendix: Implementation Details
-
-**Files created or modified during this branch (paths relative to workspace root):**
-
-- `scripts/rules/schema/rules_v1.json` (222 lines) — JSON Schema 2020-12 source of truth.
-- `scripts/rules/schema/rules_v1.yaml` (370 lines) — YAML equivalent, generated from the JSON by `scripts/rules/schema/build_yaml.py` and checked in for readability.
-- `scripts/rules/schema/README.md` — reader-facing overview of the schema layout.
-- `scripts/rules/schema/examples/<type>/*.json` — 5 instances per category × 5 categories = 25 files.
-- `scripts/rules/schema/build_examples.py` — regenerates the example set deterministically.
-- `scripts/rules/rule_id.py` (65 lines) — canonical serialization and id derivation.
-- `scripts/rules/validate.py` (186 lines) — two-layer validator.
-- `scripts/rules/ledger.py` (193 lines) — append-only ledger with supersede support and cycle detection.
-- `scripts/rules/__init__.py` (5 lines) — package marker.
-- `data/rules/ledger.jsonl` — the ledger file itself; initialized with the synthetic instances so downstream consumers have something to read against.
-- `tests/test_rules_schema.py` (413 lines) — full test suite.
-- `docs/rules_schema_report.md` (293 lines) — companion document at the milestone level; this report is the cycle-level companion.
-
-**Cross-branch integration.** Independently reproduced in the branch's earlier cycles: 25/25 synthetic instances passing, 11 planted-invalid rejections, `rule_id` determinism reproduced from scratch on a fresh interpreter, supersede transitivity confirmed on a fresh temp ledger, cross-branch integration suite green at 90/90.
-
-**Cycle-level sessions.** Cycles 1–2 of this clone: researcher `bfe4b5ec-f7fa-49ef-bd2e-6157a3912467` and `84e4881e-1eb0-4304-8e19-fe3aa409c137`; worker `3f609512-5fa6-415f-93dc-15c3c863f612` and `d646a9ad-ca9a-4a50-acaa-596efddf4b50`; auditor `e8792cad-c92b-41ec-97d0-2ddfe918173a` and `40f669e0-4e4e-4fb7-9cab-aaa4f18c4827`. The branch as a whole ran seven cycles; the substantive convergence was reached earlier and the terminal cycle emitted a single scope-closure event with an immediately-archived one-shot helper, introducing no new artifacts.
-
-**Ledger events at branch close.** One authorized rollup event (`_run/clone-1-scope-complete`) plus the pre-existing milestone-level validation event from earlier in the branch. No other events emitted.
-
-**Merge verdict.** The branch objective — schema, validator, synthetic-instance suite, planted-invalid suite, round-trip determinism, supersede pattern, consumer interface — was met and independently confirmed. The extraction half is out of scope and correctly deferred.
-
-<verdict>validated</verdict>
+[END OUTPUT]
