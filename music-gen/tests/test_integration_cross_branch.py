@@ -4425,6 +4425,82 @@ if _C36A_VERDICT.is_file():
           "ear-v0 §57k: verdict.rubric_hash byte-equal to rubric_hash.txt")
 check(_C36A_TEST.is_file(), "ear-v0 §57l: test suite file present")
 
+# §60. M-EAR-1/real-label-training-v2 — c45 substantive + c46 adjudication.
+import hashlib as _hs_v2
+_V2_DATA = WS / "data" / "ear_v2"
+_V2_RUBRIC = WS / "docs" / "ear_real_label_training_v2_rubric.md"
+_V2_HASH = _V2_DATA / "rubric_hash.txt"
+_V2_VERDICT = _V2_DATA / "verdict.json"
+_C46_DET = _V2_DATA / "determinism_check_c46.json"
+_C46_ADJ_RUBRIC = WS / "docs" / "ear_v2_verdict_adjudication_rubric.md"
+_C46_ADJ_HASH = _V2_DATA / "adjudication_rubric_hash.txt"
+_C46_REPORT = WS / "docs" / "ear_v2_verdict_adjudication_report.md"
+_V2_REPORT = WS / "docs" / "ear_real_label_training_v2_report.md"
+
+# §60a — three-way rubric_hash byte-equality: doc SHA == rubric_hash.txt == verdict.rubric_hash
+if _V2_VERDICT.is_file() and _V2_HASH.is_file() and _V2_RUBRIC.is_file():
+    _v = json.loads(_V2_VERDICT.read_text())
+    _h_disk = _V2_HASH.read_text().strip()
+    _h_doc = _hs_v2.sha256(_V2_RUBRIC.read_bytes()).hexdigest()
+    check(_v.get("rubric_hash") == _h_disk == _h_doc,
+          "v2 §60a: three-way rubric_hash byte-equality")
+check(_V2_RUBRIC.is_file(),
+      "v2 §60b: rubric doc present")
+# §60c — rubric-first mtime ordering
+if _V2_RUBRIC.is_file():
+    _rmt = _V2_RUBRIC.stat().st_mtime
+    _script_dir = WS / "scripts" / "ear_v2"
+    _rubric_first_ok = True
+    if _script_dir.is_dir():
+        for _p in _script_dir.rglob("*.py"):
+            if _p.name == "__init__.py":
+                continue
+            if _p.stat().st_mtime < _rmt:
+                _rubric_first_ok = False
+                break
+    check(_rubric_first_ok, "v2 §60c: rubric doc mtime < all scripts under scripts/ear_v2/")
+# §60d — corpus-N caveat present in report
+if _V2_REPORT.is_file():
+    _rep_txt = _V2_REPORT.read_text()
+    check("43" in _rep_txt and "80" in _rep_txt,
+          "v2 §60d: report carries 43/80 corpus caveat")
+# §60e — no sidecar_nonfactor in scripts/ear_v2/
+_v2_sidecar_ok = True
+if (WS / "scripts" / "ear_v2").is_dir():
+    for _p in (WS / "scripts" / "ear_v2").rglob("*.py"):
+        if "sidecar_nonfactor" in _p.read_text():
+            _v2_sidecar_ok = False
+            break
+check(_v2_sidecar_ok, "v2 §60e: no sidecar_nonfactor under scripts/ear_v2/")
+# §60f — no i4_stratified imported
+_v2_i4_ok = True
+if (WS / "scripts" / "ear_v2").is_dir():
+    for _p in (WS / "scripts" / "ear_v2").rglob("*.py"):
+        if "i4_stratified" in _p.read_text():
+            _v2_i4_ok = False
+            break
+check(_v2_i4_ok, "v2 §60f: no i4_stratified imported by scripts/ear_v2/")
+# §60g — chassis anchor files exist (READ-ONLY)
+_chassis_ok = all(
+    (WS / "scripts" / "ear" / n).is_file()
+    for n in ("features.py", "model.py", "corn.py",
+              "leak_test.py", "synthetic_labels.py",
+              "stability_metrics.py")
+)
+check(_chassis_ok, "v2 §60g: c6 chassis anchor files present")
+# §60h — c46 adjudication rubric hash matches doc SHA
+if _C46_ADJ_RUBRIC.is_file() and _C46_ADJ_HASH.is_file():
+    _adj_disk = _C46_ADJ_HASH.read_text().strip()
+    _adj_doc = _hs_v2.sha256(_C46_ADJ_RUBRIC.read_bytes()).hexdigest()
+    check(_adj_disk == _adj_doc,
+          "v2 §60h: c46 adjudication rubric hash byte-equal to doc SHA")
+# §60i — c46 determinism × 2 verified on corn_head
+if _C46_DET.is_file():
+    _d = json.loads(_C46_DET.read_text())
+    check(_d.get("run_1", {}).get("corn_head_v2.pt")
+          == _d.get("run_2", {}).get("corn_head_v2.pt"),
+          "v2 §60i: c46 determinism × 2 equal on corn_head_v2.pt")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
