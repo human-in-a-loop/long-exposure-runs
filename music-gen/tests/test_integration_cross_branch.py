@@ -4774,6 +4774,262 @@ if _V2P1_RUBRIC.is_file():
                 break
     check(_rubric_first_ok, "v2p1 §61i: rubric doc mtime < all scripts under scripts/ear_v2p1/")
 
+# =============================================================================
+# §65 — _manager/corpus-expansion-plan — c48 Branch B (clone-1)
+# =============================================================================
+import hashlib as _hs_cep, csv as _csv_cep, ast as _ast_cep, re as _re_cep
+
+_CEP_RUBRIC = WS / "docs" / "corpus_expansion_plan_rubric.md"
+_CEP_RUBRIC_HASH = WS / "data" / "corpus_expansion_plan" / "rubric_hash.txt"
+_CEP_AXES = WS / "data" / "corpus_expansion_plan" / "axes.tsv"
+_CEP_COSTS = WS / "data" / "corpus_expansion_plan" / "cost_estimator_output.json"
+_CEP_PROJ = WS / "data" / "corpus_expansion_plan" / "partial_corpus_projection.json"
+_CEP_VERDICT = WS / "data" / "corpus_expansion_plan" / "verdict.json"
+_CEP_ANCHOR = WS / "data" / "corpus_expansion_plan" / "anchor_preservation.json"
+_CEP_PKG = WS / "scripts" / "corpus_expansion_plan"
+
+if _CEP_VERDICT.is_file():
+    _v = json.loads(_CEP_VERDICT.read_text())
+    # §65a verdict schema well-formed
+    check(_v.get("verdict") in ("CORPUS_EXPANSION_TICKET_LANDS", "CORPUS_EXPANSION_TICKET_PARTIAL"),
+          "cep §65a: verdict enum member")
+    # §65b three-way rubric_hash byte-equality
+    _doc_sha = _hs_cep.sha256(_CEP_RUBRIC.read_bytes()).hexdigest()
+    _pinned = _CEP_RUBRIC_HASH.read_text().strip()
+    check(_doc_sha == _pinned == _v.get("rubric_hash"),
+          "cep §65b: three-way rubric_hash byte-equality")
+    # §65c byte-determinism × 2 on core artifacts (verified by test_corpus_expansion_plan §13-15,20)
+    check(_CEP_AXES.is_file() and _CEP_COSTS.is_file() and _CEP_PROJ.is_file(),
+          "cep §65c: core artifacts present (byte-determinism verified in dedicated suite)")
+    # §65d c22 stability harness anchor SHAs unchanged
+    if _CEP_ANCHOR.is_file():
+        _a = json.loads(_CEP_ANCHOR.read_text())
+        _c22 = ("scripts/ear/synthetic_labels.py", "scripts/ear/stability_metrics.py", "scripts/ear/stability_audit.py")
+        _c22_ok = all(_a["pre"][p]["sha256"] == _a["post"][p]["sha256"] for p in _c22 if p in _a["pre"])
+        check(_c22_ok, "cep §65d: c22 stability harness anchor SHAs unchanged")
+    # §65e c45 v2 + c47 v2.1 verdict.json SHAs unchanged
+    if _CEP_ANCHOR.is_file():
+        _a = json.loads(_CEP_ANCHOR.read_text())
+        for _pth in ("data/ear_v2/verdict.json", "data/ear_v2p1/verdict.json"):
+            if _pth in _a["pre"]:
+                check(_a["pre"][_pth]["sha256"] == _a["post"][_pth]["sha256"],
+                      f"cep §65e: {_pth} SHA unchanged pre==post")
+    # §65f c47 policy doc + c47 anchor manifest SHAs unchanged
+    if _CEP_ANCHOR.is_file():
+        _a = json.loads(_CEP_ANCHOR.read_text())
+        for _pth in ("docs/pre_registration_gate_policy.md", "data/anchor_manifest_v1.json", "docs/anchor_manifest_v1.md"):
+            if _pth in _a["pre"]:
+                check(_a["pre"][_pth]["sha256"] == _a["post"][_pth]["sha256"],
+                      f"cep §65f: {_pth} SHA unchanged pre==post")
+    # §65g zero live-network probes AST-grep
+    _blk = {"urllib", "requests", "socket", "httpx", "yt_dlp", "aiohttp", "urllib3"}
+    _lhits = []
+    if _CEP_PKG.is_dir():
+        for _p in _CEP_PKG.rglob("*.py"):
+            _t = _ast_cep.parse(_p.read_text(), filename=str(_p))
+            for _n in _ast_cep.walk(_t):
+                if isinstance(_n, _ast_cep.Import):
+                    for _al in _n.names:
+                        if _al.name.split(".")[0] in _blk:
+                            _lhits.append(str(_p))
+                elif isinstance(_n, _ast_cep.ImportFrom):
+                    if _n.module and _n.module.split(".")[0] in _blk:
+                        _lhits.append(str(_p))
+    check(not _lhits, "cep §65g: zero live-network probes under scripts/corpus_expansion_plan/")
+    # §65h zero PRNG AST-grep
+    _prng_blk = {"random", "secrets"}
+    _phits = []
+    if _CEP_PKG.is_dir():
+        for _p in _CEP_PKG.rglob("*.py"):
+            _t = _ast_cep.parse(_p.read_text(), filename=str(_p))
+            for _n in _ast_cep.walk(_t):
+                if isinstance(_n, _ast_cep.Import):
+                    for _al in _n.names:
+                        if _al.name.split(".")[0] in _prng_blk:
+                            _phits.append(str(_p))
+                elif isinstance(_n, _ast_cep.ImportFrom):
+                    if _n.module and _n.module.split(".")[0] in _prng_blk:
+                        _phits.append(str(_p))
+    check(not _phits, "cep §65h: zero PRNG imports under scripts/corpus_expansion_plan/")
+
+# --------------------------------------------------------------------
+# §66. _infra/pre-existing-test-drift-triage — c48 Branch C (clone-2).
+# 8 checks: verdict schema, three-way rubric_hash, classification total,
+# priority soundness, c47-overlap agreement, byte-determinism × 2 on
+# all three artifacts, c47 anchor manifest SHA byte-identical pre/post,
+# CRITICAL escalation list present.
+# --------------------------------------------------------------------
+import hashlib as _hl66, pathlib as _pl66, json as _js66
+_data66 = _pl66.Path("data/pre_existing_test_drift")
+if (_data66 / "verdict.json").exists():
+    # §66a — verdict JSON well-formed and enum member
+    _v66 = _js66.loads((_data66 / "verdict.json").read_text())
+    check(_v66.get("verdict") in {"DRIFT_TRIAGE_COMPLETE", "DRIFT_TRIAGE_PARTIAL",
+                                    "DRIFT_TRIAGE_INSUFFICIENT"},
+          "§66a: verdict enum member")
+    # §66b — three-way rubric_hash
+    _doc66 = _hl66.sha256(_pl66.Path("docs/pre_existing_test_drift_triage_rubric.md").read_bytes()).hexdigest()
+    _rh66 = (_data66 / "rubric_hash.txt").read_text().strip()
+    check(_doc66 == _rh66 == _v66["rubric_hash"], "§66b: three-way rubric_hash byte-equality")
+    # §66c — classification total == 87
+    check(sum(_v66["per_taxonomy_counts"].values()) == 87, "§66c: classification total == 87")
+    # §66d — priority soundness (c47-orthogonal must not match lock-set;
+    #        c47-non-orthogonal must match lock-set)
+    _lock66 = ("c47", "v2p1", "policy", "deprecation", "anchor.pin",
+               "source.date", "source_date", "ear_v2p1", "adjudication")
+    _tsv_lines66 = (_data66 / "triage_taxonomy.tsv").read_text().splitlines()
+    _hdr66 = _tsv_lines66[0].split("\t")
+    _i_id66 = _hdr66.index("identifier")
+    _i_lab66 = _hdr66.index("taxonomy_label")
+    _psound = True
+    for _ln66 in _tsv_lines66[1:]:
+        _pp66 = _ln66.split("\t")
+        _ident66 = _pp66[_i_id66].lower()
+        _lab66 = _pp66[_i_lab66]
+        _match66 = any(t in _ident66 for t in _lock66)
+        if _lab66 == "c47-non-orthogonal" and not _match66:
+            _psound = False
+        if _lab66 == "c47-orthogonal" and _match66:
+            _psound = False
+    check(_psound, "§66d: priority soundness")
+    # §66e — c47-overlap agreement
+    _ov66 = _js66.loads((_data66 / "c47_overlap_detection.json").read_text())
+    check(_ov66["classification_agreement"] and _ov66["soundness_status"] == "PASS",
+          "§66e: c47-overlap detection agreement PASS")
+    # §66f — byte-determinism × 2 on captured failures list
+    check(_v66["capture_run_1_sha256"] == _v66["capture_run_2_sha256"],
+          "§66f: captured_failures byte-determinism × 2")
+    # §66g — c47 anchor manifest SHA byte-identical pre/post
+    _ap66 = _js66.loads((_data66 / "anchor_preservation.json").read_text())["anchors"]
+    _now66 = _hl66.sha256(_pl66.Path("data/anchor_manifest_v1.json").read_bytes()).hexdigest()
+    check(_ap66["data/anchor_manifest_v1.json"] == _now66,
+          "§66g: c47 anchor manifest SHA byte-identical pre/post")
+    # §66h — CRITICAL escalation list present (may be empty)
+    check("c47_critical_identifiers" in _v66 and isinstance(_v66["c47_critical_identifiers"], list),
+          "§66h: CRITICAL escalation list present in verdict.json")
+
+
+# §64 — c48 Branch A _infra/harness-and-writer-hardening-v3 invariants
+# ---------------------------------------------------------------------
+import hashlib as _hs_hw3, json as _json_hw3, inspect as _insp_hw3, os as _os_hw3, sys as _sys_hw3
+_hw3_ws = WS if 'WS' in globals() else pathlib.Path(__file__).parent.parent
+_hw3_data = _hw3_ws / "data" / "harness_and_writer_hardening_v3"
+_hw3_rubric = _hw3_ws / "docs" / "harness_and_writer_hardening_v3_rubric.md"
+_hw3_verdict = _hw3_data / "verdict.json"
+_hw3_baseline = _hw3_data / "baseline_replay_manifest.jsonl"
+_hw3_baseline_sha = _hw3_data / "baseline_manifest_sha.txt"
+
+# §64a — rubric doc mtime < any file mutated under long_exposure/*
+if _hw3_rubric.is_file():
+    _hw3_rmt = _hw3_rubric.stat().st_mtime
+    _LE = "/home/user/human-in-a-loop/long-exposure"
+    _mods = [_LE + "/long_exposure/workspace_bootstrap.py",
+             _LE + "/long_exposure/tools/_ledger_schema.py"]
+    _hw3_gate_ok = all(pathlib.Path(m).stat().st_mtime >= _hw3_rmt for m in _mods if pathlib.Path(m).exists())
+    check(_hw3_gate_ok, "hw3 §64a: rubric doc mtime <= any file mutated under long_exposure/*")
+
+# §64b — three-way rubric_hash byte-equality
+if _hw3_rubric.is_file() and (_hw3_data / "rubric_hash.txt").is_file() and _hw3_verdict.is_file():
+    _doc_sha = _hs_hw3.sha256(_hw3_rubric.read_bytes()).hexdigest()
+    _file_sha = (_hw3_data / "rubric_hash.txt").read_text().strip()
+    _v_sha = _json_hw3.loads(_hw3_verdict.read_text()).get("rubric_hash", "")
+    check(_doc_sha == _file_sha and _file_sha == _v_sha,
+          "hw3 §64b: three-way rubric_hash byte-equality (doc == rubric_hash.txt == verdict.rubric_hash)")
+
+# §64c — verdict JSON schema well-formed
+if _hw3_verdict.is_file():
+    _v = _json_hw3.loads(_hw3_verdict.read_text())
+    check(_v.get("verdict") in
+          {"HARNESS_AND_WRITER_HARDENING_LANDS", "HARNESS_AND_WRITER_HARDENING_INSUFFICIENT"}
+          and _v.get("sub_fix_1_landed") is not None
+          and _v.get("sub_fix_2_landed") is not None
+          and _v.get("baseline_replay_manifest_sha"),
+          "hw3 §64c: verdict.json schema well-formed")
+
+# §64d — baseline manifest SHA present and pinned
+if _hw3_baseline.is_file() and _hw3_baseline_sha.is_file():
+    _now = _hs_hw3.sha256(_hw3_baseline.read_bytes()).hexdigest()
+    _pin = _hw3_baseline_sha.read_text().strip()
+    check(_now == _pin,
+          "hw3 §64d: baseline manifest SHA pinned in baseline_manifest_sha.txt")
+
+# §64e — both env-var toggles round-trip (fixture-only, no main-ledger side effects)
+_sys_hw3.path.insert(0, "/home/user/human-in-a-loop/long-exposure")
+import long_exposure.workspace_bootstrap as _hw3_wb  # noqa
+from long_exposure.tools._ledger_schema import content_hash_event_id_v2 as _hw3_cheiv2  # noqa
+_os_hw3.environ.pop("MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION", None)
+_off_M = _hw3_wb._should_suffix("M-EAR-1/synthetic-test")
+_off_infra = _hw3_wb._should_suffix("_infra/synthetic-test")
+_os_hw3.environ["MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION"] = "1"
+_on_M = _hw3_wb._should_suffix("M-EAR-1/synthetic-test")
+_on_infra = _hw3_wb._should_suffix("_infra/synthetic-test")
+_os_hw3.environ.pop("MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION", None)
+check(_off_M is True and _off_infra is True and _on_M is False and _on_infra is True,
+      "hw3 §64e: MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION round-trip fixture-only")
+
+_ledger_lines = (_hw3_ws / "promise_ledger.jsonl").read_text().splitlines()
+_line745 = _json_hw3.loads(_ledger_lines[744])
+_h_off = _hw3_cheiv2(_line745, include_supersedes=False)
+_h_on = _hw3_cheiv2(_line745, include_supersedes=True)
+check(_h_off == "658231db-5d86-56e5-8ca9-2a9bed7fdf9f"
+      and _h_on == "6366af60-acb7-5e3f-a2e5-89b47f42c82f",
+      "hw3 §64f: MUSICGEN_LEDGER_SUPERSEDES_IN_HASH round-trip fixture-only")
+
+# §64g — LedgerNamespaceViolation MRO unchanged
+from long_exposure.tools._ledger_schema import LedgerSchemaError as _hw3_LSE  # noqa
+_mro = [c.__name__ for c in _hw3_wb.LedgerNamespaceViolation.__mro__]
+check(_mro[:3] == ["LedgerNamespaceViolation", "LedgerSchemaError", "ValueError"]
+      and issubclass(_hw3_wb.LedgerNamespaceViolation, ValueError),
+      "hw3 §64g: LedgerNamespaceViolation MRO chain unchanged")
+
+# §64h — append_ledger_event.__signature__ == (workspace, event) unchanged
+_params = list(_insp_hw3.signature(_hw3_wb.append_ledger_event).parameters.keys())
+check(_params == ["workspace", "event"],
+      "hw3 §64h: append_ledger_event.__signature__ == (workspace, event)")
+
+# §64i — c22 stability harness + c6 chassis + c33 guard rubric SHA unchanged
+_hw3_anchor = _hw3_data / "anchor_preservation.json"
+if _hw3_anchor.is_file():
+    _ap = _json_hw3.loads(_hw3_anchor.read_text())
+    _ro = _ap.get("readonly_anchors", {})
+    _keys = [
+        "scripts/ear/synthetic_labels.py",
+        "scripts/ear/stability_metrics.py",
+        "scripts/ear/stability_audit.py",
+        "scripts/ear/features.py",
+        "scripts/ear/model.py",
+        "scripts/ear/corn.py",
+        "scripts/ear/leak_test.py",
+        "docs/harness_clone_namespace_guard_rubric.md",
+    ]
+    _ok = True
+    for _k in _keys:
+        _entry = _ro.get(_k, {})
+        _p = _hw3_ws / _k
+        if _p.exists() and _entry.get("sha256"):
+            if _hs_hw3.sha256(_p.read_bytes()).hexdigest() != _entry["sha256"]:
+                _ok = False; break
+    check(_ok, "hw3 §64i: c22 stability + c6 chassis + c33 guard rubric SHAs unchanged")
+
+# §64j — c45/c47 rubric doc SHAs unchanged
+if _hw3_anchor.is_file():
+    _ap = _json_hw3.loads(_hw3_anchor.read_text())
+    _ro = _ap.get("readonly_anchors", {})
+    _keys = [
+        "docs/ear_real_label_training_v2_rubric.md",
+        "docs/ear_real_label_training_v2p1_rubric.md",
+        "docs/pre_registration_gate_policy_scope_verification_rubric.md",
+        "docs/deprecation_and_anchor_pin_rubric.md",
+    ]
+    _ok = True
+    for _k in _keys:
+        _entry = _ro.get(_k, {})
+        _p = _hw3_ws / _k
+        if _p.exists() and _entry.get("sha256"):
+            if _hs_hw3.sha256(_p.read_bytes()).hexdigest() != _entry["sha256"]:
+                _ok = False; break
+    check(_ok, "hw3 §64j: c45/c47 rubric doc SHAs unchanged")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
