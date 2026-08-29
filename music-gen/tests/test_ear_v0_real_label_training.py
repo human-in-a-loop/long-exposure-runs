@@ -203,6 +203,46 @@ def test_16_c6_pipeline_not_mutated():
         assert ap["pre"][target] == ap["post"][target], f"mutation of {target}"
 
 
+def test_17_snapshot_script_produces_valid_output():
+    """§2 Case A (c36 auditor MODERATE #2): invoking snapshot_anchor_preservation
+    on the real tree yields a non-empty JSON with `unchanged` present + boolean."""
+    from scripts.ear_v0.snapshot_anchor_preservation import snapshot
+    snap = snapshot(ROOT)
+    assert isinstance(snap, dict) and len(snap) > 0, snap
+    assert "unchanged" in snap, list(snap.keys())
+    assert isinstance(snap["unchanged"], bool), type(snap["unchanged"])
+    assert "combined_manifest_sha" in snap
+    assert isinstance(snap["combined_manifest_sha"], str)
+    assert len(snap["combined_manifest_sha"]) == 64  # SHA-256 hex
+    # At least one anchor group must exist on the real tree.
+    assert any(g["n"] > 0 for g in snap["groups"].values()), snap["groups"]
+
+
+def test_18_snapshot_flips_on_perturbation():
+    """§2 Case B (c36 auditor MODERATE #2): perturb a fixture anchor tree;
+    assert `unchanged` flips to False.
+
+    Isolates via a scratch root — no touch of real anchors.
+    """
+    import shutil
+    import tempfile
+    from scripts.ear_v0.snapshot_anchor_preservation import snapshot
+    scratch = Path(tempfile.mkdtemp(prefix="perturb_anchor_"))
+    try:
+        # Copy scripts/ear/ into scratch with a perturbation to features.py.
+        src = ROOT / "scripts" / "ear"
+        dst = scratch / "scripts" / "ear"
+        dst.mkdir(parents=True, exist_ok=True)
+        for p in src.glob("*.py"):
+            shutil.copy2(p, dst / p.name)
+        (dst / "features.py").write_text("# PERTURBED\n" + (dst / "features.py").read_text())
+        snap = snapshot(scratch)
+        assert snap["unchanged"] is False, "should flip on perturbation"
+        assert snap["combined_manifest_sha"] != snap["c35_baseline"]
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
 def _run_all() -> tuple[int, int]:
     passed, failed = 0, 0
     failures = []
