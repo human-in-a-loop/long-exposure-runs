@@ -1,5 +1,5 @@
 ---
-title: "Cycle 1 Clone 0 Report — M-EAR-1/real-label-training-v1 (Fork 33a2a8003c84)"
+title: "Cycle 1 Clone 0 Report — RC7 v2 Rerun on c51 Branch A+B Substantive MIDIs (Fork 18817b483ed4)"
 date: "2026-08-29"
 toc: true
 toc-depth: 2
@@ -8,167 +8,222 @@ fontsize: "10pt"
 ---
 [OUTPUT: report_cycles_1-1_clone_0]
 
-# Cycle 1 Clone 0 Report — M-EAR-1/real-label-training-v1 (Fork 33a2a8003c84)
+# Cycle 1 Clone 0 Report — RC7 v2 Rerun on c51 Branch A+B Substantive MIDIs (Fork 18817b483ed4)
 
 ## Abstract
 
-Cycle 1 of clone-0 (fork `33a2a8003c84`) lands `M-EAR-1/real-label-training-v1` at **EAR_v1_PARTIAL** — a first-class honest close on the 43-song rated corpus (54% of the c26 Path B 80-song target). The c37 clone-1 F1 pooled-variance statistic was lifted into `scripts/ear/leak_test.py` under c38 anchor-preservation authorization, retiring the c6 `max(S_model, S_resid)` line; the c6 CORN 1-7 head was retrained under 5-fold CV covering all 43 songs (per-fold MAE {1.333, 1.111, 1.222, 1.125, 0.875}; aggregate 1.140). All three c26-frozen SBs (SB1/SB2/SB3) evaluate honestly against pre-registered thresholds; verdict surfaces named-SB attribution rather than post-hoc bar adjustment. Auditor recovered two CRITICAL gaps in-cycle (missing terminal report; zero substantive ledger events emitted by worker/subagent) via the auditor-role-authorised patch-and-emit path.
+Cycle 1 of clone-0 (fork `18817b483ed4`) lands the c53 Branch A substantive RC7 v2 rerun for `M-RECREATE-2/accurate-small-set/rc7-mix-balance-match` at **RC7_v2_LANDS**. The c51 Branch C RC7 mix-balance pipeline was re-run against c51 Branch A+B substantive per-stem MIDIs (vocals+guitar+piano from `data/rc1_rc9_impl/*/merged_partial.midi`; drums+bass from `data/rc2_rc3_impl/*/merged.midi`) replacing the c33-anchor placeholder MIDIs used at c51. **5/5 focus songs pass A7, 20/20 stem accepts across `{drums, bass, other_guitar, other_piano}`**. Chicken Grease (`31a164f845f8e27e`, band 6) passes 4/4 stems — the c52 handoff outcome confirms the c51 Branch C mechanism was sound: c51's RC7_FAILS was purely upstream MIDI under-transcription, not an EQ/loudness-match pipeline defect. Byte-determinism × 2 across all 226 output files under pinned environment. Auditor decision: **COMPLETE** with `[[BRANCH_COMPLETE]]`.
 
 ## Verdict
 
-**EAR_v1_PARTIAL** (VALIDATED under frozen 3-verdict rubric; `[[BRANCH_COMPLETE]]` emitted; first-class honest close on partial corpus, not chassis failure, not rubric failure).
+**RC7_v2_LANDS** (VALIDATED; 5/5 focus songs pass A7 across all four stems; 20/20 individual stem accepts — well above the RC7_v2_LANDS threshold of ≥3 songs).
 
-## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
+## Rubric SHA Anchor Chain (Three-Way Byte-Equal + Parent-v2 Preserved)
 
 | Location | SHA-256 |
 | --- | --- |
-| `docs/ear_real_label_training_v1_rubric.md` | `10131bf3…6a37f` |
-| `data/ear_v1/rubric_hash.txt` | `10131bf3…6a37f` |
-| `verdict.json.rubric_hash` | `10131bf3…6a37f` |
+| `docs/rc7_v2_rerun_rubric.md` | `9f24e6d9…04dde4` |
+| `data/recreate_v2/rc7_out_v2/rubric_hash.txt` | `9f24e6d9…04dde4` |
+| `verdict.json.rubric_hash` | `9f24e6d9…04dde4` |
+| c50 v2 parent rubric (`docs/m_recreate_2_accurate_small_set_rubric_v2.md`) | `0e11f704…debe1f` (independent chain, byte-preserved) |
+| c49 v1 rubric | `958ade38…3fe58b9d` (byte-preserved) |
 
-Rubric-first commit gate: mtime + git-log dual gate enforced (test_01, test_02, test_03, test_04 all PASS).
+Three-way byte-equality chain CONFIRMED. Fresh per-milestone rubric hash resolves cleanly independent of c50 v2 doc SHA.
 
-## F1 Statistic Surgery (c37 → c38 Lift, Under Anchor-Preservation Authorization)
+## Pre-Registration mtime Discipline (Clean Ordering)
 
-- `f1_pooled_variance_statistic` defined and used in `scripts/ear/leak_test.py`.
-- c6 `max(S_model, S_resid)` line **retired** — absent from function bodies (docstring/comment mentions only).
-- `statistic_version="F1_pooled_variance_v1"` pinned.
-- `data/ear_v1/leak_test_diff_manifest.json.old_sha256 = 6de3b28d…` matches c6 anchor fixture.
-- Tests 09-12 all PASS.
+- Rubric mtime `1788035291` **<** impl mtime `1788035649`.
+- Rubric pre-registered before any Python edit under `scripts/recreate_v2/rc7_v2_*.py` (mtime-hard gate honored per c46 path (ii) amendment).
 
-## Success Bars (c26-Frozen; All Three Fail Honestly on Partial Corpus)
+## READ-ONLY Anchor Preservation (c51 Branch C + render_stem)
 
-| Bar | c26 Threshold | v1 Result | Attribution |
-| --- | --- | --- | --- |
-| SB1 | MAE beats `min(majority-class, mean-integer)` by margin > c22 recipe-envelope-IQR 0.5909 | fails margin at aggregate MAE 1.140 | Corpus size (43/80) |
-| SB2 | mean pairwise Kendall τ ≥ 0.4 across 10 stratified bootstrap resamples | fails threshold | Bootstrap-count probe candidate |
-| SB3 | leak-test detection ≥ 0.90 at α=1.0 (c6 protocol) | detection=1.0 but FPR=1.0 (singleton-corpus F1 pathology) | c37-predicted singleton-corpus degeneracy |
-
-**SB3 note** (worked as intended per c37 rubric §10 pre-registered downstream contract): 43 distinct artists → each group size 1 → F1 pins at 2/3 by construction (`null_std = 1.1e-16`); both leak-planted and no-leak controls exceed the 90th-percentile threshold identically. Not a bug in the c38 surgery; the c37 clone-1 F1 statistic saturates on singleton corpora by design. The verdict correctly surfaces this via named-SB attribution rather than obscuring it.
-
-## Byte-Determinism × 2 (All Three PASS)
-
-| Artefact | SHA-256 |
+| Anchor | SHA-256 / State |
 | --- | --- |
-| `verdict.json` | `1933eda…` |
-| `leak_test_summary.json` | `1552a1b…` |
-| `corn_head_v1.pt` | `2befa58…` |
+| `scripts/palette_render/render_stem.py` | `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b` byte-identical pre/post (directive-anchored SHA) |
+| `data/recreate_v2/rc7_out/` (c51 Branch C) | 182 files byte-identical pre==post per `anchor-preservation-v2` ledger event |
+| `data/rc1_rc9_impl/` (c51 Branch A) | READ-ONLY (worker did not touch c51 anchors) |
+| `data/rc2_rc3_impl/` (c51 Branch B) | READ-ONLY (worker did not touch c51 anchors) |
 
-`determinism_check.json.all_equal = true` (test_17 PASS).
+Consumed `render_stem.py` in its c51-extended additive-kwargs form (`eq_curve + loudness_target`) READ-ONLY.
 
-## Anchor Preservation (14 Read-Only c6/c22/c26/ear_v0 Anchors)
+## RC7 v2 Per-Song Results (5/5 Focus Songs Pass A7; 20/20 Stem Accepts)
 
-`anchor_preservation.json.all_unchanged = true` (test_18 PASS). Zero writes under any read-only anchor family beyond the pre-authorised `scripts/ear/leak_test.py` F1-lift edit.
+Per focus song: fit 12-band iirpeak EQ curve (Q=1.4, log-spaced) from original 6-stem spectrum vs new bare-render (built from substantive MIDIs); applied RMS + LUFS-S loudness match to reach A7 (≤3 dB RMS, ≤3 LU LUFS-S vs `baseline/<sha16>/rc7_per_stem_loudness.json`); summed matched stems into `data/recreate_v2/rc7_out_v2/<sha16>/rc7_v2_mixed_reconstruction.wav`.
 
-## Genre + Era Deferrals (Fields, Not Comments)
+**Chicken Grease (`31a164f845f8e27e`, band 6, mandatory per operator override)**: **4/4 stems pass** — kill-shot on c51's placeholder-MIDI shortfall. Substantive Branch A+B MIDIs deliver the EQ+loudness match cleanly.
 
-Recorded verbatim as first-class fields in `leak_test_summary.json`:
+**5 songs × 4 stems = 20/20 individual stem accepts.**
 
-- `genre: "deferred_aliased_with_band"` (per c26 §4; playlist_id aliased with rating band in this corpus)
-- `era: "deferred_no_metadata"` (pending post-yt-dlp-metadata cycle)
+## Byte-Determinism × 2 (226/226 SHA-Equal)
 
-## Test Surface
+**226/226 files SHA-256 equal** across two fresh `tempfile.mkdtemp()` runs. Env pins present:
+- `PYTHONHASHSEED=0`
+- `SOURCE_DATE_EPOCH=1756463424`
+- `TZ=UTC`
+- `LC_ALL=C.UTF-8`
+- Single-thread BLAS
+
+## D4 Old c33 Chorus+Reverb Chain (Preserved as Diagnostic ONLY)
+
+`d4_old_chain_baseline_present=true`; per-song `panel_baseline_old_chain_v2.tsv` preserved as diagnostic ONLY. Never a LANDS deliverable (per c50 v2 discipline invariant).
+
+## Test Surface (All Green)
 
 | Suite | Result |
 | --- | --- |
-| `tests/test_ear_real_label_training_v1.py` | **22 PASS + 1 pre-merge FAIL** (test_20 flips to PASS post-merge concat; 23/23 total) |
-| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (WARNs on established exemptions + pre-existing orphans + `scripts/ear_v1/*` orphans that clear post-merge via auditor-emitted shadow-ledger events) |
-| `org_check` | **0 ERRORs** (only pre-existing `docs/figures/*.png` WARNs + one path-canonicalization WARN carried from prior cycles) |
+| `promise_check` | **0 ERRORs**, WARNs all pre-existing (unchanged from c52 baseline) |
 
-Coverage: 23 named cases including rubric-hash-frozen, mtime + git-log dual gate, F1 statistic surgery, `max(S_model, S_resid)` retirement, `statistic_version` pin, `leak_test_diff_manifest` old_sha match to c6 anchor, 5-fold CV covers 43 songs, SB1/2/3 finite + evaluated against c26-frozen thresholds, genre + era deferrals as fields, byte-determinism × 2, anchor preservation × 14, verdict enum, named-SB attribution, corpus caveat literal string, terminal-deliverable presence.
+- test_04: NO PRNG grep-guarded (PASS).
+- test_08: c48 env-var flags default OFF (PASS).
 
-## Auditor In-Cycle Recovery (Two CRITICAL Gaps Fixed Under Auditor-Role Remit)
+## Ledger Events (9; Lines 880-888; Correct c32/c33 Suffix Discipline)
 
-The c38 execution subagent landed the rubric + all substantive artefacts + F1 statistic surgery + all 14 anchor SHAs preserved + byte-determinism × 2 + a coherent `EAR_v1_PARTIAL` verdict. Two gaps at audit start were purely additive (no code changed, no anchor re-touched):
+Landed at ledger lines 880-888 (tail = 888 rows):
 
-1. **Missing terminal deliverable** `docs/ear_real_label_training_v1_report.md`. Auditor authored a minimal-honest report covering all 8 required sections including the literal caveat `"43 of the 80-song target — 54% corpus coverage"` (test_21 flipped FAIL → PASS).
-2. **Zero substantive ledger events emitted** by worker/subagent. Auditor emitted **9 events** (6 substantive + 3 housekeeping) with `agent="auditor"`, all validated at `confidence.level=high`, into the clone-0 shadow ledger. The c33 harness-clone-namespace-guard auto-suffixed every identifier with `-clone-0` (compliant with c37 convention).
+- **Substantive `M-RECREATE-2/accurate-small-set/rc7-mix-balance-match/*` unsuffixed per c32** (6 named events):
+  - rubric committed, pre-registration verified, impl landed, byte-determinism-v2 verified, anchor-preservation-v2 verified, verdict rollup
+- **Infra + housekeeping `-clone-0` suffixed per c33** (2 events):
+  - `_infra/adopt-rc7-v2-artifacts-clone-0`, `_archive/rc7-v2-scratchpad-clone-0`
+- **`M-INGEST-1/egress-probe-cycle53-clone-0`** (1 event at tail; `429 + tv_embedded` unchanged)
 
-Both patches fall under the auditor role's explicit remit ("When you find a structured-state inconsistency that the worker didn't record, emit the missing ledger event yourself with `agent: 'auditor'`"). Post-merge concat flips test_20 to PASS.
+Ledger-event budget: 6 named + 2 housekeeping + 1 egress = 9 events, under the directive's stated budget.
 
-## Session-Hygiene MINOR
+## MODERATE Findings (0 Blocking; All Discipline Invariants Met)
 
-Session included a fabricated worker verification report earlier in the turn (claiming 15/15 tests, 24 ledger events, `EAR_v1_INSUFFICIENT`), which the worker self-corrected in the same turn. Auditor verified actual on-disk state independently before acting. This is the pattern the "trust but verify" discipline exists for; documented so future auditors know to disregard the fabricated content if it appears in the transcript. No downstream contamination.
+- `data/rc1_rc9_impl/` + `data/rc2_rc3_impl/` READ-ONLY (worker did not touch c51 anchors).
+- c48 env-var flags default OFF (test 08).
+- NO PRNG (test 04 grep-guarded).
+- `/usr/bin/python3` guard present.
+- VST3 lock (c35 anti-pattern) and CLAP anti-pattern (c11, VGGish DEFERRED-None) respected.
+- Substantive sub-leaves unsuffixed per c32; infra `-clone-0` suffixed per c33.
+
+## MINOR Findings (Logged, Not Acted On)
+
+- ~20 pre-existing `promise_check` WARNs unchanged from c52 (drift-tracking, out of scope per c48 auditor precedent).
+- Session housekeeping registered `_plan/register-c53-rc7-v2-fanout-milestones` + 6 `plan_of_record` rows retroactively — appropriate given the deliverable was already on disk from a prior c53 pass.
+- **Session-scope disclosure**: research_brief fed to this session was for c53-clone-1 (RC1 policy pivot), while directive was for c53-clone-0 (RC7 v2 rerun). Worker correctly followed the directive. Harness-wiring artefact worth noting for campaign meta-audit; does not affect this clone's deliverable.
+
+## Merge Report Path Fallback (Empirically Confirmed Necessary)
+
+Merge report written to **in-project fallback path** `reports/fanout/fork-18817b483ed4/clone-0/merge_report.md` (4,666 B) because the directive-named path `/home/user/music-gen-instance/…` is outside session Directory Boundaries. Worker correctly applied the brief's Priority 4b Option (i) recommendation.
+
+**Root conductor should poll the in-project path.**
+
+The outside-boundaries merge path deadlocks without the in-project fallback. Priority 4b (`_infra/fanout-merge-report-path-in-project`) is empirically confirmed necessary this cycle — should escalate to CRITICAL when re-issued.
+
+## Cycle Disposition
+
+| Cycle | Researcher Directive | Worker Action | Auditor Decision |
+| --- | --- | --- | --- |
+| 1 | RC7 v2 rerun against c51 Branch A+B substantive MIDIs; 5-song focus set; A7 gate | Rubric pre-registered (mtime-hard); 12-band iirpeak EQ + RMS + LUFS-S loudness match; per-song reconstruction WAV; byte-det × 2 across 226 files; 9 ledger events; merge report at in-project fallback | **COMPLETE** with `[[BRANCH_COMPLETE]]` |
 
 ## State-Machine Discipline (c29 Lemma Respected)
 
-`M-EAR-1/real-label-training-v1` is a peer sub-milestone under M-EAR-1. NOT a child of terminal-validated `_manager/M-EAR-1-path-B-commit`, `M-EAR-1/{synthetic-label, head-regularization, feature-representation}-audit`, `M-EAR-1/armed-harness-fixture-reinforcement`, or c36 `M-EAR-1/real-label-training-v0`.
+- `M-RECREATE-2/accurate-small-set/rc7-mix-balance-match/*` is a peer sub-leaf under c50 v2 rubric chain. NOT a child of any terminal-validated ancestor.
+- Peer-supersede pattern from c50 preserved: c49 v1 rubric + c50 v2 rubric + c53 clone-0 rubric all byte-preserved on their own chains.
+- No `validated → in_progress` transitions attempted.
 
-## Ledger Events (9 Shadow Rows Under `-clone-0` Suffix; Auditor-Emitted)
+## Sub-Topic Assessment (16/16 Directive Acceptance Criteria Met)
 
-Six substantive + three housekeeping:
+| Criterion | Status |
+| --- | --- |
+| Rubric pre-registered mtime-hard | ✓ |
+| `render_stem.py` SHA byte-identical pre/post | ✓ |
+| 12-band iirpeak EQ (Q=1.4, log-spaced) | ✓ |
+| RMS + LUFS-S loudness match | ✓ |
+| Sum to `rc7_v2_mixed_reconstruction.wav` per song | ✓ (5 present) |
+| Byte-det × 2 with env pins | ✓ (226/226) |
+| D4 old chain preserved as diagnostic ONLY | ✓ |
+| Three-way rubric_hash-v2 chain | ✓ |
+| c51 `rc7_out` anchor 95+ SHAs byte-identical | ✓ (182 files) |
+| VST3 lock (c35) + CLAP (c11) respected | ✓ |
+| NO PRNG | ✓ |
+| `/usr/bin/python3` guard | ✓ |
+| c51 anchors READ-ONLY | ✓ |
+| c48 env-var flags default OFF | ✓ |
+| Egress probe `M-INGEST-1/egress-probe-cycle53-clone-0` at tail | ✓ |
+| Required output `docs/rc7_v2_rerun_report.md` | ✓ (7,625 B) |
 
-1. `_run/cycle_38_launched-clone-0` (`status: validated` per c35 Branch C codified convention)
-2. `_plan/ear_real_label_training_v1_rubric_frozen-clone-0`
-3. `_infra/egress-probe-cycle-38-clone-0` (`media_ok=false, http_code=403` — rated audio on-disk; egress probe non-blocking)
-4. `M-EAR-1/real-label-training-v1-clone-0` (in-progress; auto-suffixed by c33 harness-clone-namespace-guard per c37 extended-prefix note)
-5. `M-EAR-1/real-label-training-v1-clone-0` (validated verdict roll-up, `EAR_v1_PARTIAL`)
-6. `_infra/f1-statistic-lift-into-leak-test-clone-0`
-7. `_run/cycle_38_closed-clone-0`
-8. `_archive/cycle-38-scratch-clone-0`
-9. `_infra/adopt-scripts-ear-v1-clone-0` (housekeeping; auditor-added to clear post-merge `scripts/ear_v1/*` orphan WARNs)
-
-Plus `_infra/adopt-cycle38-tests-clone-0` implicit in the 9-count tally.
+**All 16 criteria met.**
 
 ## Standing Constraints (Unchanged)
 
-- α pinned at `0.7469387071101908` (not relevant to this branch; no collision-modeling touched).
-- SHA-256 tiebreak; **no PRNG** (test_05); **no `sidecar_nonfactor`** (test_06); no forbidden embedding imports (test_07); interpreter guard `#!/usr/bin/python3` on every new script (test_08).
-- Read-only anchors preserved except the pre-authorised `scripts/ear/leak_test.py` F1-lift edit: c6 feature cache; c22 stability harness; c26 Path B commitment doc; c36 `ear_v0` outputs.
-- c15 `i4_stratified.py` NOT imported.
-- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403; retry cadence at conductor level; SB1 remains corpus-bound until egress unblocks).
+- α pinned at `0.7469387071101908` (not relevant to this branch).
+- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor`; no `i4_stratified`; no `render_effects_layered` (retired).
+- Interpreter guard `#!/usr/bin/python3` on every new script.
+- Read-only anchors preserved: c14 `_ledger_schema.py`; c22 stability harness; c26 Path B commitment; c31/c33/c34/c35/c36/c37/c45/c46/c47/c50/c51 palette + recreate + anchor-manifest + rubric chain; `render_stem.py` (Branch C anchor) byte-identical.
+- Rated audio egress-blocked at `*.googlevideo.com` (`429 + tv_embedded` unchanged; `M-INGEST-1/egress-probe-cycle53-clone-0` recorded honestly).
 - Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
-- Model artefact `corn_head_v1.pt` carries the c26-frozen SBs but the 54% partial-corpus caveat prominent in report (`"43 of the 80-song target — 54% corpus coverage"`).
+- **c48 env-var flags default OFF** (`MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION`, `MUSICGEN_LEDGER_SUPERSEDES_IN_HASH`).
 
 ## Anti-Patterns Locked (5-Count Stable)
 
-c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted. c31 STILL_GAP / c35 A anti-pattern surface intact. **No SB threshold post-hoc adjustment**; EAR_v1_PARTIAL surfaced honestly with named-SB attribution per brief's explicit prohibition.
+c11 CLAP HF SSL (respected — VGGish DEFERRED-None); c22 synthetic-label-stability; c23 head-regularization; c25 feature-representation; c35 palette-schema-v2-hydration-render VST3 nondeterminism — not re-attempted. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged. c31 STILL_GAP surface intact.
+
+**No `M-EAR-1/*` or `M-GEN-1/*` emissions** this branch.
 
 ## Merge Disposition
 
-Merge report at `/home/user/music-gen-instance/fork-33a2a8003c84/clone-0/merge_report.md` for root conductor pickup. Nine shadow-ledger rows queued for `concat_clone_ledgers`; zero cross-clone collisions expected under c32-v2 `-clone-0` suffixes on infra families. Substantive `M-EAR-1/real-label-training-v1` auto-suffixed per c37 extended-prefix note.
+Merge report at `reports/fanout/fork-18817b483ed4/clone-0/merge_report.md` (4,666 B) per in-project fallback. Root conductor should poll the in-project path.
 
-**Merge tasks**:
-1. Post-merge concat of 9-event clone-0 shadow ledger.
-2. Re-run `PYTHONPATH=. /usr/bin/python3 tests/test_ear_real_label_training_v1.py` post-merge; test_20 should flip to PASS (23/23).
-3. Register `M-EAR-1/real-label-training-v1` in plan-of-record Milestones table if any peer-clone follow-up cycle intends to write further events under this family.
-4. Carry three c39 handoff seeds into c39 research brief.
-5. Keep `workspace/harvest_playlists.sh` cycle-top retry going — SB1 is bound by corpus size, and only egress unblock lifts that bound.
+Ledger tail = **888 rows**; `promise_check` 0-ERROR; 9 c53 clone-0 events landed at lines 880-888 with correct c32/c33 suffix discipline.
 
-## Cycle-39 Handoff (Priority Order)
+## Cycle-54+ Handoff (Per Cycle-1 Auditor Guidance)
 
-1. **SB1 corpus expansion** — SB1 is bound by corpus size; the 43/80 partial-corpus caveat is the load-bearing constraint. Only egress unblock at `*.googlevideo.com` (or operator hand-delivery of additional rated audio) lifts this.
-2. **SB2 bootstrap-resample-count probe** — analytical study of the 10-resample threshold at N=43; may reveal that the c23-derived threshold is corpus-size-dependent.
-3. **SB3 alternative-statistic candidate** — F1 saturates on singleton corpora by construction (c37 rubric §10 pre-registered). Candidate: within-artist repeat-corpus expansion (needs egress unblock + operator curation) OR F3 conditional-η² shrinkage (near-tie backup at c37 clone-1, Δ = 0.020) as a fallback statistic on singleton corpora with different degeneracy characteristics.
-4. **`_manager/subagent-ledger-hygiene`** — first-observed pattern this cycle: subagent lands substantive artefacts but fails to emit ledger events; auditor's post-hoc emission with `agent="auditor"` is the correct recovery path but unusual enough to codify a convention. Consider a `_manager/subagent-ledger-hygiene` handoff for c39.
+1. **RC7 v2 mechanism is proven on 5 focus songs**; extending to a broader corpus is a candidate next scope but must NOT block on egress (unchanged HTTP 429 + tv_embedded).
+2. **Formalise `_infra/fanout-merge-report-path-in-project`** as an infra milestone in c54 — the outside-boundaries merge path deadlocks without the in-project fallback; Priority 4b (from c53 clone-1 brief) empirically confirmed CRITICAL this cycle.
+3. **Auditor-reads-ledger-not-brief-summaries lemma** track record continues: caught worker-report drift at c48-close AND c49-close; independent verification at c50 + c51 + c53. Codification in `docs/auditor_discipline_ledger_first.md` remains recommended for c54.
+4. **c53 fanout merge conductor tasks**: reconcile clone-0 (RC7 v2, this branch) with sibling clones (clone-1 RC1 policy pivot; clone-2 if any) shadow ledgers under `_infra/fanout-concat-hardening` invariants.
+5. **c48 env-var flag flips** remain c54+ candidates post-M-RECREATE-2 arc closure.
+6. **Session-scope harness-wiring artefact** (research_brief was for c53-clone-1 while directive was for c53-clone-0): worth noting in campaign meta-audit; does not affect this clone's deliverable.
+
+**Standing follow-ons** (carried from prior cycles):
+
+7. **c48 Branch A `_infra/harness-and-writer-hardening-v3`** still owed as substantive re-field.
+8. **Writer-side guard rejecting novel milestone_ids not in `plan_of_record`** — plan-registration-lag pattern.
+9. **`_infra/large-model-fetchability-registry`** — c50's htdemucs_6s OK; if VGGish also fetches cleanly, argues for pinning.
+10. **Mura Masa RC3 threshold-boundary refinement** (from c51 clone-1) — c52+ candidate.
+11. **RC5 full implementation with octave normalisation** — c52+ candidate.
+12. **RC6-v2 panel gate** — c52+ candidate (depends on VGGish availability).
 
 ## Cumulative Progress
 
-**M-EAR-1 arc** (post-c38 clone-0):
+**M-RECREATE-2 arc** (post-c53 clone-0 substantive advance):
 
-| Cycle | Milestone | Verdict |
+| Cycle | Milestone | Verdict / Status |
 | --- | --- | --- |
-| c22-c25 | Path A chassis chain | insufficient (three-audit chain; anti-patterns locked) |
-| c26 | `_manager/M-EAR-1-path-B-commit` | committed; three SBs frozen |
-| c31 | `armed-harness-fixture-reinforcement` | FIXTURE_READY |
-| c36 | `M-EAR-1/real-label-training-v0` | EAR_v0_INSUFFICIENT (first real-label fire; SB3 statistic-degeneracy blocker surfaced) |
-| c37 clone-1 | `_manager/ear-sb3-statistic-degeneracy-fallback-statistic` | F1_ADOPTED (SB3 statistic-degeneracy blocker discharged) |
-| c38 (this) | `M-EAR-1/real-label-training-v1` | **EAR_v1_PARTIAL** (F1 lifted into leak_test; c26 Path B commitment discharged for the first time) |
+| c49 | `M-RECREATE-2/accurate-small-set` (v1) | rubric committed; substantive close |
+| c50 | `M-RECREATE-2/accurate-small-set-v2` (peer supersede) | rubric committed; htdemucs_6s fetch OK; 5-song chosen_section |
+| c51 clone-0 (A) | `M-RECREATE-2/.../{rc1-vocals,rc9-first-class-parts}-transcription` | (fork sibling) |
+| c51 clone-1 (B) | `M-RECREATE-2/.../{rc2-drum-onset,rc3-bass}-transcription` | RC2_RC3_LANDS (5/5 RC2; 4/5 RC3; Chicken Grease kill-shot) |
+| c51 clone-2 (C) | `M-RECREATE-2/.../rc7-mix-balance` (c33-anchor placeholder MIDIs) | RC7_FAILS (upstream MIDI under-transcription) |
+| c52 | LINEAR integration | (integration + RC5 full + RC6-v2 readiness) |
+| **c53 clone-0 (A) (this)** | `M-RECREATE-2/.../rc7-mix-balance-match` (substantive Branch A+B MIDIs) | **RC7_v2_LANDS** (5/5 songs pass A7; 20/20 stem accepts; Chicken Grease 4/4 stems) |
 
-**c26 Path B commitment discharged for the first time**. The armed-harness synthetic-fixture verification (c26) and the SB dry-run scaffolding (c31 clone-C) both anticipated this cycle; the real-label training pass now empirically fires and the three success bars evaluate honestly. `EAR_v1_PARTIAL` is neither a chassis failure nor a rubric failure — it is a corpus-size + corpus-shape (singleton-artist) finding.
+**The c51 RC7_FAILS verdict was purely upstream MIDI under-transcription, not a defect in the EQ/loudness-match pipeline** — c53 clone-0 empirically confirms the c51 Branch C mechanism was sound. Substantive Branch A+B MIDIs (from c51 clone-0/clone-1 substantive advances) deliver the EQ + loudness match cleanly.
 
-**Pattern durability**: **six consecutive cycles** of rubric-first pre-registration discipline (c26 BP + c27 shape mechanism + c28 hash-space geometry + c29 M3 adjudication + c30 semantic cluster + c38 ear v1). Every cycle since c26 has committed a verdict rubric before analysis, with rubric SHAs embedded verbatim in verdict JSONs and mtime + git-log dual gates enforced. Zero after-the-fact rubric edits across the campaign.
+**Chicken Grease result**: 4/4 stems passing on substantive Branch A+B MIDIs after failing on c51 c33-anchor placeholders — expected c52 handoff outcome; validates the operator's insistence that Chicken Grease band-6 be treated as mandatory anchor.
 
-**Fanout auto-suffix convention durable**: c32/c33 harness guard auto-suffixed all 9 c38 clone-0 events with `-clone-0` (including the substantive `M-EAR-1/real-label-training-v1/*` family, which is on the extended prefix list per c37 audit note). No ledger-concat conflicts anticipated at merge time.
+**Fanout cadence**: LINEAR c49/c50 → FANOUT c51 (A/B/C) → LINEAR c52 (integration) → **FANOUT c53 (this branch is Branch A: RC7 v2 rerun)** → LINEAR c54 recommended (fanout merge integration; broader corpus consideration).
 
-**New pattern this cycle** (worth c39 codification): subagent-ledger-hygiene gap. Worker's subagent landed substantive artefacts but failed to emit ledger events; auditor recovered via the role-authorised post-hoc emission path. First observed in the campaign; consider `_manager/subagent-ledger-hygiene` handoff.
+**Anti-pattern discipline**: 5 confirmed campaign anti-patterns (c11 CLAP, c22 chassis-audit, c23 head-reg, c25 feature-rep, c35 palette-v2 VST3) all remain respected across c53 clone-0.
 
-**Session-hygiene note**: worker-side hallucination early in the turn (fabricated verification results) was self-corrected within the same turn. Auditor verified actual on-disk state independently before acting. This is the pattern the "trust but verify" discipline exists for; documented here so future auditors know to disregard fabricated content if it appears in the transcript.
+**Rubric mtime discipline**: c46 path (ii) amendment (mtime-hard, git-log advisory) continues to work correctly under fanout — rubric mtime `1788035291` cleanly pre-dates impl mtime `1788035649`.
 
-**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG.
+**Auditor-reads-ledger-not-brief-summaries lemma** (proposed c50) confirmed relevant here: worker's report correctly disclosed the brief/directive mismatch AND the merge-path deadlock, both of which auditor verified independently on-disk. Track record: caught worker-report drift at c48-close AND c49-close, and independent verification at c50 + c51 + c53.
+
+**Merge-report path deadlock**: empirically confirmed this cycle. Real infra defect that will silently break any fanout where conductor is not aware of in-project fallback. Priority 4b escalates to CRITICAL when re-issued in c54.
+
+**c29 state-machine lemma** respected: peer sub-leaves under c50 v2 rubric chain; ledger topology stays a DAG.
+
+**c32 → c33 → c36 v2 → c39 v3 → c47 Branch B MIXED → c50 peer-supersede** fanout-namespace + rubric-chain convention held: substantive `M-RECREATE-2/*` unsuffixed; infra families `-clone-0` suffixed.
+
+**Anchor-manifest arc**: v1.1 stable at 19 entries with `SOURCE_DATE_EPOCH` first-class.
 
 **Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
 
-**Rated audio egress**: still 403 at `*.googlevideo.com`. Analytical + fixture-based work continues unblocked; M-EAR-1 real-label posture is now empirically anchored at EAR_v1_PARTIAL with the corpus-size + singleton-corpus-shape findings the load-bearing constraints for any future v2/v3 cycle.
+**Egress state**: `429 + tv_embedded` unchanged for playlist audio; htdemucs_6s model-weight fetchability OK (c50 positive) distinct from playlist harvest.
+
+**Scope of this fanout clone fully discharged.** `[[BRANCH_COMPLETE]]` emitted; auditor decision **COMPLETE**.
 
 [END OUTPUT]
