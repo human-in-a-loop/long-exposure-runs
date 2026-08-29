@@ -1,0 +1,51 @@
+#!/bin/bash
+PATHS=(
+data/ear/features
+workspace/basic_pitch_venv
+scripts/tex/render_effects_layered.py
+scripts/gen/batch_v2
+scripts/gen/sample_rules.py
+scripts/rules/sampling/i4_stratified.py
+scripts/ear/synthetic_labels.py
+scripts/ear/stability_metrics.py
+scripts/ear/stability_audit.py
+docs/ear_stability_audit_report.md
+docs/ear_head_regularization_audit_report.md
+docs/ear_feature_representation_audit_report.md
+scripts/analysis
+scripts/palette
+docs/palette_assignment_schema_rubric.md
+docs/palette_assignment_schema_report.md
+data/palette/schema
+scripts/palette_probe
+docs/palette_instrument_determinism_rubric.md
+docs/palette_instrument_determinism_report.md
+data/palette_probe
+scripts/palette_render
+docs/palette_driven_bare_render_rubric.md
+docs/palette_driven_bare_render_report.md
+data/palette_render
+scripts/dawdreamer_state
+docs/dawdreamer_state_extraction_rubric.md
+docs/dawdreamer_state_extraction_workaround_report.md
+data/dawdreamer_state
+tests/fixtures/harness_clone_namespace_guard_rubric_hash.txt
+docs/harness_clone_namespace_guard_rubric.md
+scripts/palette_v2
+docs/palette_schema_v2_rubric.md
+docs/palette_schema_v2_report.md
+data/palette_v2
+scripts/palette_render_cross_seed
+docs/palette_driven_bare_render_cross_seed_rubric.md
+docs/palette_driven_bare_render_cross_seed_report.md
+data/palette_render_cross_seed
+scripts/gen_palette_batch_v1
+docs/palette_driven_batch_v1_rubric.md
+docs/palette_driven_batch_v1_report.md
+data/gen_palette_batch_v1
+)
+for p in "${PATHS[@]}"; do
+  if [ -e "$p" ]; then
+    if [ -d "$p" ]; then echo "DIR  $p"; else echo "FILE $p"; fi
+  else echo "MISS $p"; fi
+done

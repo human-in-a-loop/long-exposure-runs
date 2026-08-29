@@ -4089,5 +4089,26 @@ if _TEST53.is_file():
 
 
 print()
+# §56 — c35 clone-2: anchor-manifest freeze + launched-event convention.
+_C35_RUBRIC = WS / "docs" / "anchor_manifest_v1_rubric.md"
+_C35_MANIFEST = WS / "data" / "anchor_manifest_v1.json"
+_C35_MD = WS / "docs" / "anchor_manifest_v1.md"
+_C35_CONV_DOC = WS / "docs" / "fanout_launched_event_convention.md"
+_C35_OFFENDER = WS / "tests" / "fixtures" / "launched_event_offender_list_v1.txt"
+_C35_TEST_STAB = WS / "tests" / "test_anchor_manifest_stability.py"
+_C35_TEST_CONV = WS / "tests" / "test_launched_event_convention.py"
+
+check(_C35_RUBRIC.is_file(), "guard §56a: anchor_manifest_v1 rubric doc present")
+check(_C35_MANIFEST.is_file(), "guard §56b: anchor_manifest_v1.json present")
+check(_C35_MD.is_file(), "guard §56c: anchor_manifest_v1.md rendered index present")
+check(_C35_CONV_DOC.is_file(), "guard §56d: fanout_launched_event_convention.md present")
+check(_C35_OFFENDER.is_file(), "guard §56e: launched_event_offender_list_v1.txt fixture present")
+if _C35_MANIFEST.is_file():
+    _m56 = json.loads(_C35_MANIFEST.read_bytes())
+    check(_m56.get("anchor_count") == 18, f"guard §56f: 18 anchors in manifest (got {_m56.get('anchor_count')})")
+check(_C35_TEST_STAB.is_file() and _C35_TEST_CONV.is_file(),
+      "guard §56g: both c35 test files on disk")
+
+print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
