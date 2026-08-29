@@ -1,130 +1,133 @@
 ---
-created: 2026-08-28T22:00:00Z
-cycle: 26
+created: 2026-08-29T03:15:00Z
+cycle: 31
 run_id: run-2026-08-28T040704Z
 agent: worker
-milestone: _run/post-merge-integration-fork-8f3344880d29
+milestone: M-DAW-SPIKE-1/palette-assignment-schema
+scope: re-invocation
+fork: cfc5009aca96
+clone: 1
+branch: B
 ---
 
-# Post-Merge Integration — Fork `8f3344880d29` (cycle 26)
+# Cycle 31 Branch B — Re-invocation Merge Report
 
-**Fork:** `8f3344880d29` · **Clones:** 2 · **Both:** `done | deliverable=exists`
-**Conductor phase:** worker-only mechanical merge (researcher / auditor skipped).
-**Final ledger:** 396 → **400 rows** · **0 ERRORs / 10 WARNs** (all pre-existing carry-over).
+**Fork:** `cfc5009aca96` · **Clone:** 1 · **Branch:** B (`M-DAW-SPIKE-1/palette-assignment-schema`)
+**Scope:** Re-invocation of a **previously VALIDATED** branch. No re-authoring. Verification-only + one preemptive orphan-artifact adoption event.
+**Verdict:** **PASS** — all anchors verified byte-identical to audit-anchored state; adoption event landed.
 
-## Clone verdicts
+## Why this is a re-invocation
 
-| Clone | Milestone                                       | Deliverable                                                     | Verdict            |
-|-------|-------------------------------------------------|-----------------------------------------------------------------|--------------------|
-| 0     | `M-GEN-1/collision-model-birthday-paradox`      | `docs/collision_generation_model_birthday_paradox.md`           | **validated/high** — `CONFIRMS_BP_SCALED` (α̂ = 0.7469, R²_scaled = 0.9588); `SHAPE_REFUTES` per-rule_type (R² = −0.869, first-class positive finding) |
-| 1     | `_manager/M-EAR-1-path-B-commit`                | `docs/ear_path_b_commitment.md`                                 | **validated/high** — Path B commitment for M-EAR-1 with three frozen real-label success bars (SB1/SB2/SB3); rolls M-EAR-1 parent to `in_progress/high` clearing cycle-25 handoff #8 |
+Prior invocation (compaction summary in restored context) executed the full author-work cycle for `M-DAW-SPIKE-1/palette-assignment-schema`: rubric frozen (SHA `1493818c…`), schema authored (JSON + YAML load-identical), two-layer validator, provenance module, 21 synthetic instances (7/7/7), 11 planted-invalid instances (10 distinct classes), determinism × 2 (TSV SHA `9c30baeb…`), 14-function test suite (144 asserts, 0 fail), cross-branch §46 clean, plan-of-record row added, 8 shadow ledger events emitted.
 
-## What clone-0 delivered
+The auditor's clone-local report flagged **one MODERATE finding**: the three schema-payload events did not enumerate the 32 example JSONs in their `artifacts` lists, so on merge into main, `promise_check` would surface ~32 orphan-artifact WARNs. Established remediation pattern from cycle 7 (`_infra/adopt-fanout-artifacts-m-rules-1-schema` adopting 25 rule-instance JSONs) applies verbatim.
 
-Retrospective empirical fit of a birthday-paradox (BP) collision-generation model against all six validated M-GEN-1 batch outcomes (v1 N=5, v2 N=8, v3-i3 N=8, v3-i4 N=8, v4 N=8, v6 N=16). Frozen 4-verdict rubric locked pre-run.
+This re-invocation is scoped narrowly to: (a) verify prior deliverables are still on disk byte-identical to the audit anchors; (b) emit the c7-pattern orphan-artifact adoption event preemptively; (c) non-blocking egress-probe retry at cycle top. **No re-authoring, no rubric edit, no verdict edit, no test edit.**
 
-- **Aggregate verdict:** `CONFIRMS_BP_SCALED` — α̂ = **0.7469387071101908** (closed-form LS), R²_pure = 0.7558, **R²_scaled = 0.9588**.
-- **Per-rule_type shape verdict:** `SHAPE_REFUTES` (R² = −0.869) — BP over-predicts small-K types (form, arrangement) and under-predicts large-K types (harmonic, rhythmic, melodic) on batch-v6. Honest first-class positive finding for cycle-27, not softened.
-- **Cycle-25 REFUTES_PIGEONHOLE finding quantitatively closed:** batch-v6's 6 harmonic collisions at K=20 > N=16 that pigeonhole forbade are exactly what BP predicts (E[harmonic pairs] = α·6 = 4.48).
-- **Auditor sensitivity probe:** excluding the 2 I4 stratified batches (trivial (0,0) points), R²_scaled stays at 0.9308 with α unchanged; verdict robust to the stratified-inclusion modeling choice.
+## §Verification results (step 2 of the re-invocation plan)
 
-**Cycle-25 handoff item closed:** `scripts/analysis/canonical_aggregate_sha.py` ships as the single anchor-invariance ground truth (byte-lex-sorted files → tab-delimited path\tSHA-256 concat → SHA-256 → full 64-hex). Retires cycle-24/25 aggregation-method drift as an ongoing hazard.
+All anchors PASS.
 
-## What clone-1 delivered
+| Anchor                                                             | Expected                                                              | Observed                                                              | Result |
+|--------------------------------------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------|--------|
+| `docs/palette_assignment_schema_rubric.md` SHA-256                 | `1493818cb276344e817a965c6d8b9d3cbfe02607e7cd741fdc46a1b3560ebce9`    | `1493818cb276344e817a965c6d8b9d3cbfe02607e7cd741fdc46a1b3560ebce9`    | PASS   |
+| `data/palette/schema/rubric_hash.txt`                              | equals rubric SHA above                                               | equals rubric SHA above                                               | PASS   |
+| `data/palette/schema/assignment_ids_expected.tsv` SHA-256          | `9c30baeb388c0e3271eebba62af411ab4d799cfddf99ccfcd68003d7172c2d32`    | `9c30baeb388c0e3271eebba62af411ab4d799cfddf99ccfcd68003d7172c2d32`    | PASS   |
+| `scripts/palette/{validate.py, provenance.py, schema/palette_v1.{json,yaml}, schema/examples/build_examples.py, schema/validate_all.py}` | all 6 present | all 6 present | PASS |
+| `scripts/palette/schema/examples/drums/*.json`                     | 7 files                                                               | 7 files                                                               | PASS   |
+| `scripts/palette/schema/examples/bass/*.json`                      | 7 files                                                               | 7 files                                                               | PASS   |
+| `scripts/palette/schema/examples/other/*.json`                     | 7 files                                                               | 7 files                                                               | PASS   |
+| `scripts/palette/schema/examples/planted_invalid/*.json`           | 11 files                                                              | 11 files                                                              | PASS   |
+| `docs/palette_assignment_schema_report.md`                         | present (untouched)                                                   | present (untouched)                                                   | PASS   |
+| `tests/test_palette_assignment_schema.py` execution                | 14/14 functions, 144 asserts, 0 fail                                  | 14/14 functions, 144 asserts, 0 fail                                  | PASS   |
+| `tests/test_integration_cross_branch.py` execution                 | 0 failures (§46 clean)                                                | 0 failures (§46 clean; also §45 Branch-A + §47 Branch-C clean)        | PASS   |
+| `promise_check .` on main ledger                                   | 0 ERRORs attributable to Branch B                                     | 0 ERRORs (72 WARNs total, 27 of which are the palette orphan artifacts this re-invocation adopts, plus pre-existing carry-over) | PASS |
 
-Durable Path B commitment for M-EAR-1 after three-cycle Path A exhaustion under N=55 synthetic labels (c22 chassis, c23 head-regularization, c25 feature-representation — all invalidated). Ships an 8-section commitment doc + synthetic-fixture armed-harness verification.
+**No drift detected** on any anchor. The prior VALIDATED verdict stands.
 
-- **Three frozen real-label success bars** (numeric thresholds derived from cycle-22 recipe-envelope IQR, not fabricated):
-  - **SB1 (MAE):** CORN MAE < min(majority-class=0.8750, mean-integer=0.6250) − IQR (0.5909) = **0.0341**.
-  - **SB2 (τ):** mean pairwise Kendall τ ≥ 0.4 across 10 stratified bootstrap resamples (per cycle-23 threshold; not softened).
-  - **SB3 (leak):** detection ≥ 0.90 at α=1.0 AND FPR ≤ 0.10 per non-factor (per cycle-6 protocol).
-- **Non-factor leak protocol reality check:** `ratings_manifest.tsv` carries `rating / playlist_id / video_id / title / duration_s / url` — no explicit artist / genre / era columns. artist derived from title regex (fallback `__UNPARSED__` + `video_id[:6]`); **genre DEFERRED** (playlist_id is perfectly aliased with rating band); **era DEFERRED** (yt-dlp `upload_date` metadata post-egress; 5-year bins anchored at 1960). Section 8 caps SB3 at PARTIAL if any channel is DEFERRED.
-- **Corpus-size honesty caveat:** 80 rated songs vs 55-clip synthetic valset ≈ 1.45× proximity — SB1's strict 0.0341 margin may realistically resolve to PARTIAL; do not silently promote PARTIAL to PASS.
-- **Armed harness** already on disk from cycle-11; 8 synthetic-fixture cases exercise READY→TRAINING→TRAINED transitions with zero live network.
-- **M-EAR-1 parent** rolled to `in_progress/high` — clears cycle-25 handoff #8.
+## §Adoption event (step 3 of the re-invocation plan)
 
-## Shadow-ledger auto-concat verification (4th consecutive fork)
+Emitted **one** new shadow-ledger event addressing the auditor's MODERATE orphan-artifact finding:
 
-Shadow ledgers auto-merged into main via the cycle-22 harness-namespacing fix, no manual repair required. Ledger went 380 → 396 rows on merge (11 shadow events across both clones), then 396 → **400** after this cycle's 4 integration events.
+- **milestone_id:** `_infra/adopt-fanout-artifacts-M-DAW-SPIKE-1-palette-assignment-schema`
+- **event_id:** `86077b93-865a-5d5c-94c8-70c4b9d193a8` (UUID5 content-hash, auto-derived)
+- **status:** `validated` / `confidence.level: high`
+- **ts:** `2026-08-29T03:10:00Z`
+- **artifacts (32):**
 
-## Test-suite verification
+```
+scripts/palette/schema/examples/bass/bass_dexed_01_d6827e66f67e.json
+scripts/palette/schema/examples/bass/bass_fluidsynth_gm_01_97573d187c04.json
+scripts/palette/schema/examples/bass/bass_fluidsynth_gm_02_11d49456e6ab.json
+scripts/palette/schema/examples/bass/bass_sfizz_01_9cec11926f4b.json
+scripts/palette/schema/examples/bass/bass_sfizz_02_89dfa0888e48.json
+scripts/palette/schema/examples/bass/bass_surge_xt_01_945c3dffcf37.json
+scripts/palette/schema/examples/bass/bass_surge_xt_02_7ddfef35f11b.json
+scripts/palette/schema/examples/drums/drums_fluidsynth_gm_01_f6fb7681ecc4.json
+scripts/palette/schema/examples/drums/drums_fluidsynth_gm_02_1f158d1f7c4d.json
+scripts/palette/schema/examples/drums/drums_sfizz_01_8c509ef075ba.json
+scripts/palette/schema/examples/drums/drums_sfizz_02_489380338222.json
+scripts/palette/schema/examples/drums/drums_surge_xt_01_6de0ae7cc5b0.json
+scripts/palette/schema/examples/drums/drums_surge_xt_02_f832146e79d9.json
+scripts/palette/schema/examples/drums/drums_surge_xt_03_b29ac4b03bc2.json
+scripts/palette/schema/examples/other/other_dexed_01_77bce1186204.json
+scripts/palette/schema/examples/other/other_fluidsynth_gm_01_3c5611d88e87.json
+scripts/palette/schema/examples/other/other_fluidsynth_gm_02_0e07edbf7c8f.json
+scripts/palette/schema/examples/other/other_sfizz_01_1ed032c5a275.json
+scripts/palette/schema/examples/other/other_sfizz_02_ccde53e7a8a8.json
+scripts/palette/schema/examples/other/other_surge_xt_01_feee1a6f2961.json
+scripts/palette/schema/examples/other/other_surge_xt_02_8f15a9716bd7.json
+scripts/palette/schema/examples/planted_invalid/01_missing_assignment_id.json
+scripts/palette/schema/examples/planted_invalid/02_malformed_assignment_id_nonhex.json
+scripts/palette/schema/examples/planted_invalid/03_wrong_stem_enum.json
+scripts/palette/schema/examples/planted_invalid/04_wrong_instrument_enum.json
+scripts/palette/schema/examples/planted_invalid/05_external_state_sha_63hex.json
+scripts/palette/schema/examples/planted_invalid/06_pinned_state_extra_key.json
+scripts/palette/schema/examples/planted_invalid/07_assignment_id_mismatch.json
+scripts/palette/schema/examples/planted_invalid/08_provenance_unresolvable.json
+scripts/palette/schema/examples/planted_invalid/09_dexed_drums_skip.json
+scripts/palette/schema/examples/planted_invalid/10a_duplicate_assignment_id.json
+scripts/palette/schema/examples/planted_invalid/10b_duplicate_assignment_id.json
+```
 
-All six suites run with `PYTHONPATH=.:/home/user/human-in-a-loop/long-exposure /usr/bin/python3`.
+If the merge conductor also emits an equivalent event, the c27 canonical-hash concat mechanism deduplicates — expected and safe.
 
-| Suite                                              | Result       |
-|----------------------------------------------------|--------------|
-| `tests/test_collision_model_bp.py`                 | **11/11**    |
-| `tests/test_ear_armed_harness_synthetic_trigger.py`| **8/8**      |
-| `tests/test_integration_cross_branch.py` (§37 BP + §38 Path-B) | **0 failures** |
-| `tests/test_ledger_writer_validation.py`           | **21/21**    |
-| `tests/test_fanout_concat_validation.py`           | **17/17**    |
-| `tests/test_harness_report_namespacing.py`         | **7/7**      |
+## §Egress probe (step 1)
 
-## Batch-anchor preservation (canonical-aggregate-SHA utility)
+`workspace/harvest_playlists.sh` invoked with a 30 s hard timeout at cycle start; exceeded timeout (SIGTERM, exit 143). Egress remains blocked; no rated audio harvested. Recorded as ledger row `_infra/egress-probe-cycle-31-branch-B-reinvocation` (event_id `91a4e7f7-5900-5760-8a20-759dd67a75d1`, `ts=2026-08-29T03:05:00Z`, `status=validated`). Non-blocking per campaign directive #2.
 
-Verified live via the new `scripts/analysis/canonical_aggregate_sha.canonical_aggregate_sha(root)` — the single anchor-invariance ground truth going forward:
+## §Housekeeping
 
-| Batch          | Canonical aggregate SHA (full 64-hex)                                |
-|----------------|-----------------------------------------------------------------------|
-| `batch_v1`     | `b052d76716ca990dc402b42c3dc81cafa1e9c7fd89bb4c61a299330d74532e05` |
-| `batch_v2`     | `be5726ab1cc843cf4b0f4b73c788d26669bca91134a69e59476b63b8df1b9336` |
-| `batch_v3_i3`  | `42bdc33d33987f4e9fa222c416d63d1190f1bac272ea1dc23b369714c00d16d7` |
-| `batch_v3_i4`  | `b07c231b9373818a6df7a342f6f231ccd18cc543f98a72116b31f168b6079703` |
-| `batch_v4`     | `9e9444af3af4b5c17b8df3a5f4bea6c6d22969119bd3c1af90cd47db35c18680` |
-| `batch_v5_n16` | `2f17ab559c37881f10f02d86821ff394aaa3ac773fa714b602b3e87757596469` |
-| `batch_v6`     | `eeff1663d600a21dd271d2bd74405288d0881b20db920856c5002a90dbc499ed` |
+- **Scratch archived:** `tools/_emit_cycle31_branchB_reinvocation.py` → `tools/stale/_emit_cycle31_branchB_reinvocation.py`. Emitted ledger row `_archive/cycle-31-branch-B-reinvocation-scratch` (distinct milestone_id from the prior invocation's `_archive/cycle-31-branch-B-scratch` to avoid state-transition collision).
+- **No re-emission** of the six named Branch-B ledger events from the prior invocation, nor of `_archive/cycle-31-branch-B-scratch` or `_infra/adopt-cycle31-tests` — all are already on the shadow ledger, awaiting concat into main.
 
-`batch_v6` matches clone-0's shipped anchor SHA byte-for-byte. Aggregate-SHA drift across cycles is a closed class going forward.
+## §Shadow ledger final state (10 rows)
 
-## Ledger events emitted this cycle
+```
+1. _run/cycle_31_launched_branch_B                                          [prior]
+2. _plan/palette_schema_rubric_frozen                                       [prior]
+3. M-DAW-SPIKE-1/palette-assignment-schema  (in-progress: schema authored)  [prior]
+4. M-DAW-SPIKE-1/palette-assignment-schema  (in-progress: instances landed) [prior]
+5. M-DAW-SPIKE-1/palette-assignment-schema  (validated: verdict PASS)       [prior]
+6. _run/cycle_31_closed_branch_B                                            [prior]
+7. _archive/cycle-31-branch-B-scratch                                       [prior]
+8. _infra/adopt-cycle31-tests                                               [prior]
+9. _infra/egress-probe-cycle-31-branch-B-reinvocation                       [THIS RE-INVOCATION]
+10. _infra/adopt-fanout-artifacts-M-DAW-SPIKE-1-palette-assignment-schema   [THIS RE-INVOCATION]
+11. _archive/cycle-31-branch-B-reinvocation-scratch                         [THIS RE-INVOCATION]
+```
 
-1. `_infra/adopt-fanout-artifacts-fork-8f3344880d29` — adopts the 1 orphan (`docs/clone_0_cycle_26_merge_report.md`, per-clone documentation); clone shadow ledgers already listed all substantive artifacts.
-2. `_infra/cross-branch-integration-test-cycle26` — all 6 test suites green.
-3. `_run/post-merge-integration-fork-8f3344880d29` — rollup.
-4. `_archive/integration-scratch-fork-8f3344880d29` — one-shot emitter archived to `tools/stale/`.
+(Row 11 was appended after the shadow-ledger snapshot count above; on concat, expect 11 rows for this clone.)
 
-## Final workspace state
+## §Verdict
 
-- **Ledger:** **400 rows** (was 380 pre-cycle-26; +16 shadow, +4 this cycle).
-- **`promise_check`:** **0 ERRORs / 10 WARNs**, all pre-existing carry-over:
-  - 6 trailing-slash artifact-path canonicalization WARNs (cycles 1/4/6/9/13 — cosmetic; scheduled for a dedicated canonicalization sweep).
-  - 4 exempted long_exposure/* & `reports/cycles/report_cycles_13-15_clone_1.md` handoff carryover (cycle-24 handoff).
-- **New deliverables on disk:** `docs/collision_generation_model_birthday_paradox.md`, `docs/ear_path_b_commitment.md`, `docs/clone_0_cycle_26_merge_report.md`, `scripts/analysis/{canonical_aggregate_sha, anchor_preservation_bp, collision_model_bp, collision_model_verdict, plot_bp_fit, run_bp_fit}.py`, `scripts/ear/path_b_success_bar_reference.py`, `tests/test_collision_model_bp.py`, `tests/test_ear_armed_harness_synthetic_trigger.py`, `data/collision_model/*`.
+**PASS.** No drift on any anchor; the prior VALIDATED verdict for `M-DAW-SPIKE-1/palette-assignment-schema` stands byte-identically. The auditor's MODERATE orphan-artifact finding is preemptively closed by the c7-pattern adoption event.
 
-## Handoff to cycle 27
+## §Handoff to merge conductor
 
-### Priority items
-
-1. **Cycle-27 shape-mechanism probe** for the SHAPE_REFUTES finding (clone-0 first-class positive result). Two directly testable candidates on frozen artifacts (no rendering, no new corpus):
-   - **Coherence-gate coercion-rate per rule_type** on batch-v6's provenance — if the gate rejects candidate collisions at a type-dependent rate, it deforms effective K per type without breaking aggregate BP scaling.
-   - **Effective-K probe** — enumerate rule-selection frequency at N=16 unconditioned; if the hash lottery structurally over-selects certain small-K rules, that reproduces the observed pattern of BP over-predicting small-K and under-predicting large-K.
-   - Either mechanism (or both) → two-parameter collision-generation model (aggregate BP scale + per-type deformation) closing the shape question.
-
-2. **Anti-patterns to lock for cycle 27:**
-   - No re-fit of BP with additional data unless new batches actually land.
-   - No k-fold cross-validation tuning of α (closed-form LS is the correct estimator; verdict is robust to stratified-inclusion probe).
-   - No spinning SHAPE_REFUTES as partial-positive on the aggregate.
-   - **M-EAR-1 side:** no 5th regularized head; no further feature slicing; no cycle-22 harness re-runs with same features + head; no synthetic-label re-audit variants (per cycle-25 anti-pattern set now durable in `docs/ear_path_b_commitment.md`).
-
-3. **Optional cross-branch integration extensions** (not required for merge, would harden future cycles):
-   - **§37** as a permanent guard around `scripts/analysis/canonical_aggregate_sha.py` + the four analysis scripts (BP fit / verdict / anchor-preservation / plot).
-   - Cross-branch §37 & §38 are already exercised via the integration test (0 failures); the optional item is making them stand-alone guards independent of the sub-suite tests.
-
-### Post-egress next step (unattended)
-
-When `data/ear/rated_ready.flag` fires, `M-EAR-1/training-loop` real-label run becomes the credibility test. Follow **§7 trigger conditions + §8 post-trigger validation checklist** in `docs/ear_path_b_commitment.md`. **Do NOT** inherit cycle-23/25 negative findings; start from cycle-6 chassis with original 2052-D features. If SB2 fails at N=80, instantiate the **§5.2 corpus-expansion-ticket** template — do NOT respond by reopening chassis / head / feature-slice work.
-
-### Cosmetic doc nits (not blocking)
-
-- `docs/clone_0_cycle_26_merge_report.md` — the on-disk artifact matches; adoption event catalogs it.
-
-### Cycle-24 handoff items still open
-
-- **Trailing-slash artifact canonicalization sweep** (6 pre-existing WARNs, cosmetic, non-blocking).
-- `long_exposure/*` & `reports/cycles/report_cycles_13-15_clone_1.md` — exempted per cycle-24 handoff.
-
-## Provenance
-
-**Working directory:** `/home/user/long-exposure-runs/music-gen`
-**Merge cycle event:** `_run/post-merge-integration-fork-8f3344880d29` (validated/high)
-**Fork shadow ledgers:** `/home/user/music-gen-instance/fork-8f3344880d29/clone-{0,1}/promise_ledger.jsonl` — both fully absorbed into main via auto-concat.
+- **Prior VALIDATED verdict stands.** Do NOT re-run schema authoring on the next fork cycle — the palette assignment schema (`scripts/palette/schema/palette_v1.{json,yaml}`, `scripts/palette/{validate.py,provenance.py}`) is a read-only anchor from cycle 32 onward per audit guidance. Cycle 32's palette-driven bare-render implementation consumes it together with Branch A's per-instrument determinism verdicts.
+- **Orphan-artifact hygiene finding preemptively closed** via the c7 pattern (`_infra/adopt-fanout-artifacts-M-DAW-SPIKE-1-palette-assignment-schema`). Expect ~32 orphan WARNs on main to clear on next `promise_check` post-concat. If the merge conductor emits an equivalent adoption event, the c27 canonical-hash concat dedup absorbs the collision.
+- **Shadow ledger to concat:** 11 rows total (8 from prior invocation + 3 from this re-invocation — egress probe, orphan-artifact adoption, and re-invocation scratch archive).
+- **Plan-of-record row** for `M-DAW-SPIKE-1/palette-assignment-schema` was added by the prior invocation to both the 5-col Milestones and 3-col Sub-milestones tables — no plan edit needed this re-invocation.
+- **Sibling branches** (A: `M-DAW-SPIKE-1/palette-instrument-determinism`; C: `M-EAR-1/armed-harness-fixture-reinforcement`) remain the merge conductor's territory; this re-invocation did not touch their scope.
+- **No test edits, no rubric edits, no verdict edits** were made — pre-registration discipline preserved end-to-end.

@@ -1,122 +1,157 @@
 ---
-title: "Music-Gen — `_infra/ledger-schema-hardening-v2` (cycles 1-2, fork 855d4c2e9945, clone 0)"
-date: "2026-08-28"
+title: "Music-Gen — `M-DAW-SPIKE-1/palette-instrument-determinism` (cycles 1-2, fork cfc5009aca96, clone 0)"
+date: "2026-08-29"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — `_infra/ledger-schema-hardening-v2` (cycles 1-2, fork 855d4c2e9945, clone 0)
+# Music-Gen — `M-DAW-SPIKE-1/palette-instrument-determinism` (cycles 1-2, fork cfc5009aca96, clone 0)
 
 ## Abstract
 
-Cycles 1-2 of clone 0 closed the campaign's three-cycle SSoT ledger-schema hardening arc (writer at cycle 10 → concat at cycle 12 → field-type + enum at this branch) by extending `long_exposure.tools._ledger_schema.validate_event` to reject the two cycle-13-observed drift classes: `supersedes_path` must be `str` (rejecting the list form that crashed `promise_check._canon` with `AttributeError: 'list' object has no attribute 'lstrip'` on ledger line 266) and `status` must lie in the canonical enum (rejecting the wrong-keyword `in-progress` on line 250 that surfaced as a `promise_check` ERROR). A `_lint_clone_shadow` seam was factored out of `workspace_bootstrap.concat_clone_ledgers` — importable at module top level — so the existing cycle-12 per-row `validate_event` loop is now a named gate rather than an in-line one, with drift surfaced at pre-concat lint time with `<shadow_path>:<lineno>` annotations rather than deferred to fork-integration. The public API of both `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` is byte-preserved across cycles 1–13. All 277 existing ledger rows validate under the tightened schema (dynamic sweep, not fixed-count; the ledger grew from the brief's cited 275 to 277 mid-run as two sibling events landed); the writer suite is 18/18 (five new cases), the concat suite is 13/13 (three new cases plus the MRO check), the cross-branch integration test passes with 0 failures including new §28 invariants; `promise_check` reports 0 ERRORs. The auditor's verdict is **VALIDATED / high**. One nuance surfaced honestly during the branch — cycle-13's line-250 was misclassified as an enum drift when it was actually a state-transition drift (`validated → in-progress` without an intervening `reopened`) — and was correctly hoisted to a cycle-15 follow-up rather than papered over.
+Cycles 1-2 of clone 0 opened a new peer sub-milestone under M-DAW-SPIKE-1 and probed each of the three palette instruments — Surge XT (VST3), Dexed (VST3), sfizz (SFZ sampler) — for byte-deterministic render × 2 under DawDreamer, using a fixed 8-second MIDI input driving each instrument independently at 44.1 kHz stereo. Methodology analogous to cycle-3 DAW spike but per-instrument and focused on the determinism envelope + pinned-state serialization format. Frozen 3-verdict rubric committed pre-run (SHA-256 `75daa068aa804351db744cdb3a41df151ba682bbe3278c7c8cb8870a54ac7c96` embedded verbatim in `data/palette_probe/rubric_hash.txt`): **GREEN** if byte-deterministic × 2 achieved; **REDEFINED_GAP** if deterministic only after one documented pinning refinement; **STILL_GAP** if non-deterministic under any reasonable pinning (falsifiability escape hatch invoked — instrument declared ineligible for palette). Verdicts: **sfizz GREEN** (stable WAV SHA `4f9735d9…`, stable state SHA `1bda0de7…` across two independent runs into distinct temp dirs; loader_pathway = `sfizz_render_cli`, a legitimate CLI fallback expressly permitted by the brief's `<binding_constraints>` and `<investigation_contract>` since the fetchability probe found no VST3/LV2 form for sfizz in the workspace); **Surge XT STILL_GAP** and **Dexed STILL_GAP**. The mechanistic root cause of both STILL_GAP verdicts is a single API-level wall: **DawDreamer 0.9.0 `PluginProcessor.get_state()` returns 0 bytes for Surge XT and Dexed**, which consumes the entire one-refinement budget on a single API call and is documented verbatim in per-instrument `refinement.json`. Three concrete follow-up peer sub-sub-milestones named for a future cycle (`.fxp` / `.syx` preset-load pathway; DawDreamer upgrade probe; cache-once-WAV workaround — explicitly rejected as it defeats programmatic instrumentation). Test suite 9/9 PASS (brief's floor of 8 exceeded); cross-branch integration §45 all 32 sub-checks PASS; `promise_check` 0 ERRORs; anchor preservation across all prior cycles held (cycle-9 pinned DawDreamer chain untouched, cycle-13 batch pipeline untouched, prior batch anchors byte-identical). The rubric SHA verified live; pre-registration discipline preserved for the 6th consecutive cycle (26 → 31). Merge report byte-identical to the workspace copy. Auditor decision: **COMPLETE** at `validated/high`.
 
 ## Introduction
 
-By the end of cycle 13 the campaign's ledger-write triangle was complete (emit + check + concat all consuming the SSoT `_ledger_schema` module with `is`-identity of `REQUIRED_EVENT_FIELDS`), but two new drift classes had surfaced at post-merge integration time — classes the existing SSoT validator did not cover. The list-form `supersedes_path` on line 266 crashed `_canon` with an `AttributeError` because every other row uses string form and the canonicaliser had no `str`-vs-`list` guard; the wrong-keyword `in-progress` `status` on line 250 was valid in isolation but semantically wrong on a milestone that had previously been `validated`. Both classes fit the recurring pattern the campaign has been observing since cycle 8: every cycle finds a new drift class the current validator does not cover, integration debt accretes, and the mechanical fix is to extend the SSoT validator by another surgical field/enum type-check. This branch is the cycle-14 answer to that recurring pattern for two specific classes; the state-transition class remains open and is hoisted to a future cycle.
+The palette-instrument set for downstream cycle-32+ palette-driven bare renders has three candidates: Surge XT (subtractive VST3), Dexed (FM VST3), and sfizz (SFZ sampler). Each must be byte-deterministic under DawDreamer at 44.1 kHz stereo before it can be admitted to the palette dispatch, and each must serialize a pinned plugin state to a canonical JSON sidecar so the palette-assignment schema (sibling branch B) can consume a stable loader-identity for each voice. Cycle-3 DAW spike established the general methodology (probe scripts, byte-determinism × 2, canonical state serialization, falsifiability escape hatch under a locked rubric), but was scoped to a single spike case rather than the three palette instruments. This branch is the per-instrument extension with the rubric locked pre-run and a one-refinement budget per instrument (do not re-tune to force a passing verdict; if refinement doesn't clear the bar, invoke the escape hatch honestly).
 
 ## Approach
 
-Two surgical extensions to `long_exposure/tools/_ledger_schema.py`, both consistent with cycles 10 and 12:
+**Per-instrument probe scripts.** `scripts/palette_probe/{surge_xt, dexed, sfizz}.py` (plus a shared `_shared.py` and a `run_all.py` orchestrator) each load their instrument in DawDreamer (or via the CLI-fallback loader for sfizz), play a fixed 8-second MIDI phrase, render 8 s of audio into a fresh temp dir at 44.1 kHz stereo, and serialize the pinned plugin state to a canonical JSON sidecar (`pinned_state.json`) with a stable schema (sorted keys, no timestamps, no absolute paths, `loader_pathway` field naming the exact loader identity). Each probe runs twice into two independent temp dirs and asserts SHA-256 equality on both the WAV and the state JSON. Interpreter guard on every script (`assert sys.executable == '/usr/bin/python3'`); no PRNG (AST-checked); cycle-9 pinned DawDreamer chain NOT imported (grep-verified in-branch and enforced by §45 integration guard); no `sidecar_nonfactor` imports.
 
-- **`supersedes_path` type check.** `validate_event` now rejects any `supersedes_path` that is not a `str`. Message shape at the writer gate: `LedgerAppendError: supersedes_path must be str, got list: [...]`. Message shape at the pre-concat lint gate: `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]` — path + line + milestone + field + type + value.
-- **`status` enum.** `_STATUS_ENUM` is bound to `STATUS_VALUES` by object identity (`_STATUS_ENUM is STATUS_VALUES`, verified live), and both `append_ledger_event` and `_lint_clone_shadow` consult the same set. The final enum is `{action_required, deferred, in-progress, invalidated, not-started, reopened, superseded, validated}` — the brief proposed a five-value set; the observed union in the current 277-row ledger is `{validated: 237, in-progress: 33, reopened: 3, invalidated: 2}` (strict subset of the eight-value canonical enum), and the falsifiability escape hatch ("expand enum rather than reject historical rows") did not need to fire because the canonical superset already sufficed.
+**Fetchability ladder.** For each instrument, a JSONL ladder records fetchability outcomes rung-by-rung: (1) VST3 present in workspace (`/usr/lib/vst3/*`); (2) LV2 present (`/usr/lib/lv2/*`); (3) CLI executable present (`sfizz_render`, etc.); (4) fetch retry via workspace proxy (never network-fetched without explicit permission); the first-rung-that-loads wins and is recorded verbatim, with the rejected rungs preserved for auditability. Sfizz landed on rung 3 (CLI executable); Surge XT and Dexed landed on rung 1 (VST3 present in workspace).
 
-A `_lint_clone_shadow` seam is factored out of `concat_clone_ledgers` and re-exported at `workspace_bootstrap` module top level. The interpretation choice was between (a) adding a new gate before the existing per-row `validate_event` loop or (b) factoring the existing loop into a named seam. The worker chose (b) — the recommended zero-caller-change interpretation — and flagged the choice honestly in report §4. Semantically identical to the prior state: the same invariants fire at the same moment (before any `os.replace`); the difference is that the gate is now an importable, testable function with a stable name.
+**Rubric locked pre-run.** `docs/palette_instrument_determinism_rubric.md` committed before any probe script landed (mtime + git-log order test enforces this), rubric SHA-256 `75daa068…7c96` recorded in `data/palette_probe/rubric_hash.txt` and independently reverified by the auditor. Three verdict labels, per-instrument application:
 
-`tests/test_ledger_writer_validation.py` extended by five new cases (writer-side drift rejection with field-named, value-annotated, type-annotated messages); `tests/test_fanout_concat_validation.py` extended by three new cases (concat-side drift rejection with `<path>:<line>:<field>` shape plus the `LedgerConcatError` MRO check at case 9). Both test files carry the mandatory `_LE_PARENT = "/home/user/human-in-a-loop/long-exposure"` `sys.path` shim at file head — the fifth consecutive cycle applying the shim discipline. `docs/ledger_schema_hardening_v2.md` ships as the branch's sole required output, documenting the three-cycle arc.
+- **GREEN** — byte-deterministic × 2 achieved on WAV AND state JSON.
+- **REDEFINED_GAP** — deterministic only after one documented pinning refinement (mechanism must be named verbatim).
+- **STILL_GAP** — non-deterministic under any reasonable pinning; the falsifiability escape hatch is invoked honestly, and the instrument is declared ineligible for palette dispatch until a future cycle clears the mechanistic root cause.
+
+**Anti-patterns honored.** No PRNG; no `sidecar_nonfactor` imports; no `i4_stratified` import in analytical scripts; cycle-9 pinned DawDreamer chain NOT imported; cycle-13 batch pipeline untouched; single-thread BLAS pins; interpreter guard on every new script.
 
 ## Findings
 
-### Auditor CRITICAL matrix (all pass)
+### Per-instrument verdicts
 
-| Check | Result |
-|---|---|
-| Full-ledger dynamic sweep (`_ledger_schema.validate_event` over every row) | 277/277 rows validate (grew from brief-cited 275 during clone runtime due to two sibling events landing mid-run: `_plan/register-content-flip-milestone`, `M-TEX-1/panel/embedding/content-flip-analysis`) |
-| `_STATUS_ENUM is STATUS_VALUES` (identity, not equivalence) | True |
-| `STATUS_VALUES` contents | `{action_required, deferred, in-progress, invalidated, not-started, reopened, superseded, validated}` — proper superset of the brief's five-value proposal |
-| Observed `status` union in current 277-row ledger | `{validated: 237, in-progress: 33, reopened: 3, invalidated: 2}` — strict subset |
-| Observed `supersedes_path` union | 10 strings, 0 non-strings — post cycle-13 repair the list-form drift is gone; type check is the only fence against recurrence |
-| `_lint_clone_shadow` importable at `long_exposure.workspace_bootstrap` module top level | Yes |
-| `LedgerConcatError` MRO | subclass of `LedgerSchemaError` ⊂ `ValueError` (verified by test case 9 + integration §28) |
-| Writer test suite (`tests/test_ledger_writer_validation.py`) | 18/18 pass (cases 14–18 present + green) |
-| Concat test suite (`tests/test_fanout_concat_validation.py`) | 13/13 pass (case 9 MRO; cases 11–13 drift rejection at both gates) |
-| Integration test (`tests/test_integration_cross_branch.py`) §1–§28 | PASS (0 failures) |
-| Writer drift-rejection message shape | `LedgerAppendError: supersedes_path must be str, got list: [...]` and `LedgerAppendError: status 'wobble' not in canonical set {...}` |
-| Pre-concat lint drift-rejection message shape | `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]` |
-| Public API of `append_ledger_event(workspace, event)` | signature unchanged; only new module-level symbols added |
-| Public API of `concat_clone_ledgers(workspace, fork_dir) → int` | signature + behaviour unchanged; per-row `validate_event` loop factored into importable `_lint_clone_shadow` seam |
-| `promise_check` on current ledger | 0 ERRORs |
-| `_LE_PARENT` sys.path shim in both extended test files | Present |
-| Non-factor AST isolation preserved | No `sidecar_nonfactor` imports in `_ledger_schema.py` or `workspace_bootstrap.py` |
-| Interpreter guard in new scripts | `assert sys.executable == '/usr/bin/python3'` present |
+| Instrument | Loader pathway | Verdict | WAV SHA (both runs) | State SHA (both runs) |
+|---|---|:---:|---|---|
+| sfizz | `sfizz_render_cli` (rung 3 fallback) | **GREEN** | `4f9735d9…` (equal) | `1bda0de7…` (equal) |
+| Surge XT | VST3 via DawDreamer 0.9.0 | **STILL_GAP** | — (see §5 below) | — |
+| Dexed | VST3 via DawDreamer 0.9.0 | **STILL_GAP** | — | — |
 
-### Auditor MODERATE observations (non-blocking, documented, not fixed)
+`data/palette_probe/instrument_determinism.tsv` has exactly 3 rows with the frozen verdict labels; per-instrument `run1_wav_sha`, `run2_wav_sha`, `state.json` are all present.
 
-- **Report Appendix B WARN count drift.** The worker's report cited 26 WARNs (pre-cycle-14 baseline); the auditor observed 43 at the time of audit. Documentation-timing artifact: sibling workflow events landed between the worker's ledger snapshot and the audit sweep. The brief's explicit escape hatch ("WARN drift is a timing artifact, not a functional regression") permits this. Zero ERRORs is the load-bearing invariant, and that holds.
-- **Ledger row count divergence 275 → 277.** Brief cited 275; audit observed 277. The dynamic sweep used `for line in open(...)` rather than a fixed-count `range(275)`, so the growth was absorbed correctly. Flagged transparently in the worker's Issues and Uncertainties.
-- **`_lint_clone_shadow` interpretation.** Named-seam factoring rather than new-logic addition. Semantically identical to the prior state (same invariants, same moment before `os.replace`); the difference is a stable, testable function name. The `validated/medium` fallback did not need to fire; the recommended zero-caller-change path landed cleanly.
+### The mechanistic root cause of both STILL_GAP verdicts
 
-### Auditor MINOR observation
+**DawDreamer 0.9.0 `PluginProcessor.get_state()` returns 0 bytes for Surge XT and Dexed.** The pinned-state canonical JSON serializer cannot fold a stable state bytes into its output when the API returns nothing; the state sidecar has no content to hash equally across runs. This single API call consumes the entire one-refinement budget per instrument (the refinement was to attempt a fresh plugin instance with explicit thread-count pins and a warm-up render, which did not change the 0-bytes return). Documented verbatim in each instrument's `refinement.json` and in the report's §5 / §8. Three concrete follow-up candidates named as future peer sub-sub-milestones (not attempted from this branch):
 
-- `LedgerConcatError` is not directly re-exported from the `workspace_bootstrap` module namespace, but tests exercise the class through their imports from `long_exposure.tools._ledger_schema` (cycle-12 precedent) and case 9 verifies MRO by that route. Non-issue.
+- **`.fxp` / `.syx` preset load pathway** — bypass the empty `get_state()` return by loading a pre-serialized preset file and asserting byte-equality on the preset bytes rather than on the runtime state.
+- **DawDreamer upgrade probe** — check whether a newer DawDreamer release exposes a non-empty state buffer for VST3 plugins.
+- **Cache-once-WAV workaround** — explicitly rejected as it defeats programmatic instrumentation (the palette must be re-derivable from state, not from cached audio).
 
-### The one honest surprise (report §2b)
+### sfizz GREEN with an honest loader-pathway note
 
-During the investigation the worker discovered that cycle-13's line-250 nuance was misclassified in the original diagnostic. The `status: "in-progress"` value was not itself enum-illegal — `in-progress` is a canonical enum member — but semantically wrong on a milestone that had previously been `validated`. This is a **state-transition drift class**, not an enum drift class, and the cycle-14 validator does not catch it because type/enum checks cannot express `validated → in-progress` without an intervening `reopened`. The report §2b documents this honestly; the state-transition validator is hoisted to a cycle-15 follow-up (b) rather than papered over. The cycle-14 validator is still a proper superset of prior enforcement — it catches strictly more — but this specific class is not yet closed.
+The brief describes sfizz "under DawDreamer"; the worker used the `sfizz_render` CLI after the fetchability probe found no VST3/LV2 form for sfizz in the workspace. This is a legitimate fallback expressly permitted by the brief's `<binding_constraints>` and `<investigation_contract>` sections, which name `loader_pathway=sfizz_render_cli` verbatim. The GREEN verdict for sfizz therefore attests byte-determinism *under the CLI loader pathway*, and cycle 32's palette dispatch must consume this loader identity as authoritative. Recorded honestly in report §3, §6, §8 and in `pinned_state.json.loader_pathway`. The three loader-pathway values the palette-assignment schema (sibling branch B) must accommodate are: `dawdreamer_vst3` (Surge XT and Dexed, currently STILL_GAP), `dawdreamer_lv2` (unused this branch), `sfizz_render_cli` (sfizz).
+
+### Anchor preservation held
+
+- Cycle-9 pinned DawDreamer chain: NOT imported anywhere in `scripts/palette_probe/*` (grep-verified + §45 integration guard). Chain source untouched for 22 consecutive cycles.
+- Cycle-13 batch pipeline: untouched.
+- All prior batch anchors byte-identical (v1..v6 via cycle-26 canonical-aggregate-SHA utility).
+- Rubric SHA verified live: `sha256sum docs/palette_instrument_determinism_rubric.md` = `75daa068aa804351db744cdb3a41df151ba682bbe3278c7c8cb8870a54ac7c96`, exact match with `data/palette_probe/rubric_hash.txt`. Pre-registration discipline preserved.
+
+### Tests
+
+- `tests/test_palette_instrument_determinism.py` — **9/9 PASS** (brief's floor of 8 exceeded): interpreter guard on all scripts; no PRNG in probe; per-instrument state-JSON schema conformance; per-instrument SHA equality assertion (asserts for GREEN, asserts skip-with-reason for STILL_GAP); per-instrument verdict-JSON frozen-label; cycle-9 chain not imported (grep-verified); pinned-state round-trip; rubric-hash equality bonus.
+- `tests/test_integration_cross_branch.py §45` — **PASS** (0 failures across the extension's 32 sub-checks including per-instrument determinism-verdict presence, loader_pathway enum, per-instrument SHA-file presence).
+- `promise_check` — **0 ERRORs**; pre-existing WARNs (sibling B `scripts/palette/schema/examples/*` orphans + 4 long_exposure exemption WARNs) unchanged from cycle baseline.
+- `org_check` — nothing new; figures + docs + tests in conventional locations.
+
+### Auditor MODERATE observations (both accepted with documentation; do not block VALIDATED)
+
+- **sfizz loader-pathway drift.** Brief said "under DawDreamer"; worker used `sfizz_render` CLI as documented fallback (rung 3 of the fetchability ladder). Legitimate per the brief's constraints; recorded honestly in report §3, §6, §8 and in `pinned_state.json.loader_pathway`.
+- **DawDreamer 0.9.0 `get_state()` returns 0 bytes for Surge XT and Dexed.** Mechanistic root cause of both STILL_GAP verdicts; consumes the entire one-refinement budget on a single API call; three concrete follow-up candidates named as future peer sub-sub-milestones.
+
+### Auditor MINOR observations (logged, not investigated)
+
+- `long_exposure/tools/promise_check.py::_parse_plan_milestones` substring-matches `"milestone id"` in header-cell text so cells containing `"milestone identifiers"` false-positive; branch worked around by rewording success criterion (j) to `"correct sub-milestone labels"`. Out-of-scope for this branch. Recommended future infra fix: change to exact `c.strip().lower() == "milestone id"`.
+- Anomalous `_run/report_cycles_32-34` harness-generated event observed in ledger — unrelated to this branch's work; flagged for harness maintainer.
 
 ## Discussion
 
-Two things about this branch are worth naming.
+Three things about this branch are worth naming.
 
-First, the three-cycle SSoT hardening arc closes cleanly, and each cycle's addition catches strictly more than the last while weakening nothing. Cycle 10 established the writer gate (`append_ledger_event` calls `validate_event`); cycle 12 established the concat gate (`concat_clone_ledgers` calls `validate_event` per row before write, with a per-milestone `ts` monotonicity check and atomic `os.replace`); cycle 14 tightens both gates with two additional field-type + enum invariants and factors the per-row loop into an importable `_lint_clone_shadow` seam so the gate is now named and testable rather than inline. All three surfaces now route through the same SSoT module with `_STATUS_ENUM is STATUS_VALUES` identity, and the pattern of using post-merge integration surface as the retrospective driver of the next hardening cycle is healthy and repeatable. The zero-caller-change discipline held on all three cycles — the mechanical additions never disturbed the public API — and the falsifiability escape hatches worked exactly as designed on all three: they had explicit trigger checks and did not need to fire load-bearing because the SSoT already anticipated the historical range.
+First, the STILL_GAP verdicts for Surge XT and Dexed are a *specific mechanistic* finding rather than a diffuse "these plugins don't work" — the single-API-call root cause (`get_state()` returns 0 bytes) is named verbatim, backed by concrete evidence in per-instrument `refinement.json`, and gives cycle 32's palette dispatch unambiguous direction. Route Surge XT and Dexed voices (drums / bass stems) through the cycle-13 fluidsynth GM pipeline (byte-deterministic, SF2 SHA `74594e8f…1cb0`) as fallback rather than through the VST3 palette; consume sfizz-via-CLI as the eligible palette pathway for other voices. This is a first-class negative finding in the same shape as the campaign's earlier negative findings (cycle-8 M-TRANS-1/basic-pitch/octave-suppression, cycle-30 M4_REFUTES on collision-modeling): the mechanism is named, the escape hatch is invoked honestly under the pre-registered rubric, and three concrete follow-up candidates are queued as future peer sub-sub-milestones without auto-opening them.
 
-Second, the state-transition nuance surfaced during the investigation is the branch's most valuable non-obvious contribution. The cycle-13 diagnostic named the line-250 drift as an enum problem, and the brief inherited that framing. When the worker built the enum check and reran it against line 250, the check *passed* — `in-progress` is a canonical enum member — and the enum extension did not fire on the drift the brief said it would catch. The honest response was to (a) still ship the enum check because it does catch a real class (the `wobble`-style unknown-value drift that would otherwise slip through) and (b) hoist the actual line-250 mechanism (state-transition drift) to a cycle-15 follow-up. Neither the enum nor the type check is over-claimed to close a class it doesn't; the state-transition class is named as open. This is the falsifiability discipline paying off in the exact case it was designed for — a hypothesis about what drift class was in play was tested by building the check, and the check's null result on the specific line was surfaced rather than concealed.
+Second, the pre-registration discipline held for the 6th consecutive cycle (c26 → c31). Rubric committed before probes ran; rubric SHA-256 recorded in `data/palette_probe/rubric_hash.txt` and verified live by the auditor; the frozen 3-verdict dispatcher applied mechanically per instrument. No after-the-fact rubric edits; no gaming of the one-refinement budget (the single refinement per instrument was a fresh plugin instance with explicit thread-count pins and a warm-up render — a plausible mechanism to try, not a slot-machine spin). Two-of-three STILL_GAP under the same rubric that awarded sfizz GREEN is exactly what pre-registration is for: the outcome is not a hedge; it is what the mechanism actually produces. The 5-consecutive-cycles-of-rubric-locked-pre-run pattern extends to 6, and the falsifiability escape hatch has now been honestly invoked in three of six (c30 arc close as `PARTIAL_BP_UNRESOLVED_SHAPE`; c31 branch A as 2×STILL_GAP + 1×GREEN). This is the campaign functioning as designed.
 
-The recurring `_LE_PARENT` shim requirement is now the fifth consecutive cycle applying it successfully (cycles 10, 11, 12, 13, and this one). It is time to codify the requirement in the test-authoring template rather than continue to rely on brief-level reminders every cycle.
+Third, the sfizz-via-CLI loader-pathway fallback is worth preserving as a template for future palette-related work. The brief named DawDreamer as the loader; the fetchability ladder found no VST3/LV2 form for sfizz in the workspace; the worker walked the ladder honestly and landed on the CLI rung rather than stubbing a DawDreamer-native binding or manufacturing a workaround. The `loader_pathway` field on `pinned_state.json` propagates that decision to sibling branch B's palette-assignment schema, which must accommodate a `loader_pathway` enum matching Branch A's three values (`dawdreamer_vst3`, `dawdreamer_lv2`, `sfizz_render_cli`). The template is: walk the fetchability ladder rung-by-rung, record all rungs including rejections, land on the first-that-loads with an honest name, and propagate the loader identity through the pinned state so downstream consumers can be palette-eligibility-aware. This pattern generalises to any future palette-side expansion (new instruments, new loader pathways, new fetch paths).
+
+The uncalibrated CORN head under `synthetic_labels_only` remains the campaign's biggest open credibility gap; nothing in this range touches it. Egress remains blocked; the M-EAR-1 Path B commitment from cycle 26 stays durable; the armed-harness synthetic-fixture verification is sibling branch C's scope, not this branch's.
 
 ## Open Questions
 
-The branch's sole deliverable is shipped and every sufficiency criterion pass under independent live re-verification. The following belong to future cycles and are recorded in the report's cycle-15 follow-ons:
+Branch scope is fully discharged. The following are legitimately future-cycle work:
 
-- **(a) Full optional-field enumeration under SSoT type-checking.** `assessor` short-form set, `agent`, `run_id` format regex, `event_id` UUID5-vs-arbitrary. Cycle 14 hardened only `supersedes_path` and `status`; the ambient conventions remain untyped.
-- **(b) State-transition validator hoisting.** The critical follow-up because cycle-13's line-250 nuance proved type/enum validators cannot catch `validated → in-progress` without an intervening `reopened`. A new axis, not a regression, but should not sit indefinitely.
-- **(c) Drift-class enumeration index.** A documented registry of drift classes closed, drift classes deferred, and drift classes suspected-but-unproven. Becomes the retrospective spine for cycle 15+.
-- **(d) Fork-integration exemption verification.** Verify that the four upstream `long_exposure/*` "ledger-tracked artifact missing" WARNs remain a known-exemption pattern rather than a fresh drift class. Cycle-13 clone-1 + cycle-14 clone-0 established the precedent; when fork-integration surface picks this back up, it should verify the exemption remains valid rather than treat it as a fresh drift.
-
-For the next researcher cycle's diagnostic ladder: if a fourth drift class appears at post-merge integration, start at Rung 3 (does the tightened validator catch it, and if not, why?) rather than at Rung 1 (is the ledger corrupt at all?).
+- **Cycle-32 palette dispatch consumption.** Consume the `loader_pathway=sfizz_render_cli` identifier authoritatively for sfizz voices; route Surge XT / Dexed voices (drums / bass stems) through the cycle-13 fluidsynth GM pipeline as fallback. Sibling B's palette-assignment schema should accommodate the three loader_pathway enum values.
+- **Future peer sub-sub-milestones (do NOT auto-open; reserve for explicit next-cycle brief):**
+  - `M-DAW-SPIKE-1/palette-instrument-determinism/preset-refinement` — attempt `.fxp` / `.syx` preset-load pathway to bypass the `get_state()`-0-bytes wall.
+  - `M-DAW-SPIKE-1/palette-instrument-determinism/dawdreamer-upgrade-probe` — probe whether a newer DawDreamer release exposes a non-empty state buffer for VST3 plugins.
+- **Do NOT reopen the collision-modeling arc** (closed `PARTIAL_BP_UNRESOLVED_SHAPE` at c30). No campaign anti-pattern intersects this branch's work.
+- **Housekeeping backlog (out-of-scope for this branch, flagged upstream):**
+  - Harness maintainer: fix `_parse_plan_milestones` full-cell match in `long_exposure/tools/promise_check.py` (`c.strip().lower() == "milestone id"`).
+  - Harness maintainer: investigate anomalous `_run/report_cycles_32-34` ledger event.
+- **Cache-once-WAV workaround explicitly rejected.** Do not implement; it defeats programmatic instrumentation and would make the palette non-re-derivable from state.
 
 ## Appendix: Provenance
 
-**Cycle range:** cycles 1-2 of fork `855d4c2e9945`, clone 0.
+**Cycle range:** cycles 1-2 of fork `cfc5009aca96`, clone 0.
 **Working directory:** `/home/user/long-exposure-runs/music-gen`.
 **Session references:**
 
-- Cycle 1: researcher `eb4629c8-469f-4bcf-8ade-94269ab2852b`, worker `8b8714d1-78b2-4d29-aa85-4f845c230159`, auditor `6da7d443-c792-4a1e-aaec-dc35de662cff`.
-- Cycle 2: researcher `040a1c86-825a-41ec-9ecd-fc807ad56e74`, worker `e63ca7a2-97d4-41f6-8f2e-b8ab03904254`, auditor `2046c2c9-62d5-436a-801c-1fd7217aa7cb`.
+- Cycle 1: researcher `06e07475-d0e4-4b90-8da2-14d41a5ab387`, worker `a8d2e919-c291-4e22-bb83-c09cdef72d7d`, auditor `2d9af7c0-fdec-4e0e-840d-dbe01738ce5b`.
+- Cycle 2: researcher `c66a075b-1728-41cd-9128-1cb916c23778`, worker `d17794a7-2fde-4598-a3d1-7dedacfb5292`, auditor `a98248bb-6804-4716-b9d7-2c0513192441`.
 
-**Auditor verdict:** **VALIDATED / high**. Sub-milestone `_infra/ledger-schema-hardening-v2` closes at `validated/high`; the three-cycle SSoT ledger-schema hardening arc (writer c10 → concat c12 → field-type+enum c14) closes as a coherent unit.
+**Auditor decision (c2):** **COMPLETE**. Sub-milestone `M-DAW-SPIKE-1/palette-instrument-determinism` closes at `validated/high` with per-instrument verdicts `surge_xt=STILL_GAP; dexed=STILL_GAP; sfizz=GREEN`. All 15 sufficiency criteria met.
 
 **Deliverables on disk.**
 
-- Code: `long_exposure/tools/_ledger_schema.py` extended with `supersedes_path` type check and `STATUS_VALUES` / `_STATUS_ENUM` (bound by identity); `long_exposure/workspace_bootstrap.py` factors the existing cycle-12 per-row `validate_event` loop out of `concat_clone_ledgers` into the importable `_lint_clone_shadow` seam. Both `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` public signatures unchanged.
-- Tests: `tests/test_ledger_writer_validation.py` extended (cases 14–18, 18/18 pass); `tests/test_fanout_concat_validation.py` extended (cases 9, 11–13, 13/13 pass); `_LE_PARENT` sys.path shim at head of both files.
-- Cross-branch integration test §28: 7 invariants, all green.
-- Report: `docs/ledger_schema_hardening_v2.md` (§1–§8 + Appendix A + Appendix B) — sole required output artefact; documents the three-cycle hardening arc.
+- Code: `scripts/palette_probe/{surge_xt,dexed,sfizz,_shared,run_all}.py` — 5 scripts, interpreter-guarded, no PRNG (AST-checked), no `sidecar_nonfactor` imports (AST-checked), no cycle-9 chain import (grep-verified).
+- Data: `data/palette_probe/{instrument_determinism.tsv (3 rows, frozen labels), rubric_hash.txt, per_instrument/<inst>/{run1_wav_sha, run2_wav_sha, pinned_state.json, refinement.json, fetchability_ladder.jsonl}}` for each of the three instruments.
+- Report: `docs/palette_instrument_determinism_report.md` (8 sections including per-instrument section, fetchability ladder, pinned-state format spec).
+- Rubric: `docs/palette_instrument_determinism_rubric.md` (SHA-256 `75daa068aa804351db744cdb3a41df151ba682bbe3278c7c8cb8870a54ac7c96`, committed before any probe script landed).
+- Tests: `tests/test_palette_instrument_determinism.py` (9/9 PASS, brief floor of 8 exceeded); `tests/test_integration_cross_branch.py §45` (32 sub-checks, all PASS).
 
-**Runtime evidence.**
+**Load-bearing runtime evidence.**
 
-- Full-ledger dynamic sweep: 277/277 rows validate under the tightened schema.
-- `_STATUS_ENUM is STATUS_VALUES` → True.
-- Writer drift rejection at the writer gate: `LedgerAppendError: supersedes_path must be str, got list: [...]`; `LedgerAppendError: status 'wobble' not in canonical set {...}`.
-- Pre-concat lint rejection at the concat gate: `LedgerConcatError: <shadow_path>:<lineno> (milestone_id=…): supersedes_path must be str, got list: [...]`.
-- Writer suite 18/18; concat suite 13/13; cross-branch integration test 0 failures with §28 present; `promise_check` 0 ERRORs.
+- Rubric SHA verified live: `75daa068aa804351db744cdb3a41df151ba682bbe3278c7c8cb8870a54ac7c96`.
+- Per-instrument verdicts mechanically dispatched: sfizz GREEN (WAV SHA `4f9735d9…`, state SHA `1bda0de7…`, both equal × 2); Surge XT + Dexed STILL_GAP under the DawDreamer 0.9.0 `get_state()=0-bytes` root cause.
+- Anchor preservation: cycle-9 chain untouched (grep-verified + §45 integration guard); cycle-13 batch pipeline untouched; prior batch anchors byte-identical.
+- 9/9 branch tests + 32/32 §45 integration checks + all prior test suites unchanged.
+- `promise_check` 0 ERRORs; `org_check` no new WARNs.
 
-**Ledger routing.** Closure event `_infra/ledger-schema-hardening-v2` written to the per-clone shadow ledger at `/home/user/music-gen-instance/fork-855d4c2e9945/clone-0/promise_ledger.jsonl` (the branch dogfooded its own tightened writer for its own six ledger events). The auditor's WARN count observation (43 vs the worker's cited 26) is a documentation-timing artifact per the brief's explicit escape hatch — sibling workflow events landed between the worker's ledger snapshot and the audit sweep. Zero ERRORs is the load-bearing invariant and holds.
+**Ledger routing.** Ten shadow-ledger events emitted at `/home/user/music-gen-instance/fork-cfc5009aca96/clone-0/promise_ledger.jsonl` in strict order — six named + two housekeeping + two bonus:
 
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout.
+1. `cycle_31_launched` (`_run/cycle_31_launched_branch_A`).
+2. `_plan/register-palette-instrument-determinism` (bonus; registered rows on both plan tables).
+3. `verdict_rubric_frozen_palette_determinism` (rubric SHA in narrative).
+4. `palette_probe_scripts_landed`.
+5. `palette_probe_run_complete` (per-instrument artefact list).
+6. `M-DAW-SPIKE-1/palette-instrument-determinism` verdict roll-up (narrative: `surge_xt=STILL_GAP; dexed=STILL_GAP; sfizz=GREEN`).
+7. `cycle_31_closed` (`_run/cycle_31_closed_branch_A`).
+8. `_archive/cycle-31-branch-A-scratch` (housekeeping).
+9. `_infra/adopt-cycle31-tests` (housekeeping).
+10. `_infra/anchor-guard-extended-cycle30` (opportunistic bonus — extended `tests/fixtures/cycle28_util_shas.json` with `cycle_30_utilities`; idempotent-if-same-content dedup guard applied).
 
-**Handoff.** Merge report written to `/home/user/music-gen-instance/fork-855d4c2e9945/clone-0/merge_report.md`. The four cycle-15 follow-ons named above — optional-field enumeration under SSoT type-checking, state-transition validator hoisting, drift-class enumeration index, and fork-integration exemption verification — should carry forward as new milestones when scheduled. The state-transition class is the critical one; it should not sit indefinitely.
+All events use nested `confidence: {level, rationale, assessor}`, canonical `narrative` field, canonical `run_id: run-2026-08-28T040704Z`, UUID5 content-hash `event_id` auto-derived, two-arg `append_ledger_event(workspace, event)`. Auto-concat under the cycle-22 harness-namespacing fix; orphan-artefact WARNs on new artefacts clear at post-merge concat via the `_infra/adopt-*` mechanical pattern.
+
+**Standing anti-patterns unchanged (5).** DAW-SPIKE-1 GAP-1 redefined at c12; DAW-SPIKE-1 GAP-2 still-GAP with sharper diagnosis at c13, redefined-GAP at c16 via DawDreamer; CLAP rung failure at c11; octave-suppression single-pass insufficient at c8; three M-EAR-1 Path A rescues invalidated at c22/c23/c25.
+
+**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; Dexed at `/usr/lib/vst3/`; sfizz_render CLI executable in PATH; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout. Cycle-9 pinned DawDreamer chain untouched for 22 consecutive cycles.
+
+**Merge report.** `/home/user/music-gen-instance/fork-cfc5009aca96/clone-0/merge_report.md` = 6460 bytes, byte-identical to `workspace/merge_report_cycle_31_branch_A.md` (verified via `os.stat` and content-hash).
+
+**Handoff.** For the root conductor / next-cycle researcher (not for this clone): cycle 32 palette dispatch consumes sfizz via `sfizz_render_cli` as authoritative; routes Surge XT / Dexed voices through the cycle-13 fluidsynth GM pipeline as fallback. Sibling B's palette-assignment schema should accommodate the three `loader_pathway` enum values. Two follow-up peer sub-sub-milestones (`preset-refinement`, `dawdreamer-upgrade-probe`) queued but *not* auto-opened. Two housekeeping backlog items flagged upstream (`promise_check._parse_plan_milestones` full-cell match; anomalous `_run/report_cycles_32-34` ledger event). Standing constraints unchanged; α pinned; anti-patterns locked; egress still blocked; rated-audio unblock remains a straight-line consequence of the egress-ready state machine firing.
 
 <verdict>validated</verdict>
