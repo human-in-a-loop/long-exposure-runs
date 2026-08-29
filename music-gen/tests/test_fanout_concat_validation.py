@@ -614,6 +614,70 @@ def test_un_namespaced_collision_fails_loud():
     )
 
 
+# --- Cycle-33 §18: _lint_clone_shadow symmetric namespace detection ---------
+
+@register("18. _lint_clone_shadow catches c33 namespace violation at concat boundary")
+def test_lint_clone_shadow_c33_namespace_violation():
+    """A manufactured shadow with one bare `_infra/<name>` row (no
+    `-clone-<k>` suffix) fails _lint_clone_shadow with
+    LedgerNamespaceViolation and the correct <shadow_path>:<line_no>
+    annotation. Verifies writer-boundary + concat-boundary symmetry."""
+    from long_exposure.workspace_bootstrap import (
+        _lint_clone_shadow,
+        LedgerNamespaceViolation,
+    )
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    shadow_dir = fork / "clone-2"
+    shadow_dir.mkdir(parents=True)
+    shadow = shadow_dir / "promise_ledger.jsonl"
+    good = _mk_event(milestone_id="M-C33-1/writer",
+                     ts="2026-08-29T05:00:00Z", narrative="good")
+    bad = _mk_event(milestone_id="_infra/c33-lint-violator",
+                    ts="2026-08-29T05:01:00Z", narrative="bad")
+    with open(shadow, "w") as f:
+        f.write(json.dumps(good) + "\n")
+        f.write(json.dumps(bad) + "\n")
+    try:
+        _lint_clone_shadow(shadow)
+    except LedgerNamespaceViolation as e:
+        msg = str(e)
+        assert f"{shadow}:2" in msg, f"missing shadow_path:line_no annotation: {msg}"
+        assert "_infra/c33-lint-violator" in msg
+        assert "clone_k=2" in msg, f"missing recovered clone_k: {msg}"
+    else:
+        raise AssertionError(
+            "expected _lint_clone_shadow to raise LedgerNamespaceViolation "
+            "on bare _infra/* row"
+        )
+
+
+@register("19. _lint_clone_shadow accepts properly-suffixed and M-* rows")
+def test_lint_clone_shadow_c33_accepts_valid():
+    """A shadow containing only M-* rows and properly `-clone-<k>` suffixed
+    infra rows lints cleanly — the c33 guard is precise and does not
+    over-reject."""
+    from long_exposure.workspace_bootstrap import _lint_clone_shadow
+    ws = _fresh_workspace()
+    fork = ws / "fork"
+    shadow_dir = fork / "clone-2"
+    shadow_dir.mkdir(parents=True)
+    shadow = shadow_dir / "promise_ledger.jsonl"
+    rows = [
+        _mk_event(milestone_id="M-C33-1/foo",
+                  ts="2026-08-29T05:00:00Z", narrative="ok M-*"),
+        _mk_event(milestone_id="_infra/x-clone-2",
+                  ts="2026-08-29T05:01:00Z", narrative="ok suffixed _infra/*"),
+        _mk_event(milestone_id="_run/y-clone-2",
+                  ts="2026-08-29T05:02:00Z", narrative="ok suffixed _run/*"),
+    ]
+    with open(shadow, "w") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    # Should return None cleanly (no raise).
+    _lint_clone_shadow(shadow)
+
+
 # --- Runner -----------------------------------------------------------------
 
 def main():

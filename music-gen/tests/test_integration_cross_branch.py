@@ -3476,6 +3476,256 @@ if (_ARR / "sb_dry_run_verdict.json").is_file():
     check(isinstance(_sb2, list) and len(_sb2) == 10,
           f"armed-fixture §47h: sb2_per_resample_tau has 10 entries")
 
+# §48. M-TEX-1/palette-driven-bare-render — cycle 33 clone-0, fork 4595e91f7574.
+print()
+import json as _j48
+from pathlib import Path as _P48
+_PR = WS / "scripts" / "palette_render"
+_PD = WS / "data" / "palette_render"
+
+# 48a — package + script presence
+for _f in ("__init__.py", "build_assignments.py", "render_stem.py", "run_all.py"):
+    check((_PR / _f).is_file(),
+          f"palette-render §48a: scripts/palette_render/{_f} present")
+
+# 48b — rubric doc precedes earliest render script (mtime)
+_RUB = WS / "docs" / "palette_driven_bare_render_rubric.md"
+if _RUB.is_file():
+    _rmt = _RUB.stat().st_mtime
+    _emt = min(p.stat().st_mtime for p in _PR.glob("*.py")) if list(_PR.glob("*.py")) else 0
+    check(_rmt < _emt,
+          f"palette-render §48b: rubric mtime {_rmt:.0f} < earliest render script mtime {_emt:.0f}")
+
+# 48c — per-stem SHA + pinned_state present for all three stems
+for _s in ("drums", "bass", "other"):
+    _sd = _PD / "per_stem" / _s
+    for _fn in ("render_run1.wav.sha", "render_run2.wav.sha", "pinned_state.json"):
+        check((_sd / _fn).is_file(),
+              f"palette-render §48c: {_s}/{_fn} present")
+
+# 48d — verdict.json parseable + rubric hash embedded matches rubric_hash.txt
+_VD = _PD / "verdict.json"
+_RH = _PD / "rubric_hash.txt"
+if _VD.is_file() and _RH.is_file():
+    _v = _j48.loads(_VD.read_text())
+    _h = _RH.read_text().strip()
+    check(_v.get("rubric_hash") == _h,
+          "palette-render §48d: verdict.json rubric_hash matches data/palette_render/rubric_hash.txt")
+    check(_v.get("verdict") in {"PALETTE_MOVES_PANEL", "PALETTE_NEUTRAL", "RENDER_FAILS"},
+          f"palette-render §48d: verdict enum ({_v.get('verdict')})")
+
+# 48e — c31 palette + palette_probe anchors unchanged (worker snapshotted).
+_AP = _PD / "anchor_preservation.json"
+if _AP.is_file():
+    _ap = _j48.loads(_AP.read_text())
+    check(_ap.get("unchanged") is True,
+          "palette-render §48e: c31 palette + palette_probe anchors unchanged")
+
+# 48f — bare_combined SHA byte-identical across the two independent runs.
+_s1p = _PD / "bare_combined.wav.sha.run1"
+_s2p = _PD / "bare_combined.wav.sha.run2"
+if _s1p.is_file() and _s2p.is_file():
+    check(_s1p.read_text().strip() == _s2p.read_text().strip(),
+          "palette-render §48f: bare_combined SHA equal across runs")
+
+# §49. M-DAW-SPIKE-1/dawdreamer-state-extraction-workaround — cycle 33 clone-1, fork 4595e91f7574.
+print()
+import hashlib as _h49
+import json as _j49
+_DR = WS / "scripts" / "dawdreamer_state"
+_DD = WS / "data" / "dawdreamer_state"
+
+# 49a — package + probe script presence
+for _f in ("__init__.py", "_shared.py",
+           "probe_p1_iterate_parameters.py",
+           "probe_p2_save_preset.py",
+           "probe_p3_metadata_inspection.py",
+           "run_all.py"):
+    check((_DR / _f).is_file(),
+          f"dawdreamer-state §49a: scripts/dawdreamer_state/{_f} present")
+
+# 49b — rubric SHA chain integrity: doc ↔ rubric_hash.txt ↔ verdict.json.rubric_hash
+_RUB49 = WS / "docs" / "dawdreamer_state_extraction_rubric.md"
+_RH49 = _DD / "rubric_hash.txt"
+_VD49 = _DD / "verdict.json"
+if _RUB49.is_file() and _RH49.is_file() and _VD49.is_file():
+    _doc_sha = _h49.sha256(_RUB49.read_bytes()).hexdigest()
+    _file_sha = _RH49.read_text().strip()
+    _vj = _j49.loads(_VD49.read_text())
+    check(_doc_sha == _file_sha,
+          f"dawdreamer-state §49b: rubric doc SHA == rubric_hash.txt")
+    check(_vj.get("rubric_hash") == _file_sha,
+          "dawdreamer-state §49b: verdict.json rubric_hash == rubric_hash.txt")
+
+# 49c — verdict.json schema-conformant + enum
+if _VD49.is_file():
+    _vj = _j49.loads(_VD49.read_text())
+    check(_vj.get("verdict") in {"WORKAROUND_FOUND", "PARTIAL_WORKAROUND", "NO_WORKAROUND"},
+          f"dawdreamer-state §49c: verdict enum ({_vj.get('verdict')})")
+    for _k in ("rubric_hash", "verdict", "per_plugin", "per_path",
+               "midi_input_sha256", "committed_at"):
+        check(_k in _vj, f"dawdreamer-state §49c: verdict.json has {_k!r}")
+    for _pk in ("surge_xt", "dexed"):
+        check(_pk in _vj.get("per_plugin", {}),
+              f"dawdreamer-state §49c: per_plugin has {_pk!r}")
+
+# 49d — per-plugin data files present
+for _pk in ("surge_xt", "dexed"):
+    _pd = _DD / "per_plugin" / _pk
+    for _fn in ("p1_state_v2.json", "p1_state_sha",
+                "p2_preset_hex", "p2_state_sha",
+                "p3_metadata.json", "p3_state_sha"):
+        check((_pd / _fn).is_file(),
+              f"dawdreamer-state §49d: per_plugin/{_pk}/{_fn} present")
+
+# 49e — no import of scripts.tex.render_effects_layered under scripts/dawdreamer_state/ (AST).
+import ast as _ast49
+if _DR.is_dir():
+    _bad = []
+    for _f in _DR.rglob("*.py"):
+        try:
+            _tree = _ast49.parse(_f.read_text())
+        except SyntaxError:
+            continue
+        for _node in _ast49.walk(_tree):
+            if isinstance(_node, _ast49.Import):
+                for _a in _node.names:
+                    if "render_effects_layered" in _a.name or _a.name.startswith("scripts.tex"):
+                        _bad.append(str(_f))
+            elif isinstance(_node, _ast49.ImportFrom):
+                _mod = _node.module or ""
+                if "render_effects_layered" in _mod or _mod.startswith("scripts.tex"):
+                    _bad.append(str(_f))
+    check(not _bad,
+          f"dawdreamer-state §49e: no cycle-9 effects chain import (AST) ({_bad})")
+
+# 49f — no import of scripts.classifier.sidecar_nonfactor under scripts/dawdreamer_state/
+if _DR.is_dir():
+    _bad = []
+    for _f in _DR.rglob("*.py"):
+        _t = _f.read_text()
+        if "sidecar_nonfactor" in _t:
+            _bad.append(str(_f))
+    check(not _bad,
+          f"dawdreamer-state §49f: no sidecar_nonfactor import ({_bad})")
+
+# 49g — pinned_state_v2 candidacy note in report iff verdict == WORKAROUND_FOUND
+_REP49 = WS / "docs" / "dawdreamer_state_extraction_workaround_report.md"
+if _REP49.is_file() and _VD49.is_file():
+    _vj = _j49.loads(_VD49.read_text())
+    _rt = _REP49.read_text()
+    if _vj.get("verdict") == "WORKAROUND_FOUND":
+        check("pinned_state_v2" in _rt,
+              "dawdreamer-state §49g: report references pinned_state_v2 candidate")
+
+# 49h — anchor preservation: c31 palette + palette_probe files NOT modified after cycle-33 launch
+# (checked via presence + non-empty; deeper SHA check lives in the branch's own test suite)
+for _anchor in ("scripts/palette/schema/palette_v1.json",
+                "scripts/palette_probe/_shared.py",
+                "data/palette_probe/rubric_hash.txt"):
+    _ap = WS / _anchor
+    check(_ap.is_file() and _ap.stat().st_size > 0,
+          f"dawdreamer-state §49h: c31 anchor {_anchor} present + non-empty")
+
+# §50. _infra/harness-clone-namespace-guard — cycle 33 clone-2, fork 4595e91f7574.
+print()
+print("§50 _infra/harness-clone-namespace-guard (cycle 33 clone-2)")
+import hashlib as _h50
+import inspect as _i50
+import json as _j50
+import os as _os50
+
+_RUB50 = WS / "docs" / "harness_clone_namespace_guard_rubric.md"
+_FX50 = WS / "tests" / "fixtures" / "harness_clone_namespace_guard_rubric_hash.txt"
+_REP50 = WS / "docs" / "harness_clone_namespace_guard_report.md"
+_TEST50 = WS / "tests" / "test_harness_clone_namespace_guard.py"
+
+# 50a — rubric doc + fixture + test file all present
+check(_RUB50.is_file(), "guard §50a: rubric doc present")
+check(_FX50.is_file(), "guard §50a: rubric SHA fixture present")
+check(_TEST50.is_file(), "guard §50a: test file present")
+
+# 50b — fixture SHA equals sha256(rubric doc)
+if _RUB50.is_file() and _FX50.is_file():
+    _sha50 = _h50.sha256(_RUB50.read_bytes()).hexdigest()
+    _fixture50 = _FX50.read_text().strip()
+    check(_sha50 == _fixture50,
+          f"guard §50b: fixture SHA equals doc SHA (got {_fixture50[:12]}..., "
+          f"expected {_sha50[:12]}...)")
+
+# 50c — 468-row baseline replay invariance (root-context, both modes)
+import long_exposure.workspace_bootstrap as _wb50
+_baseline = WS / "promise_ledger.jsonl"
+if _baseline.is_file():
+    _rows50 = [_j50.loads(l) for l in _baseline.read_text().splitlines() if l.strip()]
+    check(len(_rows50) >= 468,
+          f"guard §50c: baseline ledger has >= 468 rows (got {len(_rows50)})")
+    _saved50 = {}
+    for _v in ("AGENT_FORK_ID", "AGENT_FORK_CLONE_K", "AGENT_INSTANCE_DIR",
+               "MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"):
+        _saved50[_v] = _os50.environ.pop(_v, None)
+    try:
+        for _mode in ("default", "strict"):
+            if _mode == "strict":
+                _os50.environ["MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"] = "1"
+            else:
+                _os50.environ.pop("MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE", None)
+            _muts = 0
+            _rej = 0
+            for _r in _rows50:
+                _pre = _r.get("milestone_id")
+                try:
+                    _after = _wb50._guard_clone_namespace(dict(_r), WS)
+                    if _after.get("milestone_id") != _pre:
+                        _muts += 1
+                except _wb50.LedgerNamespaceViolation:
+                    _rej += 1
+            check(_muts == 0 and _rej == 0,
+                  f"guard §50c: baseline replay [{_mode}] mutations={_muts} rejects={_rej}")
+    finally:
+        for _v, _val in _saved50.items():
+            if _val is None:
+                _os50.environ.pop(_v, None)
+            else:
+                _os50.environ[_v] = _val
+
+# 50d — LedgerNamespaceViolation is a real subclass of LedgerSchemaError.
+from long_exposure.tools._ledger_schema import LedgerSchemaError as _LSE50
+check(issubclass(_wb50.LedgerNamespaceViolation, _LSE50),
+      "guard §50d: LedgerNamespaceViolation is subclass of LedgerSchemaError")
+
+# 50e — public API of append_ledger_event unchanged
+_sig50 = list(_i50.signature(_wb50.append_ledger_event).parameters)
+check(_sig50 == ["workspace", "event"],
+      f"guard §50e: append_ledger_event signature is (workspace, event) — got {_sig50}")
+
+# 50f — c33 test suite defines >= 10 test_ functions (rubric floor).
+import ast as _ast50
+if _TEST50.is_file():
+    _tree50 = _ast50.parse(_TEST50.read_text())
+    _tfns50 = [n.name for n in _tree50.body
+               if isinstance(n, _ast50.FunctionDef) and n.name.startswith("test_")]
+    check(len(_tfns50) >= 10,
+          f"guard §50f: test file defines >= 10 test_ functions (got {len(_tfns50)})")
+
+# 50g — the c22 upstream anchor helpers are untouched. _is_clone and
+# _get_clone_k are defined in long_exposure/fanout.py (re-exported via
+# exploration.py); grep-verify their `def` lines directly in fanout.py.
+# Direct import of exploration is avoided to keep integration test lean.
+_FANOUT_SRC50 = Path(_wb50.__file__).with_name("fanout.py")
+if _FANOUT_SRC50.is_file():
+    _fn_txt50 = _FANOUT_SRC50.read_text()
+    check("def _is_clone(" in _fn_txt50 and "def _get_clone_k(" in _fn_txt50,
+          "guard §50g: c22 anchor fanout._is_clone/_get_clone_k intact")
+
+# 50h — rubric doc mtime <= workspace_bootstrap.py mtime
+if _RUB50.is_file():
+    _rmt50 = _RUB50.stat().st_mtime
+    _wmt50 = Path(_wb50.__file__).stat().st_mtime
+    check(_rmt50 <= _wmt50 + 1.0,
+          f"guard §50h: rubric mtime <= workspace_bootstrap.py mtime "
+          f"({_rmt50:.0f} <= {_wmt50:.0f})")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

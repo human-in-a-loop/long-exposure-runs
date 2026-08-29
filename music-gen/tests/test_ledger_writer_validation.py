@@ -631,6 +631,122 @@ def test_22_archived_emitter_resolves_workspace_root_from_stale():
     )
 
 
+# ------------------------------------------------------------------ cycle-33 harness-clone-namespace-guard
+
+def _clear_clone_env() -> dict:
+    """Pop AGENT_FORK_ID / AGENT_FORK_CLONE_K / AGENT_INSTANCE_DIR /
+    MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE from os.environ; return saved
+    values so caller can restore in finally."""
+    saved = {}
+    for var in ("AGENT_FORK_ID", "AGENT_FORK_CLONE_K", "AGENT_INSTANCE_DIR",
+                "MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"):
+        saved[var] = os.environ.pop(var, None)
+    return saved
+
+
+def _restore_env(saved: dict) -> None:
+    for k, v in saved.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+
+
+def test_23_clone_context_auto_suffix_through_writer():
+    """Case 23 (cycle-33 _infra/harness-clone-namespace-guard, default mode):
+    a bare `_infra/foo` emitted from clone context is auto-suffixed to
+    `_infra/foo-clone-<k>` by `append_ledger_event`. Ledger file receives
+    the suffixed row; the original bare identifier does not appear."""
+    ws = _tmpdir()
+    saved = _clear_clone_env()
+    try:
+        os.environ["AGENT_FORK_ID"] = "test-fork-abcdef"
+        os.environ["AGENT_FORK_CLONE_K"] = "2"
+        os.environ["AGENT_INSTANCE_DIR"] = str(ws / "shadow-2")
+        ev = _well_formed_event(milestone_id="_infra/foo-c33test")
+        del ev["event_id"]
+        append_ledger_event(ws, ev)
+        ledger = resolve_ledger_path(ws)
+        line = ledger.read_text().splitlines()[0]
+        written = json.loads(line)
+        assert written["milestone_id"] == "_infra/foo-c33test-clone-2", (
+            f"expected auto-suffix, got {written['milestone_id']!r}"
+        )
+    finally:
+        _restore_env(saved)
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_24_strict_mode_env_roundtrip():
+    """Case 24 (cycle-33): strict-mode env-var toggle round-trips through
+    the writer. Same manufactured event raises with STRICT=1 and silently
+    auto-suffixes with STRICT unset."""
+    from long_exposure.workspace_bootstrap import LedgerNamespaceViolation
+    ws = _tmpdir()
+    saved = _clear_clone_env()
+    try:
+        os.environ["AGENT_FORK_ID"] = "test-fork-abcdef"
+        os.environ["AGENT_FORK_CLONE_K"] = "2"
+        os.environ["AGENT_INSTANCE_DIR"] = str(ws / "shadow-strict")
+        # strict=1: raises.
+        os.environ["MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"] = "1"
+        ev = _well_formed_event(milestone_id="_run/foo-c33test-strict")
+        del ev["event_id"]
+        try:
+            append_ledger_event(ws, ev)
+        except LedgerNamespaceViolation as e:
+            msg = str(e)
+            assert "_run/foo-c33test-strict" in msg
+            assert "clone_k=2" in msg
+        else:
+            raise AssertionError("expected LedgerNamespaceViolation under strict mode")
+        # strict unset: auto-suffix.
+        del os.environ["MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"]
+        os.environ["AGENT_INSTANCE_DIR"] = str(ws / "shadow-nonstrict")
+        ev2 = _well_formed_event(milestone_id="_run/foo-c33test-default")
+        del ev2["event_id"]
+        append_ledger_event(ws, ev2)
+        line = resolve_ledger_path(ws).read_text().splitlines()[0]
+        written = json.loads(line)
+        assert written["milestone_id"] == "_run/foo-c33test-default-clone-2"
+    finally:
+        _restore_env(saved)
+        shutil.rmtree(ws, ignore_errors=True)
+
+
+def test_25_baseline_468_rows_invariant_through_writer_api():
+    """Case 25 (cycle-33): 468-row baseline replay through the writer's
+    public API from ROOT context — no row rejects, no row is mutated.
+    Runs each row's `milestone_id` through `_guard_clone_namespace`
+    directly (writer's internal path) with clone env cleared."""
+    from long_exposure.workspace_bootstrap import _guard_clone_namespace
+    saved = _clear_clone_env()
+    try:
+        ledger_path = Path("promise_ledger.jsonl")
+        if not ledger_path.exists():
+            print("    (no promise_ledger.jsonl in cwd; skipping)")
+            return
+        for i, raw in enumerate(ledger_path.read_text().splitlines(), 1):
+            row = json.loads(raw)
+            pre = row.get("milestone_id")
+            after = _guard_clone_namespace(dict(row), Path("."))
+            assert after.get("milestone_id") == pre, (
+                f"row {i} mutated from root: {pre!r} -> {after.get('milestone_id')!r}"
+            )
+        # Now with strict mode set, still root -> no-op.
+        os.environ["MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE"] = "1"
+        for i, raw in enumerate(ledger_path.read_text().splitlines(), 1):
+            row = json.loads(raw)
+            pre = row.get("milestone_id")
+            after = _guard_clone_namespace(dict(row), Path("."))
+            assert after.get("milestone_id") == pre, (
+                f"row {i} mutated from root under strict: "
+                f"{pre!r} -> {after.get('milestone_id')!r}"
+            )
+    finally:
+        _restore_env(saved)
+
+
 # ------------------------------------------------------------------ runner
 
 TESTS = [
@@ -660,6 +776,12 @@ TESTS = [
         test_21_state_transitions_frozenset_shape),
     ("test_22_archived_emitter_resolves_workspace_root_from_stale",
         test_22_archived_emitter_resolves_workspace_root_from_stale),
+    ("test_23_clone_context_auto_suffix_through_writer",
+        test_23_clone_context_auto_suffix_through_writer),
+    ("test_24_strict_mode_env_roundtrip",
+        test_24_strict_mode_env_roundtrip),
+    ("test_25_baseline_468_rows_invariant_through_writer_api",
+        test_25_baseline_468_rows_invariant_through_writer_api),
 ]
 
 
