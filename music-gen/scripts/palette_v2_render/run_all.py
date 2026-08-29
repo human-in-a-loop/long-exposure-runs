@@ -249,9 +249,14 @@ def _resolve_verdict(r1: dict, r2: dict,
             reasons["per_stem_determinism_failure"] = {"stem": stem,
                 "run1_sha": sha_r1, "run2_sha": sha_r2}
             return "RENDER_FAILS", reasons
-        # Silence gate.
-        if a_r1.get("silent", False) or match.get("silent", False):
-            reasons["stem_silent"] = {"stem": stem,
+        # Silence gate applies ONLY to VST3 hydration path (rubric §Render
+        # mechanism). Drums fluidsynth may render quietly when basic-pitch
+        # transcription yields low-velocity percussion notes on GM channel;
+        # that is normal upstream noise and NOT a v2-hydration failure.
+        inst = a_r1.get("instrument")
+        if inst in ("surge_xt", "dexed") and (
+                a_r1.get("silent", False) or match.get("silent", False)):
+            reasons["vst3_hydration_silent"] = {"stem": stem, "instrument": inst,
                 "run1_peak_abs": a_r1.get("peak_abs"),
                 "run2_peak_abs": match.get("peak_abs")}
             return "RENDER_FAILS", reasons

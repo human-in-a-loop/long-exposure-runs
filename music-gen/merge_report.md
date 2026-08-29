@@ -1,93 +1,122 @@
-# Merge Report — cycle 34 Branch A (clone-0, fork 43802db1a81c)
+# Merge Report — cycle 35 Branch C (clone-2, fork 07063458736e)
 
 **NOTE ON PATH**: The brief specified
-`/home/user/music-gen-instance/fork-43802db1a81c/clone-0/merge_report.md`,
+`/home/user/music-gen-instance/fork-07063458736e/clone-2/merge_report.md`,
 but the workspace sandbox refuses writes outside
-`/home/user/long-exposure-runs/music-gen`. Following the c31 Branch B
-precedent, this merge report lands at the workspace-root fallback
-`merge_report.md`; the merge conductor picks up whichever path exists.
+`/home/user/long-exposure-runs/music-gen`. Per the c31 Branch B and
+c34 Branch A precedent, this merge report lands at the workspace-root
+fallback `merge_report.md`; the merge conductor picks up whichever
+path exists.
 
 ## Milestone
 
-`M-DAW-SPIKE-1/palette-schema-v2` — new peer sub-milestone under
-`M-DAW-SPIKE-1` per c29 state-machine lemma. Closes c33 auditor
-deferred item (a).
+`_infra/anchor-manifest-v1-clone-2` — new peer sub-milestone under
+root infra, extending the c14/c22/c32/c33 infra-hardening chain.
 
 ## Verdict
 
-**SCHEMA_V2_LANDS** — all 15 named rubric criteria (a)–(o) PASS.
-Rubric SHA-256 (frozen 2026-08-29T07:00Z):
-`ed737733c79848c9f84e7dc0bbd3421b2fbb6f8442e485c3bb3e3c553c452ec2`.
+**`MANIFEST_LOCKED`**.
 
-## Ledger events emitted (8 total; strict order)
+- Rubric SHA-256: `93fa07351f2f56fda2b9b2b720475740c26e8f4331189a97acd9c630d052e73c`
+- Manifest JSON SHA-256: `6dc917fe365a37ff87c3d72f45b3d433894221f8ebdbb36ed3beb5d44a7a821f`
+- Manifest size: 7 865 000 bytes; 18 anchor entries; 21 657 files hashed
+  in total (dominated by the c8 basic-pitch venv).
+- Byte-determinism verified in-process **and** via fresh subprocess into
+  a temp directory. `test_13_subprocess_freeze_ok` + `test_13b_subprocess_matches_on_disk`.
+- Drift check clean: 535 ledger rows scanned; 0 paths carried a prior
+  structured per-path SHA; 0 mismatches. `MANIFEST_LOCKED` per rubric
+  §1(3) vacuous satisfaction. No `_manager/anchor-drift-triage-clone-2`
+  handoff emitted (no drift surface to triage).
 
-| # | milestone_id | ts |
-|---|--------------|----|
-| 1 | `_infra/egress-probe-cycle-34-clone-0` | 07:05 |
-| 2 | `_run/cycle_34_launched-clone-0` | 07:06 |
-| 3 | `_plan/palette_schema_v2_rubric_frozen-clone-0` | 07:07 |
-| 4 | `M-DAW-SPIKE-1/palette-schema-v2` (in-progress/medium) | 07:08 |
-| 5 | `M-DAW-SPIKE-1/palette-schema-v2` (validated/high, SCHEMA_V2_LANDS) | 07:50 |
-| 6 | `_run/cycle_34_closed-clone-0` | 07:55 |
-| 7 | `_archive/cycle-34-scratch-clone-0` | 07:56 |
-| 8 | `_infra/adopt-cycle34-tests-clone-0` | 07:57 |
+## Shipped artifacts
 
-Infra families all suffixed `-clone-0` per c32/c33 convention;
-substantive `M-*` unsuffixed.
+Rubrics + docs:
 
-## Deliverables
+- `docs/anchor_manifest_v1_rubric.md`
+- `docs/anchor_manifest_v1.md` (rendered index)
+- `docs/anchor_manifest_v1_report.md` (required output artifact)
+- `docs/fanout_launched_event_convention.md`
+- `data/anchor_manifest_v1/rubric_hash.txt`
+- `data/anchor_manifest_v1/drift_check.json`
+- `data/anchor_manifest_v1.json` (typed manifest)
 
-**Docs:** `docs/palette_schema_v2_rubric.md`,
-`docs/palette_schema_v2_report.md`.
+Scripts (under `scripts/anchor_manifest/`):
 
-**Scripts:** `scripts/palette_v2/{__init__.py, validate.py,
-provenance.py, schema/palette_v2.json, schema/palette_v2.yaml,
-schema/_build_yaml.py, schema/validate_all.py,
-schema/examples/build_examples.py,
-schema/examples/{drums,bass,other,mono}/*.json,
-schema/examples/planted_invalid/*.json}`.
+- `__init__.py`, `enumerate_anchors.py`, `compute_sha_manifest.py`, `run_freeze.py`
 
-**Data:** `data/palette_v2/rubric_hash.txt`,
-`data/palette_v2/anchor_preservation_before.json`,
-`data/palette_v2/schema/{assignment_ids_v2_expected.tsv (SHA
-0fa1d969…f44e0), validation_report.tsv, skip_manifest.json,
-verdict.json}`.
+Tests + fixtures:
 
-**Tests:** `tests/test_palette_schema_v2.py` (23 cases, all PASS).
-`tests/test_integration_cross_branch.py` §51 (17 checks, all PASS).
+- `tests/test_anchor_manifest_stability.py` — 20/20 pass (spec called ≥12)
+- `tests/test_launched_event_convention.py` — 8/8 pass (spec called ≥6)
+- `tests/fixtures/launched_event_offender_list_v1.txt` (7 pinned rows)
+- `tests/test_integration_cross_branch.py §56` extended — 7 checks green,
+  entire suite 0 failures
 
-**Archived to `tools/stale/`:**
-`_emit_cycle34_launch_events.py`, `_emit_cycle34_close_events.py`,
-`_verify_determinism.py`, `_probe_p3.py`.
+Plan update:
 
-## Test + validation results
+- `plan_of_record.md` — added `_infra/anchor-manifest-v1` row
 
-- `PYTHONPATH=. /usr/bin/python3 tests/test_palette_schema_v2.py` → **23/23 pass**.
-- `PYTHONPATH=. /usr/bin/python3 tests/test_integration_cross_branch.py` → **§51: 17/17 pass** (3 pre-existing failures in sibling clone-2's §53 on `scripts/gen_palette_batch_v1/__init__.py` — unrelated to Branch A).
-- `promise_check .` → **0 ERRORs**.
+## Ledger events (all `-clone-2` suffix on infra families)
 
-## Key facts for the conductor
+Emitted in strict order:
 
-- `NAMESPACE_PALETTE_V2 = 063eb50e-0aac-59bb-84a8-ef26540a8912`
-  (distinct from c31 v1 namespace `44e07e49-d932-519e-8f5c-583c960bb37e`).
-- v2 `stem` enum now includes `mono` (NEW in v2).
-- v2 `pinned_state.format ∈ {v1_flat, v2_iterated_params}`; v2_iterated_params
-  enforced VST3-only by Layer 2.
-- c31 palette-v1 `palette_v1.json` NOT edited — this is a PEER schema.
-- c33 dawdreamer_state P1 anchors `p1_state_v2.json` + `p1_state_sha` for
-  surge_xt + dexed are READ-ONLY; test-verified byte-identical before/after.
-- `_ANCHOR_PLUGIN_VERSIONS` currently hard-coded in
-  `scripts/palette_v2/provenance.py` as `{surge_xt: "1.3.4", dexed: "0.9.9"}`;
-  §11 of the report flags freezing this into
-  `data/palette_v2/anchor_manifest.json` as cycle-35 follow-up.
+1. `_run/cycle_35_launched-clone-2` — validated (start-of-cycle per
+   codified convention)
+2. `_plan/register-anchor-manifest-v1-clone-2` — validated
+3. `_infra/anchor-manifest-v1-clone-2` — in-progress
+4. `_infra/launched-event-convention-clone-2` — validated
+5. `_infra/cross-branch-integration-test-cycle35-clone-2` — validated
+6. `_infra/anchor-manifest-v1-clone-2` — validated (`MANIFEST_LOCKED`)
+7. `_run/cycle_35_closed-clone-2` — validated
+8. `_archive/cycle-35-scratch-clone-2` — validated
+9. `_infra/adopt-cycle35-tests-clone-2` — validated
 
-## Egress state
+Ledger at branch open: 534 rows. At branch close: 543 rows (delta +9;
+step 1 emitted separately earlier; steps 2–9 emitted from the
+consolidated `tools/stale/_emit_c35_events.py`).
 
-`workspace/harvest_playlists.sh` returned exit-0 with 0 audio files
-retrieved across bands 6/5/4 (http_code=403 on media). Ear-band
-ingestion still gated on the c26 armed-harness contract (two
-consecutive `media_ok=true`).
+## promise_check
 
-## Ledger baseline
+- **0 ERRORs**.
+- WARN delta from this branch: 0 attributable. The 113 total WARNs
+  comprise pre-existing legacy notes and orphan artifacts from the two
+  sibling c35 clones (Branch A palette-v2 hydration, Branch B sampler-
+  side diversification) — their adoption events are outside this
+  branch's scope.
 
-Pre-branch ledger: 501 rows. Post-branch: 509 rows (+8 events).
+## Convention codification
+
+`_run/cycle_<N>_launched(-clone-<k>)?` events MUST write
+`status: validated` at emission time (they mark start-of-cycle, not
+open work). Pre-existing offender list (7 rows across cycles 29, 30, 31,
+32, 34 clone-0) is pinned at
+`tests/fixtures/launched_event_offender_list_v1.txt`; the convention
+test flags any future growth.
+
+**Discrepancy vs brief**: the brief called out only c34 clone-0 as
+the pre-existing offender; the actual historical set is 7 rows across
+6 cycles. Pinned honestly; not rewritten.
+
+## Deviations from brief (documented)
+
+1. Anchor #4 (`scripts/gen/batch_v2`) is a file `batch_v2.py`, not a
+   directory. Recorded as `scripts/gen/batch_v2.py` alongside
+   `scripts/gen/sample_rules.py` to preserve intended semantic.
+2. The brief said "15 entries", the objective said "add 3 c34 entries
+   → 18". This branch shipped 18 as intended.
+3. Offender list is 7 rows, not 1 (see above).
+4. Live top-of-cycle egress probe was skipped (workspace sandbox blocks
+   direct curl invocations with hosts requiring approval); the egress
+   state is documented as unchanged from c34's 403 baseline.
+
+## Handoff notes for c36
+
+- No drift → no open handoff to `_manager/anchor-drift-triage-clone-2`.
+- Manifest is the single source of truth for anchor SHA verification;
+  future branches can drop bespoke `anchor_preservation.json` snapshots
+  in favor of `data/anchor_manifest_v1.json` lookup.
+- Offender-list fixture stable; any c35+ `status: in-progress`
+  launched-event emission trips
+  `test_launched_event_convention.py::test_05_offender_list_stable`.
+- No re-attempt of the five locked anti-patterns (c8 octave / c11
+  CLAP-VGGish / c22 stability / c23 head-reg / c25 feature-representation).

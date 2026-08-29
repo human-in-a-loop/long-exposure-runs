@@ -19,7 +19,7 @@ For each rule_type in {harmonic, rhythmic, arrangement}:
 
 NO PRNG. Reads data/rules/ledger.jsonl streaming-only.
 Base 76-row ledger actual counts: H=10, R=18, M=18, F=15, A=15
-(brief's "K=20 harmonic" was a carry-over from batch-v6's ledger_i3_dminor).
+(brief's "K=20 harmonic" was a carry-over from c15's D-minor augmented ledger).
 Not a blocker; distinctness requires only |candidates_per_type| >= |salts|,
 i.e. |candidates| >= 3, which every rule_type in {harmonic, rhythmic,
 arrangement} satisfies (min = 10 on harmonic).

@@ -188,11 +188,19 @@ their respective ledger events at emit time (no orphan surface).
 
 ## §8. `promise_check` state
 
-At branch close: 0 ERRORs, WARN delta 0 (11 pre-existing WARNs
-unchanged — 5 legacy trailing-slash artifact-path notes, 3 upstream
-`long_exposure/*` reference WARNs, 1 c33 clone-namespace plan-milestone
-reference, 1 missing pre-existing report file, 1 c22 handoff report
-reference).
+At branch close: **0 ERRORs**, 113 WARNs. Only 2 WARNs are attributable
+to files this session touched — both from parallel c35 sibling clones
+(`tools/_c35_egress_probe.py`, `tools/_scratch_sanity.py`) — and both
+predate this branch's shadow ledger. Every file this branch produced
+under `scripts/anchor_manifest/`, `data/anchor_manifest_v1*`,
+`docs/anchor_manifest_v1*`, `docs/fanout_launched_event_convention.md`,
+and `tests/*` is declared in an event's `artifacts` field at emit
+time; **none of this branch's outputs surface a WARN**. The remaining
+WARNs comprise (a) pre-c35 legacy trailing-slash and long_exposure/*
+exemption notes, and (b) orphan artifacts landed by the other two c35
+clones (`palette_v2_render/*`, `gen_palette_batch_v2/*`,
+`docs/palette_v2_hydration_render_rubric.md`, etc.) — those are the
+sibling branches' adoption events to emit, not this branch's.
 
 ## §9. c36 handoff notes
 

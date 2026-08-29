@@ -4089,6 +4089,207 @@ if _TEST53.is_file():
 
 
 print()
+# §54. M-DAW-SPIKE-1/palette-schema-v2-hydration-render — cycle 35 clone-0, fork 07063458736e.
+print("§54 M-DAW-SPIKE-1/palette-schema-v2-hydration-render (cycle 35)")
+_SCRIPTS54 = WS / "scripts" / "palette_v2_render"
+_DATA54 = WS / "data" / "palette_v2_render"
+_RUB54 = WS / "docs" / "palette_v2_hydration_render_rubric.md"
+_REP54 = WS / "docs" / "palette_v2_hydration_render_report.md"
+_TEST54 = WS / "tests" / "test_palette_v2_hydration_render.py"
+
+check(_RUB54.is_file(), "guard §54a: rubric doc present")
+check(_REP54.is_file(), "guard §54b: report doc present")
+check(_TEST54.is_file(), "guard §54c: test suite present")
+for _fn54 in ("__init__.py", "build_assignments_v2.py",
+              "render_stem_v2.py", "run_all.py"):
+    check((_SCRIPTS54 / _fn54).is_file(),
+          f"guard §54d:{_fn54}: script present")
+for _f54 in ("rubric_hash.txt", "verdict.json", "assignments_v2.jsonl",
+             "anchor_preservation.json",
+             "panel_original_vs_v2.tsv", "panel_v1_vs_v2.tsv",
+             "bare_combined.wav.sha.run1", "bare_combined.wav.sha.run2",
+             "fetchability_ladder.jsonl"):
+    check((_DATA54 / _f54).is_file(),
+          f"guard §54e:{_f54}: artifact present")
+
+if (_DATA54 / "verdict.json").is_file():
+    _v54 = json.loads((_DATA54 / "verdict.json").read_bytes())
+    check(_v54.get("verdict") in ("V2_MOVES_PANEL", "V2_NEUTRAL", "RENDER_FAILS"),
+          f"guard §54f: verdict enum ({_v54.get('verdict')!r})")
+    check(_v54.get("rubric_hash") ==
+          (_DATA54 / "rubric_hash.txt").read_text().strip(),
+          "guard §54g: verdict rubric_hash == rubric_hash.txt")
+    _assn54 = _v54.get("assignments", [])
+    check(len(_assn54) == 3,
+          f"guard §54h: 3 v2 assignments emitted (got {len(_assn54)})")
+    _stem_instr = {a["stem"]: a["instrument"] for a in _assn54}
+    check(_stem_instr.get("drums") == "fluidsynth_gm"
+          and _stem_instr.get("bass") == "surge_xt"
+          and _stem_instr.get("other") == "dexed",
+          f"guard §54i: v2 dispatch drums=fluidsynth_gm bass=surge_xt other=dexed "
+          f"(got {_stem_instr})")
+
+if (_DATA54 / "anchor_preservation.json").is_file():
+    _a54 = json.loads((_DATA54 / "anchor_preservation.json").read_bytes())
+    check(_a54.get("unchanged") is True,
+          "guard §54j: anchor_preservation unchanged")
+
+import ast as _ast54
+if _TEST54.is_file():
+    _tree54 = _ast54.parse(_TEST54.read_text())
+    _tfns54 = [n.name for n in _tree54.body
+               if isinstance(n, _ast54.FunctionDef) and n.name.startswith("test_")]
+    check(len(_tfns54) >= 14,
+          f"guard §54k: test file defines >= 14 test_ functions (got {len(_tfns54)})")
+
+
+print()
+# §55. M-GEN-1/palette-driven-batch-v2-sampler-diversified — cycle 35 clone-1, fork 07063458736e.
+print("§55 M-GEN-1/palette-driven-batch-v2-sampler-diversified (cycle 35)")
+_SCRIPTS55 = WS / "scripts" / "gen_palette_batch_v2"
+_DATA55 = WS / "data" / "gen_palette_batch_v2"
+_RUB55 = WS / "docs" / "palette_driven_batch_v2_sampler_diversified_rubric.md"
+_REP55 = WS / "docs" / "palette_driven_batch_v2_sampler_diversified_report.md"
+_TEST55 = WS / "tests" / "test_palette_driven_batch_v2.py"
+
+# 55a — required file layout.
+_REQUIRED_SCRIPTS55 = ("__init__.py", "sample_rule_triple_v2.py",
+                       "perturb_pinned_state.py", "render_song.py",
+                       "run_batch.py", "spread_analysis.py")
+for _fn55 in _REQUIRED_SCRIPTS55:
+    check((_SCRIPTS55 / _fn55).is_file(),
+          f"batch-v2 §55a: scripts/gen_palette_batch_v2/{_fn55} present")
+check(_RUB55.is_file(), "batch-v2 §55a: rubric doc present")
+check(_REP55.is_file(), "batch-v2 §55a: report doc present")
+check((_DATA55 / "rubric_hash.txt").is_file(), "batch-v2 §55a: rubric_hash.txt present")
+check((_DATA55 / "verdict.json").is_file(), "batch-v2 §55a: verdict.json present")
+check((_DATA55 / "batch_manifest.json").is_file(), "batch-v2 §55a: batch_manifest.json present")
+check((_DATA55 / "summary.tsv").is_file(), "batch-v2 §55a: summary.tsv present")
+check((_DATA55 / "spread_analysis.json").is_file(), "batch-v2 §55a: spread_analysis.json present")
+check((_DATA55 / "anchor_preservation.json").is_file(),
+      "batch-v2 §55a: anchor_preservation.json present")
+check(_TEST55.is_file(), "batch-v2 §55a: test file present")
+
+# 55b — rubric mtime < earliest script mtime under scripts/gen_palette_batch_v2/.
+_py55 = [p for p in _SCRIPTS55.iterdir()
+         if p.is_file() and p.suffix == ".py"]
+if _py55 and _RUB55.is_file():
+    _r_mtime55 = _RUB55.stat().st_mtime
+    _earliest_script55 = min(p.stat().st_mtime for p in _py55)
+    check(_r_mtime55 <= _earliest_script55,
+          f"batch-v2 §55b: rubric mtime <= earliest script mtime "
+          f"(rubric={_r_mtime55}, script={_earliest_script55})")
+
+# 55c — rubric SHA link: doc SHA == rubric_hash.txt == verdict.json.rubric_hash.
+import hashlib as _hashlib55
+if _RUB55.is_file():
+    _doc55 = _hashlib55.sha256(_RUB55.read_bytes()).hexdigest()
+    _txt55 = (_DATA55 / "rubric_hash.txt").read_text().strip()
+    check(_doc55 == _txt55, f"batch-v2 §55c: doc SHA == rubric_hash.txt")
+    _v55 = json.loads((_DATA55 / "verdict.json").read_text())
+    check(_v55.get("rubric_hash") == _txt55,
+          "batch-v2 §55c: verdict.json.rubric_hash == rubric_hash.txt")
+
+# 55d — verdict enum.
+if (_DATA55 / "verdict.json").is_file():
+    _v55d = json.loads((_DATA55 / "verdict.json").read_text())
+    check(_v55d.get("verdict") in {"SPREAD_ACHIEVED", "SPREAD_PARTIAL",
+                                    "SPREAD_STILL_COLLAPSED", "BATCH_FAILS"},
+          f"batch-v2 §55d: verdict in enum (got {_v55d.get('verdict')!r})")
+
+# 55e — per-salt byte-determinism × 2.
+for _salt55 in ("0", "1", "2"):
+    _sd55 = _DATA55 / "per_song" / _salt55
+    check(_sd55.is_dir(), f"batch-v2 §55e: salt={_salt55} per-song dir present")
+    _r1 = _sd55 / "bare_combined.wav.sha.run1"
+    _r2 = _sd55 / "bare_combined.wav.sha.run2"
+    if _r1.is_file() and _r2.is_file():
+        check(_r1.read_text().strip() == _r2.read_text().strip(),
+              f"batch-v2 §55e: salt={_salt55} bare_combined SHA byte-equal x2")
+    for _stem55 in ("drums", "bass", "other"):
+        _sd_stem = _sd55 / "per_stem" / _stem55
+        _s1 = _sd_stem / "render_run1.wav.sha"
+        _s2 = _sd_stem / "render_run2.wav.sha"
+        if _s1.is_file() and _s2.is_file():
+            check(_s1.read_text().strip() == _s2.read_text().strip(),
+                  f"batch-v2 §55e: salt={_salt55} stem={_stem55} SHA byte-equal x2")
+
+# 55f — anchor preservation across c31/c33/c34 anchors.
+if (_DATA55 / "anchor_preservation.json").is_file():
+    _ap55 = json.loads((_DATA55 / "anchor_preservation.json").read_text())
+    check(_ap55.get("unchanged") is True,
+          "batch-v2 §55f: anchor_preservation.unchanged is True")
+
+# 55g — no-import guards on forbidden modules.
+_forbidden55 = ("scripts.tex.render_effects_layered",
+                "scripts.gen.batch_v2",
+                "scripts.rules.sampling.i4_stratified",
+                "scripts.ear.stability_metrics",
+                "scripts.ear.stability_audit",
+                "scripts.analysis.collision_model_bp",
+                "scripts.analysis.canonical_aggregate_sha",
+                "scripts.analysis.hash_geometry_fit",
+                "scripts.analysis.multiple_testing_correction",
+                "scripts.analysis.semantic_cluster_fit")
+import ast as _ast55g
+for _p55 in sorted(_SCRIPTS55.iterdir()):
+    if _p55.is_file() and _p55.suffix == ".py":
+        _tree55 = _ast55g.parse(_p55.read_text())
+        _mods55 = set()
+        for _node55 in _ast55g.walk(_tree55):
+            if isinstance(_node55, _ast55g.Import):
+                for _al55 in _node55.names:
+                    _mods55.add(_al55.name)
+            elif isinstance(_node55, _ast55g.ImportFrom):
+                if _node55.module:
+                    _mods55.add(_node55.module)
+        for _bad55 in _forbidden55:
+            _hit55 = any(_m == _bad55 or _m.startswith(_bad55 + ".")
+                         for _m in _mods55)
+            check(not _hit55,
+                  f"batch-v2 §55g: {_p55.name} does not import {_bad55}")
+
+# 55h — spread analysis shape.
+_sj55 = _DATA55 / "spread_analysis.json"
+if _sj55.is_file():
+    _s55 = json.loads(_sj55.read_text())
+    for _k55 in ("mel_l1_db", "spectral_centroid_rmse_hz",
+                 "rms_env_rmse", "lufs_m_rmse_lu"):
+        for _pn55 in ("panel_original", "panel_fluidsynth"):
+            _e55 = _s55.get("per_key", {}).get(_pn55, {}).get(_k55, {})
+            check("iqr" in _e55 and "max_minus_min" in _e55,
+                  f"batch-v2 §55h: spread {_pn55}/{_k55} iqr+max_minus_min present")
+    check("sfizz_vs_delta_correlation" in _s55,
+          "batch-v2 §55h: sfizz_vs_delta_correlation entry present")
+
+# 55i — per-salt v2 perturbed payloads authored + validate.
+for _salt55 in ("0", "1", "2"):
+    _v2d = _DATA55 / "per_song" / _salt55 / "v2_perturbed"
+    for _plugin55 in ("surge_xt", "dexed"):
+        check((_v2d / f"{_plugin55}.json").is_file(),
+              f"batch-v2 §55i: salt={_salt55} v2 payload for {_plugin55}")
+
+# 55j — cross-salt assignments distinctness (rule triples differ per salt).
+_bm55 = _DATA55 / "batch_manifest.json"
+if _bm55.is_file():
+    _mm55 = json.loads(_bm55.read_text())
+    _sha_per_salt55 = _mm55.get("assignments_sha_per_salt", {})
+    check(len(set(_sha_per_salt55.values())) == len(_sha_per_salt55),
+          f"batch-v2 §55j: assignments SHAs distinct per salt "
+          f"(got {sorted(set(_sha_per_salt55.values()))[:3]})")
+
+# 55k — test file defines >= 14 test_ functions.
+import ast as _ast55f
+if _TEST55.is_file():
+    _tree55f = _ast55f.parse(_TEST55.read_text())
+    _tfns55 = [n.name for n in _tree55f.body
+               if isinstance(n, _ast55f.FunctionDef) and n.name.startswith("test_")]
+    check(len(_tfns55) >= 14,
+          f"batch-v2 §55k: test file defines >= 14 test_ functions "
+          f"(got {len(_tfns55)})")
+
+
+print()
 # §56 — c35 clone-2: anchor-manifest freeze + launched-event convention.
 _C35_RUBRIC = WS / "docs" / "anchor_manifest_v1_rubric.md"
 _C35_MANIFEST = WS / "data" / "anchor_manifest_v1.json"
