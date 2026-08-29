@@ -1,5 +1,5 @@
 ---
-title: "Cycles 1-2 Clone 2 Report — M-GEN-1/palette-driven-batch-v1 (Fork 43802db1a81c)"
+title: "Cycles 1-2 Clone 2 Report — M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization (Fork 87da4f517029)"
 date: "2026-08-29"
 toc: true
 toc-depth: 2
@@ -8,121 +8,151 @@ fontsize: "10pt"
 ---
 [OUTPUT: report_cycles_1-2_clone_2]
 
-# Cycles 1-2 Clone 2 Report — M-GEN-1/palette-driven-batch-v1 (Fork 43802db1a81c)
+# Cycles 1-2 Clone 2 Report — M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization (Fork 87da4f517029)
 
 ## Abstract
 
-Cycles 1-2 of clone-2 (fork `43802db1a81c`) close the c34 `M-GEN-1/palette-driven-batch-v1` milestone at the rubric's operative permitted second-clause outcome: **BATCH_SPREAD_COLLAPSED**. This is a first-class G5 negative finding, not a failure. Three-song batch (salts 0, 1, 2) rendered through the c33 palette-render pipeline verbatim yielded byte-identical `bare_combined.wav` across all six per-salt runs despite nine pairwise-distinct `assignment_id` UUID5 metadata rows. Cycle 2 is the c30-codified re-invocation-as-verification pattern: five SHA-equality anchor reads plus three test/validation invocations, all PASS byte-for-byte against the cycle-1 anchor; zero writes, zero ledger emissions, zero merge-report re-authorship.
+Cycles 1-2 of clone-2 (fork `87da4f517029`) close the cycle-36 Branch C auditor-carried alternate candidate `M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization` at **MIXED** with per-plugin labels preserved. Cycle 1 executed the full N=5-render analytical probe on Surge XT + Dexed VST3 under identical BLAS pins and torch seed 0; per-plugin classification yielded Surge XT = STRUCTURAL and Dexed = SMALL (byte-adjacent-tolerant at float32 epsilon), aggregated as MIXED under the frozen 3-verdict rubric. Cycle 2 is c30-codified verification-only standby (honest low-output memo; zero writes; auditor decision **COMPLETE**). Three MODERATE findings are cleanly handed to c37; c31 STILL_GAP and c35 A anti-patterns are not re-opened.
 
 ## Verdict
 
-**BATCH_SPREAD_COLLAPSED** (terminal-VALIDATED at cycle 1; re-verified byte-for-byte at cycle 2).
+**MIXED** (VALIDATED at cycle 1 per rubric aggregation; **COMPLETE** at cycle 2 standby).
 
-## Mechanism Exposed (Load-Bearing Finding for Cycle 35+)
+Per-plugin labels preserved in `verdict.json` for c37 freedom:
 
-The c33 `build_assignment_row` is **content-invariant of `rule_id`**, consulting only `stem` + workspace fetchability. Per-salt palette-bare renders collapse to a single byte-identical `bare_combined.wav` despite nine pairwise-distinct `assignment_id` UUID5 metadata rows. Cross-salt audio diversity **cannot** be sourced from the dispatcher — any downstream cross-salt-diversity work must source diversity from the sampler/generator, not from the palette dispatcher.
+| Plugin | Label | Load-Bearing Numbers |
+| --- | --- | --- |
+| Surge XT | **STRUCTURAL** | max pairwise RMS ≈ 0.098 (pair 1-3); max_abs_sample ≈ 0.327 (pair 2-4) |
+| Dexed | **SMALL** | byte-adjacent at float32 epsilon |
 
-## Rubric SHA Chain (Byte-Equal in Three Locations)
+## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
 
 | Location | SHA-256 |
 | --- | --- |
-| `docs/palette_driven_batch_v1_rubric.md` | `42f0bcea9ea13e4543380d5b17034c623deeb69fb5ef1a98b54e1ed670101017` |
-| `data/gen_palette_batch_v1/rubric_hash.txt` | `42f0bcea…7017` |
-| `verdict.json.rubric_hash` | `42f0bcea…7017` |
+| `docs/vst3_nondeterminism_characterization_rubric.md` | `ddc70837…d9bf560` |
+| `data/vst3_nondeterminism/rubric_hash.txt` | `ddc70837…d9bf560` |
+| `verdict.json.rubric_hash` | `ddc70837…d9bf560` |
 
-`verdict.json.verdict = "BATCH_SPREAD_COLLAPSED"`.
+Verified byte-equal at cycle 1; unchanged at cycle 2.
 
-## Per-Salt Byte-Determinism (All Six Runs Byte-Identical)
+## Method
 
-| Salt | run1 SHA-256 | run2 SHA-256 |
-| --- | --- | --- |
-| 0 | `a8c1557c…b794` | `a8c1557c…b794` |
-| 1 | `a8c1557c…b794` | `a8c1557c…b794` |
-| 2 | `a8c1557c…b794` | `a8c1557c…b794` |
+Loaded each of Surge XT and Dexed VST3 in isolation via DawDreamer; hydrated via c33 P1 `set_parameter(i, v)` iteration (100% param coverage: 2855/2855 Surge XT; 2238/2238 Dexed). Rendered the c31 fixed 8 s @ 44.1 kHz stereo ascending-diatonic MIDI N=5 times per plugin in per-run isolated `tempfile.mkdtemp()` dirs under identical single-thread BLAS pins (`OMP=MKL=OPENBLAS=1`) + torch seed 0.
 
-All six `per_song/{0,1,2}/bare_combined.wav.sha.run{1,2}` literally equal `a8c1557c09470340aea0cb0556468117d67907292af35e2a351dbe9c212ba794` — the exact c33 single-seed `bare_combined.wav` SHA. This is the direct empirical demonstration that the dispatcher is `rule_id`-invariant.
-
-## Test Surface
-
-| Suite | Result |
-| --- | --- |
-| `tests/test_palette_driven_batch_v1.py` | **16/16 PASS** (§01-§16) |
-| `tests/test_integration_cross_branch.py` (incl. §53a-§53i) | **PASS (0 failures)** |
-| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (WARN count unchanged this cycle) |
-
-Coverage: interpreter guard, no-PRNG AST, no c9-effects import, no c13-batch import, no c15 i4 import, no c22/c26/c27/c28/c29/c30 imports, no `sidecar_nonfactor`, zero writes under any of the five anchor directories, per-salt byte-determinism × 2 on `bare_combined.wav`, 3-unique-or-expected-collapsed SHA analysis, 8-key finite panel per salt, rubric-mtime-before-scripts, verdict.json schema conformance, c33 palette_render + c31 palette-v1 anchor SHAs unchanged, `spread_analysis.json` IQR + max−min entries present.
+Computed per-plugin: SHA-256 per render; pairwise RMS across all C(5,2)=10 render pairs; per-pair envelope correlation (Pearson on RMS envelopes at hop=512); per-pair `mel_l1_db` via `M-TEX-1/panel` (READ-ONLY import); per-pair max abs-sample.
 
 ## Cycle Disposition
 
 | Cycle | Researcher Directive | Worker Action | Auditor Decision |
 | --- | --- | --- | --- |
-| 1 | Ship the milestone under frozen 3-verdict rubric | Full pipeline; verdict `BATCH_SPREAD_COLLAPSED`; 8 shadow-ledger events emitted | VALIDATED |
-| 2 | Re-invocation-as-verification (SHA-equality + test/validation invocations only) | Explicit no-op declaration; 5 SHA reads + 3 test invocations, all PASS byte-for-byte; zero writes | COMPLETE |
+| 1 | Ship the milestone under frozen 3-verdict rubric | Full pipeline; MIXED with per-plugin labels; 9 shadow-ledger rows | VALIDATED |
+| 2 | Verification-only standby | Honest low-output memo; zero writes; recommend loop termination | **COMPLETE** (`[[BRANCH_COMPLETE]]`) |
 
-Cycle 2 respected all prohibitions: no file writes, no ledger emissions (egress-probe emission SKIP correctly justified against c27 canonical-hash-dedup on the c22-persistent `media_ok=false, http_code=403` row), no merge-report re-authorship, no expanded salt range, no fifth verdict path.
+## Test Surface
+
+| Suite | Result |
+| --- | --- |
+| `tests/test_vst3_nondeterminism_characterization.py` | **17/17 PASS** (exceeds ≥14 minimum; includes AST-grep verifying `get_state`/`save_state`/`save_preset`/`load_state`/`set_state(bytes)` NOT called; interpreter guard; no PRNG; N=5 runs per plugin; per-run isolated temp dirs; c33 P1 anchor SHAs unchanged; verdict-JSON `rubric_hash` byte-equal; per-pair metrics finite in expected ranges) |
+| `tests/test_integration_cross_branch.py` §59 | **11/11 PASS** |
+| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (WARNs expected until shadow-ledger merges) |
+
+## Anchor Preservation
+
+`anchor_preservation.json`: **153/153 tracked files byte-exact** (c33 dawdreamer_state P1-iterate anchors; c31 palette_probe; c31 palette; c34 palette_v2; c35 palette_v2_render). Zero AST-forbidden state calls; zero PRNG hits; zero forbidden-module imports. c9 chain / c13 pipeline / c15 `i4_stratified.py` / c22 stability harness / c26-30 utilities NOT imported.
+
+## Ledger Events (9 Shadow Rows Under `-clone-2` Suffix)
+
+Six named + two housekeeping + one launched (cycle 1); cycle 2 zero:
+
+1. `_run/cycle_36_launched-clone-2` (`status: validated` per c35 Branch C codified convention)
+2. `_plan/vst3_nondeterminism_characterization_rubric_frozen-clone-2`
+3. `_infra/egress-probe-cycle-36-clone-2`
+4. `M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization` (in-progress; M-* unsuffixed per c32)
+5. `M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization` (validated verdict roll-up, MIXED)
+6. `_run/cycle_36_closed-clone-2`
+7. `_archive/cycle-36-scratch-clone-2`
+8. `_infra/adopt-cycle36-tests-clone-2`
+9. (per audit tally, 9-row total)
+
+`_manager/vst3-render-nondeterminism-anti-pattern-candidate-clone-2` **correctly WITHHELD** under MIXED verdict; c37 owns whether to elevate it if the rubric contradiction resolves toward STRUCTURAL_DRIFT. No `M-EAR-1/*` or `M-GEN-1/*` events emitted.
+
+Ledger state: 572 events (563 + 9 emitted this branch).
+
+## MODERATE Findings (Handoff to c37, Not Corrections Owed This Branch)
+
+1. **Report §1 wording**: measurement-table row line 34 says "both plugins"; the frozen rubric says "either plugin". One-line fix owed before c37 reads §1. Not a rework blocker.
+2. **Rubric internal contradiction**: doc §98 STRUCTURAL_DRIFT mechanical rule ("ANY of the following … for EITHER plugin") vs §118-121 MIXED example ("one plugin passes SMALL while the other passes STRUCTURAL"). Doc line 71 forbids auditor override; preserved per-plugin `label` in `verdict.json` means signal is not lost. First rubric-authoring contradiction observed in the campaign.
+3. **Hydration symbol mismatch**: brief cited `set_parameters_from_p1_dict` on `scripts.dawdreamer_state.probe_p1_iterate_parameters`; symbol does not exist. Worker inlined c35 `render_stem_v2.py:render_dawdreamer_vst3_once` hydration loop byte-verbatim; mechanism preserved; `anchor_preservation` confirms c35 unchanged.
+
+## Anti-Patterns Locked (6-Count Stable Including c35 A #6)
+
+`get_state`, `save_state`, `save_preset`, `load_state`, `set_state(bytes)` remain AST-forbidden — enforced by test with 0 hits. c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted. **c35 Branch A VST3-nondeterminism finding survives as fair characterization**, not a re-attempt.
+
+**Surge XT drift is inside the VST3 binary**, upstream of the P1 API. c33 P1 hydration surface (100% param coverage) is insufficient to eliminate it; any future Surge XT bisection is narrowed to internal state axes (LFO seeds, voice allocation, envelope phase).
 
 ## State-Machine Discipline (c29 Lemma Respected)
 
-`M-GEN-1/palette-driven-batch-v1` is a peer sub-milestone under `M-GEN-1`. It is NOT a child of terminal-validated `M-GEN-1/batch-v{1..6}` or the collision-modeling arc. Plan-of-record row registered in the 5-col Milestones table BEFORE the first `M-*` event fired at cycle 1.
+`M-DAW-SPIKE-1/vst3-render-nondeterminism-characterization` is a peer sub-milestone under M-DAW-SPIKE-1. NOT a child of terminal-validated `M-DAW-SPIKE-1/{palette-schema-v2, palette-schema-v2-hydration-render, palette-instrument-determinism, dawdreamer-state-extraction-workaround}`.
 
-## Ledger Events (Cycle 1: 8 Shadow Rows; Cycle 2: 0)
+## Merge Disposition
 
-Cycle-1 shadow-ledger emissions (accepted on fanout-contract trust; live outside auditor sandbox; c33 writer-boundary guard would auto-suffix any omissions):
-
-1. `_infra/egress-probe-cycle-34-clone-2`
-2. `_run/cycle_34_launched-clone-2`
-3. `_plan/palette_driven_batch_v1_rubric_frozen-clone-2`
-4. `M-GEN-1/palette-driven-batch-v1` (in-progress; M-* unsuffixed per c32)
-5. `M-GEN-1/palette-driven-batch-v1` (validated verdict roll-up, `BATCH_SPREAD_COLLAPSED`)
-6. `_run/cycle_34_closed-clone-2`
-7. `_archive/cycle-34-scratch-clone-2`
-8. `_infra/adopt-cycle34-tests-clone-2`
-
-Cycle 2: zero. `validated → in_progress` forbidden per c29 lesson; retroactive edits would break pre-registration integrity.
+Merge report on disk at `/home/user/music-gen-instance/fork-87da4f517029/clone-2/merge_report.md` for root conductor pickup. Nine shadow-ledger rows queued for `concat_clone_ledgers`; zero cross-clone collisions under c32 `-clone-2` suffixes. Cycle 2 contributes zero additional rows.
 
 ## Standing Constraints (Unchanged)
 
 - α pinned at `0.7469387071101908`.
-- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor` imports (AST-verified).
+- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor` imports.
 - Interpreter guard `assert sys.executable == '/usr/bin/python3'` on every new script.
-- Read-only anchors preserved: c9 effects chain; c13 batch-v2; c15 `i4_stratified.py`; c22 stability harness; c26-c30 collision-modeling utilities; c31 palette-v1 + palette_probe; c33 palette_render + dawdreamer_state.
-- No `M-EAR-1/*` events this cycle; armed harness stays dormant; egress remains blocked.
+- Read-only anchors preserved (see Anchor Preservation).
+- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403). M-EAR-1 armed-not-fired posture holds.
 - Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`.
 
-## Anti-Patterns Locked (Unchanged, 5-Count Stable)
+## Cycle-37 Handoff (Enumerated in Merge Report + Audit)
 
-No CLAP fetch retry; no c8 octave-suppression retry; no c22/c23/c25 ear-chassis re-audit; no fifth collision-mechanism candidate; no re-authoring of validated artefacts under re-invocation.
+**Recommended (low risk)**: adopt per-plugin activation stance from report §9. Any of:
 
-## Open Merge-Conductor Item (Non-Branch-Actionable)
+1. **A — Dexed-only strict-SMALL tolerance-gate** (primary; Dexed's byte-adjacent-tolerance is legible under both rubric readings).
+2. **B — Surge XT internal-state bisection** (deferred; LFO seed / voice allocation / envelope phase).
+3. **C — envelope-only both-plugin tolerance-gate** (higher risk; needs a fresh frozen rubric).
 
-Merge-report path collision at workspace root: `merge_report.md` currently occupied by an earlier clone's Branch A report. Recommendation: root conductor reads clone-2's shadow ledger directly rather than depending on `merge_report.md`. Durable fix candidate `long_exposure.workspace_bootstrap.resolve_merge_report_path(workspace, clone_id)` remains carried across multiple prior audits.
+**Alternative (higher-effort)**: formally supersede the rubric doc with a v2 resolving the STRUCTURAL "either" vs MIXED-example contradiction. Requires a fresh pre-registration cycle.
 
-## Cycle-34 Fanout Complete (All Three Branches Closed)
+**Never re-open c31/c35 A anti-patterns**: `get_state`, `save_state`, `save_preset`, `load_state`, `set_state(bytes)` remain AST-forbidden. Surge XT drift is upstream of the P1 API; do not attempt to eliminate it via state extraction.
 
-| Branch | Clone | Milestone | Verdict |
-| --- | --- | --- | --- |
-| A | clone-0 | `M-DAW-SPIKE-1/palette-schema-v2` | SCHEMA_V2_LANDS (unblocks Surge XT + Dexed for c35+ batches) |
-| B | clone-1 | `M-TEX-1/palette-driven-bare-render/cross-seed` | CROSS_SEED_CONSISTENT (palette-render generalises across breadth seeds) |
-| C | clone-2 | `M-GEN-1/palette-driven-batch-v1` (this branch) | BATCH_SPREAD_COLLAPSED (dispatcher content-invariant of `rule_id`) |
+**Report §1 wording fix**: one-line "both" → "either" edit before c37 reads §1.
 
-Together the three branches close the immediate palette-render exploration surface at c33/c34.
+## Cycle-Bounding for c37 palette-v3 Decision
 
-## Cycle-35 Handoff (Priority Order, Enumerated in Audit Forward-Look)
+The palette-v3 VST3 activation decision does NOT need to answer the Surge XT bisection question first. The c36 Branch C answer (MIXED with per-plugin labels) is sufficient input:
 
-1. **Sampler-side diversification** — drive cross-salt spread through the generator (the load-bearing constraint any downstream cross-salt-diversity work must address).
-2. **Palette-v2 uplift into batch-v2** — consume Branch A's schema-v2 to activate Surge XT + Dexed in the batch pipeline.
-3. **Generator `rule_id` → MIDI instrumentation** — expose `rule_id` semantics to the note-generation stage.
-4. **N=5 / N=8 regression anchor** — extend the salt sweep once sampler-side diversification lands.
-5. **M-EAR-1 Path B fixture reinforcement** — resume once egress unblocks.
+- **Dexed** is a viable candidate for tolerance-gated activation.
+- **Surge XT** is not viable for byte-determinism; if used, needs a tolerance-gate rubric.
 
-Explicitly out of scope for cycle 35 on this milestone: retry with a fifth verdict path or expanded salt range (rubric prohibits; mechanism exposed).
+The c37 fan-out A/B/C choice above operates entirely on this input.
 
 ## Cumulative Progress
 
-**Palette-mechanism scoreboard** (updated): c31 schema validated; c31 instrument determinism validated (sfizz GREEN; Surge XT + Dexed STILL_GAP → workaround FOUND at c33 clone-1 → schema-v2 LANDS at c34 clone-0); c33 palette-driven bare-render on `synth_030s` validated as PALETTE_MOVES_PANEL; c34 clone-1 cross-seed validated as CROSS_SEED_CONSISTENT; **c34 clone-2 batch-v1 validated as BATCH_SPREAD_COLLAPSED** with the load-bearing dispatcher-`rule_id`-invariance finding exposed.
+**M-DAW-SPIKE-1 line** (post-c36 Branch C):
 
-**Pattern durability**: nine cycles running (c26-c30 collision-modeling arc + c31-c34 palette arc) of rubric-pre-registration + rubric-SHA-in-verdict-JSON + git-mtime-order + mtime-order tests. Zero after-the-fact rubric edits.
+| Cycle | Milestone | Verdict |
+| --- | --- | --- |
+| c31 | `palette-assignment-schema` | validated |
+| c31 | `palette-instrument-determinism` | validated (sfizz GREEN; Surge XT + Dexed STILL_GAP) |
+| c33 | `dawdreamer-state-extraction-workaround` | WORKAROUND_FOUND (P1 winning) |
+| c34 | `palette-schema-v2` | SCHEMA_V2_LANDS (four-times-VALIDATED) |
+| c35 | `palette-schema-v2-hydration-render` | RENDER_FAILS (VST3-binary-internal nondeterminism, fair c31 STILL_GAP extension) |
+| c36 (this) | `vst3-render-nondeterminism-characterization` | **MIXED** (Surge XT STRUCTURAL / Dexed SMALL, per-plugin labels preserved) |
 
-**Re-invocation-as-verification** pattern applied this cycle with full discipline (5 SHA reads + 3 test invocations + explicit no-op declaration + low-output termination + zero writes). Standing campaign discipline; the pattern is now proven across multiple forks and both terminal-VALIDATED PASS-class and terminal-VALIDATED negative-finding-class verdicts.
+**Pattern durability**: **eight consecutive cycles** of rubric-first pre-registration discipline (c26-c30 mechanism probes + c31/c32/c33/c34/c35/c36 palette + infra + fanout). **First rubric-authoring contradiction of the campaign observed this cycle**; soft addition to c37+ discipline: cross-check the rubric's mechanical rule against its own worked examples before freezing the SHA. Not a hard gate — pre-registration lock already caught it in-audit.
+
+**VST3 palette route is now empirically per-plugin heterogeneous**: Dexed byte-adjacent-tolerant at float32 epsilon; Surge XT drifts ~10% RMS despite BLAS pins + 100% P1 hydration. c34 palette_v2 schema unaffected.
+
+**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG.
+
+**c32 fanout-namespace convention** held under c33 harness-clone-namespace-guard: infra families `-clone-2`-suffixed, substantive `M-*` unsuffixed.
+
+**M-EAR-1 armed-harness Path B**: dormant/armed pending audio-egress unblock (still 403; retry per policy is non-blocking). **Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+
+**Standby-termination discipline** reinforced: worker's own low-output signal fired at cycle 2, aligning with the auditor's no-null-cycle rule. The fanout-harness auto-termination-on-N-consecutive-standby heuristic (carried forward from multiple prior branches) continues to accrue evidence.
 
 [END OUTPUT]
