@@ -4912,7 +4912,7 @@ if (_data66 / "verdict.json").exists():
 # §64 — c48 Branch A _infra/harness-and-writer-hardening-v3 invariants
 # ---------------------------------------------------------------------
 import hashlib as _hs_hw3, json as _json_hw3, inspect as _insp_hw3, os as _os_hw3, sys as _sys_hw3
-_hw3_ws = WS if 'WS' in globals() else pathlib.Path(__file__).parent.parent
+_hw3_ws = WS if 'WS' in globals() else Path(__file__).parent.parent
 _hw3_data = _hw3_ws / "data" / "harness_and_writer_hardening_v3"
 _hw3_rubric = _hw3_ws / "docs" / "harness_and_writer_hardening_v3_rubric.md"
 _hw3_verdict = _hw3_data / "verdict.json"
@@ -4925,7 +4925,7 @@ if _hw3_rubric.is_file():
     _LE = "/home/user/human-in-a-loop/long-exposure"
     _mods = [_LE + "/long_exposure/workspace_bootstrap.py",
              _LE + "/long_exposure/tools/_ledger_schema.py"]
-    _hw3_gate_ok = all(pathlib.Path(m).stat().st_mtime >= _hw3_rmt for m in _mods if pathlib.Path(m).exists())
+    _hw3_gate_ok = all(Path(m).stat().st_mtime >= _hw3_rmt for m in _mods if Path(m).exists())
     check(_hw3_gate_ok, "hw3 §64a: rubric doc mtime <= any file mutated under long_exposure/*")
 
 # §64b — three-way rubric_hash byte-equality
