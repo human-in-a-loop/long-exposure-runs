@@ -1,7 +1,8 @@
 # Corpus status — 2026-08-29 (updated)
 
-Rated playlists registered (playlist title = ear rating band):
+Rated corpus (playlist title = ear rating band; band 7 is local-only):
 
+- band 7: LOCAL_BAND_7 — user-supplied local files (new tier, added 2026-08-29)
 - band 6: PLoxlz_x73gZO1UKfmdIRRvnJBiJkQd53l — 30 songs
 - band 5: PLoxlz_x73gZPwSJkctwHkzMT6RpFnZqXQ — 30 songs
 - band 4: PLoxlz_x73gZNv_Ae3HP2b-uhjQNnb5YnN — 20 songs
