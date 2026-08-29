@@ -1,4 +1,12 @@
-corpus/
+# Audio bytes never committed; docs and manifests inside corpus/ are OK.
+corpus/**/*.mp3
+corpus/**/*.wav
+corpus/**/*.flac
+corpus/**/*.m4a
+corpus/**/*.opus
+corpus/**/*.ogg
+corpus/**/*.webm
+corpus/**/*.aac
 data/
 *.log
 
