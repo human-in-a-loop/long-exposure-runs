@@ -202,20 +202,54 @@ def test_06_all_five_families_covered() -> None:
                 )
 
 
-def test_07_M_star_never_touched() -> None:
-    """M-* identifiers are never suffixed or rejected."""
-    for mid in (
-        "M-DAW-SPIKE-1/foo",
-        "M-EAR-1/preparation/features",
-        "M-GEN-1",
-        "M-INGEST-1/chunker",
+def test_07_M_star_families_covered_v2() -> None:
+    """v2 (c36 _infra/fanout-namespace-convention-v2): substantive M-*
+    families ARE now auto-suffixed under clone context, and strict mode
+    raises on unsuffixed emissions. Supersedes v1 behavior where M-* was
+    untouched — see docs/fanout_namespace_convention_v2.md.
+
+    Previous check: M-* never touched. New check: M-<family>/ is treated
+    the same as the v1 leading-underscore infra families. Bare "M-GEN-1"
+    (no trailing slash) is NOT touched because it is neither a v1 infra
+    prefix nor a v2 substantive family — only prefix-matched ids are
+    guarded.
+    """
+    # V2 substantive families that MUST auto-suffix under clone context.
+    for mid, expected in (
+        ("M-DAW-SPIKE-1/foo", "M-DAW-SPIKE-1/foo-clone-2"),
+        ("M-EAR-1/preparation/features",
+         "M-EAR-1/preparation/features-clone-2"),
+        ("M-INGEST-1/chunker", "M-INGEST-1/chunker-clone-2"),
+        ("M-GEN-1/batch-v42", "M-GEN-1/batch-v42-clone-2"),
     ):
-        with _EnvOverride(**_clone_env(k=2, strict=True)):
+        # Default (non-strict) mode: silent auto-suffix.
+        with _EnvOverride(**_clone_env(k=2)):
             ev = _well_formed(mid)
             out = wb._guard_clone_namespace(ev, _WS)
-            assert out["milestone_id"] == mid, (
-                f"M-* id must not be touched: {mid!r} -> {out['milestone_id']!r}"
+            assert out["milestone_id"] == expected, (
+                f"M-* v2 auto-suffix failed: {mid!r} -> "
+                f"{out['milestone_id']!r} (expected {expected!r})"
             )
+        # Strict mode: raise on unsuffixed emission.
+        with _EnvOverride(**_clone_env(k=2, strict=True)):
+            ev = _well_formed(mid)
+            try:
+                wb._guard_clone_namespace(ev, _WS)
+                raise AssertionError(
+                    f"strict mode did not raise on M-* id {mid!r}"
+                )
+            except wb.LedgerNamespaceViolation:
+                pass  # expected
+
+    # "M-GEN-1" without a trailing slash is not a prefix match; treat as
+    # bare token per test_08.
+    with _EnvOverride(**_clone_env(k=2, strict=True)):
+        ev = _well_formed("M-GEN-1")
+        out = wb._guard_clone_namespace(ev, _WS)
+        assert out["milestone_id"] == "M-GEN-1", (
+            f"bare M-GEN-1 without trailing slash must not be touched: "
+            f"{out['milestone_id']!r}"
+        )
 
 
 def test_08_unprefixed_never_touched() -> None:
