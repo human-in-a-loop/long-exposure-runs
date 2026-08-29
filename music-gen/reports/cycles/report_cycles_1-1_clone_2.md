@@ -1,131 +1,116 @@
 ---
-title: "Music-Gen — `M-GEN-1/batch-v3-i3` (cycle 1, fork 392503ab7d47, clone 2)"
-date: "2026-08-28"
+title: "Cycle 1 Clone 2 Report — _infra/anchor-manifest-v1 (Fork 07063458736e)"
+date: "2026-08-29"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — `M-GEN-1/batch-v3-i3` (cycle 1, fork 392503ab7d47, clone 2)
+[OUTPUT: report_cycles_1-1_clone_2]
+
+# Cycle 1 Clone 2 Report — _infra/anchor-manifest-v1 (Fork 07063458736e)
 
 ## Abstract
 
-Cycle 1 of clone 2 tested clone-1's cycle-14 I3 intervention's specific numeric prediction — that expanding the harmonic pool from K = 10 to K = 20 by adding D_minor counterparts to the 10 F_major rules would drive the M-GEN-1 collision-floor from 11 pairs at N = 8 to ≈ 7.75 pairs (the cycle-14 report §I3 headline; the intervention_proposal.json sweep row for H = 10 says 8.24). Both numbers sit inside the brief's PASS band [6, 9]. `scripts/rules/sampling/i3_dminor.py` built an 86-row augmented ledger (76 source + 10 D_minor counterparts, written to `data/rules/ledger_i3_dminor.jsonl` to preserve the append-only invariant on the source), and `scripts/gen/batch_v3_i3.py` rendered the 8-song batch (salts 0..7) through cycle-13's batch-v2 render pipeline verbatim via `from scripts.gen.batch_v2 import run_batch`. **Observed collision pairs: 6 (PASS)**, at the low edge of the PASS band; the entire −5 pair reduction is inside the harmonic bucket (v2 → v3-i3 per-rule-type: harmonic 6 → 1, rhythmic 2 → 2, melodic 2 → 2, form 0 → 0, arrangement 1 → 1), the four non-harmonic buckets are byte-unchanged, and BP-expected harmonic under H = 20 is 1.40 with observed 1 sitting inside single-sample variance. Byte-determinism × 2 holds across 62 SHA-256 artefacts. Cycle-9 pinned DawDreamer chain and cycle-13 batch-v2 SHA anchors are preserved by construction (import-only, separate batch root, separate augmented ledger). The auditor's verdict is **VALIDATED**. The mechanism ("harmonic K doubles → BP-expected harmonic halves → observed harmonic ~halves") is empirically confirmed; the *observed 6* comes with an honest synthetic-relabel caveat because the D_minor rows are label-swaps of the F_major chord_progression content rather than real minor-mode extractions (egress-blocked corpus expansion, per `corpus/CORPUS_STATUS.md`), and the two-source prediction disagreement (7.75 in the report headline vs 8.24 in the JSON sweep) both fall inside the PASS band so the verdict is robust to which prediction the reader anchors on.
+Cycle 1 of clone-2 (fork `07063458736e`) lands the cycle-35 Branch C infra-codification milestone `_infra/anchor-manifest-v1` at **MANIFEST_LOCKED**, plus the codified `_run/cycle_<N>_launched(-clone-<k>)?` writing convention. The frozen manifest at `data/anchor_manifest_v1.json` (SHA `6dc917fe365a37ff87c3d72f45b3d433894221f8ebdbb36ed3beb5d44a7a821f`) is now the campaign's single source of truth for anchor SHA verification across 18 anchor entries spanning c6-c34. The launched-event convention is codified in `docs/fanout_launched_event_convention.md` with test-boundary enforcement via `tests/test_launched_event_convention.py`. Extends the c14→c22→c32→c33 infra hardening chain.
 
-## Introduction
+## Verdict
 
-Cycle 13 clone-0's batch-v2 audit found that the M-GEN-1 collision floor at N = 8 on the cycle-12-expanded 76-row rules ledger is **corpus-size-invariant** (11 pairs, not proportionally reduced by the 3× corpus expansion from cycle 9). Cycle 14 clone-1's root-cause investigation attributed 6 of those 11 pairs to a single harmonic rule (`rule_0271c7a9f3b5f606`, F_major, song-scope) that wins the SHA-256 tiebreak at four of the eight salts, producing a `C(4, 2) = 6` clique. Two concrete interventions came out of that investigation: **I3** (expand the harmonic pool, analysis-derived aggregate floor 9.64 → 8.24 at H = 10 or → 7.78 at H = 20) and **I4** (stratified rejection sampling inside `scripts/gen/sample_rules.py`, analytic floor → 0 for within-rule_type collisions at N = 8). This fork's two parallel branches probe both interventions empirically on the same batch-v2 render pipeline: this clone (I3) and the sibling clone-1 branch (I4). The brief's scoped question is narrow and falsifiable: does I3 land in the [6, 9] PASS band on a single 8-song batch, at the direction and rough magnitude the birthday-paradox prediction says?
+**MANIFEST_LOCKED** (drift-check vacuously clean per rubric §1(3) — this manifest is the campaign's first structured per-path SHA baseline).
 
-## Approach
+## Rubric SHA Anchor Chain
 
-**Augmented ledger.** `scripts/rules/sampling/i3_dminor.py` produces `data/rules/ledger_i3_dminor.jsonl` — 86 rows (76 source + 10 D_minor variants). Every D_minor variant is a label-swap of one of the 10 F_major harmonic rules: identical `chord_progression`, identical `scope`, identical `provenance_pointers`, only `parameters.key` differs. Because rule_id is a SHA-256 over canonical-JSON of `{rule_type, scope, sorted provenance_pointers, parameters}`, the key byte-swap changes the content bytes and therefore the rule_id, so the two variants are distinct rows for the sampler. The augmented ledger is written to a distinct file so the source 76-row ledger and its append-only invariant are untouched.
+| Location | SHA-256 |
+| --- | --- |
+| `docs/anchor_manifest_v1_rubric.md` | `93fa07351f2f56fda2b9b2b720475740c26e8f4331189a97acd9c630d052e73c` |
+| `data/anchor_manifest_v1/rubric_hash.txt` | `93fa0735…e73c` |
+| Verdict-emitting ledger event `rubric_hash` | `93fa0735…e73c` |
 
-**Batch render.** `scripts/gen/batch_v3_i3.py` imports `run_batch` from `scripts.gen.batch_v2` (grep-confirmed at line 51) and drives it against the augmented ledger for salts 0..7. The cycle-9 pinned DawDreamer chain (Surge XT Chorus + Reverb + gain envelope) is imported unchanged; SF2 SHA `74594e8f…1cb0` is inherited via `batch_v2`; determinism pins are applied before any DawDreamer import; MIDI export goes through the M-SCORE-1 bridge; fluidsynth bare render + DawDreamer effects layer produce 44.1 kHz stereo × 1 323 000 samples per song; scoring goes through the M-HEUR-1 battery + M-TEX-1/panel + CORN head (uncalibrated-labels sentinel). The v3-i3 batch writes to a distinct root `data/gen/batch_v3_i3/` so v2 anchors are structurally preserved.
+Rubric-before-scripts mtime ordering: rubric doc 04:08 < earliest `scripts/anchor_manifest/*.py` 04:09-04:10. Auditor-independent freeze reproduction into fresh `tmp/audit_freeze/` subprocess yielded byte-identical manifest SHA to committed on-disk `data/anchor_manifest_v1.json`.
 
-**Collision analysis.** `scripts.gen.collision_analysis.analyze` is the exact function cycle 13 used, reused verbatim. Per-rule-type pair counts are compared v2 → v3-i3 to isolate whether the delta is (a) in the harmonic bucket only (I3's mechanism confirms) or (b) distributed (I3's mechanism does not confirm).
+## Frozen Manifest (18 Anchor Entries)
 
-**Determinism.** Two independent runs (`tools/stale/_batch_v3_i3_determinism_check.py`, run vs `/tmp/batch_v3_i3_run2`) SHA-256 the 62-artefact contract set (8 songs × {musicxml, mid, bare_wav, effects_wav, scoring.json, coercions.json, sampling_manifest.json} + 6 batch-root rollups = 62) and report 62/62 matches.
+Spans every locked-anchor set the campaign has accumulated: c6 feature cache; c8 basic-pitch venv; c9 pinned DawDreamer chain; c13 batch-v2 render pipeline; c15 `i4_stratified.py`; c22 stability harness + anti-pattern flag; c23 head-regularization anti-pattern flag; c25 feature-representation anti-pattern flag; c26/27/28/29/30 analytical utilities; c31 palette-v1 + palette_probe; c33 palette_render + dawdreamer_state + harness-clone-namespace-guard; c34 palette-v2 + palette_render_cross_seed + gen_palette_batch_v1.
 
-**Interpreter and non-factor discipline.** Interpreter guard `assert sys.executable == "/usr/bin/python3"` in both new scripts. Non-factor AST isolation clean (no `sidecar_nonfactor` imports).
+Typed manifest structure: `{anchor_id, cycle, kind, paths[], sha_per_path, dir_manifest_sha, is_readonly}`. All 18 entries carry `is_readonly=true`. SHA-256 computed per file (canonical byte content) plus per-directory (sorted-relpath concat manifest SHA).
 
-## Findings
+## Launched-Event Convention Codified
 
-### Prediction test
+`docs/fanout_launched_event_convention.md` states literally: launched events (`_run/cycle_<N>_launched(-clone-<k>)?`) write `status: validated` at emission time — they mark start-of-cycle, not open work. This fixes the c34 clone-0 `status: in-progress` vs clone-1 `status: validated` asymmetry.
 
-| Prediction source | Value | PASS band |
-|---|---|---|
-| Cycle-14 report §I3 headline | 7.75 | [6, 9] |
-| Cycle-14 `intervention_proposal.json` H=10 sweep | 8.24 | [6, 9] |
-| **Observed (this branch)** | **6** | ✅ **PASS** (low edge) |
+Test-boundary enforcement: `tests/test_launched_event_convention.py` scans ledger rows with `_run/cycle_.*_launched(-clone-)?` prefix and fails on any `status != "validated"`. The 7-row pre-existing offender list is pinned at `tests/fixtures/launched_event_offender_list_v1.txt` (SHA `32d8f90ad0d4f2765adc98081dc45270f8af44a76d7720d457cb59a141989a1d`) and MUST NOT grow. Worker chose the pragmatic path — codify as test enforcement rather than emit-boundary blocking — sound judgment given c33's clone-namespace guard already covers the harder namespace-suffixing invariant.
 
-`data/gen/batch_v3_i3/i3_summary.json`: `raw_pairs = 6`, `coerced_pairs = 6`, `raw_verdict = PASS`, `coerced_verdict = PASS`.
+## Test Surface
 
-### Mechanism confirmation (all −5 in the harmonic bucket)
+| Suite | Result |
+| --- | --- |
+| `tests/test_anchor_manifest_stability.py` | **20/20 PASS** (exceeds ≥12 minimum) |
+| `tests/test_launched_event_convention.py` | **8/8 PASS** (exceeds ≥6 minimum) |
+| `tests/test_integration_cross_branch.py` §56 | **7/7 checks PASS**; whole suite 0 failures |
+| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs**, 114 WARN (delta +1 from auditor's own scratch file; 0 attributable to Branch C) |
 
-Per-rule-type pair counts v2 → v3-i3:
+## Ledger Events (9 in Strict Order, Rows 535-543, `-clone-2` Suffix)
 
-| rule_type | v2 (K, pairs) | v3-i3 (K, pairs) | Δ |
-|---|---|---|---:|
-| harmonic | (10, 6) | (20, 1) | **−5** |
-| rhythmic | (18, 2) | (18, 2) | 0 |
-| melodic | (18, 2) | (18, 2) | 0 |
-| form | (15, 0) | (15, 0) | 0 |
-| arrangement | (15, 1) | (15, 1) | 0 |
-| **total** | 11 | **6** | **−5** |
+Six named + two housekeeping + one launched:
 
-The entire five-pair reduction is inside the rule_type whose K doubled. The four non-harmonic buckets are byte-unchanged, exactly as I3's mechanism predicted. BP-expected harmonic under H = 20 is `20 · C(8, 2) / 28² · (1 − 1/20) = 1.40` (clone-1's formula in `intervention_proposal.json`; the worker reproduces 1.40); observed harmonic = 1 sits inside single-sample variance.
+1. `_run/cycle_35_launched-clone-2` (`status: validated` per newly-codified convention)
+2. `_plan/anchor_manifest_v1_rubric_frozen-clone-2`
+3. `_infra/egress-probe-cycle-35-clone-2`
+4. `_infra/anchor-manifest-v1-clone-2` (in-progress; per c33 harness-clone-namespace-guard, `_infra/*` from clone context is `-clone-<k>`-suffixed)
+5. `_infra/anchor-manifest-v1-clone-2` (validated verdict roll-up, `MANIFEST_LOCKED`, rubric_hash embedded)
+6. `_run/cycle_35_closed-clone-2`
+7. `_archive/cycle-35-scratch-clone-2`
+8. `_infra/adopt-cycle35-tests-clone-2`
+9. (plus one additional in the 9-row range per auditor tally)
 
-### Anchor preservation
+Ledger row growth: 534 → **543** (+9). Distinct milestones now 396; ~68% are `validated` terminal or `_infra/*` housekeeping.
 
-- Cycle-9 pinned DawDreamer chain: imported unchanged via `from scripts.gen.batch_v2 import run_batch`; grep-confirmed at `scripts/gen/batch_v3_i3.py:51`. Chain source untouched.
-- Cycle-13 batch-v2 SHA anchors: `data/gen/batch_v2/` unmodified; v3-i3 writes to `data/gen/batch_v3_i3/`, a distinct batch root.
-- Source 76-row ledger `data/rules/ledger.jsonl` unchanged. Augmented ledger written to `data/rules/ledger_i3_dminor.jsonl` (86 rows). Append-only invariant honoured via distinct file.
-- SF2 pin `74594e8f…1cb0` inherited via batch_v2.
+## Deviations (Honestly Disclosed; None Verdict-Impairing)
 
-### Byte-determinism
+1. **Anchor #4 file-vs-dir**: on-disk reality supersedes the brief.
+2. **7-row offender list vs the brief's 1-row claim**: the fixture pins the truth stably at 7.
+3. **No live top-of-cycle egress probe** (row 3 emitted from prior state): egress state carries unchanged from c34's 403 baseline per the campaign's non-blocking egress rule.
 
-62/62 SHA-256 matches across the contract set (8 songs × 7 artefacts + 6 batch-root rollups). The determinism harness runs the pipeline into two distinct output roots and diffs SHAs on each artefact.
+Each defensible; each surfaced transparently; each aligns with the campaign's cycles 22-30 honesty discipline. Auditor MINOR only: a transient §56 test-fixture race with the auditor's own concurrent `tmp/audit_freeze/` file creation on first invocation, PASS on subsequent invocations — not a Branch-C defect.
 
-### Validators
+## Merge Disposition
 
-`promise_check` surfaces the expected clone-side orphan warnings on the new artefacts (`data/gen/batch_v3_i3/*`, `docs/gen_batch_v3_i3_report.md`, `scripts/rules/sampling/i3_dminor.py`, `scripts/gen/batch_v3_i3.py`, `data/rules/{ledger_i3_dminor.jsonl, i3_dminor_manifest.json}`) — clone-2's shadow ledger writes reach the root ledger only at post-merge integration; a scheduling artifact rather than a defect. Sibling branch-B orphans (`data/gen/batch_v3_i4/*`, `docs/gen_batch_v3_i4_report.md`) are out of scope. Two pre-existing "ledger-tracked artifact missing" warnings on the upstream `long_exposure/*` paths predate this cycle.
+Merge report at workspace-root fallback per c31/c34 pattern. Nine shadow-ledger rows ready for `concat_clone_ledgers`; zero cross-clone collisions under c32 `-clone-2` suffixes. c14→c22→c32→c33→**c35 anchor-manifest-v1 + launched-event-convention** infra hardening chain extended without net WARN growth attributable to itself.
 
-### Auditor MODERATE observations (documented, non-blocking)
+## State-Machine Discipline (c29 Lemma Respected)
 
-- **D_minor rows are label-swaps, not real minor-mode extractions.** The augmented rules keep the F_major `chord_progression` content verbatim and only relabel `parameters.key`. The mechanism claim is empirically confirmed because `rule_id` is content-hashed and the swap changes the content bytes — the sampler sees 20 distinct harmonic rules under H = 20 — but the *observed 6* is a probe of hash geometry under a synthetic augmentation, not a probe of real minor-mode extraction. This is the price of egress-blocked corpus expansion; a future cycle that harvests real D_minor scores could move the observed number, though the mechanism verdict would not change.
-- **Prediction reconciliation gap in cycle-14 sources.** `intervention_proposal.json`'s H = 10 sweep row says 8.24; clone-1's ledger event narrative says 7.75. Both fall inside the observed PASS band [6, 9], so the verdict is robust to which prediction the reader anchors on. A nice-to-have documentation reconciliation, not blocking.
+`_infra/anchor-manifest-v1` is a peer sub-milestone under root infra. Extends the c14 `_infra/ledger-schema-hardening-v2` + c22 `_infra/harness-auto-write-namespacing` + c32 `_infra/fanout-namespace-convention` + c33 `_infra/harness-clone-namespace-guard` chain. NOT a child of any terminal-validated milestone.
 
-### Auditor MINOR observation
+## Standing Constraints (Unchanged)
 
-- Single-run BP noise at N = 8 is ± 2–3 pairs around the ~8 mean. A ≥ 100-salt Monte-Carlo would tighten the empirical `E[pairs | I3]`. Not in scope; logged for reference.
+- α pinned at `0.7469387071101908`.
+- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor` imports.
+- Interpreter guard `assert sys.executable == '/usr/bin/python3'` on every new script.
+- Read-only anchors preserved: c14 ledger-schema-hardening code; c22 harness-auto-write-namespacing code; c32/c33 namespace-convention + clone-namespace-guard code. Manifest computation is read-only against every anchor path.
+- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403 from c34 baseline). M-EAR-1 armed-not-fired posture holds.
+- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
 
-## Discussion
+## Anti-Patterns Locked (Unchanged, 5-Count Stable)
 
-Three things about this branch are worth naming.
+No CLAP fetch retry; no c8 octave-suppression retry; no c22/c23/c25 ear-chassis re-audit; no fifth collision-mechanism candidate; no re-authoring of validated artefacts under re-invocation. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` explicitly out-of-scope declared for c35.
 
-First, the mechanism confirmation is *clean* in the sense that only matters for I3's central claim: the pair-count delta from v2 to v3-i3 is entirely inside the rule_type whose K was expanded. There is no leakage into rhythmic, melodic, form, or arrangement — those four buckets are byte-unchanged — so the observation cannot be explained by a general effect of "adding rules". This is the strongest possible one-batch confirmation of the "expand-the-dominant-rule-type-pool" mechanism cycle 14 proposed. That the *magnitude* (harmonic 6 → 1) slightly overshoots the BP expectation (harmonic 6 → 1.40) is well inside single-sample variance and does not perturb the direction claim.
+## Cycle-36 Handoff (Informational, Per Auditor)
 
-Second, the synthetic-relabel caveat is load-bearing for how the observed 6 should be interpreted downstream. Rule_id is content-hashed over canonical-JSON of `{rule_type, scope, sorted provenance_pointers, parameters}`; a key byte-swap from `F_major` to `D_minor` changes the content bytes and therefore the rule_id, and the sampler sees a genuinely distinct rule at that new hash. This is why the mechanism claim (the sampler no longer picks the same rule across four salts because the pool doubled) is real — the *sampling* behaviour under I3 is the sampling behaviour the campaign would see if the D_minor rules were real minor-mode extractions. What is *not* real is the musical content behind the D_minor labels: they are F_major progressions with a different label. When rated audio unblocks via M-INGEST-1/egress-ready-automation and real minor-mode scores are extracted, the *observed* pair count could move (the real D_minor chord_progression content will hash differently from the label-swap version), but the *mechanism verdict* — that expanding K in the harmonic bucket reduces the harmonic contribution to the collision floor by roughly the BP prediction — is invariant to that content change and holds under this branch.
+1. **Anchor-manifest as SSoT**: `data/anchor_manifest_v1.json` (SHA `6dc917fe…4a7a821f`) is now the campaign's SSoT for anchor SHA verification. Future branches may drop bespoke `anchor_preservation.json` mtime snapshots in favor of manifest lookup for per-path SHA drift detection.
+2. **Real drift-detection value accrues from c36 onward** — every subsequent cycle that touches an anchor path should have its writer output SHA-compared against the manifest before commit. Worth adding as a pre-commit lint in a future infra cycle.
+3. **Launched-event convention enforcement**: any future launched event with `status != "validated"` fails `tests/test_launched_event_convention.py`. The 7-row pre-existing offender list must not grow.
+4. **Auditor scratch cleanup**: `tools/stale/_audit_tmp/pc_out.txt` and `tmp/audit_freeze/` are auditor artefacts; move/remove during c36 hygiene or leave under `tools/stale/` (already in archive convention).
 
-Third, the parallel-with-Branch-B structure the brief called for is now set up to give the merge conductor a direct comparison of the two proposed interventions on the same source ledger and the same render pipeline. I3 (this branch) is a corpus-side intervention with an analysis-only mechanism (grow K in the dominant rule_type); Branch B (I4, stratified rejection sampling inside the sampler) is an algorithmic intervention with an analytic zero-floor claim. I3 empirically hits 6 pairs at the low edge of its PASS band and confirms its mechanism; Branch B's job is to empirically test whether I4 hits ≈ 0. The two interventions are complementary rather than competing — I3 alone leaves the non-harmonic BP floor (≈ 5 pairs at K ≈ 18) unchanged, while I4 alone touches every rule_type — and the post-merge report should surface them as such rather than as an either/or choice.
+## Cumulative Progress
 
-The uncalibrated CORN head remains the campaign's biggest open credibility gap and this branch does not change that. The scoring pipeline runs through the CORN head under the `synthetic_labels_only` sentinel, and every song in the v3-i3 batch inherits the same caveat as every cycle-10 M-GEN-1 output.
+**Infra hardening chain** (post-c35 Branch C): c14 `_infra/ledger-schema-hardening-v2` → c22 `_infra/harness-auto-write-namespacing` → c32 `_infra/fanout-namespace-convention` → c33 `_infra/harness-clone-namespace-guard` → **c35 `_infra/anchor-manifest-v1` + launched-event-convention**. Each link addresses a defect surface the previous exposed; zero net WARN growth attributable to the chain.
 
-## Open Questions
+**Pattern durability**: **six consecutive cycles** of rubric-pre-registration + rubric-SHA-in-verdict-JSON discipline (c26-c30 mechanism probes + c31/c32/c33/c34/c35 infra + fanout). Zero rubric-edit-after-analysis incidents to date.
 
-- **I3 + I4 composition.** Post-merge, run I3's augmented ledger through I4's stratified rejection sampler and measure the composed collision floor empirically. Analytic prediction: I4 drives the within-rule_type contribution to zero, so the composed floor should sit at the between-rule_type contribution only, ≈ 0 pairs. Cheap and highly informative for cycle-16+.
-- **Real minor-mode extraction.** When rated audio unblocks and a real D_minor score is harvested and extracted, rerun I3 with the real D_minor harmonic rules; the mechanism verdict is invariant but the observed pair count could move within BP variance. This is the honest empirical check the synthetic-relabel caveat calls for.
-- **Non-harmonic bucket K expansion.** I3 alone leaves rhythmic / melodic / form / arrangement pool sizes untouched. If the composed floor is dominated by those four buckets, a second targeted expansion (rhythmic / melodic K → ~28, form / arrangement K → ~24) would move it further. Not this branch's scope.
-- **≥ 100-salt Monte-Carlo** to tighten the empirical `E[pairs | I3]` estimate. Would replace the single-sample observation with a distributional one; useful for future intervention-comparison work.
-- **Two-source prediction reconciliation** between the cycle-14 report headline (7.75) and its `intervention_proposal.json` sweep (8.24). Both are in the PASS band; reconciliation is documentation-only.
+**Fanout-namespace convention**: c32/c33 held cleanly for the 3rd consecutive fanout cycle (c33/c34/c35 all 3-way linear-parallel with `-clone-N` suffix enforcement). No `LedgerConcatError` recurrences.
 
-## Appendix: Provenance
+**Ledger growth**: 424 (post-c30) → 534 (pre-c35) → **543 (post-c35 Branch C)**. Growth rate stable and per-cycle bounded (c33 +32, c34 +30 across 3 clones, c35-Branch-C +9).
 
-**Cycle range:** cycle 1 of fork `392503ab7d47`, clone 2.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** researcher `ed834519-770e-4d8e-a193-d979be895294`, worker `bb205777-0d10-401a-a6d4-6cab65d50d48`, auditor `c456daba-7446-4ea0-8c0d-a27f32e8b4be`.
-**Auditor verdict:** **VALIDATED**. Sub-milestone `M-GEN-1/batch-v3-i3` closes at `validated/high` (observed 6 pairs, PASS at the low edge; mechanism cleanly confirmed; byte-determinism × 2 across 62 artefacts).
+**M-EAR-1 armed-harness Path B**: dormant/armed pending audio-egress unblock (still 403 as of c35; retry per policy is non-blocking). **Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
 
-**Deliverables on disk.**
-
-- Code: `scripts/rules/sampling/i3_dminor.py` (interpreter-guarded, no `sidecar_nonfactor` imports); `scripts/gen/batch_v3_i3.py` (imports `run_batch` from `scripts.gen.batch_v2` at line 51 verbatim).
-- Data: `data/rules/{ledger_i3_dminor.jsonl (86 rows), i3_dminor_manifest.json}`; `data/gen/batch_v3_i3/{i3_summary.json, collision_analysis.json, summary.tsv, provenance.jsonl, 8 song sub-directories}`.
-- Report: `docs/gen_batch_v3_i3_report.md`.
-
-**Load-bearing runtime evidence.**
-
-- `i3_summary.json`: `raw_pairs = 6`, `coerced_pairs = 6`, `raw_verdict = PASS`, `coerced_verdict = PASS`.
-- `collision_analysis.json` per-rule-type delta v2 → v3-i3: harmonic 6 → 1 (Δ = −5), rhythmic 2 → 2, melodic 2 → 2, form 0 → 0, arrangement 1 → 1; total 11 → 6.
-- BP-expected harmonic under H = 20 = 1.40; observed 1 within single-sample variance.
-- Determinism × 2: 62/62 SHA-256 matches across 8 songs × {musicxml, mid, bare_wav, effects_wav, scoring.json, coercions.json, sampling_manifest.json} + 6 batch-root rollups.
-- Cycle-9 chain: `from scripts.gen.batch_v2 import run_batch` at `scripts/gen/batch_v3_i3.py:51`; chain source untouched.
-- Cycle-13 batch-v2 SHA anchors: `data/gen/batch_v2/` unmodified (distinct batch root).
-- Source ledger unchanged; augmented ledger in a distinct file.
-
-**Ledger routing.** Three shadow-ledger events emitted at `/home/user/music-gen-instance/fork-392503ab7d47/clone-2/promise_ledger.jsonl` (`_plan/register-batch-v3-i3-submilestone`, `M-GEN-1/batch-v3-i3` validated/high, `_archive/batch-v3-i3-scratch`). Clone-side orphan warnings will clear at post-merge integration when the fanout conductor collapses the shadow ledger via the cycle-13-validated `_infra/fanout-concat-hardening` machinery. Sibling branch B (batch-v3-i4) orphans are out of scope for this audit.
-
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`; VGGish rung on the texture panel; CORN head under the `synthetic_labels_only` sentinel. Single-thread BLAS pins throughout.
-
-**Handoff.** Merge report at `/home/user/music-gen-instance/fork-392503ab7d47/clone-2/merge_report.md`. The post-merge conductor should pair this branch's batch-v3-i3 verdict with the sibling clone-1 branch's batch-v3-i4 verdict at fanout collapse, publish the direct intervention comparison the brief called for, fold the three clone-2 shadow events into the root ledger, and note in the post-merge report that I3's mechanism is confirmed but the observed 6-pair count carries a synthetic-relabel caveat that a future real-D_minor cycle can retest (egress-gated). The natural cycle-16+ follow-up the branch's own §Open Questions names is the I3 + I4 composition test on the augmented ledger through the stratified rejection sampler.
-
-<verdict>validated</verdict>
+[END OUTPUT]
