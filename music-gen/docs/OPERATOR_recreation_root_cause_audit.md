@@ -84,9 +84,29 @@ on ONE patch.
    to the original stem's average spectrum → sum. Replaces the global
    chorus+reverb wash entirely.
 
+## Third-pass finding (user listening audit of per-stem A/B pairs)
+
+**RC10 — Transcription was validated on the easy case and is the core
+failure.** The M-TRANS-1 survey measured transcription accuracy on
+*synthetic* seed clips (clean fluidsynth renders of known MIDI — the easiest
+possible input) and the adopted tool/settings were never re-benchmarked on
+real separated stems. On real stems the transcription content is, in the
+user's words, "very far off and completely wrong" — sparse, missing, or
+wrong notes on every part. Every downstream stage (score, MIDI, render,
+mix) faithfully reproduces a wrong transcription. Transcription accuracy is
+the campaign's central unsolved problem, and it must be measured per stem
+against the real separated stems, per song, forever after.
+
+## Operator decisions (updated)
+
+- The per-stem content gate applies to **ALL SIX parts** — drums, bass,
+  guitar, piano, other-residual, and vocals — not just the rhythm section.
+  Drums/bass keep fix *priority* only; the gate is all six.
+- A transcription re-survey on REAL stems is mandatory (see directive).
+
 ## Operator directive queued alongside this audit
 
 Stop breadth. Focus on **accurate reconstruction of 3–5 songs** with strong
-rhythm sections (must include Chicken Grease), fixing RC1–RC9 under the four
-design decisions above, with pre-registered acceptance criteria, before any
-other new work.
+rhythm sections (must include Chicken Grease), fixing RC1–RC10 under the
+design decisions above, with pre-registered per-stem acceptance criteria on
+all six parts, before any other new work.
