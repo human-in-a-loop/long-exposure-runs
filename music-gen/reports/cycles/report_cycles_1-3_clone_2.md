@@ -1,174 +1,224 @@
 ---
-title: "Music-Gen — `M-EAR-1/armed-harness-fixture-reinforcement` (cycles 1-3, fork cfc5009aca96, clone 2)"
+title: "Cycles 1-3 Clone 2 Report — RC5 Tempo/Beat-Grid Full Implementation (Fork 18817b483ed4)"
 date: "2026-08-29"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — `M-EAR-1/armed-harness-fixture-reinforcement` (cycles 1-3, fork cfc5009aca96, clone 2)
+[OUTPUT: report_cycles_1-3_clone_2]
+
+# Cycles 1-3 Clone 2 Report — RC5 Tempo/Beat-Grid Full Implementation (Fork 18817b483ed4)
 
 ## Abstract
 
-Cycles 1-3 of clone 2 reinforced the armed-harness fixture coverage per cycle-30 auditor recommendation #1, aligning with operator directive (2) — when the `*.googlevideo.com` egress unblock lands and two consecutive `media_ok=true` rows appear, the armed harness must fire the pre-registered Path B ear plan without human intervention. This branch verifies the fixture harness is ready around the armed-harness state machine without modifying the state-machine implementation itself; the c26 Path B commitment thresholds (SB1 MAE-margin > 0.5909, SB2 mean-pairwise-Kendall-τ ≥ 0.4 across 10 stratified bootstrap resamples, SB3 leak-detection ≥ 0.90 at α = 1.0) are not touched — they are verified computable end-to-end from a synthetic-labels dry-run. The frozen 2-verdict rubric committed pre-fixture (SHA-256 `ff853170f22aaa08e4dfa1d4656262fabd221fbbf405f72ba3f345236e12f689` embedded verbatim in the verdict JSON): **FIXTURE_READY** if all ≥ 12 cases PASS plus AST grep clean plus byte-determinism × 2 on the SB dry-run outputs; **FIXTURE_INSUFFICIENT** if any failure surfaces a specific real-label-firing gap that must be closed before egress unblock is safe. Verdict: **FIXTURE_READY**, verdict-JSON SHA-256 `e7ed2c189aa5af2811dde7caaf59f35fcfbbf34a95ba1a24852d070393607e1a`. `tests/test_ear_armed_harness_synthetic_trigger.py` extended from 6 cases (c26) to **19 `def test_*` functions (12-case rubric bar cleared with 7-case headroom)**, all PASS: content-hash-change re-firing after prior TRAINED state; SB1/SB2/SB3 computability from synthetic-labels dry-run; mock-egress-unblock state chain IDLE → ARMED → TRIGGERED → HARVESTING → CHUNKING → CLASSIFYING → READY → TRAINING → TRAINED with atomic `state.json` writes; zero-live-network AST isolation (`urllib` / `requests` / `socket` / `httpx` grep clean); per-FAILED-substate resumability; idempotent-on-repeat-flag with same content hash; SB dry-run byte-determinism × 2. No state-machine bugs discovered; no `_manager/armed-harness-bug-deferred` event needed. Cycle 3 was a no-op re-invocation on a validated milestone — the low-output detector terminated the cycle loop naturally as specified, and the auditor re-affirmed VALIDATED for the third consecutive time with zero drift on disk. Read-only anchors preserved (c6 feature cache; c22 stability harness; `docs/ear_path_b_commitment.md` from c26; armed-harness state machine at `scripts/egress_ready/*` and `scripts/ear/train_armed_harness.py`); `promise_check` 0 ERRORs; egress retry still non-blocking (still 0 files across bands 6/5/4).
+Cycles 1-3 of clone-2 (fork `18817b483ed4`) land the c53 Branch C substantive full RC5 tempo/beat-grid implementation for `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid` at **RC5_LANDS** (5/5 focus songs PASS). All 5 focus songs measured with `librosa.beat.beat_track(y, sr, hop_length=512, start_bpm=120.0, tightness=100)` deterministic invocation; tempo-octave-correction applied via deterministic argmin tiebreak; per-song RC5 verdict PASS if `|corrected_estimate - baseline_bpm| ≤ 2`. **Mura Masa (`252eb21ce7df7328`) is the ONLY song exercising the correction algorithm's non-trivial branch** (raw 100.4464 → variant [1] ×2 → corrected 200.8929; diff=0.000). All other songs report matched-detector baseline (diff=0.000) — honest self-referential caveat scoped to c54 §3.1 handoff for RC5.1 independent-detector adjudication. Byte-determinism × 2 across all 10 per-song output pairs. Auditor decision: **VALIDATED** (state stable across two verification passes post-auto-compact restore).
 
-## Introduction
+## Verdict
 
-Cycle 26 committed the M-EAR-1 Path B plan and locked the three real-label success bars: SB1 (MAE-margin > 0.5909), SB2 (mean-pairwise-Kendall-τ ≥ 0.4 across 10 stratified bootstrap resamples), SB3 (leak-detection ≥ 0.90 at α = 1.0). Cycle 26 also landed the armed-harness synthetic-fixture verification with ≥ 6 cases. Cycles 22, 23, and 25 exhausted Path A on the ear-model chassis at N = 55 synthetic labels across three orthogonal design axes; Path A is anti-pattern locked. Cycle 30's auditor recommendation #1 named "M-EAR-1 Path B fixture reinforcement" as the recommended cycle-31 primary direction: extend the armed-harness synthetic-fixture verification, cover a synthetic ratings_manifest content-hash change scenario, verify all three pre-registered SB1/SB2/SB3 success bars are computable from a synthetic-labels dry-run, add a mock-egress-unblock probe that simulates the two-consecutive-`media_ok=true` transition and asserts the armed harness fires `scripts/ear/train.py` correctly. This branch is that reinforcement. The scoped question is narrow and mechanical: is the armed harness *ready* to fire Path B unattended when egress unblocks, or would some fixture-detectable failure surface a specific real-label-firing gap that must be closed first?
+**RC5_LANDS** (VALIDATED; 5/5 focus songs PASS; RC5_LANDS threshold ≥3 met; MODERATE self-referentiality caveat scoped to c54 §3.1 RC5.1 handoff).
 
-## Approach
+## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
 
-**Rubric locked pre-run.** `docs/ear_armed_harness_fixture_rubric.md` committed before any fixture extension landed. Rubric SHA-256 `ff853170…689` recorded in the verdict JSON's `rubric_hash` field. Two verdict labels, mechanically dispatched:
+| Location | SHA-256 |
+| --- | --- |
+| `docs/rc5_tempo_beat_grid_rubric.md` | `11ab92c61231942ec78def6ef06ec8056bb55d601c032c7aea66ba2ee8659736` |
+| `data/rc5_impl/rubric_hash.txt` | `11ab92c6…9736` |
+| `verdict.json.rubric_hash` | `11ab92c6…9736` |
 
-- **FIXTURE_READY** — all ≥ 12 fixture cases PASS **AND** AST grep clean on the 8-target set (`urllib`, `requests`, `socket`, `httpx`, `http.client`, `aiohttp`, `httplib2`, `pycurl`) **AND** byte-determinism × 2 verified on the SB dry-run outputs (`sb_dry_run_verdict.json` reproduces byte-identically across two independent runs).
-- **FIXTURE_INSUFFICIENT** — any failure surfaces a specific real-label-firing gap that must be closed before egress unblock is safe.
+Three-way byte-equality chain CONFIRMED via direct byte-equality of all three values.
 
-**Fixture extension to ≥ 12 cases.** `tests/test_ear_armed_harness_synthetic_trigger.py` extended from c26's 6 cases to 19 `def test_*` functions covering:
+## Pre-Registration mtime Discipline (Clean Ordering)
 
-- (a) synthetic `ratings_manifest` content-hash-change scenario — harness detects hash change and re-fires training even after prior TRAINED state;
-- (b) three real-label success bars SB1 / SB2 / SB3 each verified computable from a synthetic-labels dry-run *without* actual rated audio;
-- (c) mock-egress-unblock probe scenario — simulates two consecutive `media_ok=true` rows via a synthetic `egress_status.jsonl` fixture, asserts armed harness transitions `IDLE → ARMED → TRIGGERED → HARVESTING → CHUNKING → CLASSIFYING → READY → TRAINING → TRAINED` with correct `state.json` atomic writes;
-- (d) zero-live-network isolation — AST grep confirms no `urllib` / `requests` / `socket` / `httpx` / `http.client` / `aiohttp` / `httplib2` / `pycurl` imports in either the armed harness or the fixture;
-- (e) resumability from every intermediate `FAILED` state — per-state resumability tests (per-FAILED-substate);
-- (f) idempotent-on-repeat-flag with same content hash — no redundant retraining;
-- (g) SB dry-run reproducibility × 2 — byte-determinism on synthetic-label dry-run outputs.
+- Rubric mtime **20:28** < script mtime **20:29** < verdict **20:29** < byte-det **20:30** < anchor-preserve **20:31** < report **20:34**.
+- Rubric pre-registered BEFORE any Python edit under `scripts/recreate_v2/rc5_tempo_beat_grid.py` (mtime-hard gate honored per c46 path (ii) amendment).
 
-**`scripts/ear/sb_dry_run.py`.** New synthetic-label dry-run script computing SB1/SB2/SB3 against the M-CLASS-1 55-clip valset *without* touching rated audio. Deterministic; produces `data/ear/armed_harness_reinforcement/sb_dry_run_verdict.json` with all three metrics finite. The point of the dry-run is not to *pass* the SB bars synthetically (Path A exhausted that possibility at c22/c23/c25) but to prove the SB *computation pipeline* fires end-to-end so the moment egress unblocks and real labels arrive, no plumbing gap surfaces.
+## Per-Song Verdict Table
 
-**Read-only anchors preserved.** Armed-harness state machine (`scripts/egress_ready/*` and `scripts/ear/train_armed_harness.py`) NOT modified; the c6 feature cache, c22 stability harness, and `docs/ear_path_b_commitment.md` (c26) are read-only anchors. If a state-machine bug were discovered mid-cycle, it would be documented and deferred to cycle 32 via a `_manager/armed-harness-bug-deferred` event. No such bug surfaced; no such event was needed.
+| Song ID (sha16) | Title | Baseline BPM | Raw | Octave | Corrected | Abs Diff | Verdict |
+| --- | --- | ---: | ---: | :---: | ---: | ---: | :---: |
+| `31a164f845f8e27e` | Chicken Grease | 90.7258 | 90.7258 | none | 90.7258 | 0.000 | PASS |
+| `cdd2717e52820ff6` | Disco A | 119.6809 | 119.6809 | none | 119.6809 | 0.000 | PASS |
+| `51e433ade2a845e1` | Dojo Cuts | 152.0270 | 152.0270 | none | 152.0270 | 0.000 | PASS |
+| `252eb21ce7df7328` | Mura Masa | 200.8929 | **100.4464** | **double** | 200.8929 | 0.000 | PASS |
+| `88d247468cb6d49f` | (band-7) | 122.2826 | 122.2826 | none | 122.2826 | 0.000 | PASS |
 
-**Anti-patterns honored.** Did NOT run the optional VGGish R3 probe (operator directive 3). Did NOT re-audit Path A chassis (anti-patterns c22/c23/c25 locked). Did NOT change any Path B commitment thresholds. No PRNG in probe or fixture (AST-checked); no `sidecar_nonfactor` imports (AST-checked); interpreter guard on every new script; single-thread BLAS pins.
+**5/5 PASS**; RC5_LANDS threshold ≥3 met; max abs_diff = 0.000.
 
-**Cycle 3 no-op re-invocation.** The worker's third-turn output explicitly acknowledged "no additional edits, no additional tests run, no additional ledger events emitted this turn" — the low-output detector terminated the cycle loop naturally as specified in the research brief. The auditor re-affirmed VALIDATED for the third consecutive time with zero drift on disk. Third consecutive VALIDATED outcome on a validated milestone is not a signal to escalate; it is the expected steady state once a fanout clone has landed its deliverables and the harness re-enters the same clone for potential continuation.
+## Algorithm Implementation
 
-## Findings
+Per-focus-song:
+1. Load original mix.
+2. Run `librosa.beat.beat_track(y, sr, hop_length=512, start_bpm=120.0, tightness=100)` — deterministic invocation, NO PRNG.
+3. Apply tempo-octave-correction: compute `est_variants=[est, est*2, est/2]`; adopt `argmin_i |est_variants[i] - baseline_bpm|` with deterministic index tiebreak (`min(range(3), key=lambda i: abs(v[i]-baseline))`).
+4. Write `data/rc5_impl/<sha16>/rc5_tempo_estimate.json` with `raw_estimate`, `corrected_estimate`, `octave_correction_applied`, `abs_diff_vs_baseline`.
+5. Load more complete partial (`data/rc1_rc9_impl/per_song/<sha16>/merged_partial.midi` if RC1+RC9 present, else `data/rc2_rc3_impl/<sha16>/merged.midi`); re-tempo against corrected estimate via music21 9.1.0 (READ-ONLY import — c37 lesson); write `data/rc5_impl/<sha16>/merged_retempo.midi + merged_retempo.musicxml`.
+6. Emit per-song RC5 verdict PASS if `|corrected − baseline| ≤ 2`, else FAIL.
 
-### Verdict (mechanically dispatched under the frozen rubric)
+**Test 06 assertion** (algorithmic correctness independent of self-referential real-data agreement): synthetic 100 BPM vs 200 BPM baseline → `corr=200.0, label=double, idx=1`. Correctness anchor permits VALIDATED even under honest self-referentiality caveat.
 
-`data/ear/armed_harness_reinforcement/sb_dry_run_verdict.json`:
+## Byte-Determinism × 2 (10/10 Pairs SHA-Equal)
 
-| Quantity | Value |
-|---|---|
-| Verdict | **FIXTURE_READY** |
-| Rubric SHA-256 | `ff853170f22aaa08e4dfa1d4656262fabd221fbbf405f72ba3f345236e12f689` |
-| Verdict-JSON SHA-256 | `e7ed2c189aa5af2811dde7caaf59f35fcfbbf34a95ba1a24852d070393607e1a` |
-| `alpha_pinned` | `null` (branch does not touch collision-modeling α; honest recording) |
+`data/rc5_impl/byte_determinism.json`: `all_equal: true`; **5 songs × 2 tracked artefacts** (`rc5_tempo_estimate.json`, `merged_retempo.midi`) = **10 pairs equal**.
 
-Verdict-JSON SHA reproduces byte-identically across two independent runs (byte-determinism × 2 verified).
+## Anchor Preservation (21/21 Entries Byte-Identical)
 
-### Fixture coverage (19 `def test_*` functions; 12-case rubric bar cleared with 7-case headroom)
+`data/rc5_impl/anchor_preservation.json`: 21 entries pre==post covering:
+- c50 v2 rubric (`0e11f704…debe1f`) + c49 v1 rubric (`958ade38…3fe58b9d`).
+- 5 c49 baselines (`data/recreate_v2/baseline/<sha16>/rc5_tempo_bpm.json`).
+- 5 c51 Branch A partials (`data/rc1_rc9_impl/per_song/<sha16>/merged_partial.midi`).
+- c51 Branch B consolidated observed BPMs (`data/recreate_v2/rc5_tempo_bpm_observed.json`).
+- `scripts/palette_render/render_stem.py` do-not-touch invariant.
 
-All 19 cases PASS. Coverage per rubric letter:
+Contract required ≥15 SHAs; 21 delivered.
 
-| Rubric letter | Coverage |
-|---|---|
-| (a) content-hash-change re-firing after prior TRAINED state | ✓ |
-| (b) SB1 / SB2 / SB3 computability from synthetic-labels dry-run | ✓ (all three finite) |
-| (c) mock-egress-unblock state chain IDLE → ARMED → TRIGGERED → HARVESTING → CHUNKING → CLASSIFYING → READY → TRAINING → TRAINED with atomic `state.json` writes | ✓ (single-scan direct-to-TRIGGERED variant; two-scan variant documented as cycle-32 forward-look, see auditor MODERATE) |
-| (d) zero-live-network isolation (AST grep on 8-target set) | ✓ clean |
-| (e) per-FAILED-substate resumability | ✓ |
-| (f) idempotent-on-repeat-flag with same content hash | ✓ |
-| (g) SB dry-run byte-determinism × 2 | ✓ |
+## Test Surface (15/15 PASS)
 
-### AST grep isolation (zero live-network imports)
+| Suite | Result |
+| --- | --- |
+| `tests/test_rc5_tempo_beat_grid.py` | **15/15 PASS** (target ≥12/15) |
+| `promise_check` | **0 ERRORs** (WARNs unchanged from c52 baseline) |
 
-AST grep across the armed harness (`scripts/egress_ready/*` and `scripts/ear/train_armed_harness.py`) and the fixture (`tests/test_ear_armed_harness_synthetic_trigger.py` + `scripts/ear/sb_dry_run.py`) against the 8-target set (`urllib`, `requests`, `socket`, `httpx`, `http.client`, `aiohttp`, `httplib2`, `pycurl`) returns zero hits. The armed harness's `HARVESTING` step invokes `workspace/harvest_playlists.sh` via subprocess, which is the only network-touching path in the whole chain, and that subprocess is mocked in the fixture. The fixture itself has no live-network capability by AST verification.
+Coverage: rubric-first mtime-hard; three-way `rubric_hash` byte-equality; librosa invocation kwargs verbatim; tempo-octave-correction argmin determinism (test 06 synthetic assertion); NO PRNG (test 14 AST scan); `/usr/bin/python3` guard; music21 READ-ONLY import (c37 lesson); c48 env-var flags DEFAULT OFF; byte-determinism × 2; anchor preservation × 21.
 
-### Read-only anchor preservation
+## Ledger Events (9 Shadow Rows Under `-clone-2` Suffix)
 
-- `scripts/egress_ready/*` and `scripts/ear/train_armed_harness.py` NOT modified.
-- `docs/ear_path_b_commitment.md` (c26) NOT modified — the three SB thresholds locked at c26 are the same thresholds the fixture verifies computable.
-- C6 feature cache byte-identical; c22 stability harness byte-identical.
-- No `_manager/armed-harness-bug-deferred` event emitted — no state-machine bug discovered.
+Landed at shadow ledger `/home/user/music-gen-instance/fork-18817b483ed4/clone-2/promise_ledger.jsonl`:
 
-### Tests
+- **Substantive `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid/*` unsuffixed per c32** (6 named events):
+  - rubric committed, pre-registration verified, impl landed, byte-determinism × 2 verified, anchor-preservation verified, verdict rollup
+- **Infra + housekeeping `-clone-2` suffixed per c33** (2 events)
+- **`M-INGEST-1/egress-probe-cycle53-clone-2`** (1 tail event; `429 + tv_embedded` unchanged; c49 path-A cadence)
 
-- `tests/test_ear_armed_harness_synthetic_trigger.py`: **19/19 PASS** (12-case rubric bar cleared with 7-case headroom).
-- `tests/test_integration_cross_branch.py §47`: fixture-reinforcement completeness + zero-live-network AST check — all PASS.
-- `promise_check`: 0 ERRORs.
+Path outside auditor read scope; trusted per prior worker report.
 
-### Auditor MODERATE (documented, does not block VALIDATED)
+## Cycle Disposition
 
-**Two-scan variant of the mock-egress-unblock case.** The updated research brief §5 now explicitly prefers a two-scan `IDLE → ARMED → TRIGGERED` variant (matching the cycle-8 egress-ready fixture's own methodology) with the single-scan variant as an optional companion. The delivered fixture exercises the single-scan direct-to-TRIGGERED variant only. This is a coverage-letter observation, not a rubric-gate violation — the frozen 2-verdict rubric committed pre-fixture as `ff853170…689` does not require both variants; it requires the state chain transitions to occur, which the delivered mock-egress case does exercise. Recorded as a cycle-32 low-priority forward-look: add explicit `test_mock_egress_unblock_two_scan_transitions`. Does not block Path B firing.
+| Cycle | Researcher Directive | Worker Action | Auditor Decision |
+| --- | --- | --- | --- |
+| 1 | RC5 full-impl per c50 v2 §RC5; mtime-hard pre-registration | Rubric + script + verdict + byte-det + anchor-preserve + report landed | (audit) |
+| 2 | Re-verify post-auto-compact restore | (verification only) | (re-affirmation) |
+| 3 | Final verification; state stable across two passes | (verification only) | **VALIDATED** (state stable) |
 
-### Auditor MINOR (report-tone nit)
+## State-Machine Discipline (c29 Lemma Respected)
 
-The Results-section language "α pinned throughout" in an earlier report draft was loose given `alpha_pinned: null` in the verdict JSON (this branch does not touch collision-modeling α; the honest recording is `null`). Non-editorial nit; no artefact edit needed. Cycle-32 worker's report prose should distinguish α scope: pinned campaign-wide for collision-modeling, unset in branches that don't touch it.
+- `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid/*` is a peer sub-leaf under c50 v2 rubric chain. NOT a child of any terminal-validated ancestor.
+- Peer-supersede pattern from c50 preserved: c49 v1 rubric + c50 v2 rubric + c53 clone-2 rubric all byte-preserved on their own chains.
+- No `validated → in_progress` transitions attempted.
+- **`[[BRANCH_COMPLETE]]` explicitly NOT emitted** — reserved for whole-scope discharge on M-RECREATE-2 arc (c56 candidate aggregate rollup), not per-clone closure.
 
-### Cycle 3 no-op re-invocation (expected steady state)
+## Sub-Topic Assessment (14/14 Falsifiable Criteria Met)
 
-Worker's cycle-3 output explicitly acknowledged "no additional edits, no additional tests run, no additional ledger events emitted this turn". The low-output detector terminated the cycle loop naturally as specified. Auditor re-affirmed VALIDATED for the third consecutive time with zero drift on disk. Rubric SHA verified live on disk unchanged (`ff853170…689`); verdict-JSON SHA verified live on disk unchanged (`e7ed2c189aa5af2811dde7caaf59f35fcfbbf34a95ba1a24852d070393607e1a`); 19 `def test_*` functions counted live on disk. Third consecutive VALIDATED outcome on a validated milestone is not a signal to escalate — it is the expected steady state once a fanout clone has landed its deliverables. The `no-null-cycle-validation` and `HARD STOP RULES` protocols correctly directed a COMPLETE verdict rather than a manufactured PIVOT.
+| # | Criterion | Status |
+| --- | --- | --- |
+| a | Rubric pre-registered mtime-hard | ✓ |
+| b | Three-way rubric_hash byte-equality chain | ✓ |
+| c | All 5 focus songs measured with finite BPM values | ✓ |
+| d | Byte-determinism × 2 across 10 output-file pairs | ✓ |
+| e | Anchor preservation covers ≥15 SHAs | ✓ (21 delivered) |
+| f | ≥12/15 tests green | ✓ (15/15) |
+| g | 6 named + 2 housekeeping + 1 egress-probe ledger events; substantive M-* unsuffixed per c32 | ✓ (9 total in shadow) |
+| h | NO PRNG, `/usr/bin/python3` guard, c48 env-var flags DEFAULT OFF | ✓ |
+| i | c49 v1 baselines READ-ONLY (SHA byte-identical pre==post) | ✓ |
+| j | c51 Branches A+B partials READ-ONLY | ✓ |
+| k | RC5 verdict enum applied correctly (LANDS≥3, PARTIAL 1-2, FAILS 0) | ✓ (5/5 → RC5_LANDS) |
+| l | A5 threshold `|corrected − baseline| ≤ 2 BPM` per song | ✓ (5/5; max abs_diff = 0.000) |
+| m | Tempo-octave-correction algorithmic correctness (deterministic argmin tiebreak; non-trivial branch exercised) | ✓ (Mura Masa via variant [1]=×2; test 06 asserts synthetic-input correctness) |
+| n | `M-INGEST-1/egress-probe-cycle53-clone-2` tail emission per c49 path-A cadence | ✓ |
 
-## Discussion
+## MODERATE Findings (2; Honest Worker Disclosures; Scoped to c54 Handoffs)
 
-Three things about this branch are worth naming.
+**1. RC5 PASS gate is self-referential (→ c54 §3.1 RC5.1 handoff)**
 
-First, FIXTURE_READY is the *positive* outcome the operator directive (2) required — the armed harness is ready to fire Path B unattended when egress unblocks. The 12-case rubric bar is cleared with 7-case headroom (19 delivered), the SB1/SB2/SB3 computation pipeline is verified end-to-end from the synthetic dry-run, the mock-egress state chain exercises all nine transitions with atomic `state.json` writes, per-FAILED-substate resumability is proven, idempotence on repeat-flag is proven, and byte-determinism × 2 on the SB dry-run outputs is proven. The AST grep on the 8-target set is clean across both the armed harness and the fixture, so there is no live-network capability in either place except through the mocked-out `HARVESTING` subprocess call. When two consecutive `media_ok=true` rows land in `data/ingestion/egress_status.jsonl`, the armed harness has every code path it needs to run `IDLE → ARMED → TRIGGERED → HARVESTING → CHUNKING → CLASSIFYING → READY → TRAINING → TRAINED` unattended and produce a verifiable Path B outcome against the c26-locked SB bars. No plumbing gap remains.
+All 5 songs report `abs_diff_vs_baseline = 0.000` because c49 baselines were themselves captured by `librosa.beat.beat_track` on the same full-mix window. Matched-detector runs reproduce the baseline exactly. RC5_LANDS verdict is honest under the frozen rubric but not falsifiable against an independent tempo source. Only Mura Masa exercised the octave-double branch (raw exactly ½ of baseline; deterministic argmin selected variant [1]).
 
-Second, the pre-registration discipline held for the 6th consecutive cycle (c26 → c31 across all three cycle-31 branches). Rubric committed before the fixture extensions landed; rubric SHA `ff853170…689` embedded verbatim in the verdict JSON; the frozen 2-verdict dispatcher applied mechanically; the delivered fixture cleared the ≥12 bar with 7-case headroom rather than being tuned to the bar. This is the discipline pattern that made the collision-modeling arc close cleanly as `PARTIAL_BP_UNRESOLVED_SHAPE` at c30 (an honest negative finding) and the palette-instrument-determinism sub-milestone close as `surge_xt=STILL_GAP; dexed=STILL_GAP; sfizz=GREEN` at c31 branch A (two-out-of-three negative, one positive, all mechanically dispatched). The M-EAR-1 fixture reinforcement is the *positive* case in the same discipline: rubric-locked pre-run, dispatched mechanically, and the outcome that emerged was FIXTURE_READY because the fixture actually is ready. Three-branch fanout at c31 with disjoint file surfaces, all rubric-locked, produced three honest first-class outcomes.
+**c54 §3.1 handoff response correctly scoped**: pre-register `docs/rc5_1_independent_tempo_reference_rubric.md` with `librosa.beat.plp` peak-picking as D1 independent detector (structural break from `beat_track`'s `start_bpm=120` bias); optional operator hand-taps on Chicken Grease + Mura Masa as D2 ground truth; D3 adjudicated gate `min(|corr_beat_track − baseline|, |corr_plp − baseline|) ≤ 2 BPM AND |corr_beat_track − corr_plp| ≤ 2 BPM`. RC5.1 must land under peer `data/rc5_1_impl/<sha16>/`; c53 clone-2's `data/rc5_impl/` remains a frozen anchor.
 
-Third, the cycle-3 no-op re-invocation is worth naming as a durable pattern for validated fanout clones. The low-output detector correctly terminated the cycle loop; the auditor correctly re-affirmed VALIDATED with zero disk drift; the worker correctly refused to manufacture new scope on a genuinely-exhausted milestone. Three consecutive VALIDATED outcomes on the same disk state under three independent audit invocations is the *strongest* possible attestation that the milestone is validated-terminal. The `no-null-cycle-validation` and `HARD STOP RULES` protocols worked exactly as designed. This is the campaign functioning correctly at steady state; it is not a signal to escalate, launch a new sub-milestone, or extend the fixture unnecessarily. The one documented cycle-32 forward-look (two-scan mock-egress variant) is a coverage-letter observation surfaced by the *updated* brief in a later turn, not a rubric-gate violation on the delivered work.
+**2. Observed-BPM path drift (→ c54 §3.2 erratum handoff)**
 
-The uncalibrated CORN head under `synthetic_labels_only` remains the campaign's biggest open credibility gap; this branch's contribution is to make sure the *plumbing* to close that gap is ready. Real labels via `M-INGEST-1/egress-ready-automation` firing on two consecutive `media_ok=true` rows remain the substantive closure mechanism; the armed harness will fire Path B without human intervention when that trigger lands, and the FIXTURE_READY verdict is the pre-registered evidence that the plumbing works.
+Brief specified `data/rc2_rc3_impl/<sha16>/rc5_tempo_bpm_observed.json`; on-disk truth is single consolidated `data/recreate_v2/rc5_tempo_bpm_observed.json` (c51 Branch B emission). Worker disclosed honestly; READ-ONLY informational anchor; no substantive impact on this cycle's verdict.
 
-## Open Questions
+**c54 §3.2 handoff response correctly scoped**: canonicalise consolidated file (do NOT force per-song split — would touch a c51 anchor); publish erratum sibling `docs/rc5_tempo_beat_grid_erratum_path_drift.md` referencing consolidated file with `supersedes_path: docs/rc5_tempo_beat_grid_rubric.md` per c14 lemma (str, not list); add erratum path to all future c55+ RC5.1 brief templates.
 
-Branch scope is fully discharged. The following are legitimately future-cycle work:
+## Priority-3 Window-Policy Call (Endorsed)
 
-- **Cycle-32 low-priority forward-look:** add explicit `test_mock_egress_unblock_two_scan_transitions` per the updated brief's §5 preference for the two-scan `IDLE → ARMED → TRIGGERED` variant matching the cycle-8 egress-ready fixture's methodology. Coverage-letter improvement; does not block Path B firing.
-- **Cycle-32 report-tone discipline:** distinguish α scope in worker report prose — pinned campaign-wide for collision-modeling; unset in branches that don't touch it. The `alpha_pinned: null` in verdict JSONs is honest and should stay.
-- **Post-egress live firing:** when `data/ear/rated_ready.flag` fires via `M-INGEST-1/egress-ready-automation`, `M-EAR-1/armed-harness` runs Path B on real labels. Start from the cycle-6 chassis with the original 2052-D features; do not inherit c22/c23/c25 synthetic-label negative findings into the real-label recipe. Success bars locked at c26: SB1 MAE-margin > 0.5909, SB2 mean-pairwise-Kendall-τ ≥ 0.4, SB3 leak-detection ≥ 0.90 at α = 1.0. The three-audit VALIDATION of the fixture is the pre-registered "ready" evidence.
-- **Standing constraints unchanged.** Fixed Decisions binding; anti-patterns locked (5, unchanged: DAW-SPIKE-1 GAP-1 redefined at c12; DAW-SPIKE-1 GAP-2 still-GAP with sharper diagnosis at c13, redefined-GAP at c16 via DawDreamer; CLAP rung failure at c11; octave-suppression single-pass insufficient at c8; three M-EAR-1 Path A rescues invalidated at c22/c23/c25); α pinned at 0.7469387071101908 for collision-modeling (irrelevant here); SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor`; no `i4_stratified` imports in analytical scripts; c27 structural lemma (coherence gate never remaps rule_ids); read-only anchors; ledger hygiene; ledger state-machine.
-- **Egress still blocked.** Retry `workspace/harvest_playlists.sh` at top of each cycle; do not gate cycle work on it. `_manager/M-EAR-1-path-B-commit` remains durable Path B contract. Still 0 files across bands 6/5/4.
+c51 Branch B saw Chicken Grease **178.21 BPM on the D1 chosen section** (t=233-263s) whereas this cycle's full-mix run got **90.73 BPM**. Both PASS under octave-correction (full-mix diff=0.000; D1-section diff=1.63 via ×½).
 
-## Appendix: Provenance
+c54 brief's locked decision — compute BOTH windows in c55 RC5.1 impl and record both, verdict against c49 full-mix baseline with D1 riding as peer field — correctly honours the c49 anchor without forcing a choice. **Endorse.**
 
-**Cycle range:** cycles 1-3 of fork `cfc5009aca96`, clone 2.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:**
+## Standing Constraints (Unchanged)
 
-- Cycle 1: researcher `bd93fbde-d4c3-4172-a3f7-77b734a5bd0b`, worker `e134443e-a863-4e16-8d16-f184b4306186`, auditor `57a4fe81-aca6-42f2-9be9-254b57b918ab`.
-- Cycle 2: researcher `cd55813d-df9d-4374-9ddb-d74914956a75`, worker `c3c4e40f-40ba-43e0-a502-0308a3b55d1d`, auditor `aecdb8dc-88ea-479d-8f76-e9406ea4fd44`.
-- Cycle 3: researcher `46721550-fb6c-431f-a554-3695d9bf50c6`, worker `1ebb4eda-cbc7-4f45-b538-cc84d93f585f`, auditor `48964a42-de07-4150-9964-f2c3476f58dc`.
+- α pinned at `0.7469387071101908` (not relevant to this branch).
+- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor`; no `i4_stratified`.
+- Interpreter guard `#!/usr/bin/python3` on every new script.
+- Read-only anchors preserved: c14 `_ledger_schema.py`; c22 stability harness; c26 Path B commitment; c31/c33/c34/c35/c36/c37/c45/c46/c47/c50 palette + recreate + anchor-manifest + rubric chain; c49 v1 baselines; c51 A+B partials; c51 B consolidated observed BPMs; `scripts/palette_render/render_stem.py` byte-identical do-not-touch invariant.
+- Rated audio egress-blocked at `*.googlevideo.com` (`429 + tv_embedded` unchanged; `M-INGEST-1/egress-probe-cycle53-clone-2` recorded honestly per path-A cadence).
+- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
+- **c48 env-var flags default OFF** (`os.environ.setdefault` used, not `setenv`).
+- **music21 9.1.0 READ-ONLY import** (c37 lesson honoured; no writes to music21 internal state).
 
-**Auditor decision (c3):** **VALIDATED / COMPLETE**. Sub-milestone `M-EAR-1/armed-harness-fixture-reinforcement` closes at `validated/high` with terminal verdict **FIXTURE_READY**. Third consecutive VALIDATED with zero drift on disk.
+## Anti-Patterns Locked (5-Count Stable)
 
-**Deliverables on disk.**
+c11 CLAP HF SSL (respected — VGGish DEFERRED-None); c22 synthetic-label-stability; c23 head-regularization; c25 feature-representation; c35 palette-schema-v2-hydration-render VST3 nondeterminism — not re-attempted. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged. c31 STILL_GAP surface intact.
 
-- Rubric: `docs/ear_armed_harness_fixture_rubric.md` (SHA-256 `ff853170f22aaa08e4dfa1d4656262fabd221fbbf405f72ba3f345236e12f689`; committed pre-fixture).
-- Code: `scripts/ear/sb_dry_run.py` (new; synthetic-label dry-run computing SB1/SB2/SB3 against the M-CLASS-1 55-clip valset without rated audio; deterministic; interpreter-guarded; no PRNG; no `sidecar_nonfactor` imports; no live-network imports).
-- Data: `data/ear/armed_harness_reinforcement/{fixture_scenarios.tsv, mock_egress_status.jsonl, sb_dry_run_verdict.json (SHA e7ed2c189aa5af28…), state_transitions_verification.jsonl}`.
-- Report: `docs/ear_armed_harness_fixture_report.md` (8 sections).
-- Tests: `tests/test_ear_armed_harness_synthetic_trigger.py` — extended from 6 to **19 `def test_*` functions** (12-case rubric bar cleared with 7-case headroom); `tests/test_integration_cross_branch.py §47` — fixture-reinforcement completeness + zero-live-network AST check, PASS.
+**No `M-EAR-1/*` or `M-GEN-1/*` emissions** this branch.
 
-**Load-bearing runtime evidence.**
+## Merge Disposition
 
-- Verdict: **FIXTURE_READY** (rubric SHA embedded verbatim in verdict JSON).
-- Rubric SHA verified live × 3 audit turns: `ff853170f22aaa08e4dfa1d4656262fabd221fbbf405f72ba3f345236e12f689`.
-- Verdict-JSON SHA verified live × 3 audit turns: `e7ed2c189aa5af2811dde7caaf59f35fcfbbf34a95ba1a24852d070393607e1a` (byte-determinism × 2 on the SB dry-run outputs).
-- 19 `def test_*` functions counted live (all PASS).
-- AST grep on 8-target set (`urllib`, `requests`, `socket`, `httpx`, `http.client`, `aiohttp`, `httplib2`, `pycurl`): zero hits across armed harness + fixture + sb_dry_run.
-- Read-only anchor preservation: `scripts/egress_ready/*`, `scripts/ear/train_armed_harness.py`, `docs/ear_path_b_commitment.md`, c6 feature cache, c22 stability harness all byte-identical pre/post.
-- `promise_check` 0 ERRORs across all three audit turns.
-- Egress retry still non-blocking (still 0 files across bands 6/5/4).
+Merge report trusted per worker report at `/home/user/music-gen-instance/fork-18817b483ed4/clone-2/merge_report.md` (path outside auditor read scope). Root conductor should poll the in-project fallback if outside-boundaries path is unreachable (per c53 clone-0 empirical confirmation).
 
-**Ledger routing.** Six named + two housekeeping shadow-ledger events emitted in strict order at `/home/user/music-gen-instance/fork-cfc5009aca96/clone-2/promise_ledger.jsonl`:
+## Cycle-54 Handoff (Priority Order; Per Cycle-3 Auditor Guidance)
 
-1. `cycle_31_launched` (`_run/cycle_31_launched_branch_C`).
-2. `ear_armed_harness_rubric_frozen` (rubric SHA in narrative).
-3. `sb_dry_run_script_landed`.
-4. `armed_harness_fixture_extended` (per-fixture-case list).
-5. `M-EAR-1/armed-harness-fixture-reinforcement` verdict roll-up (**FIXTURE_READY**).
-6. `cycle_31_closed` (`_run/cycle_31_closed_branch_C`).
-7. `_archive/cycle-31-branch-C-scratch` (housekeeping).
-8. `_infra/adopt-cycle31-tests` (housekeeping).
+**c54 LINEAR cadence per §6 (endorse)**:
 
-All events use nested `confidence: {level, rationale, assessor}`, canonical `narrative` field, canonical `run_id: run-2026-08-28T040704Z`, UUID5 content-hash `event_id` auto-derived, two-arg `append_ledger_event(workspace, event)`. Cycle-3 emitted zero additional events (no-op re-invocation on a validated milestone). Ledger totals stand at 443 rows / 314 distinct milestones pre-merge; post-merge target ~467 rows / ~317 distinct milestones depending on housekeeping-event dedup at concat via cycle-27 canonical-hash dedup.
+1. **Priority-1** c53 shadow-ledger concat + rollup + plan-of-record registration (`_run/post-merge-integration-cycle-53`).
+2. **Priority-2** RC5.1 + path-drift design (§3.1 + §3.2). Pre-register `docs/rc5_1_independent_tempo_reference_rubric.md`; publish erratum sibling `docs/rc5_tempo_beat_grid_erratum_path_drift.md` with `supersedes_path` per c14 str-lemma.
+3. **Priority-3** c53 clone-1 P1 close event + RC1 policy reissue rubric under Option (a) (§4).
+4. **Priority-4** RC6 panel-gate scaffold pre-registration (§5).
 
-**Standing anti-patterns unchanged (5).** DAW-SPIKE-1 GAP-1 redefined at c12; DAW-SPIKE-1 GAP-2 still-GAP with sharper diagnosis at c13, redefined-GAP at c16 via DawDreamer; CLAP rung failure at c11; octave-suppression single-pass insufficient at c8; three M-EAR-1 Path A rescues invalidated at c22/c23/c25. Anti-patterns c22/c23/c25 explicitly locked for this branch (do NOT re-audit Path A chassis).
+**c55 LINEAR** implements RC5.1 + RC6 + RC1-policy-reissue in three peer scopes.
 
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout.
+**c56 FANOUT candidate** targets `M_RECREATE_2_LANDS` aggregate rollup + corpus breadth + honest-negative reserve.
 
-**Handoff.** Merge report at `/home/user/music-gen-instance/fork-cfc5009aca96/clone-2/merge_report.md`. Cycle 31 branch C is closed. Path B armed-harness readiness for the impending `*.googlevideo.com` egress unblock is well-established across three independent audit turns with zero drift on disk. Cycle 32 low-priority forward-looks (two-scan mock-egress variant; α-scope report-tone discipline) are documented but do not block Path B firing. When `data/ear/rated_ready.flag` fires, `M-EAR-1/armed-harness` runs Path B on real labels unattended — the FIXTURE_READY verdict is the pre-registered "ready" evidence, and the c26-locked SB1/SB2/SB3 thresholds are the credibility test. The three-branch cycle-31 fanout (A palette-instrument-determinism, B palette-assignment-schema, C armed-harness-fixture-reinforcement) has completed its plan-of-record registrations and shadow-ledger event emission; post-merge collapse will consolidate up to 24 total events (8 per branch) into the root ledger via cycle-22 harness-namespacing + cycle-27 canonical-hash dedup.
+**Do NOT**:
+- Re-open c11 CLAP, c22 chassis-audit, c23 head-reg, c25 feature-rep, c35 palette-v2 VST3, c31 STILL_GAP anti-patterns (none triggered this cycle; live-guidance anti-pattern watch clean).
+- Attempt writer-side plan-of-record guard implementation this cycle (c56+ candidate under `_infra/harness-auto-plan-of-record-registration-clone-<k>`, per c54 brief §2 note).
+- Retro-timestamp c54 events; all c54 reconciliation events must carry this cycle's ts and cite on-disk SHAs as evidence of when the work landed (per c54 brief §11).
 
-<verdict>validated</verdict>
+## Cumulative Progress
+
+**M-RECREATE-2 arc RC status roll-up** (post-c53):
+
+| RC | Status | Cycle |
+| --- | --- | --- |
+| Rubric v2 committed | ✓ | c50 |
+| Focus set frozen w/ Chicken Grease mandatory | ✓ | c50 |
+| RC0/RC0-v2 baselines captured × 2 | ✓ | c49/c50 |
+| RC1+RC9 **LANDS 4/5** (Chicken Grease known-fail on chosen-section-vs-baseline-window mismatch) | ✓ | c51 Branch A |
+| RC2+RC3 (consumed as READ-ONLY inputs by c53 clone-0 RC7-v2; indirect evidence of upstream `RC2_RC3_LANDS`) | ✓ | c51 Branch B |
+| RC4 GM program map | deferred beyond c54 | — |
+| **RC5 LANDS 5/5** (honest self-referential caveat scoped to c54 §3.1) | ✓ | **c53 clone-2 (this)** |
+| **RC7 LANDS 5/5** (c53 clone-0 RC7-v2; supersedes c51 Branch C `RC7_FAILS`) | ✓ | c53 clone-0 |
+| RC6 panel-gate | not started; c54 §5 pre-registers; c55 implements | — |
+| Aggregate `M_RECREATE_2_LANDS` | **c56 candidate** contingent on c55 RC5.1 + RC6 outcomes | — |
+
+**Recurring patterns**:
+
+- **Plan-of-record registration lag: 10 cycles running**. c54 §2 step 3 batch-fixes c53 forensically. Writer-side guard remains c56+ candidate. c53 clone-2 auditor named compounding cost as real-but-bounded (5-10 min per cycle for researcher plan-file edit).
+- **Anchor-preservation discipline healthy: 4 consecutive cycles.** c51/c52/c53 all clean; c53 clone-2's 21-entry snapshot preserved both rubric chains + c51 A+B partials + `render_stem.py` do-not-touch + c51 B consolidated observed BPMs.
+- **Honest-negative-finding discipline holding: 8 consecutive cycles.** c35/c36/c48/c51-A/c51-C/c53-clone-0-no-negative/c53-clone-1(P1 ABANDONED)/c53-clone-2(self-referentiality disclosure). MATERIAL campaign asset; audit trail preserves.
+- **Egress unchanged (17+ cycles)**: HTTP 429 + `tv_embedded` failure mode. c50 htdemucs_6s fetch OK anomaly remains isolated; not re-probed.
+
+**Model-architecture invariants**: Test 06 assertion (`corr=200.0, label=double, idx=1` on synthetic 100 BPM vs 200 BPM baseline) provides algorithm-correctness evidence for the octave-correction argmin tiebreak that is **independent of the self-referential real-data measurements**. Correctness anchor permits VALIDATED even under honest self-referentiality caveat. Mura Masa remains the ONLY song exercising the correction algorithm's non-trivial branch across all 5 focus songs.
+
+**c29 state-machine lemma** respected: peer sub-leaves under c50 v2 rubric chain; ledger topology stays a DAG.
+
+**c32 → c33 → c36 v2 → c39 v3 → c47 Branch B MIXED → c50 peer-supersede** fanout-namespace + rubric-chain convention held: substantive `M-RECREATE-2/*` unsuffixed; infra families `-clone-2` suffixed.
+
+**Auditor-reads-ledger-not-brief-summaries lemma** (proposed c50) confirmed relevant here: worker's report correctly disclosed the self-referentiality caveat AND observed-BPM path drift, both of which auditor verified independently on-disk. Track record: caught worker-report drift at c48-close AND c49-close; independent verification at c50 + c51 + c53 (clone-0, clone-2). Codification in `docs/auditor_discipline_ledger_first.md` remains recommended for c54.
+
+**Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+
+**Auditor's role for this fanout clone-2 branch is discharged**; clone-2 hands off to the c54 root-conductor via the merge report. `[[BRANCH_COMPLETE]]` explicitly NOT emitted — reserved for whole-scope discharge on M-RECREATE-2 arc.
+
+[END OUTPUT]
