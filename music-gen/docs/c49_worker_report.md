@@ -180,3 +180,105 @@ in VGGish via the M-TEX-1/panel embedding surface.
   remain default OFF (c51+ candidate to flip).
 - No file deletion; scratch → `tools/stale/` via `shutil.copy2` +
   `os.utime` + `os.unlink` (c38 pattern).
+
+---
+
+## §11 — c49-close correction (c50 addendum)
+
+Appended by c50 worker per c50 brief Priority 3. §1–§10 are byte-identical
+pre==post; only this §11 is new.
+
+### 11.1 What surfaced post-c49-close
+
+`python3 -m long_exposure.tools.promise_check .` reported **6 ERRORs** at
+c49 close, all of the form "milestone_id ... not in plan_of_record.md
+and not in a reserved namespace":
+
+- `M-RECREATE-2/accurate-small-set/rubric-committed`
+- `M-RECREATE-2/accurate-small-set/focus-set-selected`
+- `M-RECREATE-2/accurate-small-set/rc0-baseline-captured`
+- `M-RECREATE-2/accurate-small-set/rc-stubs-registered`
+- `M-INGEST-1/egress-probe-cycle49`
+- `M-INGEST-1/egress-probe-cycle48-clone-1` (c48 Branch B drift row)
+
+Root cause: c49 emitted ledger events for these 6 sub-leaves + probes
+but never appended their rows to the `plan_of_record.md` Milestones
+table. The events landed on disk cleanly; the plan-of-record was the
+authority that fell out of sync.
+
+### 11.2 Priority 1 fix
+
+c50 emitted `_plan/register-c49-substantive-and-probe-milestones`
+appending 6 rows to the 5-col Milestones table under proper parents
+(`M-RECREATE-2/accurate-small-set` × 4; `M-INGEST-1/egress-probe` × 2).
+No content change to any existing ledger event. Follows the c47
+`_plan/c46-line-745-supersedes-field-added` pattern verbatim. Success
+gate `python3 -m long_exposure.tools.promise_check .` returns
+**0 ERRORs** post-fix.
+
+### 11.3 Priority 2 test-scope mismatch
+
+c49's `tests/test_c48_shadow_ledger_reconciliation.py::test_07_promise_check_zero_error`
+passed while the actual CLI reported ERRORs. Root cause: the test
+matched `line.startswith("ERROR")` but the CLI prefixes with `x ERROR:`.
+c50 fixed test_07 in-place to match the CLI's actual format across
+both stdout and stderr, and added `test_11_promise_check_zero_error_via_cli_verified`
+as a belt-and-suspenders check with the strict `x ERROR` prefix that
+catches future scope drift.
+
+### 11.4 c50 auditor OPERATOR UPDATE (rubric-v2 supersede)
+
+The OPERATOR UPDATE 2026-08-29 supplement (three additional root causes
+RC7/RC8/RC9 + four binding design decisions D1–D4 + two new accepts
+A7/A8) materially changes M-RECREATE-2 architecture. c49's rubric-v1
+three-way byte-equality chain would break under any edit, so c50 ships
+a **peer supersede** via `docs/m_recreate_2_accurate_small_set_rubric_v2.md`
+(SHA-256 `0e11f704e12c62f85cfb9d58d6e6890227209ffb43247239e735a22acfdebe1f`)
+opening a **new** three-way byte-equality chain. c49 v1 chain is
+preserved as READ-ONLY anchor; c49 sub-leaves emitted under v1 remain
+valid.
+
+Additional c50 v2 deliverables:
+
+- `data/recreate_v2/focus_set_v2.json` extends c49 focus_set with D1
+  `chosen_section` metadata per song (5/5 songs computed non-null;
+  byte-determinism × 2 PASS).
+- RC0-v2 baseline extension per song: `rc7_per_stem_loudness.json`
+  (RMS + LUFS-S per baseline stem on chosen section) +
+  `rc8_chosen_section_verified.json` (cross-check vs focus_set_v2) +
+  `rc9_6stem/{drums,bass,other,vocals,guitar,piano}.wav`
+  (byte-determinism × 2 PASS all 5 songs).
+- D3 htdemucs_6s fetchability: **OK** (HTTP 200 via workspace proxy;
+  `demucs.pretrained.get_model('htdemucs_6s')` loads with 6 sources).
+  First large-model fetchability window observed in the campaign;
+  recorded in `data/recreate_v2/fetchability_htdemucs_6s.jsonl`.
+- 6 c50 stubs under `scripts/recreate_v2/` (`rc7_mix_balance.py`,
+  `rc8_section_selection.py`, `rc9_first_class_parts.py`,
+  `rc1_v2_hybrid.py`, `rc4_v2_gm_program_map.py`,
+  `rc6_v2_panel_gate.py`), each raising `NotImplementedError('c51+ branch')`.
+  All 6 mtimes strictly after `docs/m_recreate_2_accurate_small_set_rubric_v2.md`
+  mtime; c49 v1 stubs byte-identical pre==post.
+- 9 plan-of-record rows appended for the v2 supersede + `_plan/m-recreate-2-rubric-v2-supersede`
+  event carrying `supersedes_path: docs/m_recreate_2_accurate_small_set_rubric.md`
+  (as `str` per c14 lemma).
+
+### 11.5 c50 handoff to c51 researcher
+
+- **c51 fanout candidates** (rubric-v2 + RC0-v2 baseline landed):
+  Branch A (RC1-v2 hybrid vocal + RC9 first-class-parts — share vocal/
+  guitar/piano transcription surface); Branch B (RC2 drum onset +
+  RC3 bass transcription — independent stem-level accept tests);
+  Branch C (RC7 mix-balance + D4 per-stem EQ implementation extending
+  `scripts/palette_render/render_stem.py` via additive kwargs per c36).
+  RC4/RC5/RC8 fold into A/B/C. RC6-v2 panel gate lands c52+ as the
+  integration cycle.
+- **htdemucs_6s fetch OK** unblocks D3 first-class-parts scope for
+  c51 Branch A.
+- **Rubric-v2 vs rubric-v1 coexistence**: c49 v1 chain preserved;
+  c50 v2 chain opens for c51+ sub-leaves. Auditor verifies both
+  chains three-way byte-equal at every emission.
+- **D4 old-chain-as-baseline row**: pinned Surge chorus+reverb chain
+  (c33 anchor) survives ONLY as comparison baseline in the panel.
+  c51 Branch C should emit `panel_baseline_old_chain.tsv`.
+- **Formalize `_infra/auditor-reads-ledger-not-brief-summaries`** in
+  c51+ alongside c46 rubric-doc lemma.
