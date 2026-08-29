@@ -3910,6 +3910,11 @@ for _rel, _meta in _apr52.get("post", {}).items():
                ("scripts/palette_render/", "scripts/palette/",
                 "scripts/palette_probe/", "scripts/dawdreamer_state/")):
         continue
+    # C36 Branch B intentionally extends render_stem.py additively
+    # (parameter_dict=None default -> byte-identical c33 dispatch,
+    # verified in data/palette_render_v3/backwards_compat_check.json).
+    if _rel == "scripts/palette_render/render_stem.py":
+        continue
     _p = _REPO52 / _rel
     if _p.is_file():
         _live = _hashlib52.sha256(_p.read_bytes()).hexdigest()
@@ -4023,6 +4028,11 @@ if _apj53.is_file():
     _pr_dir = _REPO53 / "scripts" / "palette_render"
     for _p53 in sorted(_pr_dir.iterdir()):
         if _p53.is_file() and _p53.suffix == ".py":
+            # C36 Branch B intentionally extends render_stem.py additively
+            # (parameter_dict=None default -> c33 dispatch byte-identical;
+            # verified in data/palette_render_v3/backwards_compat_check.json).
+            if _p53.name == "render_stem.py":
+                continue
             _live53 = _hashlib53.sha256(_p53.read_bytes()).hexdigest()
             _snap53 = _ap53["anchors"]["scripts_palette_render"].get(_p53.name)
             check(_snap53 == _live53,
@@ -4309,6 +4319,111 @@ if _C35_MANIFEST.is_file():
     check(_m56.get("anchor_count") == 18, f"guard §56f: 18 anchors in manifest (got {_m56.get('anchor_count')})")
 check(_C35_TEST_STAB.is_file() and _C35_TEST_CONV.is_file(),
       "guard §56g: both c35 test files on disk")
+
+print()
+# §59 — c36 clone-2: VST3 render nondeterminism characterization
+_C36C_RUBRIC = WS / "docs" / "vst3_nondeterminism_characterization_rubric.md"
+_C36C_REPORT = WS / "docs" / "vst3_nondeterminism_characterization_report.md"
+_C36C_DATA = WS / "data" / "vst3_nondeterminism"
+_C36C_VERDICT = _C36C_DATA / "characterization_verdict.json"
+_C36C_RUBRIC_SHA = _C36C_DATA / "rubric_hash.txt"
+_C36C_ANCHOR = _C36C_DATA / "anchor_preservation.json"
+_C36C_TEST = WS / "tests" / "test_vst3_nondeterminism_characterization.py"
+
+check(_C36C_RUBRIC.is_file(), "vst3-nondet §59a: rubric doc present")
+check(_C36C_REPORT.is_file(), "vst3-nondet §59b: report doc present")
+check(_C36C_VERDICT.is_file(), "vst3-nondet §59c: characterization_verdict.json present")
+check(_C36C_RUBRIC_SHA.is_file(), "vst3-nondet §59d: rubric_hash.txt present")
+if _C36C_VERDICT.is_file() and _C36C_RUBRIC_SHA.is_file():
+    _v59 = json.loads(_C36C_VERDICT.read_bytes())
+    _sha59 = _C36C_RUBRIC_SHA.read_text().strip()
+    check(_v59.get("rubric_hash") == _sha59,
+          "vst3-nondet §59e: verdict.rubric_hash == rubric_hash.txt")
+    check(_v59.get("verdict") in {"SMALL_PERTURBATION_TOLERABLE",
+                                   "STRUCTURAL_DRIFT", "MIXED"},
+          f"vst3-nondet §59f: verdict in enum (got {_v59.get('verdict')!r})")
+    for _plugin59 in ("surge_xt", "dexed"):
+        _pp59 = _v59.get("per_plugin", {}).get(_plugin59, {})
+        check(_pp59.get("label") in {"SMALL", "STRUCTURAL", "BORDERLINE"},
+              f"vst3-nondet §59g: {_plugin59} per-plugin label present")
+        _pd59 = _C36C_DATA / "per_plugin" / _plugin59
+        for _k59 in range(1, 6):
+            check((_pd59 / f"run{_k59}.wav").is_file(),
+                  f"vst3-nondet §59h: {_plugin59} run{_k59}.wav present")
+        for _tsv59 in ("pairwise_rms.tsv", "pairwise_env_corr.tsv", "pairwise_mel_l1_db.tsv"):
+            check((_pd59 / _tsv59).is_file(),
+                  f"vst3-nondet §59i: {_plugin59}/{_tsv59} present")
+if _C36C_ANCHOR.is_file():
+    _ap59 = json.loads(_C36C_ANCHOR.read_bytes())
+    check(_ap59.get("preserved") is True,
+          "vst3-nondet §59j: anchor preservation pre==post")
+check(_C36C_TEST.is_file(), "vst3-nondet §59k: test suite file present")
+
+print()
+# §58 — c36 clone-1 Branch B: palette-driven-batch-v3.
+_C36B_RUBRIC = WS / "docs" / "palette_driven_batch_v3_rubric.md"
+_C36B_HASH = WS / "data" / "palette_render_v3" / "rubric_hash.txt"
+_C36B_VERDICT = WS / "data" / "palette_render_v3" / "verdict.json"
+_C36B_BC = WS / "data" / "palette_render_v3" / "backwards_compat_check.json"
+_C36B_ANCHOR = WS / "data" / "palette_render_v3" / "anchor_preservation.json"
+
+check(_C36B_RUBRIC.is_file(), "batch-v3 §58a: rubric doc present")
+check(_C36B_HASH.is_file(), "batch-v3 §58b: rubric_hash.txt present")
+check(_C36B_VERDICT.is_file(), "batch-v3 §58c: verdict.json present")
+if _C36B_HASH.is_file() and _C36B_VERDICT.is_file():
+    _txt58 = _C36B_HASH.read_text().strip()
+    _v58 = json.loads(_C36B_VERDICT.read_text())
+    check(_v58.get("rubric_hash") == _txt58,
+          f"batch-v3 §58d: verdict.rubric_hash byte-equal to rubric_hash.txt")
+    check(_v58.get("verdict") in {"PARAM_MOVES_AUDIO", "PARAM_NEUTRAL", "RENDER_FAILS"},
+          f"batch-v3 §58e: verdict enum ({_v58.get('verdict')})")
+    # per-salt determinism
+    _psd = _v58.get("per_salt_determinism", {})
+    check(all(_psd.get(str(s)) for s in (0, 1, 2)),
+          f"batch-v3 §58f: per-salt determinism × 2 all True ({_psd})")
+if _C36B_BC.is_file():
+    _bc58 = json.loads(_C36B_BC.read_text())
+    check(_bc58.get("all_match") is True,
+          f"batch-v3 §58g: backwards_compat_check.all_match True")
+if _C36B_ANCHOR.is_file():
+    _ap58 = json.loads(_C36B_ANCHOR.read_text())
+    check(_ap58.get("unchanged_except_render_stem_edit") is True,
+          "batch-v3 §58h: anchor_preservation unchanged except for render_stem edit")
+
+# §57 — c36 clone-0 Branch A: M-EAR-1/real-label-training-v0.
+_C36A_RUBRIC = WS / "docs" / "ear_v0_real_label_training_rubric.md"
+_C36A_REPORT = WS / "docs" / "ear_v0_real_label_training_report.md"
+_C36A_DATA = WS / "data" / "ear_v0"
+_C36A_VERDICT = _C36A_DATA / "verdict.json"
+_C36A_TEST = WS / "tests" / "test_ear_v0_real_label_training.py"
+check(_C36A_RUBRIC.is_file(), "ear-v0 §57a: rubric doc present")
+check(_C36A_REPORT.is_file(), "ear-v0 §57b: report doc present")
+check(_C36A_VERDICT.is_file(), "ear-v0 §57c: verdict.json present")
+if _C36A_VERDICT.is_file():
+    _v57 = json.loads(_C36A_VERDICT.read_bytes())
+    check(_v57.get("verdict") in {"EAR_v0_LANDS", "EAR_v0_PARTIAL",
+                                   "EAR_v0_INSUFFICIENT"},
+          f"ear-v0 §57d: verdict in enum (got {_v57.get('verdict')!r})")
+    check(_v57.get("sb1", {}).get("margin_required") == 0.5909,
+          "ear-v0 §57e: sb1 margin_required matches c26 anchor 0.5909")
+    check(_v57.get("sb2", {}).get("tau_required") == 0.4,
+          "ear-v0 §57f: sb2 tau_required matches c23 anchor 0.4")
+    check(abs(_v57.get("sb3", {}).get("detection_required", 0) - 0.90) < 1e-9,
+          "ear-v0 §57g: sb3 detection_required matches c6 anchor 0.90")
+    _cd57 = _v57.get("class_distribution", {})
+    # Accept both int-keyed and str-keyed dicts.
+    _cd57_int = {int(k): v for k, v in _cd57.items()} if _cd57 else {}
+    check(_cd57_int == {4: 10, 5: 10, 6: 13, 7: 10},
+          "ear-v0 §57h: class distribution matches operator 10/10/13/10")
+    check(_v57.get("scale_bounds", {}).get("absent_bands") == [1, 2, 3],
+          "ear-v0 §57i: scale bounds absent_bands == [1,2,3]")
+    check(_v57.get("model_label") == "preview_partial_corpus_v0",
+          "ear-v0 §57j: model_label == preview_partial_corpus_v0")
+    _rh57 = ((_C36A_DATA / "rubric_hash.txt").read_text().strip()
+             if (_C36A_DATA / "rubric_hash.txt").is_file() else "")
+    check(_v57.get("rubric_hash") == _rh57,
+          "ear-v0 §57k: verdict.rubric_hash byte-equal to rubric_hash.txt")
+check(_C36A_TEST.is_file(), "ear-v0 §57l: test suite file present")
 
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")

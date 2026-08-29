@@ -93,9 +93,19 @@ def _canonicalize_wav_deterministic(y: np.ndarray, out_wav: Path) -> None:
     scipy_wav.write(str(out_wav), SAMPLE_RATE, y.astype(np.float32))
 
 
-def render_fluidsynth(midi_path: Path, out_wav: Path) -> None:
+def render_fluidsynth(midi_path: Path, out_wav: Path,
+                      parameter_dict: dict | None = None) -> None:
     """Fluidsynth CLI dispatch. Command line copied verbatim from
     scripts/tex/render_bare_midi.py:70 — that module is NOT imported.
+
+    When ``parameter_dict is None`` this function is byte-identical to
+    the c33 anchor path (fixed gain=1.0, no chorus/reverb args).
+
+    When non-None (c36 Branch B extension) the fluidsynth CLI is threaded
+    with ``gain`` and optional chorus/reverb settings via ``-o`` synth
+    options. Recognized keys (all optional): ``gain``, ``chorus_level``,
+    ``reverb_level``, ``reverb_room_size``. Additional/unknown keys are
+    IGNORED (forward-compatible with a wider table in c37+).
     """
     _assert_sf2()
     if not midi_path.is_file():
@@ -103,14 +113,40 @@ def render_fluidsynth(midi_path: Path, out_wav: Path) -> None:
     tmp = out_wav.with_suffix(".raw.wav")
     if tmp.exists():
         tmp.unlink()
-    cmd = [
-        FLUIDSYNTH, "-a", "null", "-T", "wav",
-        "-F", str(tmp),
-        "-r", str(SAMPLE_RATE),
-        "-g", "1.0",
-        "-i",
-        str(SF2_PATH), str(midi_path),
-    ]
+    # c33 anchor path — byte-identical when parameter_dict is None.
+    if parameter_dict is None:
+        cmd = [
+            FLUIDSYNTH, "-a", "null", "-T", "wav",
+            "-F", str(tmp),
+            "-r", str(SAMPLE_RATE),
+            "-g", "1.0",
+            "-i",
+            str(SF2_PATH), str(midi_path),
+        ]
+    else:
+        gain = float(parameter_dict.get("gain", 1.0))
+        cmd = [
+            FLUIDSYNTH, "-a", "null", "-T", "wav",
+            "-F", str(tmp),
+            "-r", str(SAMPLE_RATE),
+            "-g", f"{gain:.6f}",
+            "-i",
+        ]
+        # Chorus (on when chorus_level provided).
+        if "chorus_level" in parameter_dict:
+            cl = float(parameter_dict["chorus_level"])
+            cmd += ["-o", "synth.chorus.active=1",
+                    "-o", f"synth.chorus.level={cl:.6f}"]
+        # Reverb (on when either reverb_level or reverb_room_size provided).
+        if "reverb_level" in parameter_dict or "reverb_room_size" in parameter_dict:
+            cmd += ["-o", "synth.reverb.active=1"]
+            if "reverb_level" in parameter_dict:
+                rl = float(parameter_dict["reverb_level"])
+                cmd += ["-o", f"synth.reverb.level={rl:.6f}"]
+            if "reverb_room_size" in parameter_dict:
+                rs = float(parameter_dict["reverb_room_size"])
+                cmd += ["-o", f"synth.reverb.room-size={rs:.6f}"]
+        cmd += [str(SF2_PATH), str(midi_path)]
     subprocess.run(cmd, check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     y, got_sr = sf.read(str(tmp), always_2d=True)
@@ -121,7 +157,8 @@ def render_fluidsynth(midi_path: Path, out_wav: Path) -> None:
 
 
 def render_sfizz(midi_path: Path, out_wav: Path,
-                 block_size: int = 512) -> None:
+                 block_size: int = 512,
+                 parameter_dict: dict | None = None) -> None:
     """sfizz_render CLI dispatch. Command line copied via documented
     comment from scripts/palette_probe/sfizz.py:82 — that module is
     NOT imported.
@@ -154,12 +191,36 @@ def render_sfizz(midi_path: Path, out_wav: Path,
     data, sr = sf.read(str(raw), always_2d=True)
     if sr != SAMPLE_RATE:
         raise RuntimeError(f"sfizz sr={sr}, expected {SAMPLE_RATE}")
-    _canonicalize_wav_deterministic(data.astype(np.float32), out_wav)
+    # c33 anchor path — when parameter_dict is None output is byte-identical.
+    # When non-None (c36 Branch B extension), thread post-render gain/pitch
+    # adjustments deterministically (sfizz_render CLI on this workspace does
+    # not expose --set opcode overrides; the fallback is documented in
+    # dispatch_summary.json). Recognized keys: `master_volume` (dB scalar
+    # multiplier applied to samples), `master_pitch_offset` (cents; ignored
+    # this cycle as re-pitching post-render is not byte-safe against the
+    # canonicalizer and c37 will address via opcode-file rewrite),
+    # `envelope_attack_mult`, `envelope_release_mult` (ignored this cycle
+    # per rubric fallback). All unrecognized keys IGNORED.
+    y = data.astype(np.float32)
+    if parameter_dict is not None:
+        if "master_volume" in parameter_dict:
+            db = float(parameter_dict["master_volume"])
+            scale = float(10.0 ** (db / 20.0))
+            y = y * np.float32(scale)
+    _canonicalize_wav_deterministic(y, out_wav)
     raw.unlink()
 
 
-def render_stem(stem: str, instrument: str, out_dir: Path) -> dict:
+def render_stem(stem: str, instrument: str, out_dir: Path,
+                *, parameter_dict: dict | None = None) -> dict:
     """Render one stem twice, verify byte-determinism, save SHAs.
+
+    ``parameter_dict`` is keyword-only and defaults to None (c33 anchor
+    path — byte-identical output). When non-None, threads params via
+    the extended fluidsynth/sfizz CLI dispatch per the c36 Branch B
+    rubric. Surge XT / Dexed remain unsupported (c31 STILL_GAP + c35
+    Branch A RENDER_FAILS). Any non-None ``parameter_dict`` passed
+    with instrument ∈ {surge_xt, dexed} raises NotImplementedError.
 
     Returns dict:
       {"stem": stem, "instrument": instrument,
@@ -177,12 +238,20 @@ def render_stem(stem: str, instrument: str, out_dir: Path) -> dict:
     out1 = out_dir / "render_run1.wav"
     out2 = out_dir / "render_run2.wav"
 
-    if instrument == "fluidsynth_gm":
-        render_fluidsynth(midi_path, out1)
-        render_fluidsynth(midi_path, out2)
+    if instrument in ("surge_xt", "dexed"):
+        if parameter_dict is not None:
+            raise NotImplementedError(
+                "VST3 param threading deferred to c37 pending Branch-C "
+                "VST3-nondeterminism verdict"
+            )
+        raise RuntimeError(f"unsupported instrument {instrument} for palette-render "
+                           f"(Surge XT / Dexed excluded per c31 STILL_GAP)")
+    elif instrument == "fluidsynth" or instrument == "fluidsynth_gm":
+        render_fluidsynth(midi_path, out1, parameter_dict=parameter_dict)
+        render_fluidsynth(midi_path, out2, parameter_dict=parameter_dict)
     elif instrument == "sfizz":
-        render_sfizz(midi_path, out1)
-        render_sfizz(midi_path, out2)
+        render_sfizz(midi_path, out1, parameter_dict=parameter_dict)
+        render_sfizz(midi_path, out2, parameter_dict=parameter_dict)
     else:
         raise RuntimeError(f"unsupported instrument {instrument} for palette-render "
                            f"(Surge XT / Dexed excluded per c31 STILL_GAP)")
