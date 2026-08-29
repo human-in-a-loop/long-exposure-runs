@@ -61,6 +61,67 @@ from sklearn.model_selection import StratifiedKFold
 from .corn import corn_predict
 from .model import CornHead, corn_loss, set_determinism, K, EPOCHS, LR, WD
 
+# c38 authorized mutation: retire c6 `S = max(S_model, S_resid)` line under
+# c38 anchor-preservation authorization. Substitute the c37 clone-1 F1
+# pooled-variance-with-small-cell-adjustment statistic (Nakagawa-Cuthill
+# prior); statistic_version pinned to "F1_pooled_variance_v1" and emitted
+# on every row.
+STATISTIC_VERSION = "F1_pooled_variance_v1"
+
+
+def f1_pooled_variance_statistic(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    leak_labels,
+) -> float:
+    """F1 — pooled-variance-with-small-cell-adjustment (c37 clone-1).
+
+    On singleton-cell corpora (n_g == 1 everywhere), naive one-way η²
+    saturates at 1.0 because within-group variance is identically zero.
+    Adding a Nakagawa-Cuthill small-cell prior to the within-group
+    variance estimator makes the statistic well-defined and bounded on
+    singleton corpora while reducing to a standard between/total ratio
+    on large-cell corpora.
+
+    Formula:
+        r      = y_true - y_pred           (per-sample residual)
+        B      = sum_g n_g * (mean_g(r) - grand_mean(r)) ** 2
+        V_pool = sum_i (r_i - grand_mean(r)) ** 2
+        lambda = 1 / (1 + n_bar),  n_bar = N / G
+        S_F1   = (B / V_pool) / (1 + lambda)
+
+    Returns 0.0 on degenerate input (V_pool < 1e-12 or length mismatch);
+    otherwise a scalar in [0, 1/(1+lambda)] on singleton corpora and
+    [0, 1] on large-cell corpora.
+
+    Reference: docs/ear_sb3_fallback_statistic_report.md and
+    scripts/ear_sb3_fallback/candidate_f1_pooled_variance.py.
+    """
+    y_true = np.asarray(y_true, dtype=np.float64).reshape(-1)
+    y_pred = np.asarray(y_pred, dtype=np.float64).reshape(-1)
+    labels = list(leak_labels)
+    if y_true.shape[0] != y_pred.shape[0] or y_true.shape[0] != len(labels):
+        return 0.0
+    n = y_true.shape[0]
+    if n == 0:
+        return 0.0
+    residuals = y_true - y_pred
+    grand = float(residuals.mean())
+    v_pool = float(((residuals - grand) ** 2).sum())
+    if v_pool < 1e-12:
+        return 0.0
+    groups: dict = {}
+    for r, a in zip(residuals.tolist(), labels):
+        groups.setdefault(a, []).append(r)
+    g = len(groups)
+    n_bar = n / g
+    lam = 1.0 / (1.0 + n_bar)
+    b = 0.0
+    for xs in groups.values():
+        mg = sum(xs) / len(xs)
+        b += len(xs) * (mg - grand) ** 2
+    return (b / v_pool) / (1.0 + lam)
+
 
 # --- Synthetic non-factor planting -------------------------------------------
 ARTIST_LEVELS = ("A1", "A2", "A3", "A4", "A5")
@@ -170,10 +231,9 @@ class LeakRow:
     seed: int
     fold: int
     mae: float               # MAE on test fold
-    S: float                 # combined leak statistic = max(S_model, S_resid)
-    S_model: float           # variance of ŷ per nf bucket / var(y_te)
-    S_resid: float           # variance of residual per nf bucket / var(y_te)
+    S: float                 # F1 pooled-variance leak statistic (c37/c38)
     detected: bool           # S >= tau
+    statistic_version: str = STATISTIC_VERSION  # "F1_pooled_variance_v1"
 
 
 def _impute_nan(X: np.ndarray) -> np.ndarray:
@@ -213,26 +273,20 @@ def _eta_squared(x: np.ndarray, nf: np.ndarray) -> float:
     return float(ss_between / ss_total)
 
 
-def _leak_stats(y_te: np.ndarray, y_pred: np.ndarray, nf_te: np.ndarray) -> tuple[float, float, float]:
-    """Two-sided leak detector:
+def _leak_stats(y_te: np.ndarray, y_pred: np.ndarray, nf_te: np.ndarray) -> float:
+    """F1 pooled-variance-with-small-cell-adjustment leak detector (c37/c38).
 
-    - S_model: η² of ŷ_te by nf — fraction of model-prediction variance
-      that is explained by nf. Fires when the model has *learned* the
-      shortcut.
-    - S_resid: η² of (y_te - ŷ_te) by nf — fraction of residual variance
-      that is explained by nf. Fires when the target depends on nf but
-      the model cannot follow (orthogonal-plant case).
-    - S: max(S_model, S_resid) — leak fires either way.
+    Retires the c6 `S = max(S_model, S_resid)` line under c38
+    anchor-preservation authorization. Substitutes the c37 clone-1 F1
+    pooled-variance implementation defined in
+    tests/test_ear_sb3_fallback_statistic.py and referenced in
+    docs/ear_sb3_fallback_statistic_report.md.
 
-    Both statistics are bounded in [0, 1] and scale-free in y_te, so the
-    same τ works across leak-strength and no-leak scenarios where
-    var(y_te) itself differs. Returns (S, S_model, S_resid).
+    Delegates to f1_pooled_variance_statistic(y_true, y_pred, leak_labels).
+    Returns a single scalar in [0, 1/(1+lambda)] on singleton corpora
+    and [0, 1] on large-cell corpora.
     """
-    pred = y_pred.astype(np.float64)
-    resid = y_te.astype(np.float64) - pred
-    S_model = _eta_squared(pred, nf_te)
-    S_resid = _eta_squared(resid, nf_te)
-    return max(S_model, S_resid), S_model, S_resid
+    return f1_pooled_variance_statistic(y_te, y_pred, list(nf_te.tolist()))
 
 
 def _cv_runs(
@@ -261,8 +315,8 @@ def _cv_runs(
         y_pred = _predict(model, X[te_idx])
         y_te = y[te_idx]
         mae = float(np.mean(np.abs(y_pred - y_te)))
-        S, S_model, S_resid = _leak_stats(y_te, y_pred, nf_vals[te_idx])
-        out.append((fi, mae, S, S_model, S_resid))
+        S = _leak_stats(y_te, y_pred, nf_vals[te_idx])
+        out.append((fi, mae, S))
     return out
 
 
@@ -302,10 +356,10 @@ def run_experiments(
             # Rating uncorrelated with any non-factor
             y_ctrl = synth_rating(np.zeros(len(clip_ids)), alpha=0.0, seed=seed)
             runs = _cv_runs(X, y_ctrl, nf_off, seed=seed, n_splits=n_splits, epochs=epochs)
-            for fi, mae, S, S_model, S_resid in runs:
+            for fi, mae, S in runs:
                 controls.append(LeakRow(
                     scenario="control", leak_type=kind, alpha=0.0, seed=seed, fold=fi,
-                    mae=mae, S=S, S_model=S_model, S_resid=S_resid, detected=False,
+                    mae=mae, S=S, detected=False,
                 ))
 
     # τ per leak type = percentile of no-leak combined-leak-statistic distribution.
@@ -356,10 +410,10 @@ def run_experiments(
                 seed = base_seed + 10_000 + c
                 y_pl = synth_rating(nf_off, alpha=alpha, seed=seed)
                 runs = _cv_runs(X, y_pl, nf_off, seed=seed, n_splits=n_splits, epochs=epochs)
-                for fi, mae, S, S_model, S_resid in runs:
+                for fi, mae, S in runs:
                     planted.append(LeakRow(
                         scenario="leak", leak_type=kind, alpha=alpha, seed=seed, fold=fi,
-                        mae=mae, S=S, S_model=S_model, S_resid=S_resid,
+                        mae=mae, S=S,
                         detected=bool(S >= tau_per_kind[kind]),
                     ))
 
