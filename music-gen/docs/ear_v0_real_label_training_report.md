@@ -3,16 +3,17 @@
 **Cycle 36 Branch A, fork 87da4f517029, clone-0.**
 **Rubric SHA-256 (verdict-embedded):** `636c2cd0486760f38bda7d02f1be8472f9e756176e83bb3d8e61ee53491bb2e9`.
 **Rubric doc:** `docs/ear_v0_real_label_training_rubric.md`.
-**Cycle status at this report revision:** in-flight — feature extraction incomplete (see §3).
-**Verdict:** `[TBD-post-training: verdict]`.
+**Cycle status at this report revision:** COMPLETE — 43/43 features extracted, verdict resolved, byte-determinism × 2 PASS, tests 18/18 PASS.
+**Verdict:** `EAR_v0_INSUFFICIENT`.
 
-> This report is landed at the report-skeleton stage per the c36 auditor's
-> anti-null-cycle rule. Placeholders marked `[TBD-post-training: …]` will
-> be filled by `tools/_write_ear_v0_report.py` after the pipeline runs to
-> completion (feature extraction → folds → CORN training → SB evaluation →
-> leak ablation → verdict → determinism × 2 → anchor snapshot). The
-> commitment to the c26-frozen thresholds and the `preview_partial_corpus_v0`
-> caveat is complete and binding as of this landing.
+> Report completed by cycle-36 clone-0 after §7 completion pipeline
+> succeeded on a fresh session (43/43 features cached, PID 20291
+> exited cleanly). All three success bars FAIL on this 43-song
+> preview corpus. Per the c26 Path B commitment and the c36 brief,
+> `EAR_v0_INSUFFICIENT` is a **first-class deliverable**: it is the
+> honest, numeric measurement of "the c6 chassis on 43 rated songs,
+> under the frozen rubric, cannot beat majority-class MAE". The
+> `preview_partial_corpus_v0` caveat remains binding.
 
 ## 1. Preview partial corpus caveat (READ THIS FIRST)
 
@@ -69,26 +70,19 @@ The rubric SHA-256 `636c2cd0…1bb2e9` is stored at
 `scripts/ear_v0/` predates the rubric doc. **These gates are green from
 cycle 2 and are not re-verified this cycle** (auditor exclusion).
 
-## 3. Extraction status
+## 3. Extraction status — COMPLETE
 
-Feature extraction is a long-running CPU-bound job (PANNs Cnn14 forward
-pass × N clips per song). Two prior sessions terminated it silently
-(monitor + background-task teardown on session end). This session
-restarted the extractor detached (`nohup setsid`) with a heartbeat log.
+Feature extraction reached 43/43 songs; PID 20291 exited cleanly.
+Empirical rate ≈ 130 s / song (better than prior 213 s / song
+estimate). Detached-via-`nohup setsid` supervision worked as
+designed on this run.
 
-- **Liveness log:** `data/ear_v0/extraction_liveness.tsv` (append-only,
-  one row per cycle: `ts, files_seen, sec_per_song, eta_to_43_iso,
-  newest_mtime_iso, note`).
-- **Rate at report-skeleton emission:** see the latest liveness row.
-  Empirical rate ≈ 213 s / song (~3.5 min); ETA to 43/43 ≈ ~2 h from
-  restart under this rate.
+- **Liveness log:** `data/ear_v0/extraction_liveness.tsv` (final row:
+  `2026-08-29T06:40:34Z, 43, 0, complete`).
 - **Cache idempotence:** `data/ear_v0/cache_idempotence_check.tsv`
-  confirms the cache-hit path returns byte-identical bytes to disk on
-  a re-invocation of `extract_song()`. Regeneration-determinism test
-  (delete + re-run) is deferred to the completion pass to avoid racing
-  the live background job.
-- **Extractor stdout:** `data/ear_v0/extract3.log` (this restart).
-  Prior partial logs preserved at `extract.log`, `extract2.log`.
+  (row 3, `scope=regeneration_determinism, result=pass`) — cache-hit
+  and regeneration paths both byte-equal.
+- **Extractor stdout:** `data/ear_v0/extract3.log`.
 
 ## 4. Results (skeleton — placeholders filled by completion pass)
 
@@ -96,40 +90,54 @@ restarted the extractor detached (`nohup setsid`) with a heartbeat log.
 
 | SB | Threshold | Observed | Pass? |
 |---|---|---|---|
-| SB1: MAE margin over `min(majority-class, mean-integer)` | > 0.5909 | `[TBD-post-training: sb1_margin]` (MAE=`[TBD-post-training: mae_aggregate]`; baseline_min=`[TBD-post-training: baseline_min]`) | `[TBD-post-training: sb1_pass]` |
-| SB2: mean pairwise Kendall τ over 10 stratified bootstraps | ≥ 0.4 | `[TBD-post-training: mean_tau]` | `[TBD-post-training: sb2_pass]` |
-| SB3: leak-detection at α=1.0 on `artist` | ≥ 0.90 | `[TBD-post-training: artist_detection_rate]` | `[TBD-post-training: sb3_pass]` |
+| SB1: MAE margin over `min(majority-class, mean-integer)` | > 0.5909 | **−0.2093** (MAE=1.1395; baseline_min=0.9302) | **FAIL** |
+| SB2: mean pairwise Kendall τ over 10 stratified bootstraps | ≥ 0.4 | **−0.0987** | **FAIL** |
+| SB3: leak-detection at α=1.0 on `artist` | ≥ 0.90 | **0.0** | **FAIL** |
+
+**Verdict resolution:** SB1 FAIL → **EAR_v0_INSUFFICIENT** (per frozen rubric: `EAR_v0_INSUFFICIENT` = SB1 FAIL OR (SB2 FAIL AND SB3 FAIL); both conditions hold).
 
 ### Baselines (SB1 inputs)
 
-- Majority-class MAE (predict modal band): `[TBD-post-training: baseline_majority_class_MAE]`.
-- Mean-integer MAE (predict rounded population mean): `[TBD-post-training: baseline_mean_integer_MAE]`.
+- Majority-class MAE (predict modal band = 6): **0.9302**.
+- Mean-integer MAE (predict rounded population mean = 6): **0.9302**.
+
+Both baselines coincide numerically because bands 4/5/6/7 with counts 10/10/13/10 place the population mean at 5.535 → rounded to 6 = modal band. The model's aggregate MAE of 1.1395 is **0.2093 worse** than these baselines: on this 43-song preview the c6 chassis cannot beat "always predict 6".
 
 ### Per-fold MAE (5-fold stratified leave-one-per-band CV)
 
 | Fold | Held out | MAE |
 |---|---|---|
-| 0 | `[TBD-post-training: fold_0_n]` | `[TBD-post-training: MAE_fold_1]` |
-| 1 | `[TBD-post-training: fold_1_n]` | `[TBD-post-training: MAE_fold_2]` |
-| 2 | `[TBD-post-training: fold_2_n]` | `[TBD-post-training: MAE_fold_3]` |
-| 3 | `[TBD-post-training: fold_3_n]` | `[TBD-post-training: MAE_fold_4]` |
-| 4 | `[TBD-post-training: fold_4_n]` | `[TBD-post-training: MAE_fold_5]` |
-| — Aggregate | 43 | `[TBD-post-training: mae_aggregate]` |
+| 0 | 9 | 1.3333 |
+| 1 | 9 | 1.1111 |
+| 2 | 9 | 1.2222 |
+| 3 | 8 | 1.1250 |
+| 4 | 8 | 0.8750 |
+| — Aggregate | 43 | **1.1395** |
+
+Fold 4 alone (MAE 0.8750) slightly beats the 0.9302 baseline; the other four folds are all above baseline. Cross-fold spread (max−min = 0.4583) is comparable to the aggregate deficit against baseline — a signal that the small per-fold held-out sets (n=8 or 9) yield high variance and that the aggregate signal is noise-dominated.
 
 ### Non-factor leak-ablation (per-column)
 
-- **artist**: `[TBD-post-training: artist_detection_rate]` at α=1.0
-  (threshold ≥ 0.90). Parse yield: `[TBD-post-training: artist_parse_yield]` / 43.
-- **genre**: `[TBD-post-training: genre_detection_rate=deferred_aliased_with_band]` — playlist_id
-  perfectly aliases with rating band on this corpus; genre unseparable
-  from signal by construction.
-- **era**: `[TBD-post-training: era_detection_rate=deferred_no_metadata]` — release-year absent
-  from RECEIPTS/manifest; deferred to post-yt-dlp-metadata cycle.
+- **artist**: **0.0** at α=1.0 (threshold ≥ 0.90). Parse yield: **43 / 43**
+  (zero parse failures; every RECEIPTS.md title yielded a parsable artist string).
+  Under the c6 protocol at α=1.0 with real (unshuffled) artist labels, `S_model = S_resid = 1.0` and the observed statistic never exceeds the 90th-percentile null. This is expected on a corpus where each artist appears exactly once: there is no within-artist variation for the residual to explain, so the leak signal collapses.
+- **genre**: **`deferred_aliased_with_band`** — `alias_confirmed=true` in
+  `data/ear_v0/leak_ablation_summary.json`. Each rating band on this corpus uses exactly one playlist_id (or the LOCAL_BAND_N fallback for band-7 uploads), so `genre` is unseparable from the label by construction. Cannot be resolved on this corpus; requires cross-genre samples per band.
+- **era**: **`deferred_no_metadata`** — release-year absent from
+  `corpus/ratings/*/RECEIPTS.md` and `corpus/ratings/ratings_manifest.tsv`. Deferred to a post-yt-dlp-metadata cycle.
 
 ### Anchor preservation
 
-- `data/ear_v0/anchor_preservation.json.combined_manifest_sha` vs c35
-  baseline `6dc917fe…2f45b3d`: `[TBD-post-training: anchor_unchanged]`.
+- `data/ear_v0/anchor_preservation.json.unchanged` = **true**.
+  All 9 c6/c22/c26 anchor SHAs (`scripts/classifier/tagger.py`, `scripts/ear/{corn,features,leak_test,model,stability_audit,stability_metrics,synthetic_labels}.py`, `docs/ear_path_b_commitment.md`) byte-identical pre/post pipeline. The c6 chassis, c22 stability harness, and c26 Path B commitment are read-only across this cycle.
+
+### Byte-determinism × 2
+
+Two consecutive `run_all` invocations against the frozen 43-song feature cache produce SHA-256-equal outputs on all six tracked artifacts (`feature_cache_manifest.json`, `training_result.json`, `corn_head_v0_real.pt`, `held_out_predictions.tsv`, `leak_ablation_summary.json`, `verdict.json`) — verified this cycle (`scratchpad/ear_v0_sha_run{1,2}.txt` diff clean).
+
+### Regeneration determinism (§1)
+
+The prior cycle's regeneration-determinism spot-check on target `069ebba269efccc2…` (`corpus/ratings/7/016__LOCAL__05_02.mp3`) produced byte-equal vector and file SHAs (`94dfbd2d…bae2` / `36a34f43…b8d9`); logged to `data/ear_v0/cache_idempotence_check.tsv`. No auditor MODERATE #1 concern reopens.
 
 ## 5. Handoff to cycle 37
 
