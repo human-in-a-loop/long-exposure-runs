@@ -1,5 +1,5 @@
 ---
-title: "Cycles 1-2 Clone 2 Report — M-RECREATE-1/second-real-audio-batch (Fork 33a2a8003c84)"
+title: "Cycles 1-2 Clone 2 Report — _manager/fanout-namespace-convention-v3-resolution (Fork c320de981fda)"
 date: "2026-08-29"
 toc: true
 toc-depth: 2
@@ -8,160 +8,184 @@ fontsize: "10pt"
 ---
 [OUTPUT: report_cycles_1-2_clone_2]
 
-# Cycles 1-2 Clone 2 Report — M-RECREATE-1/second-real-audio-batch (Fork 33a2a8003c84)
+# Cycles 1-2 Clone 2 Report — _manager/fanout-namespace-convention-v3-resolution (Fork c320de981fda)
 
 ## Abstract
 
-Cycles 1-2 of clone-2 (fork `33a2a8003c84`) close `M-RECREATE-1/second-real-audio-batch` at **BATCH_LANDS**. Cycle 1 executed the 5-song batch pipeline via SHA-256 tiebreak per rating bucket (excluding the c37 clone-0 song), consuming c37 `scripts/recreate_v0/*` machinery read-only, using the Stage-06 pretty_midi fallback as-is, and producing positive `mel_l1_db` effects deltas on all 5 songs (+2.879 to +7.983 dB; mean +5.04 dB). Cycle 2 is c30-codified verification-only standby (zero writes; auditor decision **COMPLETE**; `[[BRANCH_COMPLETE]]` emitted). 15/16 in-clone rubric criteria PASS; the 16th (git-log gate) is legitimately `MERGE_DEFERRED` to the root conductor per known clone-environment `git add` refusal.
+Cycles 1-2 of clone-2 (fork `c320de981fda`) close `_manager/fanout-namespace-convention-v3-resolution` at **CONVENTION_v3_LANDS** via **Path 2** (update doc to codify auto-suffix-all behavior). Retires the persistent `_manager/fanout-namespace-convention-discrepancy` ticket that has been reconciled manually every post-merge integration since c33. Cycle 1 executed the full v3 doc + rubric + baseline replay (670/670) + c37 + c38 shadow-ledger replay (63/63 byte-identical) + docstring bump + v1 rename. Cycle 2 is c30-codified verification-only re-affirmation (auditor **VALIDATED**; `[[BRANCH_COMPLETE]]` emitted). All four campaign invariants preserved: `append_ledger_event` signature; `MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE` env-var round-trip; `LedgerNamespaceViolation.__mro__`; four anchor SHAs.
 
 ## Verdict
 
-**BATCH_LANDS** (VALIDATED at cycle 1; **COMPLETE** at cycle 2 standby; `[[BRANCH_COMPLETE]]`).
+**CONVENTION_v3_LANDS** (VALIDATED at cycle 1 via Path 2; re-affirmed at cycle 2; `[[BRANCH_COMPLETE]]`).
 
 ## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
 
 | Location | SHA-256 |
 | --- | --- |
-| `docs/recreate_v0_batch_rubric.md` | `be65f7cb37f71c4613afceb70dafa03a1bc68a384f4b51639127b4d5256b718d` |
-| `data/recreate_v0_batch/rubric_hash.txt` | `be65f7cb…b718d` |
-| `verdict.json.rubric_hash` | `be65f7cb…b718d` |
+| `docs/fanout_namespace_convention_v3_rubric.md` | `4cd79e4fdba5431e25ec10b6af5c56e69bf77170dcac2e469c11727af2cf628e` |
+| `data/fanout_namespace_v3/rubric_hash.txt` | `4cd79e4f…628e` |
+| `verdict.json.rubric_hash` | `4cd79e4f…628e` |
 
-Rubric mtime `08:50` < earliest `scripts/recreate_v0_batch/*.py` mtime `08:51+`. git-log gate **MERGE_DEFERRED** (clone environment refuses `git add`/`git commit`; worker honestly recorded rather than fabricating; conductor verifies rubric-first commit order post-integration per c38 precedent).
+**mtime gate**: rubric mtime < earliest edit-target mtime. **git-log gate**: `MERGE_DEFERRED` per c38 precedent; explicitly disclosed at `data/fanout_namespace_v3/git_gate_status.txt`; conductor verifies rubric-first commit order post-integration.
 
-## 5-Song Selection (SHA-256 Tiebreak Per Bucket; c37 Clone-0 Song Excluded)
+## Path Chosen: Path 2 (Update Doc to Codify Auto-Suffix-All Behavior)
 
-Songs selected via SHA-256 tiebreak from each of the four rating buckets (band-4, band-5, band-6, band-7) with an extra tiebreak within the largest bucket, excluding `corpus/ratings/7/016__LOCAL__05_02.mp3` (c37 clone-0 song). All 5 songs complete the 8-stage c37 pipeline (decode → chunker → tagger sidecar → htdemucs → basic-pitch × 3 → score merge → fluidsynth bare-MIDI → cycle-9 DawDreamer effects).
+Rationale weighed in rubric doc:
 
-## Batch Verdict Numerics
+- **Path 1** (narrow guard to c32 leading-underscore set only): removes the working c36-v2 writer guard; would reintroduce the manual reconciliation burden every post-merge integration.
+- **Path 2 (chosen)**: c37+c38 field evidence (two consecutive 3-clone fanouts; zero `LedgerConcatError`; zero manual reconciliation events) proves the c36-v2 auto-suffix guard is field-tested. Codifying it as v3 retires the persistent ticket.
 
-| Metric | Result |
+## Baseline Replay (670/670 Ledger Rows PASS, Byte-Determinism × 2)
+
+All 670 existing `promise_ledger.jsonl` rows pass the tightened validator; byte-determinism × 2 confirmed on replay outputs.
+
+## Shadow-Ledger Replay (63/63 Byte-Identical)
+
+Reconstructed and pushed through the chosen convention:
+
+| Fork | Clones | Rows Byte-Identical |
+| --- | --- | --- |
+| c37 fork `675abd086911` | clones 0/1/2 | 24/24 |
+| c38 fork `33a2a8003c84` | clones 0/1/2 | 39/39 |
+| **Total** | 6 clones | **63/63** |
+
+Byte-identical on the `(milestone_id, event_id, canonical_json-excluding-ts)` tuple across both full 3-clone fanouts.
+
+## Anchor Preservation (Four-Anchor SHA Snapshot)
+
+| Anchor | SHA-256 |
 | --- | --- |
-| n_pipeline_ok | **5/5** |
-| n_byte_det_x2 | **5/5** |
-| n_positive_mel_delta | **5/5** (per-song mel deltas +2.879 to +7.983 dB; mean +5.04) |
-| Cross-band table dimensions | 5 rows × 14 numeric cols |
+| c14 `_ledger_schema.py` | `566fad6977e00…` (byte-identical) |
+| c22 `validate_event` module | (byte-identical) |
+| c33 guard fixture `harness_clone_namespace_guard_rubric_hash.txt` | `12e14f8a4d780…` (byte-identical) |
+| c36 v2 doc | `a67bf101be6ca…` (byte-identical) |
+| c32 original content preserved at `docs/fanout_namespace_convention_v1.md` | `de45eb4eac330…` (byte-identical) |
 
-Cross-band table includes `mel_l1_db + spectral_centroid_rmse_hz + rms_env_rmse + lufs_m_rmse` per the brief, plus `n=5 exploratory caveat` literal on every correlation row.
+All snapshot-verified.
 
-## Cross-Band Correlations (n=5 Sample-Size Caveat Literal on Every Row)
+## Four Campaign Invariants (All Hold)
 
-On-disk `data/recreate_v0_batch/cross_band_correlation.json` and `docs/recreate_v0_batch_report.md` (correct values):
-
-| Metric | r (band vs improvement) |
+| Invariant | Status |
 | --- | --- |
-| mel_l1_db | −0.483 |
-| spectral_centroid_rmse_hz | +0.911 |
-| rms_env_rmse | −0.199 |
-| lufs_m_rmse | −0.695 |
+| `append_ledger_event.__signature__ == (workspace: Path, event: dict) -> None` | ✓ unchanged |
+| `MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE=1` env-var round-trip (strict→raise; unset→auto-suffix) | ✓ unchanged |
+| `LedgerNamespaceViolation.__mro__` ⊇ `LedgerSchemaError`, `ValueError`, `Exception` | ✓ verified live |
+| Four anchor SHAs byte-identical (see above) | ✓ verified |
 
-MINOR-tier drift note: worker's prior compacted-session narrative-to-auditor text cited stale correlation numbers (mel −0.180, spec +0.858, rms −0.535, lufs −0.826); on-disk artefacts show the correct values above. All on-disk consumers internally coherent; narrative-vs-artefact drift only, not a scientific defect.
+## Docstring Bump (Content-Neutral, Disclosed)
 
-## Byte-Determinism × 2 (20/20 SHA Pairs Matched)
+`long_exposure/workspace_bootstrap.py`: SHA `462e3d30…` → `af0e1e87…`. Bump touched 3 sites (1 comment header + 2 `raise` messages) vs 1 site expected in brief. Content-neutral, defensible, honestly disclosed in report §9.
 
-5 songs × 4 anchors (`merged.musicxml`, `merged.midi`, `bare_midi.wav`, `effects.wav`) = 20 anchor SHAs; all byte-equal across two independent runs (`determinism_check.json.all_equal = true`).
+## v1 Rename (SHA Preserved; mtime Judgment Call Disclosed)
 
-## Anchor Preservation (18/18 c37 Read-Only Anchors Byte-Identical)
+`docs/fanout_namespace_convention.md` → `docs/fanout_namespace_convention_v1.md` (never deleted per brief). Content SHA preservation verified explicitly via `sha256sum` before/after.
 
-`anchor_preservation.json`: 18 anchors under `scripts/recreate_v0/*`, `unchanged: true`, `changed: {}`. Zero writes under c37 clone-0's machinery; read-only import via `PYTHONPATH` per rubric §7.
+**MODERATE finding (judgment call, does not block)**: worker `touch`ed v1 doc post-`mv` because `mv` preserves source mtime (2026-08-25), which would fail test_01 (rubric-mtime ≤ edit-target-mtime). Interpretation ("rename is an edit that happened after the rubric") is defensible; alternate interpretation ("rename is not an edit; exclude from `EDIT_TARGETS`") also closes the gate. Worker disclosed candidly in report §9 and merge report.
 
-## preview_untrained_ear Caveat (v1-Branch Conditional Handling)
-
-Branch A's v1 report landed mid-execution at 09:07; clone-2 report cites `docs/ear_real_label_training_v1_report.md` **by document path only**, never programmatically importing v1 model, `verdict.json`, or `corn_head_v1.pt`. Falls back to v0 caveat citation (`M-EAR-1/real-label-training-v0 → EAR_v0_INSUFFICIENT` per c36) if the v1 report path is not present. Pattern crystallised for reuse across c39 HS-2 and future recreation cycles.
+`mv` used (not `git mv`) because no git-commit approval in sandbox. Merge conductor should replay as `git mv` for git-history preservation.
 
 ## Test Surface
 
 | Suite | Result |
 | --- | --- |
-| `tests/test_recreate_v0_batch.py` | **15/15 PASS** (exceeds ≥12 minimum) |
-| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (pre-existing WARNs only; no new WARNs) |
-| `org_check` | **0 ERRORs** (no new WARNs introduced) |
+| `tests/test_fanout_namespace_convention_v3.py` | **19/19 PASS** (exceeds ≥8 minimum) |
+| `tests/test_ledger_writer_validation.py` | **25/25 PASS** (regression) |
+| `tests/test_fanout_concat_validation.py` | **19/19 PASS** (regression) |
+| `tests/test_integration_cross_branch.py` | **PASS** (regression) |
+| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (2 pre-merge fan-out WARNs on `tests/test_fanout_namespace_convention_v3.py` orphan + `docs/fanout_namespace_convention.md` missing; both clear on merge via `_infra/adopt-cycle39-tests-clone-2` + `_manager/.../doc-moved-clone-2` shadow-ledger events) |
 
 ## Cycle Disposition
 
 | Cycle | Researcher Directive | Worker Action | Auditor Decision |
 | --- | --- | --- | --- |
-| 1 | Ship the milestone under frozen 3-verdict rubric | 5-song batch pipeline; BATCH_LANDS with 5/5 positive mel deltas; 10 shadow-ledger rows | VALIDATED |
-| 2 | Verification-only standby | Honest low-output; refused to fabricate activity or adopt forward-looking c39 scope | **COMPLETE** (`[[BRANCH_COMPLETE]]`) |
+| 1 | Ship the milestone under frozen 2-verdict rubric | Full v3 doc + rubric + baseline replay + c37+c38 shadow replay + docstring bump + v1 rename + 10 shadow-ledger rows | VALIDATED (Path 2 chosen) |
+| 2 | Verification-only re-affirmation | No new work; re-affirmed audit chain against restored-context anchors | **VALIDATED**; `[[BRANCH_COMPLETE]]` |
 
 ## State-Machine Discipline (c29 Lemma Respected)
 
-`M-RECREATE-1/second-real-audio-batch` is a peer sub-milestone under M-RECREATE-1. NOT a child of terminal-validated c37 clone-0 `M-RECREATE-1/first-real-audio`. c29 lemma preserved; ledger topology stays a DAG.
+`_manager/fanout-namespace-convention-v3-resolution` is a peer sub-milestone under `_manager/*`. NOT a child of any terminal-validated ancestor. Extends the c14 `_ledger_schema.py` → c22 v2 schema → c33 guard + c36 v2 writer chain by codifying its behavior as v3 doc.
 
-## Ledger Events (10 Shadow Rows Under `-clone-2` Suffix; Cycle 2: 0)
+## Ledger Events (10 Shadow Rows Under `-clone-2` Suffix)
 
-Six substantive `M-RECREATE-1/second-real-audio-batch/*` events auto-suffixed `-clone-2` + 4 housekeeping under `-clone-2` per c33 writer-guard behavior:
+All 10 events correctly auto-suffixed `-clone-2` by the c33 writer guard — which is the codified behavior this branch is landing (not a violation):
 
-1. `_run/cycle_38_launched-clone-2` (`status: validated` per c35 Branch C codified convention)
-2. `_plan/recreate_v0_batch_rubric_frozen-clone-2`
-3. `_infra/egress-probe-cycle-38-clone-2`
-4. `M-RECREATE-1/second-real-audio-batch-clone-2` (in-progress; auto-suffixed by c33 writer-guard)
-5. `M-RECREATE-1/second-real-audio-batch/song-selection-clone-2`
-6. `M-RECREATE-1/second-real-audio-batch/pipeline-executed-clone-2`
-7. `M-RECREATE-1/second-real-audio-batch/byte-determinism-verified-clone-2`
-8. `M-RECREATE-1/second-real-audio-batch-clone-2` (validated verdict roll-up, `BATCH_LANDS`)
-9. `_run/cycle_38_closed-clone-2`
-10. `_archive/cycle-38-scratch-clone-2` + `_infra/adopt-cycle38-tests-clone-2` (housekeeping pair)
+1. `_run/cycle_39_launched-clone-2` (`status: validated` per c35 Branch C codified convention)
+2. `_plan/fanout_namespace_convention_v3_rubric_frozen-clone-2`
+3. `_infra/egress-probe-cycle-39-clone-2`
+4. `_manager/fanout-namespace-convention-v3-resolution-clone-2` (in-progress; auto-suffixed by c33 writer-guard per codified v3 behavior)
+5. `_manager/fanout-namespace-convention-v3-resolution/path-chosen-clone-2` (Path 2)
+6. `_manager/fanout-namespace-convention-v3-resolution/baseline-replay-clone-2` (670/670)
+7. `_manager/fanout-namespace-convention-v3-resolution/shadow-replay-clone-2` (63/63)
+8. `_manager/fanout-namespace-convention-v3-resolution-clone-2` (validated verdict roll-up, `CONVENTION_v3_LANDS`)
+9. `_manager/fanout-namespace-convention-discrepancy-clone-2/doc-moved` (WARN-clearing event for v1 rename)
+10. `_run/cycle_39_closed-clone-2` + `_infra/adopt-cycle39-tests-clone-2` + `_archive/cycle-39-scratch-clone-2` (housekeeping in the 10-count tally)
 
 Cycle 2: zero. `validated → in_progress` forbidden per c29 lesson.
 
-## Merge Disposition (Root-Conductor Post-Merge Validation Checklist)
+## Merge Disposition
 
-Merge report at `/home/user/music-gen-instance/fork-33a2a8003c84/clone-2/merge_report.md` for root conductor pickup.
+Merge report at `/home/user/music-gen-instance/fork-c320de981fda/clone-2/merge_report.md` for root conductor pickup.
 
-1. Read 10-row shadow ledger; reconcile with clone-0's ledger for the same fork.
-2. `git add` + `git commit` on-disk artefacts in rubric-first order (`docs/recreate_v0_batch_rubric.md` first, then `scripts/recreate_v0_batch/*`, then `data/recreate_v0_batch/*`, then `docs/recreate_v0_batch_report.md`, then `tests/test_recreate_v0_batch.py`); validate git-log gate post-commit.
-3. Run `promise_check`; expect 0 ERRORs.
-4. Verify `_manager/fanout-namespace-convention-discrepancy` open ticket (c33 writer-guard auto-suffixes substantive `M-*` labels contrary to c32 convention doc); resolution deferred to c40+ (narrow guard OR update doc).
-5. Write `merge_report.md` at the fork-clone path for root conductor pickup.
+**Merge tasks** (single-step per auditor guidance):
+1. Replay `mv` as `git mv` for git-history preservation.
+2. Concat clone-2 shadow ledger (10 events, all suffixed `-clone-2`).
+3. Pre-merge fan-out WARNs auto-clear on merge (`_infra/adopt-cycle39-tests-clone-2` clears the test orphan; `_manager/.../doc-moved-clone-2` clears the missing-doc WARN).
+4. **Persistent `_manager/fanout-namespace-convention-discrepancy` ticket is CLOSED** (report §10 + merge report both declare it).
 
 ## Standing Constraints (Unchanged)
 
 - α pinned at `0.7469387071101908` (not relevant to this branch).
-- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor`.
+- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor` imports.
 - Interpreter guard `#!/usr/bin/python3` on every new script.
-- Read-only anchors preserved: 18/18 under `scripts/recreate_v0/*` (c37 clone-0 machinery), c9 DawDreamer effects chain, c22 stability harness, c26 Path B commitment, c31/c33/c34/c35/c36 palette anchors.
-- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403; retry cadence at conductor level; not required — 5 songs are on-disk operator-delivered corpus).
+- Read-only anchors preserved: c14 `_ledger_schema.py`; c22 `validate_event` module; c33 guard fixture; c36 v2 doc; c32 original content preserved at v1 path.
+- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403; retry cadence at conductor level; not required — this is analytical infra codification).
 - Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
 
 ## Anti-Patterns Locked (5-Count Stable)
 
 c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted. c31 STILL_GAP / c35 A anti-pattern surface intact. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged.
 
-**Cycle-2 discipline** correctly avoided the "gold plate" anti-pattern by refusing to re-do validated work, refusing to adopt forward-looking c39 scope not assigned to this clone, and refusing to fabricate an activity log where none was warranted.
+## MINOR Findings (Logged, Not Acted On)
 
-## Effects-Chain Band-Selectivity Signal (Deferred to c40+)
+1. **Docstring bump touched 3 sites** in `long_exposure/workspace_bootstrap.py` vs 1 site expected in brief. Content-neutral, defensible, disclosed.
+2. **v2 doc pre-existed on disk from c36** rather than being inline-only as brief expected. Left byte-untouched; referenced in v3 §1 as historical bridge. Honestly disclosed.
+3. **Worker used `mv` not `git mv`** (no git-commit approval in sandbox). Content SHA preservation verified explicitly via `sha256sum` before/after. Merge conductor should replay as `git mv`.
+4. **Two `promise_check` WARNs are pre-merge fan-out artefacts**, not defects; clear on merge.
 
-Per-song mel deltas span 2.7× (+2.88 to +7.98 dB across 5 songs), suggesting the c9 pinned effects chain is not equally-well-tuned across musical-content classes. Queued as `_manager/effects-chain-band-selectivity` for c40+ opportunistic pickup, or promoted to urgent if c39 HS-2 (n=37) shows per-band mel-delta failures.
+## Cycle-40 Handoff (Fresh Sub-Topic — This Branch Exhausted)
 
-## Cycle-39 Handoff (Forward-Looking, Owned by c39 Fanout Not This Branch)
+**Suggested c40 directions**:
 
-Per research brief:
+1. **M-EAR-1 armed-harness fixture reinforcement extension** — extend beyond c31's ≥12 cases to test the c26 SB1/SB2/SB3 dry-run under additional label distributions, still zero live network. Complements c36 clone-0's `M-EAR-1/real-label-training-v0` EAR_v0_PARTIAL finding.
+2. **M-TEX-1 4th-seed stage-by-stage extension** — extend c13 `M-TEX-1/stage-by-stage/{seed_mid_50s,synth_060s}` to a third seed (e.g., a real-audio band-6 rated clip if `data/breadth/` seed set expands), consuming c36 clone-0's rated-audio pipeline.
+3. **Do NOT reopen the collision-modeling arc** (c26-c30 closed as `PARTIAL_BP_UNRESOLVED_SHAPE`) or any c22/c23/c25/c35 anti-pattern.
 
-1. **HS-1 `M-EAR-1/real-label-training-v1/out-of-fold-cross-band`** — analytical study of the SB1/SB2 partial-corpus failures under out-of-fold band evaluation.
-2. **HS-2 `M-RECREATE-1/full-corpus-recreation`** — extend to n=37 (or 42 pooled with c38 clone-2 batch) to establish first full-corpus real-audio recreation measurement with cross-band effects-delta trends. G1 spine promotion: c37 (n=1) → c38 (n=5) → c39 (n=37/42).
+**Codified pitfalls for c40 housekeeping**:
 
-**c39 workers accept whatever the writer emits** re namespace convention; merge conductor to resolve `_manager/fanout-namespace-convention-discrepancy` durably at c40+.
+- `mv` preserves source mtime — future rename cycles must either `touch` with disclosure OR tighten `EDIT_TARGETS` interpretation to exclude renames. Add to c40 housekeeping doc.
+- Add c39 utility SHA-anchor group to `tests/fixtures/cycle28_util_shas.json` under `cycle_39_utilities` key (mirrors c29 → c30 pattern) so c40+ audits can enforce c39 utility immutability.
+
+**v3 is now canonical**; v1 is the historical anchor. `_infra/fanout-namespace-convention-v2` and its c36 writer guard remain the operative implementation — v3 doc just codifies what the guard has been doing since c33.
 
 ## Cumulative Progress
 
-**M-RECREATE-1 arc**:
+**Infra-hardening chain** (post-c39 clone-2 close):
 
-| Cycle | Milestone | Verdict | Songs |
-| --- | --- | --- | --- |
-| c37 clone-0 | `M-RECREATE-1/first-real-audio` | RECREATION_LANDS | n=1 (band-7 song 016) |
-| c38 clone-2 (this) | `M-RECREATE-1/second-real-audio-batch` | **BATCH_LANDS** | n=5 (SHA-256 tiebreak per bucket) |
-| c39 HS-2 (forward) | `M-RECREATE-1/full-corpus-recreation` | (target) | n=37 (or 42 pooled) |
+| Cycle | Milestone | Status |
+| --- | --- | --- |
+| c14 | SSoT `_ledger_schema.py` | landed |
+| c22 | v2 schema extension | landed |
+| c33 guard + c36 v2 writer | fanout-namespace codification | field-tested through c37 + c38 (two 3-clone fanouts, zero `LedgerConcatError`) |
+| **c39 v3 doc (this)** | codifies auto-suffix-all behavior; retires persistent ticket | **CONVENTION_v3_LANDS** |
 
-**G1 spine promotion is on track**: c37 (n=1) → c38 (n=5) → c39 HS-2 (n=37 target) will establish the first full-corpus real-audio recreation measurement, complete with cross-band effects-delta trends.
+**Persistent ticket retirement**: `_manager/fanout-namespace-convention-discrepancy` (open since c33; reconciled manually every post-merge integration through c37 + c38) is now **CLOSED**. The auto-suffix-all convention is the third stable convention in the campaign's infra-hardening chain.
 
-**Pre-registration discipline holds** across three consecutive real-audio recreation cycles: frozen rubric-first commit order + mtime-gate + git-log-gate (with MERGE_DEFERRED clone-env accommodation) has become the campaign's stable pattern for adjudication-heavy work.
+**Pattern durability**: pre-registration discipline holds across c26-c38 substantive branches + c39 infra codification. Rubric SHA committed first with anchoring; byte-equal at three canonical touch-points. Zero after-the-fact rubric edits across the campaign.
 
-**preview_untrained_ear caveat handling** crystallised: v1-branch cites Branch A v1 report by document path only, never imports v1 model or verdict.json programmatically; v0-branch cites c36 M-EAR-1/real-label-training-v0 INSUFFICIENT verdict. Pattern reusable across c39 HS-2 and future recreation cycles.
+**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG.
 
-**Verification-only cycle discipline** reinforced at cycle 2: worker's honest "no new work performed this session" self-report is correct professional conduct at cycle tail. `[[BRANCH_COMPLETE]]` emitted per auditor role definition (milestone validated AND scope fully discharged).
+**c32 → c33 → c36 v2 → c39 v3** convention lineage now field-tested and doc-codified; every fan-out cycle since c33 has cleanly emitted `-clone-<k>`-suffixed infra events without concat conflicts. c39 has now retired the last recurring manual-reconciliation ticket in this arc.
 
-**Namespace convention discrepancy** (c33 writer-guard auto-suffixes substantive `M-*` while c32 convention doc says unsuffixed) remains open as `_manager/fanout-namespace-convention-discrepancy`; merge conductor to resolve durably at c40+.
-
-**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG. **G5 collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+**Scope of this fan-out clone (Branch C / `_manager/fanout-namespace-convention-v3-resolution`) is fully discharged.** Continuing would only re-confirm a closed result.
 
 [END OUTPUT]
