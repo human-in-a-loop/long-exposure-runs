@@ -87,11 +87,18 @@ def test_06_baseline_replay_contract_preserved():
 
 
 def test_07_promise_check_zero_error():
+    # c50 correction (Priority 2): the CLI prefixes ERROR lines with "x ERROR:",
+    # not "ERROR" — so the original startswith("ERROR") match was a scope drift.
+    # Match the actual CLI output format across both stdout and stderr.
     result = subprocess.run(
         ["/usr/bin/python3", "-m", "long_exposure.tools.promise_check", "."],
         cwd=str(ROOT), capture_output=True, text=True, timeout=180,
     )
-    err_lines = [l for l in result.stdout.splitlines() if l.startswith("ERROR")]
+    combined = (result.stdout or "") + "\n" + (result.stderr or "")
+    err_lines = [
+        l for l in combined.splitlines()
+        if "ERROR" in l and ("x ERROR" in l or l.lstrip().startswith("ERROR"))
+    ]
     assert len(err_lines) == 0, f"promise_check ERROR lines: {err_lines[:5]}"
 
 
@@ -123,6 +130,21 @@ def test_10_c48_egress_probes_all_three_branches():
     for k in ("0", "1", "2"):
         mid = f"M-INGEST-1/egress-probe-cycle48-clone-{k}"
         assert any(r["milestone_id"] == mid for r in rows), f"missing egress probe {mid}"
+
+
+def test_11_promise_check_zero_error_via_cli_verified():
+    # c50 belt-and-suspenders (per Priority 2): parses the CLI subprocess output
+    # via the exact `x ERROR:` prefix the tool actually emits. Catches future
+    # test-scope drift.
+    result = subprocess.run(
+        ["/usr/bin/python3", "-m", "long_exposure.tools.promise_check", "."],
+        cwd=str(ROOT), capture_output=True, text=True, timeout=180,
+    )
+    combined = (result.stdout or "") + "\n" + (result.stderr or "")
+    strict_err_lines = [l for l in combined.splitlines() if l.lstrip().startswith("x ERROR")]
+    assert len(strict_err_lines) == 0, (
+        f"promise_check emitted `x ERROR:` lines: {strict_err_lines[:5]}"
+    )
 
 
 if __name__ == "__main__":
