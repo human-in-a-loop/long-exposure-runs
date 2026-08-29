@@ -151,34 +151,44 @@ def _load_c38_clone2_rows() -> list[dict]:
 
 
 def _load_c37_clone0_row() -> list[dict]:
-    """Read c37 clone-0 verdict + panel TSVs READ-ONLY, single row."""
+    """Read c37 clone-0 verdict READ-ONLY, single row.
+
+    c37 verdict.json carries panel_original_vs_bare and panel_original_vs_effects
+    inline. Prefer inline over the (potentially absent) sidecar TSVs.
+    """
     if not C37_VERDICT.exists():
         return []
     v = json.loads(C37_VERDICT.read_text())
-    # c37 clone-0 verdict has the M-TEX-1 panel values inline.
-    # Try to load from data/recreate_v0/panel_*.tsv if present.
-    p_bare = REPO_ROOT / "data" / "recreate_v0" / "panel_original_vs_bare.tsv"
-    p_eff = REPO_ROOT / "data" / "recreate_v0" / "panel_original_vs_effects.tsv"
 
-    def _read_panel(tsv: Path) -> dict:
-        if not tsv.exists():
-            return {}
-        lines = tsv.read_text().strip().split("\n")
-        if len(lines) < 2:
-            return {}
-        h = lines[0].split("\t")
-        vals = lines[1].split("\t")
-        out = {}
-        for i, key in enumerate(h):
-            if i < len(vals):
-                try:
-                    out[key] = float(vals[i])
-                except Exception:
-                    out[key] = vals[i]
-        return out
+    pb = v.get("panel_original_vs_bare", {}) or {}
+    pe = v.get("panel_original_vs_effects", {}) or {}
 
-    pb = _read_panel(p_bare)
-    pe = _read_panel(p_eff)
+    # Fall back to sidecar TSVs if panels not inline (defensive).
+    if not pb or not pe:
+        p_bare = REPO_ROOT / "data" / "recreate_v0" / "panel_original_vs_bare.tsv"
+        p_eff = REPO_ROOT / "data" / "recreate_v0" / "panel_original_vs_effects.tsv"
+
+        def _read_panel(tsv: Path) -> dict:
+            if not tsv.exists():
+                return {}
+            lines = tsv.read_text().strip().split("\n")
+            if len(lines) < 2:
+                return {}
+            h = lines[0].split("\t")
+            vals = lines[1].split("\t")
+            out = {}
+            for i, key in enumerate(h):
+                if i < len(vals):
+                    try:
+                        out[key] = float(vals[i])
+                    except Exception:
+                        out[key] = vals[i]
+            return out
+
+        if not pb:
+            pb = _read_panel(p_bare)
+        if not pe:
+            pe = _read_panel(p_eff)
 
     def _f(d, k):
         v = d.get(k)
@@ -190,8 +200,11 @@ def _load_c37_clone0_row() -> list[dict]:
             return None
         return b - e
 
-    band = v.get("chosen_rating_band") or v.get("band") or 7
-    sha16 = (v.get("chosen_sha256") or "")[:16]
+    # c37 verdict nests chosen band/sha under chosen_song.*
+    cs = v.get("chosen_song", {}) or {}
+    band = cs.get("chosen_rating_band") or v.get("chosen_rating_band") or v.get("band") or 7
+    chosen_sha = cs.get("chosen_sha256") or v.get("chosen_sha256") or ""
+    sha16 = chosen_sha[:16]
     if not sha16:
         return []
     return [{
