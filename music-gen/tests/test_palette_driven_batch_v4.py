@@ -176,13 +176,19 @@ def test_14_anchor_preservation_only_render_stem_edited():
 
 
 def test_15_no_forbidden_imports_in_v4():
+    """Import-statement-shaped occurrences only — docstring mentions are fine."""
+    import re
     v4_dir = _REPO / "scripts" / "palette_render_v4"
+    patterns = [re.compile(rf"^\s*(?:from\s+\S*{re.escape(b)}|import\s+\S*{re.escape(b)})",
+                            re.MULTILINE) for b in FORBIDDEN_IMPORTS]
     for p in v4_dir.rglob("*.py"):
         if "__pycache__" in p.parts:
             continue
         text = p.read_text()
-        for bad in FORBIDDEN_IMPORTS:
-            assert bad not in text, f"{p.relative_to(_REPO)} imports {bad}"
+        for bad, pat in zip(FORBIDDEN_IMPORTS, patterns):
+            assert not pat.search(text), (
+                f"{p.relative_to(_REPO)} imports {bad}"
+            )
 
 
 def test_16_no_prng_in_v4():
