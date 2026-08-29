@@ -233,6 +233,15 @@ def _apply_eq_and_loudness(bare_wav: Path, eq_curve: dict,
     return float(measured_after)
 
 
+def _rel_to_song(song_out: Path, p: Path) -> str:
+    """Path relative to the per-song output dir; keeps dispatch_summary.json
+    byte-stable across fresh tempdirs (byte-determinism x 2)."""
+    try:
+        return str(Path(p).resolve().relative_to(Path(song_out).resolve()))
+    except ValueError:
+        return str(p)
+
+
 def _process_song(sha16: str, orig_stems_dir: Path, out_dir: Path) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     per_stem_summary: dict = {}
@@ -285,21 +294,21 @@ def _process_song(sha16: str, orig_stems_dir: Path, out_dir: Path) -> dict:
 
         per_stem_summary[stem] = {
             "instrument": STEM_INSTRUMENT[stem],
-            "orig_wav": str(orig_wav),
+            "orig_wav": str(orig_wav.relative_to(_REPO)),
             "orig_sha256": _sha256_file(orig_wav),
             "target_rms_db": float(target_rms_db),
             "measured_rms_db_post_match": float(measured_rms_db_final),
             "loudness_error_rms_db": error_db,
             "a7_rms_pass": bool(error_db <= 3.0),
             "in_a7_gate": stem in A7_GATE_STEMS,
-            "bare_wav": str(bare_wav),
+            "bare_wav": _rel_to_song(out_dir, bare_wav),
             "bare_sha256": _sha256_file(bare_wav),
-            "matched_wav": str(matched_wav),
+            "matched_wav": _rel_to_song(out_dir, matched_wav),
             "matched_sha256": _sha256_file(matched_wav),
-            "old_chain_wav": str(old_chain_wav),
+            "old_chain_wav": _rel_to_song(out_dir, old_chain_wav),
             "old_chain_sha256": _sha256_file(old_chain_wav),
             "eq_bands_gains_db": eq_curve["band_gains_db"],
-            "midi_src": str(stem_midis[stem]),
+            "midi_src": _rel_to_song(out_dir, stem_midis[stem]),
             "midi_src_sha256": _sha256_file(stem_midis[stem]),
         }
         matched_wavs.append(matched_wav)
@@ -349,7 +358,7 @@ def _process_song(sha16: str, orig_stems_dir: Path, out_dir: Path) -> dict:
         s = per_stem_summary.get(stem, {})
         if not s or "error" in s:
             continue
-        _, y_old = _read_wav_float(Path(s["old_chain_wav"]))
+        _, y_old = _read_wav_float(out_dir / s["old_chain_wav"])
         old_rms = _rms_db(y_old)
         old_err = float(abs(old_rms - s["target_rms_db"]))
         tsv_lines.append(
