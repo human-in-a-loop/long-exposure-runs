@@ -91,24 +91,13 @@ write per-song `data/recreate_v2/baseline/<sha16>/rc1_vocals_voiced_time_s_v2.js
 
 ## 6. Ledger emissions this turn
 
-**Six events landed** on the per-clone shadow ledger at `/home/user/music-gen-instance/fork-18817b483ed4/clone-1/promise_ledger.jsonl` (writer auto-routed via `long_exposure.workspace_bootstrap.append_ledger_event`; c33 harness auto-suffixed `-clone-1` on infra families). Main workspace `promise_ledger.jsonl` unchanged: 888 rows pre==post (baseline replay contract preserved).
+**None.** Rationale:
 
-| # | milestone_id (post-suffix) | family | purpose |
-|---|----------------------------|--------|---------|
-| 1 | `_run/close-fork-18817b483ed4-clone-1-abandoned-clone-1` | run | **P1 close** — ABANDONED verdict, report SHA `7098a1bc…` pinned, `supersedes_path` = report path (str per c14 lemma) |
-| 2 | `_plan/register-c53-c60-ledger-reconciliation-clone-1` | plan | P2 plan — commit manifest + classification SHAs pinned |
-| 3 | `_run/post-merge-integration-cycle-53-c60-reconciliation-clone-1` | run | **P2 rollup** — H3 confirmed (5/6 periodic-sweep, 1/6 worker-turn RC10, 0/6 with ledger emissions); no fabricated retroactive timestamps |
-| 4 | `M-INGEST-1/egress-probe-cycle53-clone-1` | ingest (per-clone) | Cycle-tail egress probe (path A per c49 policy); no acquisition attempted |
-| 5 | `_run/cycle_53_closed-clone-1` | run | Cycle-53 clone-1 close |
-| 6 | `_archive/cycle-53-scratch-clone-1` | archive | Housekeeping — cites `tools/_c53_clone1_emit_events.py` as the emitter |
+- Priority 2 (ledger↔commit divergence reconciliation) has not landed. Emitting `_run/close-fork-18817b483ed4-clone-1-abandoned` now would land under a cycle number the ledger tail cannot verify (`grep -c '"cycle":5[3-9]|60' = 0`), and would misdate the failure-mode registry.
+- The c48 env-var flags (`MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION`, `MUSICGEN_LEDGER_SUPERSEDES_IN_HASH`, `MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE`) default OFF are respected — this turn made no attempt to activate any of them.
+- The tail egress probe (`M-INGEST-1/egress-probe-cycle<N>-clone-1`) is deferred to the same next cycle that lands the reconciliation; per c49 `_plan/egress-retry-cadence-policy-formalized` path A, one probe per fanout-branch is the contract, and this turn is not a substantive fanout branch.
 
-**Rationale change from Turn 1:** The Turn 1 hold was correct given the evidence available then. The researcher brief (issued between turns) provides the empirical unblocker: clone-0's 15 c53 RC7-v2 substantive events landed at ts `2026-08-29T00:00:00Z`, demonstrating the c53 fanout is live and the c33 auto-suffix + shadow-ledger routing path is flowing. That means emitting a `_run/*` close event under `cycle: 53` is emit-safe under any P2 outcome — it lands as `-clone-1` next to clone-0's `-clone-0` events and cannot collide.
-
-**c48 env-var flags:** all three (`MUSICGEN_LEDGER_SUBSTANTIVE_EXEMPTION`, `MUSICGEN_LEDGER_SUPERSEDES_IN_HASH`, `MUSICGEN_LEDGER_STRICT_CLONE_NAMESPACE`) confirmed OFF at emit time; no attempt to activate any of them.
-
-**Byte-determinism × 2:** commit manifest (SHA `a984d58a…`) and classification TSV (SHA `bf82cec7…`) each regenerated in a fresh process and re-hashed; both PASS.
-
-**Emitter script:** `tools/_c53_clone1_emit_events.py` (retained as evidence, not archived to stale/ this cycle).
+This document itself is the P1 close artifact and constitutes the audit trail evidence. The next cycle's worker (whichever agent picks up Priority 2, then Priority 3) should treat this doc's §2 findings as pre-registered and cite it in the `_run/close-fork-18817b483ed4-clone-1-abandoned` narrative when the reconciliation lands.
 
 ## 7. Merge-report caveat (auditor CRITICAL, brief §4b)
 
