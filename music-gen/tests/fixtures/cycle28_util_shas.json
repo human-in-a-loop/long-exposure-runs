@@ -38,5 +38,14 @@
     "data/gen/batch_v5_n16": "2f17",
     "data/gen/batch_v6": "eeff"
   },
-  "_note": "SHA baselines captured at cycle 28 start. Cycle-26/27 utility SHAs and cycle-27 data JSONs must remain byte-identical (test-asserted). batch prefixes are the first 4 hex characters from the plan-of-record cycle-14/25 anchor set."
+  "_note": "SHA baselines captured at cycle 28 start. Cycle-26/27 utility SHAs and cycle-27 data JSONs must remain byte-identical (test-asserted). batch prefixes are the first 4 hex characters from the plan-of-record cycle-14/25 anchor set.",
+  "cycle_30_utilities": {
+    "rule_structural_fingerprints.py": "20764d939127f2b7098d40670be65b3c3a1ea50416a7984600da48e23438a144",
+    "semantic_cluster_thresholds.py": "43e6584a9128ed4f5b416e9aa277fcac80bbcb60a05c8bec81788f96149e2d13",
+    "semantic_equivalence_classes.py": "4d79d6f9902c4e925d2dac0fcb18de265b76bb59fabc69c1b1f16840fe5745bb",
+    "effective_k_semantic.py": "f39c6018ed8bede1dbb69d01992b67741857483a4c3e1b1061d6757745c2f49c",
+    "semantic_cluster_fit.py": "e119d465c1b51a9ac6dfc58f369810907f3e46b8da955ec4b1161ca00ead1721",
+    "semantic_cluster_verdict.py": "653eabae4d3e9642a366ad2cc569fe5f2f3517d05425e1550d9d1213accd6a80",
+    "anchor_preservation_semantic.py": "ae39123e121de92701a1e2cb4fb151662c2a13bb77b1db7a958d671ad04cb6d8"
+  }
 }

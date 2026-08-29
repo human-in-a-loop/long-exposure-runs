@@ -1,0 +1,19 @@
+{
+  "assignment_id": "3c5611d88e875e21bb7f62af992e1a57",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "fluidsynth_gm",
+  "pinned_state": {
+    "parameter_dict": {
+      "bank": 0,
+      "gain": 0.9,
+      "preset_num": 33
+    },
+    "plugin_name": "fluidsynth",
+    "plugin_version": "2.3.4"
+  },
+  "provenance_pointers": [
+    "rule_ca87aa6ad5ff26db"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "other"
+}

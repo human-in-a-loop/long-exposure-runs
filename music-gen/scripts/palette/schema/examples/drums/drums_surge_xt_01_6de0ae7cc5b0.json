@@ -1,0 +1,24 @@
+{
+  "assignment_id": "6de0ae7cc5b05caea8797749d0b78ea0",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "surge_xt",
+  "notes_optional": "Surge XT on drums retained (weak): subtractive synth kick with noise.",
+  "pinned_state": {
+    "parameter_dict": {
+      "Amp EG Attack": 0.05,
+      "Amp EG Release": 0.4,
+      "Filter Cutoff": 0.62,
+      "Filter Resonance": 0.35,
+      "Osc 1 Type": "Classic",
+      "Output Level": 0.8
+    },
+    "plugin_name": "Surge XT",
+    "plugin_version": "1.3.4",
+    "preset_name_optional": "Init Saw Lead"
+  },
+  "provenance_pointers": [
+    "rule_88b63bd5e771c045"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "drums"
+}

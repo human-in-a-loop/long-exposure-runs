@@ -1,0 +1,19 @@
+{
+  "assignment_id": "11d49456e6ab58ec9737d1e53db73d77",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "fluidsynth_gm",
+  "pinned_state": {
+    "parameter_dict": {
+      "bank": 0,
+      "gain": 0.92,
+      "preset_num": 33
+    },
+    "plugin_name": "fluidsynth",
+    "plugin_version": "2.3.4"
+  },
+  "provenance_pointers": [
+    "rule_821a916f5a58a283"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "bass"
+}

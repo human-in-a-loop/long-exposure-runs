@@ -1,0 +1,22 @@
+{
+  "_offending_field": "provenance_pointers",
+  "_planted_class": "provenance_unresolvable",
+  "row": {
+    "assignment_id": "2e71472e926b505685374429e747d871",
+    "extractor_version": "palette_v1_c31",
+    "instrument": "sfizz",
+    "pinned_state": {
+      "parameter_dict": {
+        "amp_velocity": 0.9,
+        "sample_path": "presets/palette/base.sfz"
+      },
+      "plugin_name": "sfizz",
+      "plugin_version": "1.2.3"
+    },
+    "provenance_pointers": [
+      "rule_ffffffffffffffff"
+    ],
+    "schema_v": "palette_v1",
+    "stem": "bass"
+  }
+}

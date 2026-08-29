@@ -1,0 +1,23 @@
+{
+  "assignment_id": "8f15a9716bd756388632d6b2b66799d7",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "surge_xt",
+  "pinned_state": {
+    "parameter_dict": {
+      "Amp EG Attack": 0.05,
+      "Amp EG Release": 0.4,
+      "Filter Cutoff": 0.64,
+      "Filter Resonance": 0.35,
+      "Osc 1 Type": "Classic",
+      "Output Level": 0.8
+    },
+    "plugin_name": "Surge XT",
+    "plugin_version": "1.3.4",
+    "preset_name_optional": "Init Saw Lead"
+  },
+  "provenance_pointers": [
+    "rule_aeaca835a649d1ca"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "other"
+}

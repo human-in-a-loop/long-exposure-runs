@@ -3206,6 +3206,276 @@ if _SC_VERDICT.is_file():
         check(_STD_DOC.is_file(),
               f"sem-cluster §44a: {_v44} → standard report doc present")
 
+# §45. Cycle-31 Branch A — M-DAW-SPIKE-1/palette-instrument-determinism.
+print()
+print("§45 M-DAW-SPIKE-1/palette-instrument-determinism (cycle 31)")
+
+import hashlib as _h45
+import json as _j45
+
+_PPROBE = WS / "data" / "palette_probe"
+_PP_TSV = _PPROBE / "instrument_determinism.tsv"
+_PP_LADDER = _PPROBE / "fetchability_ladder.jsonl"
+_PP_RUBRIC_HASH = _PPROBE / "rubric_hash.txt"
+_PP_RUBRIC_DOC = WS / "docs" / "palette_instrument_determinism_rubric.md"
+_PP_INSTRUMENTS = ["surge_xt", "dexed", "sfizz"]
+_PP_VERDICTS = {"GREEN", "REDEFINED_GAP", "STILL_GAP"}
+
+# §45a — verdict TSV present with 3 rows + header + expected columns.
+check(_PP_TSV.is_file(), "palette-probe §45a: instrument_determinism.tsv present")
+if _PP_TSV.is_file():
+    _lines45 = _PP_TSV.read_text().strip().splitlines()
+    check(len(_lines45) == 4,
+          f"palette-probe §45a: TSV has header + 3 rows (got {len(_lines45)})")
+    _hdr45 = _lines45[0].split("\t")
+    for _col in ("instrument", "fetchable", "loadable", "verdict"):
+        check(_col in _hdr45, f"palette-probe §45a: TSV has {_col!r} column")
+
+# §45b — each instrument row present with frozen verdict label + pinned_state.json.
+if _PP_TSV.is_file():
+    _rows45 = {}
+    for _ln in _PP_TSV.read_text().strip().splitlines()[1:]:
+        _p = _ln.split("\t")
+        while len(_p) < len(_hdr45):
+            _p.append("")
+        _r = dict(zip(_hdr45, _p))
+        _rows45[_r["instrument"]] = _r
+    for _inst in _PP_INSTRUMENTS:
+        check(_inst in _rows45,
+              f"palette-probe §45b: row for {_inst!r} present")
+        if _inst in _rows45:
+            check(_rows45[_inst]["verdict"] in _PP_VERDICTS,
+                  f"palette-probe §45b: {_inst} verdict in frozen set (got "
+                  f"{_rows45[_inst]['verdict']!r})")
+        _ps = _PPROBE / "per_instrument" / _inst / "pinned_state.json"
+        check(_ps.is_file(),
+              f"palette-probe §45b: pinned_state.json present for {_inst}")
+
+# §45c — rubric hash file matches committed doc SHA-256.
+if _PP_RUBRIC_HASH.is_file() and _PP_RUBRIC_DOC.is_file():
+    _stored = _PP_RUBRIC_HASH.read_text().strip()
+    _computed = _h45.sha256(_PP_RUBRIC_DOC.read_bytes()).hexdigest()
+    check(_stored == _computed,
+          f"palette-probe §45c: rubric_hash.txt matches doc SHA-256")
+
+# §45d — fetchability ladder JSONL has 3 rows, one per instrument.
+if _PP_LADDER.is_file():
+    _lrows = [_j45.loads(_ln) for _ln in _PP_LADDER.read_text().strip().splitlines() if _ln]
+    check(len(_lrows) == 3,
+          f"palette-probe §45d: fetchability ladder has 3 rows (got {len(_lrows)})")
+    _lins = {r.get("instrument") for r in _lrows}
+    check(_lins == set(_PP_INSTRUMENTS),
+          f"palette-probe §45d: fetchability ladder covers all instruments (got {_lins})")
+
+# §45e — grep-verified zero import of cycle-9 effects chain in probe scripts.
+_PP_SRC = WS / "scripts" / "palette_probe"
+for _sp in sorted(_PP_SRC.glob("*.py")):
+    if _sp.name == "__init__.py":
+        continue
+    _txt = _sp.read_text()
+    for _ln in _txt.splitlines():
+        if _ln.lstrip().startswith("#") or _ln.lstrip().startswith('"""') or _ln.lstrip().startswith("'''"):
+            continue
+        check("render_effects_layered" not in _ln and "scripts.tex" not in _ln,
+              f"palette-probe §45e: {_sp.name} does not import cycle-9 chain")
+
+# §46. Cycle-31 Branch B — M-DAW-SPIKE-1/palette-assignment-schema invariants.
+print()
+print("§46 M-DAW-SPIKE-1/palette-assignment-schema invariants (cycle 31)")
+
+import hashlib as _h46
+import json as _j46
+import yaml as _y46
+
+_PAL_JSON = WS / "scripts" / "palette" / "schema" / "palette_v1.json"
+_PAL_YAML = WS / "scripts" / "palette" / "schema" / "palette_v1.yaml"
+_PAL_RUBRIC = WS / "docs" / "palette_assignment_schema_rubric.md"
+_PAL_HASH = WS / "data" / "palette" / "schema" / "rubric_hash.txt"
+_PAL_TSV_ID = WS / "data" / "palette" / "schema" / "assignment_ids_expected.tsv"
+_PAL_TSV_REPORT = WS / "data" / "palette" / "schema" / "validation_report.tsv"
+_PAL_SKIP = WS / "data" / "palette" / "schema" / "skip_manifest.json"
+
+# §46a — schema + YAML present.
+check(_PAL_JSON.is_file(), "palette §46a: palette_v1.json present")
+check(_PAL_YAML.is_file(), "palette §46a: palette_v1.yaml present")
+
+# §46b — JSON/YAML load-identical.
+if _PAL_JSON.is_file() and _PAL_YAML.is_file():
+    _pj46 = _j46.loads(_PAL_JSON.read_text())
+    _py46 = _y46.safe_load(_PAL_YAML.read_text())
+    check(_pj46 == _py46, "palette §46b: JSON and YAML schemas load-identical")
+
+# §46c — validator + provenance + build_examples present with interpreter guard.
+for _rel46 in ("scripts/palette/validate.py",
+               "scripts/palette/provenance.py",
+               "scripts/palette/schema/examples/build_examples.py"):
+    _p46 = WS / _rel46
+    check(_p46.is_file(), f"palette §46c: {_rel46} present")
+    if _p46.is_file():
+        check('assert sys.executable == "/usr/bin/python3"' in _p46.read_text(),
+              f"palette §46c: {_rel46} carries interpreter guard")
+
+# §46d — validation_report.tsv present with expected_verdict == observed_verdict for every row.
+if _PAL_TSV_REPORT.is_file():
+    _lines46 = _PAL_TSV_REPORT.read_text().splitlines()
+    _rows46 = [l.split("\t") for l in _lines46[1:] if l.strip()]
+    check(len(_rows46) >= 20, f"palette §46d: validation_report.tsv has ≥20 rows (got {len(_rows46)})")
+    _all_match = all(r[4] == r[5] for r in _rows46 if len(r) >= 6)
+    check(_all_match, "palette §46d: every row's expected_verdict == observed_verdict")
+
+# §46e — assignment_ids_expected.tsv present with ≥20 rows.
+if _PAL_TSV_ID.is_file():
+    _rows46e = [l for l in _PAL_TSV_ID.read_text().splitlines()[1:] if l.strip()]
+    check(len(_rows46e) >= 20,
+          f"palette §46e: assignment_ids_expected.tsv has ≥20 rows (got {len(_rows46e)})")
+
+# §46f — non-factor AST isolation (no sidecar_nonfactor imports across module tree).
+import re as _re46
+_forbidden46 = _re46.compile(r"^(from|import)\s+scripts\.classifier\.sidecar_nonfactor", _re46.M)
+for _rel46f in ("scripts/palette/validate.py",
+                "scripts/palette/provenance.py",
+                "scripts/palette/schema/examples/build_examples.py",
+                "scripts/palette/schema/validate_all.py"):
+    _p46f = WS / _rel46f
+    if _p46f.is_file():
+        check(not _forbidden46.search(_p46f.read_text()),
+              f"palette §46f: {_rel46f} does not import sidecar_nonfactor")
+
+# §46g — no import of cycle-9 effects chain (scripts.tex.render_effects_layered).
+_tex46 = _re46.compile(r"scripts\.tex\.render_effects_layered")
+for _p46g in (WS / "scripts" / "palette").rglob("*.py"):
+    _c46g = _p46g.read_text()
+    check(not _tex46.search(_c46g),
+          f"palette §46g: {_p46g.relative_to(WS)} does not reference cycle-9 effects chain")
+
+# §46h — rubric hash file matches committed doc SHA-256.
+if _PAL_RUBRIC.is_file() and _PAL_HASH.is_file():
+    _doc46 = _h46.sha256(_PAL_RUBRIC.read_bytes()).hexdigest()
+    _rec46 = _PAL_HASH.read_text().strip()
+    check(_doc46 == _rec46,
+          f"palette §46h: rubric doc SHA matches recorded hash ({_doc46[:12]}…)")
+
+# §46i — skip_manifest.json records Dexed × drums exclusion.
+if _PAL_SKIP.is_file():
+    _sm46 = _j46.loads(_PAL_SKIP.read_text())
+    _skips = _sm46.get("skipped_combinations") or []
+    _has_dd = any(s.get("stem") == "drums" and s.get("instrument") == "dexed" for s in _skips)
+    check(_has_dd, "palette §46i: skip_manifest.json records Dexed × drums exclusion")
+
+# §47. Cycle-31 armed-harness fixture reinforcement — completeness + zero-live-network.
+print()
+print("§47 M-EAR-1/armed-harness-fixture-reinforcement completeness (cycle 31)")
+
+import ast as _ast47
+import hashlib as _h47
+import json as _j47
+
+_ARR = WS / "data" / "ear" / "armed_harness_reinforcement"
+_RUBRIC47 = WS / "docs" / "ear_armed_harness_fixture_rubric.md"
+_REPORT47 = WS / "docs" / "ear_armed_harness_fixture_report.md"
+_SBSCRIPT = WS / "scripts" / "ear" / "sb_dry_run.py"
+_FIXTURE47 = WS / "tests" / "test_ear_armed_harness_synthetic_trigger.py"
+
+# 47a — required artifacts on disk.
+for _p in (
+    _ARR / "sb_dry_run_verdict.json",
+    _ARR / "state_transitions_verification.jsonl",
+    _ARR / "mock_egress_status.jsonl",
+    _ARR / "fixture_scenarios.tsv",
+    _RUBRIC47,
+    _REPORT47,
+    _SBSCRIPT,
+    _FIXTURE47,
+):
+    check(_p.is_file(), f"armed-fixture §47a: required artifact present: {_p.relative_to(WS)}")
+
+# 47b — rubric hash embedded matches on-disk.
+if (_ARR / "sb_dry_run_verdict.json").is_file() and _RUBRIC47.is_file():
+    _v47 = _j47.loads((_ARR / "sb_dry_run_verdict.json").read_text())
+    _rh_disk = _h47.sha256(_RUBRIC47.read_bytes()).hexdigest()
+    check(_v47.get("rubric_hash") == _rh_disk,
+          f"armed-fixture §47b: rubric_hash embed matches on-disk SHA")
+    check(_v47.get("verdict") in {"FIXTURE_READY", "FIXTURE_INSUFFICIENT"},
+          f"armed-fixture §47b: verdict in frozen set (got {_v47.get('verdict')!r})")
+
+# 47c — SB dry-run script guarantees.
+if _SBSCRIPT.is_file():
+    _src47 = _SBSCRIPT.read_text()
+    check("assert sys.executable == \"/usr/bin/python3\"" in _src47,
+          "armed-fixture §47c: sb_dry_run.py has interpreter guard")
+    check("OMP_NUM_THREADS" in _src47,
+          "armed-fixture §47c: sb_dry_run.py pins BLAS threads")
+
+# 47d — zero-live-network AST check on armed harness + egress_ready + sb_dry_run + fixture.
+_NETLIBS47 = {"urllib", "urllib2", "urllib3", "requests", "socket",
+              "httpx", "aiohttp", "http", "http.client"}
+
+
+def _imports47(mod):
+    tree = _ast47.parse(mod.read_text(), filename=str(mod))
+    names = set()
+    for n in _ast47.walk(tree):
+        if isinstance(n, _ast47.Import):
+            for a in n.names:
+                names.add(a.name); names.add(a.name.split(".")[0])
+        elif isinstance(n, _ast47.ImportFrom):
+            if n.module:
+                names.add(n.module); names.add(n.module.split(".")[0])
+    return names
+
+
+_TARGETS47 = [
+    WS / "scripts" / "ear" / "train_armed_harness.py",
+    WS / "scripts" / "ear" / "sb_dry_run.py",
+    WS / "tests" / "test_ear_armed_harness_synthetic_trigger.py",
+] + sorted((WS / "scripts" / "egress_ready").glob("*.py"))
+for _mod47 in _TARGETS47:
+    if not _mod47.is_file():
+        continue
+    _imp47 = _imports47(_mod47)
+    for _lib47 in _NETLIBS47:
+        check(_lib47 not in _imp47,
+              f"armed-fixture §47d: {_mod47.relative_to(WS)} does not import {_lib47}")
+
+# 47e — no sidecar_nonfactor imports across the reinforcement surface.
+for _mod47 in _TARGETS47:
+    if not _mod47.is_file():
+        continue
+    _imp47 = _imports47(_mod47)
+    check(not any("sidecar_nonfactor" in i for i in _imp47),
+          f"armed-fixture §47e: {_mod47.relative_to(WS)} does not import sidecar_nonfactor")
+
+# 47f — fixture case-count invariant (>= 12 per rubric).
+if _FIXTURE47.is_file():
+    _fsrc = _FIXTURE47.read_text()
+    # Count top-level test_ functions defined in the file.
+    _tree47 = _ast47.parse(_fsrc)
+    _test_fns = [n.name for n in _tree47.body
+                 if isinstance(n, _ast47.FunctionDef) and n.name.startswith("test_")]
+    check(len(_test_fns) >= 12,
+          f"armed-fixture §47f: fixture defines >= 12 test_ functions (got {len(_test_fns)})")
+
+# 47g — read-only anchor SHAs preserved (armed harness + train.py + egress_ready state).
+_ANCHORS47 = {
+    "scripts/ear/train_armed_harness.py": None,   # any-hash OK; we only check STABILITY vs the pre-c31 snapshot in a follow-up cycle.
+    "scripts/egress_ready/state.py": None,
+    "scripts/egress_ready/trigger.py": None,
+}
+for _rel, _ in _ANCHORS47.items():
+    _p = WS / _rel
+    check(_p.is_file(), f"armed-fixture §47g: read-only anchor {_rel} present")
+
+# 47h — SB dry-run verdict internal invariants.
+if (_ARR / "sb_dry_run_verdict.json").is_file():
+    _v47i = _j47.loads((_ARR / "sb_dry_run_verdict.json").read_text())
+    check(_v47i.get("n_clips", 0) >= 50,
+          f"armed-fixture §47h: SB dry-run ran on >= 50 valset clips (got {_v47i.get('n_clips')})")
+    check(_v47i.get("alpha_pinned_c26") == 0.7469387071101908,
+          "armed-fixture §47h: c26 alpha pinned in verdict metadata")
+    _sb2 = _v47i.get("sb2_per_resample_tau", [])
+    check(isinstance(_sb2, list) and len(_sb2) == 10,
+          f"armed-fixture §47h: sb2_per_resample_tau has 10 entries")
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)

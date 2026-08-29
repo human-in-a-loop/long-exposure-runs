@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://music-gen/palette/palette_v1",
+  "title": "Palette assignment (v1)",
+  "description": "Per-stem palette assignment authored by cycle 31 Branch B (M-DAW-SPIKE-1/palette-assignment-schema). One row per {stem, instrument} decision; cycle 32's bare-render implementation will iterate the batch and dispatch to the named instrument with the pinned_state parameters. Content-addressed assignment_id (UUID5 hex) guarantees deterministic reproduction. additionalProperties: false at every object level.",
+  "type": "object",
+  "required": [
+    "schema_v",
+    "assignment_id",
+    "stem",
+    "instrument",
+    "pinned_state",
+    "provenance_pointers",
+    "extractor_version"
+  ],
+  "properties": {
+    "schema_v": {"const": "palette_v1"},
+    "assignment_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$",
+      "description": "UUID5 hex (32 lowercase hex chars) derived from canonical-JSON of (schema_v, stem, instrument, pinned_state, sorted(provenance_pointers), extractor_version). notes_optional is EXCLUDED from the hash."
+    },
+    "stem": {
+      "enum": ["drums", "bass", "other"],
+      "description": "Which stem this assignment addresses. Matches htdemucs stem taxonomy minus vocals (out-of-scope for this branch)."
+    },
+    "instrument": {
+      "enum": ["surge_xt", "dexed", "sfizz", "fluidsynth_gm"],
+      "description": "Instrument palette identifier. surge_xt/dexed = VST3; sfizz = SFZ sampler; fluidsynth_gm = legacy GM soundfont chain."
+    },
+    "pinned_state": {
+      "type": "object",
+      "required": ["plugin_name", "plugin_version", "parameter_dict"],
+      "properties": {
+        "plugin_name": {"type": "string", "minLength": 1},
+        "plugin_version": {"type": "string", "minLength": 1},
+        "parameter_dict": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_/. -]+$": {
+              "type": ["number", "string", "boolean"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "preset_name_optional": {"type": "string", "minLength": 1},
+        "external_state_sha_optional": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 of any external state file (e.g. SFZ patch, DX7 sysex) that the plugin loads. Optional; when present must be 64 lowercase hex chars."
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^rule_[0-9a-f]{16}$",
+        "description": "rule_id string that MUST resolve against data/rules/ledger.jsonl OR data/rules/ledger_i3_dminor.jsonl (checked by Layer 2 validator)."
+      }
+    },
+    "extractor_version": {"const": "palette_v1_c31"},
+    "notes_optional": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Free-text authoring note. EXCLUDED from assignment_id hash to allow note edits without invalidating the id."
+    }
+  },
+  "additionalProperties": false
+}

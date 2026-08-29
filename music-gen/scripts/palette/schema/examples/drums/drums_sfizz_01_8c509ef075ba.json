@@ -1,0 +1,22 @@
+{
+  "assignment_id": "8c509ef075ba5f7b94ba29a1068ef1c4",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "sfizz",
+  "pinned_state": {
+    "parameter_dict": {
+      "amp_release": 0.15,
+      "amp_velocity": 0.9,
+      "loop_mode": "no_loop",
+      "pitch_keycenter": 60,
+      "sample_path": "presets/palette/bass_p1.sfz"
+    },
+    "plugin_name": "sfizz",
+    "plugin_version": "1.2.3"
+  },
+  "provenance_pointers": [
+    "rule_4e0d2fded1aef6ac",
+    "rule_ba740b0c3a578421"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "drums"
+}

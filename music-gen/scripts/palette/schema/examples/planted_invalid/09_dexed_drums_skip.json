@@ -1,0 +1,21 @@
+{
+  "_offending_field": "instrument",
+  "_planted_class": "dexed_drums_skip",
+  "row": {
+    "assignment_id": "280c8544352351bc9f9ba438c2ff6571",
+    "extractor_version": "palette_v1_c31",
+    "instrument": "dexed",
+    "pinned_state": {
+      "parameter_dict": {
+        "Algorithm": 5
+      },
+      "plugin_name": "Dexed",
+      "plugin_version": "0.9.6"
+    },
+    "provenance_pointers": [
+      "rule_0271c7a9f3b5f606"
+    ],
+    "schema_v": "palette_v1",
+    "stem": "drums"
+  }
+}

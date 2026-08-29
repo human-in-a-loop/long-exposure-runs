@@ -1,0 +1,22 @@
+{
+  "_offending_field": "instrument",
+  "_planted_class": "wrong_instrument",
+  "row": {
+    "assignment_id": "0f36885109dc5d9cacf56b74ae6fb770",
+    "extractor_version": "palette_v1_c31",
+    "instrument": "moog_minimoog",
+    "pinned_state": {
+      "parameter_dict": {
+        "amp_velocity": 0.9,
+        "sample_path": "presets/palette/base.sfz"
+      },
+      "plugin_name": "sfizz",
+      "plugin_version": "1.2.3"
+    },
+    "provenance_pointers": [
+      "rule_0271c7a9f3b5f606"
+    ],
+    "schema_v": "palette_v1",
+    "stem": "bass"
+  }
+}

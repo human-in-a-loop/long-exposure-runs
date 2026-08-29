@@ -1,0 +1,88 @@
+$id: https://music-gen/palette/palette_v1
+$schema: https://json-schema.org/draft/2020-12/schema
+additionalProperties: false
+description: 'Per-stem palette assignment authored by cycle 31 Branch B (M-DAW-SPIKE-1/palette-assignment-schema).
+  One row per {stem, instrument} decision; cycle 32''s bare-render implementation
+  will iterate the batch and dispatch to the named instrument with the pinned_state
+  parameters. Content-addressed assignment_id (UUID5 hex) guarantees deterministic
+  reproduction. additionalProperties: false at every object level.'
+properties:
+  assignment_id:
+    description: UUID5 hex (32 lowercase hex chars) derived from canonical-JSON of
+      (schema_v, stem, instrument, pinned_state, sorted(provenance_pointers), extractor_version).
+      notes_optional is EXCLUDED from the hash.
+    pattern: ^[0-9a-f]{32}$
+    type: string
+  extractor_version:
+    const: palette_v1_c31
+  instrument:
+    description: Instrument palette identifier. surge_xt/dexed = VST3; sfizz = SFZ
+      sampler; fluidsynth_gm = legacy GM soundfont chain.
+    enum:
+    - surge_xt
+    - dexed
+    - sfizz
+    - fluidsynth_gm
+  notes_optional:
+    description: Free-text authoring note. EXCLUDED from assignment_id hash to allow
+      note edits without invalidating the id.
+    maxLength: 500
+    type: string
+  pinned_state:
+    additionalProperties: false
+    properties:
+      external_state_sha_optional:
+        description: SHA-256 of any external state file (e.g. SFZ patch, DX7 sysex)
+          that the plugin loads. Optional; when present must be 64 lowercase hex chars.
+        pattern: ^[0-9a-f]{64}$
+        type: string
+      parameter_dict:
+        additionalProperties: false
+        patternProperties:
+          ^[a-zA-Z0-9_/. -]+$:
+            type:
+            - number
+            - string
+            - boolean
+        type: object
+      plugin_name:
+        minLength: 1
+        type: string
+      plugin_version:
+        minLength: 1
+        type: string
+      preset_name_optional:
+        minLength: 1
+        type: string
+    required:
+    - plugin_name
+    - plugin_version
+    - parameter_dict
+    type: object
+  provenance_pointers:
+    items:
+      description: rule_id string that MUST resolve against data/rules/ledger.jsonl
+        OR data/rules/ledger_i3_dminor.jsonl (checked by Layer 2 validator).
+      pattern: ^rule_[0-9a-f]{16}$
+      type: string
+    minItems: 1
+    type: array
+  schema_v:
+    const: palette_v1
+  stem:
+    description: Which stem this assignment addresses. Matches htdemucs stem taxonomy
+      minus vocals (out-of-scope for this branch).
+    enum:
+    - drums
+    - bass
+    - other
+required:
+- schema_v
+- assignment_id
+- stem
+- instrument
+- pinned_state
+- provenance_pointers
+- extractor_version
+title: Palette assignment (v1)
+type: object

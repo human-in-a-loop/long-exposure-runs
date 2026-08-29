@@ -1,0 +1,20 @@
+{
+  "assignment_id": "f6fb7681ecc45d229cd6ae47c108b8af",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "fluidsynth_gm",
+  "notes_optional": "GM standard drum kit for kick+snare+hihat rhythm rule.",
+  "pinned_state": {
+    "parameter_dict": {
+      "bank": 0,
+      "gain": 0.9,
+      "preset_num": 33
+    },
+    "plugin_name": "fluidsynth",
+    "plugin_version": "2.3.4"
+  },
+  "provenance_pointers": [
+    "rule_ba740b0c3a578421"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "drums"
+}

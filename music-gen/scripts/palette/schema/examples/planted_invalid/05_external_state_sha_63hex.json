@@ -1,0 +1,23 @@
+{
+  "_offending_field": "external_state_sha_optional",
+  "_planted_class": "external_state_sha_63hex",
+  "row": {
+    "assignment_id": "4689214dcddd5c30b73657d64d090868",
+    "extractor_version": "palette_v1_c31",
+    "instrument": "sfizz",
+    "pinned_state": {
+      "external_state_sha_optional": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parameter_dict": {
+        "amp_velocity": 0.9,
+        "sample_path": "presets/palette/base.sfz"
+      },
+      "plugin_name": "sfizz",
+      "plugin_version": "1.2.3"
+    },
+    "provenance_pointers": [
+      "rule_0271c7a9f3b5f606"
+    ],
+    "schema_v": "palette_v1",
+    "stem": "bass"
+  }
+}

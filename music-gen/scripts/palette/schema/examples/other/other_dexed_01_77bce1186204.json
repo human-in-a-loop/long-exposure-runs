@@ -1,0 +1,24 @@
+{
+  "assignment_id": "77bce11862045c1a8bfa1698cd42a79f",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "dexed",
+  "pinned_state": {
+    "parameter_dict": {
+      "Algorithm": 5,
+      "Feedback": 4,
+      "LFO Speed": 34,
+      "Op1 Coarse Freq": 1.0,
+      "Op1 Fine Freq": 0.0,
+      "Op1 Output Level": 99,
+      "Op2 Coarse Freq": 2.0
+    },
+    "plugin_name": "Dexed",
+    "plugin_version": "0.9.6",
+    "preset_name_optional": "E.PIANO 1"
+  },
+  "provenance_pointers": [
+    "rule_5226628fce18201c"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "other"
+}

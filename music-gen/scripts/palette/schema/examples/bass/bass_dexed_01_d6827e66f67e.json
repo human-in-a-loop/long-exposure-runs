@@ -1,0 +1,25 @@
+{
+  "assignment_id": "d6827e66f67e5602a99517dec9b3068e",
+  "extractor_version": "palette_v1_c31",
+  "instrument": "dexed",
+  "notes_optional": "FM bass, Dexed E.PIANO 1 preset repurposed.",
+  "pinned_state": {
+    "parameter_dict": {
+      "Algorithm": 5,
+      "Feedback": 4,
+      "LFO Speed": 34,
+      "Op1 Coarse Freq": 1.0,
+      "Op1 Fine Freq": 0.0,
+      "Op1 Output Level": 99,
+      "Op2 Coarse Freq": 2.0
+    },
+    "plugin_name": "Dexed",
+    "plugin_version": "0.9.6",
+    "preset_name_optional": "E.PIANO 1"
+  },
+  "provenance_pointers": [
+    "rule_ff1fa8c4bf0f228f"
+  ],
+  "schema_v": "palette_v1",
+  "stem": "bass"
+}
