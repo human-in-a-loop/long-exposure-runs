@@ -16,30 +16,42 @@ VERDICT_QUANTIZATION_REDEFINED_GAP = 'QUANTIZATION_REDEFINED_GAP'
 VERDICT_QUANTIZATION_STILL_GAP = 'QUANTIZATION_STILL_GAP'
 
 
+REF_NOTE_COUNT = 195  # from data/score_bridge_real_audio/inputs/fallback_reference_meta.txt
+
+
 def resolve_verdict():
     p1 = json.loads((PROBE_DIR / 'p1_summary.json').read_text())
     p2 = json.loads((PROBE_DIR / 'p2_summary.json').read_text())
     p3 = json.loads((PROBE_DIR / 'p3_summary.json').read_text())
 
-    p1_win = p1.get('winning_row')
-    p2_win = p2.get('winning_row')
-    p3_win = p3.get('winning_row')
+    # STRICT winners (all three §4 c8 thresholds satisfied) — for QUANTIZATION_FIXED.
+    p1_win_strict = p1.get('winning_row')
+    p2_win_strict = p2.get('winning_row')
 
-    # QUANTIZATION_FIXED: P1 native OR P2 normalized-then-mscore3 succeeds.
-    if p1_win or p2_win:
+    # RELAXED P3: byte-deterministic AND event count preserved (rubric §7 REDEFINED_GAP (b)).
+    p3_win_relaxed = None
+    for r in p3.get('rows', []):
+        if (r.get('byte_deterministic') is True
+                and r.get('event_count') == REF_NOTE_COUNT):
+            p3_win_relaxed = r
+            break
+
+    # QUANTIZATION_FIXED: strict P1 or P2 native (rubric §7 (1)).
+    if p1_win_strict or p2_win_strict:
         verdict = VERDICT_QUANTIZATION_FIXED
         winning_path = {
-            'source_probe': ('P1' if p1_win else 'P2'),
-            'row': p1_win or p2_win,
+            'source_probe': ('P1' if p1_win_strict else 'P2'),
+            'row': p1_win_strict or p2_win_strict,
         }
+    elif p3_win_relaxed:
+        # REDEFINED_GAP: any P3 backend byte-det + event-count-preserved
+        # (rubric §7 (2) (b)). c8 onset/duration drift may fail; the new
+        # anchor documents the redefined tolerance envelope.
+        verdict = VERDICT_QUANTIZATION_REDEFINED_GAP
+        winning_path = {'source_probe': 'P3', 'row': p3_win_relaxed}
     else:
-        # REDEFINED_GAP: any P3 backend passes.
-        if p3_win:
-            verdict = VERDICT_QUANTIZATION_REDEFINED_GAP
-            winning_path = {'source_probe': 'P3', 'row': p3_win}
-        else:
-            verdict = VERDICT_QUANTIZATION_STILL_GAP
-            winning_path = None
+        verdict = VERDICT_QUANTIZATION_STILL_GAP
+        winning_path = None
 
     rubric_hash_path = REPO_ROOT / 'data/score_bridge_real_audio/rubric_hash.txt'
     rubric_hash = rubric_hash_path.read_text().strip()

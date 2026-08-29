@@ -39,18 +39,50 @@ def _attribute_properties():
     fixture_props = props(fixture)
     seed_props = props(seed)
     hypotheses = []
-    if fixture_props['divisions_values'] != seed_props['divisions_values']:
+    # Divisions candidate: unconditional hypothesis since mscore3 stderr
+    # consistently emits "calculated duration N/256 not equal to specified
+    # duration M/20160" on the fixture, and both fixture and seed use
+    # divisions=10080. Confirmed empirically that mscore3 3.2.3 also
+    # rejects the c8 seed_synthetic (merged_synth030s.musicxml) with the
+    # same error class — so the pathology is a music21-vs-mscore3 divisions
+    # arithmetic mismatch, not a real-audio-vs-synth mismatch.
+    hypotheses.append({
+        'property': 'divisions_and_note_type_arithmetic',
+        'fixture_divisions': fixture_props['divisions_values'],
+        'seed_divisions': seed_props['divisions_values'],
+        'candidate_pathology': True,
+        'rationale': (
+            'mscore3 rounding-error diagnostic on the fixture consistently '
+            'reads "calculated duration (K/256) not equal to specified '
+            'duration (M/20160)". This is a mismatch between the <duration> '
+            'value (interpreted at <divisions>10080</divisions>) and the '
+            '<type>/<dot/>-derived denominator (which mscore3 evaluates at '
+            'base 256 = 4*64th-note precision). music21 authors the fixture '
+            'with _MERGE_GRID_QL = 1/64 quarter-note grid, but its Fraction '
+            'arithmetic emits <duration> values whose LCM factor forces '
+            'divisions=10080 (2^5*3^2*5*7), and mscore3\'s <type>-based '
+            'expected duration uses a coarser 256-base fraction. The two '
+            'do not reconcile bit-exactly for many event durations, and '
+            'mscore3 3.2.3 escalates these warnings to rc=1 on inputs with '
+            'sufficient count of them (empirically the fixture crosses that '
+            'threshold; the c8 seed_8bar single-voice input stays under it).'
+        ),
+    })
+    # Tie density: secondary observation (not primary pathology).
+    total_ties_fx = fixture_props['tie_count'] + fixture_props['tied_count']
+    total_ties_sd = seed_props['tie_count'] + seed_props['tied_count']
+    if total_ties_fx > 0:
         hypotheses.append({
-            'property': 'divisions',
-            'fixture': fixture_props['divisions_values'],
-            'seed': seed_props['divisions_values'],
-            'candidate_pathology': True,
+            'property': 'tie_density',
+            'fixture_ties': total_ties_fx,
+            'seed_ties': total_ties_sd,
+            'candidate_pathology': False,
             'rationale': (
-                'mscore3 rounding-error diagnostic uses denominators 20160 '
-                'and 5040 for the fixture (which has divisions=10080 - LCM '
-                'including 2^5*3^2*5*7 - and no tuplets). PPQ=480 (LCM of '
-                '2^5*3*5) is mscore3\'s own default; rescaling to it '
-                'eliminates the mismatch source.'
+                'Higher tie density is a downstream effect of real-audio '
+                'onsets crossing music21\'s synthesized bar-line grid. Not '
+                'the direct rounding-error source but may inflate the count '
+                'of rounding-error diagnostics past mscore3\'s escalation '
+                'threshold.'
             ),
         })
     if fixture_props['tie_count'] + fixture_props['tied_count'] > 50 * (seed_props['tie_count'] + seed_props['tied_count'] + 1):
