@@ -240,8 +240,40 @@ def render_sfizz(midi_path: Path, out_wav: Path,
     raw.unlink()
 
 
+def _apply_eq_curve_iirpeak(mono: np.ndarray, centers: list, gains_db: list,
+                             fs: int = 44100) -> np.ndarray:
+    """c51 signature-v3: apply 12-band iirpeak EQ chain per rc7_eq_curve_fit_method.md."""
+    from scipy.signal import iirpeak, lfilter
+    out = mono.astype(np.float64, copy=True)
+    for f_c, gdb in zip(centers, gains_db):
+        b, a = iirpeak(float(f_c), Q=1.4, fs=fs)
+        gain_lin = float(10.0 ** (float(gdb) / 20.0))
+        band = lfilter(b, a, out)
+        out = out + (gain_lin - 1.0) * band
+    return out
+
+
+def _apply_loudness_target(stereo: np.ndarray, target_rms_db: float,
+                            max_gain_db: float = 24.0) -> tuple:
+    """c51 signature-v3: RMS-match scalar gain, return (out, measured_after_db)."""
+    mono = stereo.mean(axis=1) if stereo.ndim > 1 else stereo
+    rms = float(np.sqrt(np.mean(mono.astype(np.float64) ** 2)))
+    measured_db = 20.0 * np.log10(max(rms, 1e-10))
+    delta_db = target_rms_db - measured_db
+    delta_db_clip = max(-max_gain_db, min(max_gain_db, delta_db))
+    scalar = float(10.0 ** (delta_db_clip / 20.0))
+    out = stereo.astype(np.float32) * np.float32(scalar)
+    mono2 = out.mean(axis=1) if out.ndim > 1 else out
+    rms2 = float(np.sqrt(np.mean(mono2.astype(np.float64) ** 2)))
+    measured_after_db = 20.0 * np.log10(max(rms2, 1e-10))
+    return out, measured_after_db
+
+
 def render_stem(stem: str, instrument: str, out_dir: Path,
-                *, parameter_dict: dict | None = None) -> dict:
+                *,
+                parameter_dict: dict | None = None,
+                eq_curve: dict | None = None,
+                loudness_target: dict | None = None) -> dict:
     """Render one stem twice, verify byte-determinism, save SHAs.
 
     ``parameter_dict`` is keyword-only and defaults to None (c33 anchor
@@ -251,11 +283,26 @@ def render_stem(stem: str, instrument: str, out_dir: Path,
     Branch A RENDER_FAILS). Any non-None ``parameter_dict`` passed
     with instrument ∈ {surge_xt, dexed} raises NotImplementedError.
 
+    c51 signature-v3 additive kwargs (Branch C, RC7 mix-balance):
+
+    - ``eq_curve``: dict describing 12-band iirpeak EQ (Q=1.4, log-spaced
+      20 Hz–20 kHz per docs/rc7_eq_curve_fit_method.md). Applied
+      post-render, pre-loudness-match. Same VST3 lock as parameter_dict.
+    - ``loudness_target``: dict with target_rms_db + optional
+      target_lufs_s_db + max_gain_db. Applied AFTER eq_curve. Same VST3 lock.
+
+    When both eq_curve AND loudness_target are None, dispatch is
+    byte-identical to c33/c36 (backwards-compat contract).
+
     Returns dict:
       {"stem": stem, "instrument": instrument,
        "midi_path": str, "midi_sha": str,
        "render_run1_sha": str, "render_run2_sha": str,
-       "sha_equal": bool, "run1_wav_path": str}
+       "sha_equal": bool, "run1_wav_path": str,
+       # only when eq_curve non-None:
+       "eq_applied": bool, "eq_bands_gains_db": list,
+       # only when loudness_target non-None:
+       "loudness_error_rms_db": float}
     """
     if stem not in PER_STEM_MIDI:
         raise RuntimeError(f"unknown stem {stem}")
@@ -268,10 +315,11 @@ def render_stem(stem: str, instrument: str, out_dir: Path,
     out2 = out_dir / "render_run2.wav"
 
     if instrument in ("surge_xt", "dexed"):
-        if parameter_dict is not None:
+        # c51 lock: eq_curve and loudness_target both trigger NotImplementedError on VST3
+        if parameter_dict is not None or eq_curve is not None or loudness_target is not None:
             raise NotImplementedError(
-                "VST3 param threading deferred to c37 pending Branch-C "
-                "VST3-nondeterminism verdict"
+                "VST3 param/EQ/loudness threading not attempted per c35 STILL_GAP "
+                "anti-pattern lock (Surge XT / Dexed excluded)"
             )
         raise RuntimeError(f"unsupported instrument {instrument} for palette-render "
                            f"(Surge XT / Dexed excluded per c31 STILL_GAP)")
@@ -284,6 +332,39 @@ def render_stem(stem: str, instrument: str, out_dir: Path,
     else:
         raise RuntimeError(f"unsupported instrument {instrument} for palette-render "
                            f"(Surge XT / Dexed excluded per c31 STILL_GAP)")
+
+    # c51 signature-v3 post-processing chain: EQ → loudness match.
+    # When both are None, this section is inert and c33/c36 output is preserved.
+    extra_ret: dict = {}
+    if eq_curve is not None or loudness_target is not None:
+        for out_wav in (out1, out2):
+            _, y = scipy_wav.read(str(out_wav))
+            y = y.astype(np.float32)
+            if eq_curve is not None:
+                centers = eq_curve.get("band_center_freqs_hz")
+                gains = eq_curve.get("band_gains_db")
+                if centers is None or gains is None or len(centers) != 12:
+                    raise RuntimeError("eq_curve must carry band_center_freqs_hz + band_gains_db (12 each)")
+                # Apply chain independently on each channel (parallel L/R).
+                if y.ndim == 1:
+                    proc = _apply_eq_curve_iirpeak(y, centers, gains)
+                    y_eq = proc.astype(np.float32)
+                else:
+                    ch_l = _apply_eq_curve_iirpeak(y[:, 0], centers, gains)
+                    ch_r = _apply_eq_curve_iirpeak(y[:, 1], centers, gains)
+                    y_eq = np.stack([ch_l, ch_r], axis=1).astype(np.float32)
+                y = y_eq
+                if "eq_bands_gains_db" not in extra_ret:
+                    extra_ret["eq_applied"] = True
+                    extra_ret["eq_bands_gains_db"] = list(gains)
+            if loudness_target is not None:
+                tgt = float(loudness_target["target_rms_db"])
+                max_g = float(loudness_target.get("max_gain_db", 24.0))
+                y, measured_after = _apply_loudness_target(y, tgt, max_gain_db=max_g)
+                if "loudness_error_rms_db" not in extra_ret:
+                    extra_ret["loudness_error_rms_db"] = float(abs(measured_after - tgt))
+            # Re-canonicalize.
+            _canonicalize_wav_deterministic(y, out_wav)
 
     sha1 = hashlib.sha256(out1.read_bytes()).hexdigest()
     sha2 = hashlib.sha256(out2.read_bytes()).hexdigest()
@@ -302,13 +383,15 @@ def render_stem(stem: str, instrument: str, out_dir: Path,
     (out_dir / "pinned_state.json").write_text(
         json.dumps(pinned, sort_keys=True, indent=2) + "\n")
 
-    return {
+    ret = {
         "stem": stem, "instrument": instrument,
         "midi_path": str(midi_path), "midi_sha": midi_sha,
         "render_run1_sha": sha1, "render_run2_sha": sha2,
         "sha_equal": sha1 == sha2,
         "run1_wav_path": str(out1), "run2_wav_path": str(out2),
     }
+    ret.update(extra_ret)
+    return ret
 
 
 def main() -> int:
