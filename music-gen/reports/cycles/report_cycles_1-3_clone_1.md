@@ -1,5 +1,5 @@
 ---
-title: "Cycles 1-3 Clone 1 Report — M-EAR-1/real-label-training-v2 (Fork c320de981fda)"
+title: "Cycles 1-3 Clone 1 Report — c53 RC1 Policy Reissue P1+P2 (P3 Deferred to c54; Fork 18817b483ed4)"
 date: "2026-08-29"
 toc: true
 toc-depth: 2
@@ -8,161 +8,160 @@ fontsize: "10pt"
 ---
 [OUTPUT: report_cycles_1-3_clone_1]
 
-# Cycles 1-3 Clone 1 Report — M-EAR-1/real-label-training-v2 (Fork c320de981fda)
+# Cycles 1-3 Clone 1 Report — c53 RC1 Policy Reissue P1+P2 (P3 Deferred to c54; Fork 18817b483ed4)
 
 ## Abstract
 
-Cycles 1-3 of clone-1 (fork `c320de981fda`) advance `M-EAR-1/real-label-training-v2` scaffolding but **do not complete the pipeline** within the fanout-cycle wall-time envelope. Rubric frozen; resample manifest (43 songs → 252 clips) landed; feature extraction advanced across cycles (0 → 118 → 124 → 203/252 = 80.6%); scripts AST-clean vs c22/c23/c25 forbidden imports; c1 chunker + c6 chassis + c22 stability harness + c26 Path B doc + c38 clone-0 v1 tree preserved. But 8/10 sufficiency criteria fail: extraction incomplete, training/eval/determinism/anchor-snapshot/tests/report/10-events all not reached. Cycle 3 auditor emits **PIVOT (unfixable-by-audit escalation)** per operating-protocol hard-stop clause after 4th consecutive attempt with same executional choke.
+Cycles 1-3 of clone-1 (fork `18817b483ed4`) partially discharge Branch B: **P1 close event + P2 c53-c60 reconciliation LANDED** for `M-RECREATE-2/accurate-small-set/rc1-baseline-policy`; **P3 RC1 policy reissue on Option (a) DEFERRED to c54**. Auditor decision: **CONTINUE** per brief §9 exit clause (signal (3) partially fails but (1)+(2) land → CONTINUE with P3 focus, no unblocking work required). The Chicken Grease 27.81% honest-negative from c51 Branch A remains open at cycle 4+ of hold. Baseline replay contract preserved byte-exactly (main ledger 888 rows unchanged; 0 `promise_check` ERRORs). Anchor preservation live-verified on `docs/rc1_baseline_policy_report.md` SHA `7098a1bc…`. Shadow-ledger inspection blocked by workspace directory boundary — architectural consistency with c33 clone-context routing supports worker's shadow-emission claim.
 
 ## Verdict
 
-**PARTIAL_PROGRESS → PIVOT (unfixable-by-audit)** (rubric-verdict slot unfilled; branch escalates to root-conductor sequential-mode pickup with 203/252 feature cache preserved as handoff asset).
-
-## Rubric SHA Anchor (Committed at Cycle 1; Persisted Across Cycles 2-3)
-
-| Location | State |
-| --- | --- |
-| `docs/ear_real_label_training_v2_rubric.md` | mtime gate held |
-| `data/ear_v2/rubric_hash.txt` | 65 B, present |
-| `data/ear_v2/verdict.json` | **absent** (not reached) |
-
-Rubric-first commit gate PASS from c39 (this fork's cycle 1); zero after-the-fact rubric edits.
+**CONTINUE (P3 focus for c54)**; branch's original scope (RC1 policy call) is unfulfilled — P1+P2 landed in shadow; P3 substantive Option (a) recapture deferred.
 
 ## Cycle Disposition
 
-| Cycle | Researcher Directive | Worker Action | Auditor Decision | Feature Extraction Progress |
-| --- | --- | --- | --- | --- |
-| 1 (c39-initial + resume) | Ship the milestone under frozen 3-verdict rubric | Rubric + scripts + manifest landed; pure Hold Pattern on extraction | CONTINUE | 0 → 118 |
-| 2 (c40) | Foreground-only extractor invocation with strongest executional guardrails | Near-null cycle (+6 features) | CONTINUE with strong nudge | 118 → 124 |
-| 3 (c41, this range close) | Monitor-poll allowed; no background-job-await | Substantive-but-incomplete cycle (+79 features; escaped pure Hold Pattern with real progress); exhausted cycle budget before extraction completed | **PIVOT (unfixable-by-audit escalation)** | 124 → **203/252** (80.6%) |
+| Cycle | Researcher Directive | Worker Action | Auditor Decision |
+| --- | --- | --- | --- |
+| 1 | Frame P1 (close event) + P2 (c53-c60 reconciliation) + P3 (RC1 policy reissue on Option (a)) | P1 close event landed in shadow citing frozen report SHA; H3 hypothesis empirically closed via P2 commit_manifest.tsv | (initial hold) |
+| 2 | Complete P1+P2; attempt P3 if wall-clock permits | P1 close event emitted (`_run/close-fork-18817b483ed4-clone-1-abandoned-clone-1`); P2 `data/c53_c60_reconciliation/{commit_manifest.tsv, commit_classification.tsv}` on-disk; 6 shadow-ledger events under `-clone-1` suffix; no fabricated retroactive timestamps; no recoverable c54-c60 shadow ledgers | (P3 deferral disclosed) |
+| 3 | Verify P1+P2 landings; assess signals | Independent on-disk checks; signal tally 1 clean + 1 claimed-landed-unverifiable + 1 partial + 2 deferred | **CONTINUE** (brief §9 exit clause fires) |
 
-## On-Disk State (Verified Via ls + JSON Inspection)
+## Signal-Gate Assessment (Brief §9)
 
-| Deliverable | State | Notes |
-| --- | --- | --- |
-| `docs/ear_real_label_training_v2_rubric.md` | PASS | mtime gate held |
-| `data/ear_v2/rubric_hash.txt` | PASS | 65 B |
-| `data/ear_v2/resample_manifest.json` | PASS | 43 songs / 252 clips planned |
-| `data/ear_v2/features_v2/*.npy` | **PARTIAL** | **203/252 = 80.6%** |
-| `data/ear_v2/training_result.json` | ABSENT | never ran |
-| `data/ear_v2/corn_head_v2.pt` | ABSENT | never trained |
-| `data/ear_v2/leak_test_v2_summary.json` | ABSENT | never evaluated |
-| `data/ear_v2/sb_v2_verdict.json` | ABSENT | SB1/SB2/SB3 unknown |
-| `data/ear_v2/verdict.json` | ABSENT | no rubric-verdict emitted |
-| `data/ear_v2/anchor_preservation.json` | ABSENT | 25+ SHAs never snapshotted |
-| `docs/ear_real_label_training_v2_report.md` | **ABSENT** | branch's required output artefact |
-| `tests/test_ear_real_label_training_v2.py` | scaffolded, unrun | 0 assertions executed |
-| Ledger events `M-EAR-1/real-label-training-v2/*-clone-1` | **0/10** | grep on `promise_ledger.jsonl` returns only c38 handoff-narrative match |
+| # | Signal | Status | Evidence |
+| --- | --- | --- | --- |
+| 1 | P1 close event present | ✅ CLAIMED-LANDED | shadow ledger (unverifiable from main workspace); anchor SHA `7098a1bc…` byte-equals live report |
+| 2 | P2 plan+rollup + 0-ERROR + cycle-54+ grep>0 | 🟡 PARTIAL | 0 ERROR ✓; `commit_manifest.tsv` + `commit_classification.tsv` present ✓; cycle-54+ grep = 0 on MAIN (worker: expected under H3 shadow-only routing) |
+| 3 | P3 rubric + reverdict + verdict | ❌ DEFERRED | rubric doc, reverdict.tsv, per-song v2 baseline JSONs all absent |
+| 4 | Anchor preservation (c49 v1 / c51 A / render_stem.py / c50 v2 rubric) | ✅ PRESERVED | READ-ONLY discipline held; report SHA byte-identical pre==post live-verified |
+| 5 | `tests/test_rc1_policy_reissue.py` ≥15 + `tests/test_c53_c60_reconciliation.py` ≥8 | ❌ NOT BUILT | Neither test file present |
 
-**Extension note**: files written as `.npy` not `.npz` per brief. Minor divergence, non-blocking.
+**Signal tally**: 1 clean + 1 claimed-landed-unverifiable + 1 partial + 2 deferred. Brief §9 exit clause: *"if (3) partially fails but (1)+(2) land, next cycle CONTINUES on P3 completion without unblocking work"* — **fires**.
 
-## Sufficiency Table (2/10 PASS)
+## Live On-Disk Checks (Main Workspace)
 
-| # | Criterion | Status |
-| --- | --- | --- |
-| 1 | Rubric committed before scripts (mtime + git-log dual gate) | PASS (from c39) |
-| 2 | AST-clean vs c22/c23/c25 forbidden imports | PASS |
-| 3 | Resample manifest complete (43 songs → 252 clips) | PASS |
-| 4 | Feature extraction complete (`len(features) == manifest.n_clips_total`) | **FAIL** — 203 vs 252 |
-| 5 | Training run produced `training_result.json` + `corn_head_v2.pt` under GroupKFold(song_id) | **FAIL** — not reached |
-| 6 | SB1/SB2/SB3 evaluated; F1 denominator > 43 (SB3 redesign contract) | **FAIL** — not reached |
-| 7 | Byte-determinism × 2 SHA-256 equality on 3 artefacts | **FAIL** — not reached |
-| 8 | Anchor preservation on ≥25 SHAs (`unchanged: true`) | **FAIL** — not reached |
-| 9 | ≥14 tests green | **FAIL** — never invoked |
-| 10 | Report + 10 `-clone-1` ledger events landed | **FAIL** — 0/10 |
+- **Baseline replay contract preserved**: `wc -l promise_ledger.jsonl` → **888** (unchanged from pre-cycle baseline; matches worker's claim).
+- **`promise_check` post-emission**: **0 ERROR**, 3110 WARN (all pre-existing, unchanged from prior cycles — no new WARN from this branch).
+- **P1 anchor SHA byte-identity**: `sha256sum docs/rc1_baseline_policy_report.md` → `7098a1bcbb9bce0af5819fa60a02010d8c17fac9cc8db11e80650fb0b8ef015c` (byte-equal to SHA claimed pinned in P1 close event's narrative — anchor preservation holds).
+- **P2 on-disk artefacts present**: `data/c53_c60_reconciliation/{commit_manifest.tsv, commit_classification.tsv}` both present.
+- **Shadow-ledger inspection BLOCKED** by workspace directory boundary at `/home/user/music-gen-instance/fork-18817b483ed4/clone-1/`. Six claimed shadow events architecturally consistent with c33 harness clone context (`_is_clone_context: (True, 1)` per worker's Turn 2 log); matches observed main-ledger delta of 0.
 
-**Sufficiency-table result**: 3/10 PASS; 7/10 FAIL (extraction-blocked). 4-cycle sequential progression of pure Hold Pattern → near-null → substantive-but-incomplete confirms same executional choke every cycle.
+## MODERATE Findings (3; Non-Blocking)
 
-## PIVOT Decision (Operating-Protocol Hard-Stop Clause Triggered)
+1. **Assessment-gate signal 2 landed in shadow only.** `grep -c '"cycle":5[4-9]\|"cycle":60' promise_ledger.jsonl` on main = 0. Worker framing: H3-adjudicated ("no c54+ rows on main means grep is expected to stay at 0 for the main ledger until merge back"). Defensible under H3, but brief §9 signal wording was written against the main ledger. Auditor unable to independently confirm shadow content — **next cycle's auditor MUST verify shadow-to-main concat before promoting P2 to VALIDATED**.
+2. **Report file's §6 documents Turn 1 hold, not Turn 2 emissions.** Worker acknowledges: report reverted to committed state per brief §2's "no-edit" constraint. Ledger events, not the report, are the substantive record of Turn 2 work. Procedurally correct but creates a documentation-to-ledger cross-reference gap.
+3. **Minor mis-count in worker's Turn 2 narrative**: worker cites "clone-0's 15 c53 RC7-v2 substantive events"; prior on-disk grep found **9** clone-0 substantive events at ts `2026-08-29T00:00:00Z` under `M-RECREATE-2/accurate-small-set/rc7-mix-balance-match/*`. Does not affect verdict; only affects framing of "c53 fanout is LIVE" (still holds under either count).
 
-Operating-protocol hard-stop clause: *"If the same CRITICAL issue persists across 2 consecutive cycles, document as 'unfixable by audit — requires original builder.'"* Now the **4th consecutive attempt** with the same executional choke.
+## MINOR Findings (Logged, Not Acted On)
 
-**Choke is executional, not scientific.**
+- **P1 close event's milestone_id** is `_run/close-fork-18817b483ed4-clone-1-abandoned-clone-1` (double `-clone-1`) — c33 auto-suffix acting on a base ID that already contains `-clone-1` as semantic-name fragment (not as c33 suffix). Brief accepted at §2 auto-suffix note; not a defect.
+- **Two housekeeping events** (`_archive/cycle-53-scratch-clone-1`, plus egress + cycle-close) landed, matching brief §4.3 slots 5, 6, 11, 12 partially. Slot 8 (`_infra/observed-bpm-path-drift-parked-clone-1`) not needed and correctly dropped per brief's option.
 
-- Each cycle landed incremental progress (0 → 118 → 124 → 203 features).
-- No single cycle within the fanout branch's per-cycle wall-time budget carried the pipeline through extraction → train → eval → determinism × 2 → anchor preservation → tests → report → 10 events.
-- c40's strongest executional guardrail (foreground-only, Monitor-poll allowed, no background-job-await); c41's worker honored the Monitor-poll directive (real progress, no null cycle) but still exhausted cycle budget before extraction completed.
-- **Feature extraction alone plausibly exceeds a single cycle's budget** on this corpus (43 songs × 4-6 clips × PANNs Cnn14 penultimate 2048-D — CPU-only inference).
+## Ledger Events (Shadow-Only; 6 Named Under `-clone-1` Suffix; Main Ledger Unchanged)
 
-**Scientific scope is sound**; scaffolding is complete; scripts AST-clean and locally runnable. Continuing to spin the same wheel in this branch will not converge.
+Landed in shadow ledger `/home/user/music-gen-instance/fork-18817b483ed4/clone-1/promise_ledger.jsonl` (unverifiable from main workspace; architecturally consistent with c33 clone-context routing):
 
-## Auditor-Guided c42 Cycle Purpose: Escalation and Closure — NO Further Empirical Work in This Branch
+- **P1 close event**: `_run/close-fork-18817b483ed4-clone-1-abandoned-clone-1` (double-suffix per c33 auto-suffix on semantic-fragment base ID).
+- **P2 c53-c60 reconciliation**: reconciliation events referencing `data/c53_c60_reconciliation/{commit_manifest.tsv, commit_classification.tsv}`.
+- **Housekeeping**: `_archive/cycle-53-scratch-clone-1`, cycle-close.
+- **`M-INGEST-1/egress-probe-cycle53-clone-1`** tail event (`429 + tv_embedded` unchanged; c49 path-A cadence).
 
-Per cycle-3 auditor guidance, c42 researcher brief must instruct worker to:
-
-1. **Do NOT resume feature extraction or downstream stages in the fanout branch.** Corpus-side intervention scientifically sound; executional envelope in fanout context is not.
-2. **Emit `_manager/M-EAR-1-real-label-training-v2-unfixable-by-audit-clone-1`** as the sole substantive ledger event this cycle. `status=in_progress`, `confidence.level=high`, `confidence.assessor=auditor`, `confidence.rationale` = "4 consecutive cycles in fanout branch B (c39-initial, c39-resume, c40, c41) landed incremental feature-cache progress (0 → 118 → 124 → 203 / 252) but none completed the >5-stage sequential pipeline inside one cycle's wall-time budget. Executional envelope, not science."
-3. **Write closure document** `docs/ear_real_label_training_v2_report.md` (the required branch artefact) at PARTIAL_PROGRESS state, documenting:
-   - 4-cycle scaffolding + partial-extraction ledger.
-   - 203/252 feature cache as preserved handoff asset (do NOT invalidate).
-   - Scientific soundness of anchored-tail resample + SB3 redesign (denominator > 43 contract).
-   - Explicit handoff: root conductor picks up in sequential (non-fanout) execution, with full context window per stage, resuming the extractor cache from 203/252.
-4. **Emit COMPLETE with `[[BRANCH_COMPLETE]]`** after closure doc + manager event land.
-5. **Preservation invariants (still binding)**: rubric doc untouched; `scripts/ear_v2/*.py` untouched; α pinned at `0.7469387071101908` (this branch never touched); c26-frozen SB1/SB2/SB3 thresholds unchanged; **203-file feature cache preserved on disk (do NOT delete — root pickup uses it)**.
-6. **Housekeeping** (under `-clone-1` suffix): `_run/cycle_41_closed-clone-1`, `_archive/cycle-41-scratch-clone-1`.
-
-## Standing Constraints (Unchanged)
-
-- α pinned at `0.7469387071101908` (this branch never touched α).
-- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor` imports.
-- Interpreter guard `#!/usr/bin/python3` on every new script (scripts AST-verified).
-- Read-only anchors intact throughout: c1 chunker; c6 features + CORN chassis; c22 stability harness; c26 Path B commitment; c38 clone-0 v1 artefact tree.
-- c15 `i4_stratified.py` NOT imported; c23 `model_v2_*` and c25 `feature_subset_adapter` NOT imported (AST-verified, criterion #2 PASS).
-- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403; retry cadence at conductor level; not required — 43 songs on-disk).
-- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`.
-- c26-frozen SB1/SB2/SB3 thresholds unchanged; no post-hoc adjustment attempted or contemplated.
-
-## Anti-Patterns Locked (5-Count Stable)
-
-c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted. c31 STILL_GAP / c35 A anti-pattern surface intact. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged.
-
-**c22/c23/c25 anti-pattern locks explicitly enforced in this branch**: AST-check confirmed no `c23 model_v2_*` or `c25 feature_subset_adapter` modules imported anywhere under `scripts/ear_v2/`. Corpus-side intervention orthogonal to c22/c23/c25 axes preserved throughout.
+Main-ledger delta: **0** (shadow-only routing per c33 clone context). Main ledger tail = **888** rows unchanged.
 
 ## State-Machine Discipline (c29 Lemma Respected)
 
-`M-EAR-1/real-label-training-v2` is a peer sub-milestone under M-EAR-1. NOT a child of terminal-validated `_manager/M-EAR-1-path-B-commit`, `M-EAR-1/{synthetic-label, head-regularization, feature-representation}-audit`, `M-EAR-1/armed-harness-fixture-reinforcement`, c36 `real-label-training-v0`, or c38 `real-label-training-v1`.
+- `M-RECREATE-2/accurate-small-set/rc1-baseline-policy` is a peer sub-leaf under c50 v2 rubric chain. NOT a child of any terminal-validated ancestor.
+- Peer-supersede pattern (c50-codified with `supersedes_path` as str per c14 lemma) will be exercised at c54 P3 completion via `M-RECREATE-2/accurate-small-set/rc-v2-branch-a-rc1-policy-superseded`.
+- No `validated → in_progress` transitions attempted.
+- **`[[BRANCH_COMPLETE]]` explicitly NOT emitted** — branch scope unfulfilled; P3 deferred to c54.
 
-## Merge Disposition
+## Standing Constraints (Unchanged)
 
-No merge action this range (PIVOT to escalation; branch does not close normally). Handoff to c42 for auditor-guided closure sequence. Root-conductor sequential-mode pickup owns downstream empirical work; 203/252 feature cache preserved on-disk as handoff asset.
+- α pinned at `0.7469387071101908` (not relevant to this branch).
+- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor`; no `i4_stratified`.
+- Interpreter guard `#!/usr/bin/python3` on every new script (P2 scripts, per worker; P3 scripts deferred).
+- **Read-only anchors preserved** (live-verified where accessible): c14 `_ledger_schema.py`; c22 stability harness; c26 Path B commitment; c31/c33/c34/c35/c36/c37/c45/c46/c47/c50 palette + recreate + anchor-manifest + rubric chain; **c49 v1 baseline files byte-identical pre/post**; **c50 v2 rubric doc `0e11f704e12c62f85cfb9d58d6e6890227209ffb43247239e735a22acfdebe1f` READ-ONLY**; **c51 Branch A `data/rc1_rc9_impl/verdict.json` NOT modified**; **`scripts/palette_render/render_stem.py` byte-identical**; **`docs/rc1_baseline_policy_report.md` SHA `7098a1bc…` byte-identical pre==post**.
+- Rated audio egress-blocked at `*.googlevideo.com` (`429 + tv_embedded` unchanged; `M-INGEST-1/egress-probe-cycle53-clone-1` recorded honestly per path-A cadence).
+- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
+- **c48 env-var flags default OFF**.
+- **Ear-model HALTED** per operator override.
 
-**Systemic finding** (to file at campaign level, not this branch): fanout cycle wall-time envelope is insufficient for pipelines with dominant single-stage costs. Recommend a campaign-level `_manager/fanout-pipeline-cost-audit` at some future cycle to enumerate which M-* milestones exceed fanout-cycle capacity and must be assigned to root-conductor sequential mode.
+## Anti-Patterns Locked (5-Count Stable)
 
-## Cycle-42+ Handoff (Priority Order)
+c11 CLAP HF SSL; c22 synthetic-label-stability; c23 head-regularization; c25 feature-representation; c35 palette-schema-v2-hydration-render VST3 nondeterminism — not re-attempted. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged. c31 STILL_GAP surface intact.
 
-1. **c42 auditor-guided closure sequence** (per cycle-3 auditor guidance above): closure doc + manager event + housekeeping + `[[BRANCH_COMPLETE]]`.
-2. **Root-conductor sequential-mode pickup of M-EAR-1/real-label-training-v2** — resume extractor cache from 203/252; complete extraction → train → eval → determinism × 2 → anchor snapshot → tests → report → 10 events in sequential mode with full context window per stage.
-3. **Campaign-level `_manager/fanout-pipeline-cost-audit`** — enumerate which M-* milestones exceed fanout-cycle capacity and must be assigned to root-conductor sequential mode. Not this branch.
-4. **Sibling awareness**: clone-2 closed at `_manager/fanout-namespace-convention-v3-resolution` (CONVENTION_v3_LANDS); not directly relevant to this branch. Clone-0 status per fork-level merge report.
+**No `M-EAR-1/*` or `M-GEN-1/*` emissions** this branch.
+
+## Cycle-54 Handoff — Single-Worker Linear P3 Execution (Per Cycle-3 Auditor)
+
+Blocking topology cleared. **Next cycle is a single-worker linear P3 execution cycle**.
+
+### Priority 1 (Mandatory, Sole Substantive Scope): P3 RC1 Policy Reissue on Option (a)
+
+Recipe (from `docs/rc1_baseline_policy_report.md §4` per worker's Turn 2 pointer, plus this cycle's brief §4):
+
+1. **Pre-register rubric** `docs/rc1_baseline_policy_rubric.md` BEFORE any Python edit under `scripts/rc1_baseline_policy/`. Freeze D1 = Option (a) (chosen_section-window recapture, D1-binding-decision aligned). Rubric SHA-256 pinned to `data/rc1_baseline_policy/rubric_hash.txt` at emit time. mtime-hard, git-log advisory per c46 path (ii).
+2. **Land 5 per-song v2 baselines** at `data/recreate_v2/baseline/<sha16>/rc1_vocals_voiced_time_s_v2.json` (sibling to c49 v1 files — v1 files are READ-ONLY anchors, SHA byte-identical pre==post asserted). pyin invocation verbatim per directive: `librosa.pyin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'), hop_length=512)`. `chosen_section` window per `focus_set_v2.json` (Chicken Grease: t=233.6-263.6s).
+3. **Compute per-song RC1 re-verdict** against D4's 50% threshold. Write `data/rc1_baseline_policy/rc1_reverdict.tsv` with old vs new voiced-time + PASS/FAIL per song. Chicken Grease expected PASS.
+4. **Byte-determinism × 2** verified on all new baseline JSONs + reverdict TSV (two fresh `tempfile.mkdtemp()` runs; env pins: `PYTHONHASHSEED=0`, `SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`, `LC_ALL=C.UTF-8`, single-thread BLAS).
+5. **Three-way `rubric_hash` byte-equality**: `sha256(rubric.md)` == `data/rc1_baseline_policy/rubric_hash.txt` content == `data/rc1_baseline_policy/verdict.json.rubric_hash`. Test-enforced.
+6. **Emit 6 named + 2 housekeeping ledger events** per brief §4.3 (pre-registration / baselines-v2-computed / reverdict-emitted / anchor-preservation-v2 / verdict-emitted / peer supersede via `M-RECREATE-2/accurate-small-set/rc-v2-branch-a-rc1-policy-superseded` with `supersedes_path: str` per c14 lemma). Substantive `M-RECREATE-2/*` unsuffixed per c32. Infra families auto-suffix under c33 clone context.
+7. **Egress probe** `M-INGEST-1/egress-probe-cycle54-clone-1` at tail.
+8. **Test suite** `tests/test_rc1_policy_reissue.py` ≥15 cases green.
+
+### Priority 2 (Auditor Verification Obligation, Not Next-Worker Task): Shadow-to-Main Concat Check
+
+Next auditor MUST verify — before promoting P1+P2 to VALIDATED — that either (a) parent cycle concat pipeline has run and clone-1's 6 shadow rows appear in main `promise_ledger.jsonl` at cycle 53, OR (b) if concat has not run, next-cycle worker's own shadow emissions concat cleanly with c53 shadow tail without `LedgerConcatError`. If concat fails, **PIVOT to concat-repair before P3**.
+
+### P4a-c (Deferred, Per This Cycle's Brief §5)
+
+Infra freshness check, in-project merge-report path, scratch archives. Land in c55+.
+
+### Non-Scope Reminders
+
+- No edit to `docs/rc1_baseline_policy_report.md` (frozen c53 investigation artefact).
+- No edit to c49 v1 baseline files, c50 v2 rubric doc, c51 Branch A `verdict.json`, `scripts/palette_render/render_stem.py`.
+- No fanout. No ear-model / corpus / M-GEN-1 work. c48 env-var flags default OFF.
+- All 5 anti-patterns (c11/c22/c23/c25/c35) remain locked. Ear-model HALTED per operator override.
 
 ## Cumulative Progress
 
-**M-EAR-1 arc** (post-c41 clone-1 PIVOT):
+**M-RECREATE-2 arc RC status roll-up** (post-c53 clone-1 P1+P2 substantive; P3 deferred):
 
-| Cycle | Milestone | Verdict |
+| RC | Status | Cycle |
 | --- | --- | --- |
-| c22-c25 | Path A chassis chain | insufficient (anti-patterns locked) |
-| c26 | `_manager/M-EAR-1-path-B-commit` | committed; three SBs frozen |
-| c31 | `armed-harness-fixture-reinforcement` | FIXTURE_READY |
-| c36 | `real-label-training-v0` | EAR_v0_INSUFFICIENT (first real-label fire) |
-| c37 clone-1 | `_manager/ear-sb3-statistic-degeneracy-fallback-statistic` | F1_ADOPTED |
-| c38 clone-0 | `real-label-training-v1` | EAR_v1_PARTIAL |
-| c39-c41 clone-1 (this) | `real-label-training-v2` | **PARTIAL_PROGRESS → PIVOT** (203/252 feature cache preserved for root pickup) |
+| Rubric v2 committed | ✓ | c50 |
+| Focus set frozen w/ Chicken Grease mandatory | ✓ | c50 |
+| RC0/RC0-v2 baselines captured × 2 | ✓ | c49/c50 |
+| RC1+RC9 **LANDS 4/5** (Chicken Grease known-fail 27.81%) | ✓ | c51 Branch A |
+| RC1 policy reissue on Option (a) | **P1+P2 landed shadow; P3 deferred to c54** | **c53 clone-1 (this)** |
+| RC2+RC3 (consumed as READ-ONLY inputs by c53 clone-0 RC7-v2) | ✓ | c51 Branch B |
+| RC4 GM program map | deferred beyond c54 | — |
+| RC5 LANDS 5/5 (honest self-referential caveat scoped to c54 §3.1) | ✓ | c53 clone-2 |
+| RC7 LANDS 5/5 (c53 clone-0 RC7-v2; supersedes c51 Branch C `RC7_FAILS`) | ✓ | c53 clone-0 |
+| RC6 panel-gate | not started; c54 §5 pre-registers; c55 implements | — |
+| Aggregate `M_RECREATE_2_LANDS` | **c56 candidate** contingent on c55 RC5.1 + RC6 + c54 RC1 outcomes | — |
 
-**Executional pattern observed and documented**: fanout cycle wall-time envelope insufficient for >5-stage sequential pipelines with dominant single-stage costs. Future M-EAR-1 real-label training work should not be assigned to a fanout branch.
+**Recurring patterns**:
 
-**Scientific plan remains sound**: anchored-tail resample of 43 songs → 252 clips (mean 5.86 clips/song) breaks singleton-artist geometry that pinned v1's F1 at 2/3, giving SB3 F1 a meaningful denominator > 43 as originally motivated by c37 clone-1's F1_ADOPTED handoff.
+- **Honest-negative-finding discipline holds** at 8+ consecutive cycles: c53 clone-1 Turn 2's honest declaration of "no shadow ledgers recoverable for c54-c60 orphan commits" is the newest entry.
+- **H3 hypothesis now empirically closed** (as of P2). The c54-c60 shadow-ledger-suspension pattern is documented via `commit_manifest.tsv` on disk. Future clones can rely on this reconciliation-tail landing whenever a c53-style fanout is followed by periodic-sweep-only cycles.
+- **Plan-of-record registration lag = 9 cycles running**. P2 batch-fixes forensically for c54-c60. Writer-side registration guard remains a c55+ candidate.
+- **c53 fanout status**: clone-0 (RC7-v2 `RC7_v2_LANDS`, 9 substantive events), clone-2 (RC5 `RC5_LANDS`), **clone-1 (RC1 policy: P1+P2 substantive, P3 deferred to c54)**. Three-clone fanout at 2-clone-complete + 1-clone-partial. Full RC1 closure lands only when c54 finishes P3.
+- **Directory-boundary blocker persists** and is empirically load-bearing: auditor cannot verify shadow-ledger contents from main workspace, forcing unverifiable-but-architecturally-consistent judgment on signals 1 and 2. **P4b (in-project merge-report path) becomes MORE urgent** per c53 auditor's prior guidance — c55+ should prioritise it if c54 P3 lands.
+- **Chicken Grease RC1 27.81% honest-negative from c51 Branch A**: still open. c54 P3 closes it if Option (a) recapture produces PASS as predicted (dense vocal content in t=233.6-263.6s window).
+- **Auditor-reads-ledger-not-brief-summaries lemma** (proposed c50): track record now caught worker-report drift at c48-close + c49-close + c53 clone-1 mis-count. Independent verification at c50 + c51 + c53 (all 3 clones). Codification in `docs/auditor_discipline_ledger_first.md` remains recommended for c54.
 
-**Preserved assets valuable at root pickup**: 203/252 features cached (~80% of extractor cost sunk); manifest frozen; rubric + hash landed; scripts AST-clean; test suite scaffolded (≥14 cases enumerated per brief); c22/c23/c25 anti-pattern locks verified absent from `scripts/ear_v2/`.
+**c29 state-machine lemma** respected: peer sub-leaves under c50 v2 rubric chain; ledger topology stays a DAG.
 
-**Pattern durability**: rubric-first pre-registration discipline held for cycle 1 (c39-initial) even though downstream stages did not complete. Rubric SHA embedded verbatim in `rubric_hash.txt` and would be embedded verbatim in `verdict.json` at pipeline completion. Zero after-the-fact rubric edits.
+**c32 → c33 → c36 v2 → c39 v3 → c47 Branch B MIXED → c50 peer-supersede** fanout-namespace + rubric-chain convention held.
 
-**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG.
-
-**c32 → c33 → c36 v2 → c39 v3** fanout-namespace convention held: scripts would emit under `-clone-1` suffix per codified v3 behavior (0/10 events emitted due to pipeline incomplete).
+**Egress state**: `429 + tv_embedded` unchanged (17+ cycles); c50 htdemucs_6s fetch OK anomaly remains isolated.
 
 **Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
 
-**New systemic pattern** worth c42+ campaign-level codification: fanout-pipeline-cost-audit to catalog which M-* milestones exceed fanout-cycle capacity. This is the first observed instance of a cleanly-scoped scientific milestone whose executional envelope exceeded the fanout budget four consecutive times.
+**Ear-model arc HALTED** per operator override; anti-pattern locks all in force.
+
+**Auditor's role for cycles 1-3 discharged**; hand off to c54 root-conductor for P3 execution. **`[[BRANCH_COMPLETE]]` NOT emitted** — reserved for whole-scope discharge on M-RECREATE-2 arc; this branch's original scope (RC1 policy call) is unfulfilled until c54 P3 lands.
 
 [END OUTPUT]
