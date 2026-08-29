@@ -3726,6 +3726,368 @@ if _RUB50.is_file():
           f"guard §50h: rubric mtime <= workspace_bootstrap.py mtime "
           f"({_rmt50:.0f} <= {_wmt50:.0f})")
 
+# §51. M-DAW-SPIKE-1/palette-schema-v2 — cycle 34 clone-0, fork 43802db1a81c.
+# Peer schema-v2 extending c31 palette-v1 with a format discriminator.
+import json as _json51
+import hashlib as _hashlib51
+from pathlib import Path as _Path51
+
+_ROOT51 = _Path51(__file__).resolve().parent.parent
+_SCHEMA51 = _ROOT51 / "scripts" / "palette_v2" / "schema" / "palette_v2.json"
+_YAML51 = _ROOT51 / "scripts" / "palette_v2" / "schema" / "palette_v2.yaml"
+_VALIDATE51 = _ROOT51 / "scripts" / "palette_v2" / "validate.py"
+_PROV51 = _ROOT51 / "scripts" / "palette_v2" / "provenance.py"
+_BUILD51 = _ROOT51 / "scripts" / "palette_v2" / "schema" / "examples" / "build_examples.py"
+_RUB51 = _ROOT51 / "docs" / "palette_schema_v2_rubric.md"
+_REPORT51 = _ROOT51 / "docs" / "palette_schema_v2_report.md"
+_DATA51 = _ROOT51 / "data" / "palette_v2"
+_HASH51 = _DATA51 / "rubric_hash.txt"
+
+# 51a — script + doc + data files present
+for _p51 in (_SCHEMA51, _YAML51, _VALIDATE51, _PROV51, _BUILD51,
+             _RUB51, _HASH51, _DATA51 / "schema" / "assignment_ids_v2_expected.tsv",
+             _DATA51 / "schema" / "validation_report.tsv",
+             _DATA51 / "schema" / "skip_manifest.json"):
+    check(_p51.is_file(), f"guard §51a: {_p51.relative_to(_ROOT51)} exists")
+
+# 51b — rubric doc mtime <= earliest script mtime under scripts/palette_v2/
+if _RUB51.is_file():
+    _rmt51 = _RUB51.stat().st_mtime
+    _script_mtimes51 = [p.stat().st_mtime
+                        for p in (_ROOT51 / "scripts" / "palette_v2").rglob("*.py")]
+    if _script_mtimes51:
+        check(_rmt51 <= min(_script_mtimes51) + 1.0,
+              f"guard §51b: rubric doc mtime <= earliest palette_v2 script mtime "
+              f"({_rmt51:.0f} <= {min(_script_mtimes51):.0f})")
+
+# 51c — rubric SHA matches doc SHA
+if _RUB51.is_file() and _HASH51.is_file():
+    _doc_sha51 = _hashlib51.sha256(_RUB51.read_bytes()).hexdigest()
+    _txt_sha51 = _HASH51.read_text().strip()
+    check(_doc_sha51 == _txt_sha51,
+          f"guard §51c: rubric doc SHA == rubric_hash.txt ({_doc_sha51[:12]} == {_txt_sha51[:12]})")
+
+# 51d — ≥16 valid + ≥8 planted-invalid file counts
+_EX51 = _ROOT51 / "scripts" / "palette_v2" / "schema" / "examples"
+_n_valid51 = sum(len(list((_EX51 / s).glob("*.json"))) for s in ("drums", "bass", "other", "mono"))
+_n_inv51 = len(list((_EX51 / "planted_invalid").glob("*.json")))
+check(_n_valid51 >= 16, f"guard §51d: ≥16 valid instances (got {_n_valid51})")
+check(_n_inv51 >= 8, f"guard §51d: ≥8 planted-invalid instances (got {_n_inv51})")
+
+# 51e — verdict.json parseable + rubric_hash consistency (if present)
+_VP51 = _DATA51 / "schema" / "verdict.json"
+if _VP51.is_file():
+    _v51 = _json51.loads(_VP51.read_text())
+    check(_v51.get("verdict") in ("SCHEMA_V2_LANDS", "SCHEMA_V2_INSUFFICIENT"),
+          f"guard §51e: verdict enum ({_v51.get('verdict')})")
+    check(_v51.get("rubric_hash") == _HASH51.read_text().strip(),
+          f"guard §51e: verdict.rubric_hash matches rubric_hash.txt")
+
+# 51f — c31 palette-v1 anchor SHAs unchanged vs pre-branch baseline
+_BASE51 = _DATA51 / "anchor_preservation_before.json"
+if _BASE51.is_file():
+    _baseline51 = _json51.loads(_BASE51.read_text())
+    _drift51 = []
+    for _p51s, _sha51 in _baseline51.items():
+        if not _p51s.startswith(("scripts/palette/", "data/palette/",
+                                  "docs/palette_assignment")):
+            continue
+        _f51 = _ROOT51 / _p51s
+        if _f51.is_file():
+            _cur51 = _hashlib51.sha256(_f51.read_bytes()).hexdigest()
+            if _cur51 != _sha51:
+                _drift51.append(_p51s)
+    check(not _drift51, f"guard §51f: c31 v1 anchor SHAs unchanged (drift: {_drift51[:3]})")
+
+# 51g — c33 dawdreamer_state P1 anchor SHAs unchanged
+if _BASE51.is_file():
+    _baseline51 = _json51.loads(_BASE51.read_text())
+    _c33drift = []
+    for _k51 in _baseline51:
+        if _k51.startswith("data/dawdreamer_state/per_plugin/") \
+                and ("p1_state_v2.json" in _k51 or "p1_state_sha" in _k51):
+            _f51 = _ROOT51 / _k51
+            if _f51.is_file():
+                _cur51 = _hashlib51.sha256(_f51.read_bytes()).hexdigest()
+                if _cur51 != _baseline51[_k51]:
+                    _c33drift.append(_k51)
+    check(not _c33drift, f"guard §51g: c33 P1 anchor SHAs unchanged (drift: {_c33drift})")
+
+# 51h — schema JSON + YAML load-identical
+if _SCHEMA51.is_file() and _YAML51.is_file():
+    import yaml as _yaml51
+    _j51 = _json51.loads(_SCHEMA51.read_text())
+    _y51 = _yaml51.safe_load(_YAML51.read_text())
+    check(_j51 == _y51, "guard §51h: palette_v2.json == palette_v2.yaml (deep)")
+
+# §52. M-TEX-1/palette-driven-bare-render/cross-seed — cycle 34 clone-1, fork 43802db1a81c.
+# Cross-seed generalization test of the c33 PALETTE_MOVES_PANEL finding on
+# seed_mid_50s + synth_060s (both 44.1 kHz stereo per on-disk c10/c13 anchors).
+import json as _json52
+import hashlib as _hashlib52
+import ast as _ast52
+from pathlib import Path as _Path52
+
+print("§52 M-TEX-1/palette-driven-bare-render/cross-seed invariants (cycle 34)")
+
+_REPO52 = _Path52(__file__).resolve().parent.parent
+_SCRIPTS52 = _REPO52 / "scripts" / "palette_render_cross_seed"
+_DATA52 = _REPO52 / "data" / "palette_render_cross_seed"
+_RUB52 = _REPO52 / "docs" / "palette_driven_bare_render_cross_seed_rubric.md"
+_HASH52 = _DATA52 / "rubric_hash.txt"
+_VER52 = _DATA52 / "verdict.json"
+_SUM52 = _DATA52 / "cross_seed_summary.tsv"
+_APR52 = _DATA52 / "anchor_preservation.json"
+_TEST52 = _REPO52 / "tests" / "test_palette_driven_bare_render_cross_seed.py"
+
+# 52a — required scripts + docs + data land.
+for _rel52 in ("__init__.py", "build_assignments_per_seed.py",
+               "run_seed.py", "run_all.py"):
+    check((_SCRIPTS52 / _rel52).is_file(),
+          f"cross-seed §52a: scripts/palette_render_cross_seed/{_rel52} present")
+check(_RUB52.is_file(), "cross-seed §52a: rubric doc present")
+check(_HASH52.is_file(), "cross-seed §52a: rubric_hash.txt present")
+check(_VER52.is_file(), "cross-seed §52a: verdict.json present")
+check(_SUM52.is_file(), "cross-seed §52a: cross_seed_summary.tsv present")
+check(_APR52.is_file(), "cross-seed §52a: anchor_preservation.json present")
+
+# 52b — rubric doc mtime < earliest render-script mtime.
+_scripts_mtimes52 = [p.stat().st_mtime_ns for p in _SCRIPTS52.glob("*.py")
+                     if p.name != "__init__.py"]
+if _scripts_mtimes52:
+    check(_RUB52.stat().st_mtime_ns < min(_scripts_mtimes52),
+          "cross-seed §52b: rubric doc mtime < earliest script mtime "
+          f"(rubric={_RUB52.stat().st_mtime_ns}, earliest={min(_scripts_mtimes52)})")
+
+# 52c — rubric_hash.txt == SHA-256(rubric doc).
+_doc_sha52 = _hashlib52.sha256(_RUB52.read_bytes()).hexdigest()
+_txt_sha52 = _HASH52.read_text().strip()
+check(_doc_sha52 == _txt_sha52,
+      f"cross-seed §52c: rubric doc SHA == rubric_hash.txt")
+
+# 52d — verdict.json schema + rubric_hash byte-equal in per-seed keys.
+_v52 = _json52.loads(_VER52.read_text())
+check(_v52.get("rubric_hash") == _txt_sha52,
+      "cross-seed §52d: verdict.json rubric_hash == rubric_hash.txt")
+_cumulative52 = _v52.get("cross_seed_cumulative_verdict")
+check(_cumulative52 in ("CROSS_SEED_CONSISTENT", "CROSS_SEED_PARTIAL",
+                        "CROSS_SEED_INCONSISTENT", "RENDER_FAILS"),
+      f"cross-seed §52d: cumulative verdict in enum (got {_cumulative52!r})")
+for _seed52 in ("seed_mid_50s", "synth_060s"):
+    _d52 = _v52.get(_seed52) or {}
+    check(_d52.get("rubric_hash") == _txt_sha52,
+          f"cross-seed §52d: {_seed52}.rubric_hash byte-equal to rubric_hash.txt")
+    check(_d52.get("verdict") in ("PALETTE_MOVES_PANEL", "PALETTE_NEUTRAL", "RENDER_FAILS"),
+          f"cross-seed §52d: {_seed52} verdict in enum (got {_d52.get('verdict')!r})")
+
+# 52e — per-seed data files present (per_stem SHAs + panel TSVs).
+for _seed52 in ("seed_mid_50s", "synth_060s"):
+    _sd52 = _DATA52 / "per_seed" / _seed52
+    check((_sd52 / "assignments.jsonl").is_file(),
+          f"cross-seed §52e: {_seed52} assignments.jsonl")
+    check((_sd52 / "bare_combined.wav.sha.run1").is_file(),
+          f"cross-seed §52e: {_seed52} bare_combined.wav.sha.run1")
+    check((_sd52 / "bare_combined.wav.sha.run2").is_file(),
+          f"cross-seed §52e: {_seed52} bare_combined.wav.sha.run2")
+    check((_sd52 / "panel_original_vs_palette.tsv").is_file(),
+          f"cross-seed §52e: {_seed52} panel_original_vs_palette.tsv")
+    check((_sd52 / "panel_fluidsynth_vs_palette.tsv").is_file(),
+          f"cross-seed §52e: {_seed52} panel_fluidsynth_vs_palette.tsv")
+    check((_sd52 / "fetchability_ladder.jsonl").is_file(),
+          f"cross-seed §52e: {_seed52} fetchability_ladder.jsonl")
+    # bare_combined SHAs equal.
+    _s1_52 = (_sd52 / "bare_combined.wav.sha.run1").read_text().strip()
+    _s2_52 = (_sd52 / "bare_combined.wav.sha.run2").read_text().strip()
+    check(_s1_52 == _s2_52,
+          f"cross-seed §52e: {_seed52} bare_combined SHA equal across runs")
+
+# 52f — c33 palette_render + c31 palette + palette_probe anchor files SHAs unchanged.
+_apr52 = _json52.loads(_APR52.read_text())
+check(_apr52.get("unchanged") is True,
+      "cross-seed §52f: anchor_preservation.unchanged is True")
+for _rel, _meta in _apr52.get("post", {}).items():
+    if not any(_rel.startswith(root) for root in
+               ("scripts/palette_render/", "scripts/palette/",
+                "scripts/palette_probe/", "scripts/dawdreamer_state/")):
+        continue
+    _p = _REPO52 / _rel
+    if _p.is_file():
+        _live = _hashlib52.sha256(_p.read_bytes()).hexdigest()
+        check(_live == _meta.get("sha256"),
+              f"cross-seed §52f: {_rel} SHA equal to snapshot")
+
+# 52g — no c9 effects, c13 batch, c22 stability, sidecar_nonfactor in Branch B.
+_forbidden52 = (
+    "scripts.tex.render_effects_layered",
+    "scripts.gen.batch_v2",
+    "scripts.rules.sampling.i4_stratified",
+    "scripts.classifier.sidecar_nonfactor",
+    "scripts.ear.stability_metrics",
+)
+for _p52 in sorted(_SCRIPTS52.iterdir()):
+    if _p52.is_file() and _p52.suffix == ".py":
+        _tree52 = _ast52.parse(_p52.read_text(), filename=str(_p52))
+        _imports52 = []
+        for _n52 in _ast52.walk(_tree52):
+            if isinstance(_n52, _ast52.Import):
+                _imports52 += [a.name for a in _n52.names]
+            elif isinstance(_n52, _ast52.ImportFrom):
+                _mod52 = _n52.module or ""
+                _imports52.append(_mod52)
+                for a in _n52.names:
+                    _imports52.append(f"{_mod52}.{a.name}")
+        for _bad52 in _forbidden52:
+            check(not any(_bad52 in _i52 for _i52 in _imports52),
+                  f"cross-seed §52g: {_p52.name} does not import {_bad52}")
+
+# 52h — c13 breadth-seed anchor inputs present (original + bare_midi per seed).
+for _seed52 in ("seed_mid_50s", "synth_060s"):
+    for _kind52 in ("original.wav", "bare_midi.wav"):
+        _pi52 = _REPO52 / "data" / "breadth" / _seed52 / _kind52
+        check(_pi52.is_file(), f"cross-seed §52h: {_pi52.relative_to(_REPO52)} present")
+
+# 52i — cross_seed_summary.tsv has header + 2 data rows with per-seed verdict.
+_lines52 = _SUM52.read_text().strip().splitlines()
+check(len(_lines52) == 3,
+      f"cross-seed §52i: summary tsv has 3 lines (got {len(_lines52)})")
+_seen52 = set()
+for _row52 in _lines52[1:]:
+    _cols52 = _row52.split("\t")
+    _seen52.add(_cols52[0])
+    check(_cols52[1] in ("PALETTE_MOVES_PANEL", "PALETTE_NEUTRAL", "RENDER_FAILS"),
+          f"cross-seed §52i: summary verdict in enum ({_cols52[1]})")
+check(_seen52 == {"seed_mid_50s", "synth_060s"},
+      f"cross-seed §52i: summary rows cover both seeds (got {_seen52})")
+
+# 52j — c34 test suite defines >= 12 test_ functions.
+if _TEST52.is_file():
+    _tree52t = _ast52.parse(_TEST52.read_text())
+    _tfns52 = [n.name for n in _tree52t.body
+               if isinstance(n, _ast52.FunctionDef) and n.name.startswith("test_")]
+    check(len(_tfns52) >= 12,
+          f"cross-seed §52j: test file defines >= 12 test_ functions (got {len(_tfns52)})")
+
+
+# §53. M-GEN-1/palette-driven-batch-v1 — cycle 34 clone-2, fork 43802db1a81c.
+# First activation of c33 palette-render in the M-GEN-1 batch chain (G5).
+import json as _json53
+import hashlib as _hashlib53
+from pathlib import Path as _Path53
+
+_REPO53 = _Path53(__file__).resolve().parent.parent
+_SCRIPTS53 = _REPO53 / "scripts" / "gen_palette_batch_v1"
+_DATA53 = _REPO53 / "data" / "gen_palette_batch_v1"
+_RUB53 = _REPO53 / "docs" / "palette_driven_batch_v1_rubric.md"
+_TEST53 = _REPO53 / "tests" / "test_palette_driven_batch_v1.py"
+
+# 53a — five expected script files present.
+for _fn53 in ("__init__.py", "sample_rule_triple.py", "render_song.py",
+              "run_batch.py", "spread_analysis.py"):
+    check((_SCRIPTS53 / _fn53).is_file(),
+          f"guard §53a: scripts/gen_palette_batch_v1/{_fn53} present")
+
+# 53b — rubric-doc mtime < earliest script mtime.
+if _RUB53.is_file() and _SCRIPTS53.is_dir():
+    _rmt53 = _RUB53.stat().st_mtime
+    _sms53 = [p.stat().st_mtime for p in _SCRIPTS53.iterdir()
+              if p.is_file() and p.suffix == ".py"]
+    check(bool(_sms53) and _rmt53 < min(_sms53),
+          f"guard §53b: rubric mtime < earliest script mtime")
+
+# 53c — per-salt SHA anchors present + byte-deterministic per salt.
+for _salt53 in (0, 1, 2):
+    _sd53 = _DATA53 / "per_song" / f"{_salt53}"
+    _r1 = _sd53 / "bare_combined.wav.sha.run1"
+    _r2 = _sd53 / "bare_combined.wav.sha.run2"
+    check(_r1.is_file() and _r2.is_file(),
+          f"guard §53c: per-salt SHA anchors present (salt={_salt53})")
+    if _r1.is_file() and _r2.is_file():
+        check(_r1.read_text().strip() == _r2.read_text().strip(),
+              f"guard §53c: per-salt byte-determinism (salt={_salt53})")
+
+# 53d — verdict.json parseable + verdict in enum + rubric_hash matches.
+_vjp53 = _DATA53 / "verdict.json"
+if _vjp53.is_file():
+    _v53 = _json53.loads(_vjp53.read_text())
+    check(_v53.get("verdict") in ("BATCH_SPREAD_EXPECTED",
+                                  "BATCH_SPREAD_COLLAPSED", "BATCH_FAILS"),
+          f"guard §53d: verdict in enum (got {_v53.get('verdict')})")
+    _rh53 = (_DATA53 / "rubric_hash.txt").read_text().strip()
+    check(_v53.get("rubric_hash") == _rh53,
+          "guard §53d: verdict.json.rubric_hash == rubric_hash.txt")
+
+# 53e — c33 palette_render anchor SHAs unchanged.
+_apj53 = _DATA53 / "anchor_preservation.json"
+if _apj53.is_file():
+    _ap53 = _json53.loads(_apj53.read_text())
+    _pr_dir = _REPO53 / "scripts" / "palette_render"
+    for _p53 in sorted(_pr_dir.iterdir()):
+        if _p53.is_file() and _p53.suffix == ".py":
+            _live53 = _hashlib53.sha256(_p53.read_bytes()).hexdigest()
+            _snap53 = _ap53["anchors"]["scripts_palette_render"].get(_p53.name)
+            check(_snap53 == _live53,
+                  f"guard §53e: c33 palette_render/{_p53.name} SHA unchanged")
+
+# 53f — c31 palette-v1 anchor SHAs unchanged.
+if _apj53.is_file():
+    _p_dir = _REPO53 / "scripts" / "palette"
+    for _p53 in sorted(_p_dir.iterdir()):
+        if _p53.is_file() and _p53.suffix == ".py":
+            _live53 = _hashlib53.sha256(_p53.read_bytes()).hexdigest()
+            _snap53 = _ap53["anchors"]["scripts_palette"].get(_p53.name)
+            check(_snap53 == _live53,
+                  f"guard §53f: c31 palette/{_p53.name} SHA unchanged")
+
+# 53g — no cycle-22 or cycle-26..30 analytical imports in Branch C.
+_forbidden53 = ("scripts.ear.stability_metrics", "scripts.ear.stability_audit",
+                "scripts.analysis.collision_model_bp",
+                "scripts.analysis.canonical_aggregate_sha",
+                "scripts.analysis.hash_geometry_fit",
+                "scripts.analysis.multiple_testing_correction",
+                "scripts.analysis.semantic_cluster_fit",
+                "scripts.rules.sampling.i4_stratified",
+                "scripts.tex.render_effects_layered",
+                "scripts.gen.batch_v2")
+import ast as _ast53g
+for _p53 in sorted(_SCRIPTS53.iterdir()):
+    if _p53.is_file() and _p53.suffix == ".py":
+        _tree53g = _ast53g.parse(_p53.read_text())
+        _mods53g = set()
+        for _node53g in _ast53g.walk(_tree53g):
+            if isinstance(_node53g, _ast53g.Import):
+                for _al53g in _node53g.names:
+                    _mods53g.add(_al53g.name)
+            elif isinstance(_node53g, _ast53g.ImportFrom):
+                if _node53g.module:
+                    _mods53g.add(_node53g.module)
+        for _bad53 in _forbidden53:
+            _hit53g = any(_m == _bad53 or _m.startswith(_bad53 + ".")
+                          for _m in _mods53g)
+            check(not _hit53g,
+                  f"guard §53g: {_p53.name} does not import {_bad53}")
+
+# 53h — spread_analysis.json IQR + max-min entries present per key.
+_sj53 = _DATA53 / "spread_analysis.json"
+if _sj53.is_file():
+    _s53 = _json53.loads(_sj53.read_text())
+    for _k53 in ("mel_l1_db", "spectral_centroid_rmse_hz",
+                 "rms_env_rmse", "lufs_m_rmse_lu"):
+        _entry53 = _s53.get("per_key", {}).get("panel_fluidsynth", {}).get(_k53, {})
+        check("iqr" in _entry53 and "max_minus_min" in _entry53,
+              f"guard §53h: spread_analysis {_k53} iqr+max_minus_min present")
+    check("sfizz_vs_delta_correlation" in _s53,
+          "guard §53h: sfizz_vs_delta_correlation entry present")
+
+# 53i — c34 test suite defines >= 12 test_ functions.
+import ast as _ast53
+if _TEST53.is_file():
+    _tree53 = _ast53.parse(_TEST53.read_text())
+    _tfns53 = [n.name for n in _tree53.body
+               if isinstance(n, _ast53.FunctionDef) and n.name.startswith("test_")]
+    check(len(_tfns53) >= 12,
+          f"guard §53i: test file defines >= 12 test_ functions (got {len(_tfns53)})")
+
+
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")
 sys.exit(1 if fail else 0)
