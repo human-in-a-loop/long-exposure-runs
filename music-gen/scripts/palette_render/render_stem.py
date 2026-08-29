@@ -166,6 +166,14 @@ def render_sfizz(midi_path: Path, out_wav: Path,
     Note: sfizz_render doesn't have a --duration flag; it renders MIDI
     to completion. If the MIDI is shorter than 30s we pad; longer we
     trim. Both happen inside _canonicalize_wav_deterministic.
+
+    c37 v4 opcode-rewrite fallback: when parameter_dict contains
+    'cutoff' (Hz) and/or 'resonance' (dB) the SFZ is rewritten to a
+    temp file with `fil_cutoff=<Hz>` and/or `fil_resonance=<dB>`
+    injected into each `<region>` block, sfizz_render is invoked with
+    that temp path, and the temp is unlinked. The on-disk anchor SFZ
+    is never modified. Lazy import of the rewriter keeps v3 dispatch
+    independent of v4.
     """
     if not SFZ_PATH.is_file():
         raise RuntimeError(f"SFZ missing: {SFZ_PATH}")
@@ -176,9 +184,25 @@ def render_sfizz(midi_path: Path, out_wav: Path,
     raw = out_wav.with_suffix(".raw.wav")
     if raw.exists():
         raw.unlink()
+    # c37 v4 opcode-rewrite fallback (sfizz dispatch branch growth).
+    sfz_path_to_use = SFZ_PATH
+    rewritten_sfz: Path | None = None
+    if parameter_dict is not None and (
+        "cutoff" in parameter_dict or "resonance" in parameter_dict
+    ):
+        # Lazy import: keep v3 sfizz path free of v4 dependency.
+        from scripts.palette_render_v4.extend_sfizz_opcode_rewrite import (
+            rewrite_sfz_to_temp,
+        )
+        rewritten_sfz = rewrite_sfz_to_temp(
+            SFZ_PATH,
+            cutoff=parameter_dict.get("cutoff"),
+            resonance=parameter_dict.get("resonance"),
+        )
+        sfz_path_to_use = rewritten_sfz
     cmd = [
         SFIZZ_RENDER,
-        "--sfz", str(SFZ_PATH),
+        "--sfz", str(sfz_path_to_use),
         "--midi", str(midi_path),
         "--wav", str(raw),
         "-b", str(block_size),
@@ -187,6 +211,11 @@ def render_sfizz(midi_path: Path, out_wav: Path,
         "-p", "64",
     ]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
+    if rewritten_sfz is not None:
+        try:
+            rewritten_sfz.unlink()
+        except FileNotFoundError:
+            pass
     # sfizz_render writes int16 mono/stereo — read via soundfile as float.
     data, sr = sf.read(str(raw), always_2d=True)
     if sr != SAMPLE_RATE:
