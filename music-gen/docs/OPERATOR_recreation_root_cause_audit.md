@@ -50,8 +50,43 @@ adding fidelity. A pipeline that deletes the drums, bass, and vocals can
 still "LANDS" under this gate. The gate must become a panel: no single
 metric may confer success, and perceptual embedding must not regress.
 
+## Second-pass audit (same day): three more root causes
+
+**RC7 — No mix/balance matching.** The entire "texture" stage is a fixed
+Surge XT chorus (Output Mix 0.35) + faint reverb (Output Mix 0.05) applied
+identically to every song's full mix (`scripts/tex/content_flip/
+apply_pinned_chain.py`). Rendered stem balance is whatever fluidsynth's
+default patch loudness produces — never compared to the original stems.
+A per-stem render module exists (`scripts/palette_render/render_stem.py`)
+but the recreation pipeline does not use it.
+
+**RC8 — Always the first 30 s from t=0.** Intros are systematically the
+sparsest, least representative section; the pipeline never reconstructs a
+chorus/full-groove section.
+
+**RC9 — Arrangement collapse.** All non-bass/drums/vocals instruments
+("other" = keys+guitar+horns+synths) are transcribed as ONE polyphonic part
+on ONE patch.
+
+## Operator design decisions (user-selected, 2026-08-29)
+
+1. **Section selection:** auto-pick the peak 30 s window per song
+   (max RMS + onset density) instead of t=0.
+2. **Vocals:** HYBRID render — layer the original separated vocal stem over
+   the reconstructed band. (Vocal melody is still transcribed into the score
+   for the campaign's symbolic artifacts; it is just not synthesized in the
+   render.)
+3. **Arrangement:** switch separation to htdemucs_6s (piano + guitar stems
+   first-class; thinner residual "other"), each with its own transcription
+   and GM patch.
+4. **Mix stage:** per-stem render → per-stem loudness match (RMS/LUFS) to
+   the corresponding original stem → deterministic per-stem EQ curve fitted
+   to the original stem's average spectrum → sum. Replaces the global
+   chorus+reverb wash entirely.
+
 ## Operator directive queued alongside this audit
 
 Stop breadth. Focus on **accurate reconstruction of 3–5 songs** with strong
-rhythm sections (must include Chicken Grease), fixing RC1–RC6 as
-pre-registered acceptance criteria before any other new work.
+rhythm sections (must include Chicken Grease), fixing RC1–RC9 under the four
+design decisions above, with pre-registered acceptance criteria, before any
+other new work.
