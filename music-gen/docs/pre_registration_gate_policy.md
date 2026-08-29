@@ -81,3 +81,58 @@ pre-registration gate in this campaign, including:
 
 Ledger event: `_plan/git-log-gate-policy-amendment` records the
 formal amendment.
+
+## §3 — Empirical scope (c47 Branch B verdict = MIXED)
+
+Cycle 47 empirically verified the c46 harness-constraint claim by
+grep-classifying the full `git log --all` history reachable in this
+workspace (244 commits at scope-verification time). The verdict:
+**MIXED**. Both patterns are observed, partitioned by session-context
+class as follows:
+
+| session_context class | commit count | interpretation |
+|---|---:|---|
+| `periodic-sweep` | 105 | Harness-boundary commits. Match the amendment claim. |
+| `merge-integration` | 36 | Post-merge / cycle-N-merge envelopes. Harness-boundary. |
+| `worker-turn` | 9 | Substantive-milestone-prefixed commits that landed inside a worker's own turn (all under `M-SCORE-1/bridge-api-real-audio-quantization/*` cycles 38–39). |
+| `auditor-turn` | 0 | — |
+| `researcher-turn` | 0 | — |
+| `harness-auto-write` | 0 | — |
+| `unknown` | 94 | Bare `Add music-gen run artifacts …` variants without a `(periodic sweep)` or `(merge …)` envelope; conservatively NOT classified as worker-turn. |
+
+Full evidence: `data/pre_reg_policy_verify/commit_classification.tsv`,
+`data/pre_reg_policy_verify/session_context_matrix.tsv`,
+`data/pre_reg_policy_verify/verdict.json` (SHA-256 chain three-way
+byte-equal with rubric hash pinned to
+`data/pre_reg_policy_verify/rubric_hash.txt`).
+
+**Partition of the amendment's scope**:
+
+- Session contexts landing in the **harness-boundary bucket** (the
+  amendment's claim holds — mtime-only is the correct gate):
+  `periodic-sweep`, `merge-integration`, `harness-auto-write`,
+  `unknown`.
+- Session contexts landing in the **in-turn-capable bucket** (the
+  amendment's claim does NOT hold for these — path (i) git-log gate
+  remained satisfiable there): `worker-turn`, `auditor-turn`,
+  `researcher-turn`.
+
+**Operational reading**: in the current session (cycles 45+), only
+the harness-boundary bucket has been observed producing commits.
+The 9 in-turn worker-turn commits all landed during cycles 38–39
+before the c46 amendment was authored; those workers ran under a
+harness or session context that DID permit `git commit` inside a
+single turn. Post-c46 workers running under the current harness
+never emit worker-turn commits — every write is enveloped by a
+periodic-sweep or merge boundary. The amendment's mtime-only gate is
+therefore correct for the current context and remains ADVISORY for
+future contexts that fall into the in-turn-capable bucket.
+
+**Reconciliation ticket**: none. MIXED does not trigger sunset of
+path (i); it documents the partition and lets future cycles falling
+into the in-turn-capable bucket restore the git-log gate scope-locally
+via a follow-up amendment.
+
+Ledger event: `_infra/pre-registration-gate-policy-scope-verification-clone-1/amendment-empirically-mixed`
+records this verdict.
+

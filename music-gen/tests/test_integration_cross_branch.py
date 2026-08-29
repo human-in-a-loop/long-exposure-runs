@@ -4316,7 +4316,8 @@ check(_C35_CONV_DOC.is_file(), "guard §56d: fanout_launched_event_convention.md
 check(_C35_OFFENDER.is_file(), "guard §56e: launched_event_offender_list_v1.txt fixture present")
 if _C35_MANIFEST.is_file():
     _m56 = json.loads(_C35_MANIFEST.read_bytes())
-    check(_m56.get("anchor_count") == 18, f"guard §56f: 18 anchors in manifest (got {_m56.get('anchor_count')})")
+    # Append-only per c35 contract; c47 Branch C appended env/SOURCE_DATE_EPOCH → 19.
+    check(_m56.get("anchor_count") >= 18, f"guard §56f: >=18 anchors in manifest (got {_m56.get('anchor_count')})")
 check(_C35_TEST_STAB.is_file() and _C35_TEST_CONV.is_file(),
       "guard §56g: both c35 test files on disk")
 
@@ -4500,6 +4501,278 @@ if _C46_DET.is_file():
     check(_d.get("run_1", {}).get("corn_head_v2.pt")
           == _d.get("run_2", {}).get("corn_head_v2.pt"),
           "v2 §60i: c46 determinism × 2 equal on corn_head_v2.pt")
+
+# -----------------------------------------------------------------------
+# §63 — c47 Branch C combined deprecation + SOURCE_DATE_EPOCH pin
+# -----------------------------------------------------------------------
+_DEP_RUBRIC = WS / "docs" / "deprecation_and_anchor_pin_rubric.md"
+_DEP_VERDICT = WS / "data" / "deprecation_and_anchor_pin" / "verdict.json"
+_C45_OLD = WS / "scripts" / "ear_v2" / "determinism_check.py"
+_C45_NEW = WS / "tools" / "stale" / "scripts_ear_v2_determinism_check_c45.py"
+_C46_CANON = WS / "scripts" / "ear_v2" / "adjudication" / "determinism_check_c46.py"
+_ANCHOR_MANIFEST = WS / "data" / "anchor_manifest_v1.json"
+_ANCHOR_PRE = WS / "data" / "deprecation_and_anchor_pin" / "anchor_preservation_pre.json"
+
+# 63.1 — rubric doc exists + mtime < scripts under scripts/deprecation_and_anchor_pin/
+if _DEP_RUBRIC.is_file():
+    _dep_rubric_mtime = _DEP_RUBRIC.stat().st_mtime
+    _dep_script_dir = WS / "scripts" / "deprecation_and_anchor_pin"
+    _dep_scripts_ok = True
+    if _dep_script_dir.is_dir():
+        for _s in _dep_script_dir.glob("*.py"):
+            if _s.name == "__init__.py":
+                continue
+            if _dep_rubric_mtime > _s.stat().st_mtime:
+                _dep_scripts_ok = False
+                break
+    check(_dep_scripts_ok, "§63.1: c47-C rubric mtime <= all scripts under scripts/deprecation_and_anchor_pin/")
+else:
+    check(False, "§63.1: c47-C rubric doc present")
+
+# 63.2 — verdict.json present + verdict in 2-verdict set
+if _DEP_VERDICT.is_file():
+    _dep_v = json.loads(_DEP_VERDICT.read_text())
+    check(
+        _dep_v.get("verdict") in ("DEPRECATION_LANDS_AND_ANCHOR_PINNED", "DEPRECATION_PARTIAL"),
+        "§63.2: c47-C verdict in 2-verdict set",
+    )
+else:
+    check(False, "§63.2: c47-C verdict.json present")
+
+# 63.3 — moved file exists at tools/stale/
+check(_C45_NEW.is_file(), "§63.3: tools/stale/scripts_ear_v2_determinism_check_c45.py exists")
+
+# 63.4 — old c45 path no longer exists
+check(not _C45_OLD.is_file(), "§63.4: scripts/ear_v2/determinism_check.py removed from original path")
+
+# 63.5 — c46 canonical module present + SHA matches pre-c47 baseline
+if _C46_CANON.is_file() and _ANCHOR_PRE.is_file():
+    _pre = json.loads(_ANCHOR_PRE.read_text())
+    _c46_now = _hs_v2.sha256(_C46_CANON.read_bytes()).hexdigest()
+    check(_c46_now == _pre["c46_canonical"]["sha256"],
+          "§63.5: c46 canonical determinism_check_c46.py SHA matches pre-c47 baseline")
+else:
+    check(False, "§63.5: c46 canonical + pre-snapshot present")
+
+# 63.6 — anchor manifest contains env/SOURCE_DATE_EPOCH entry
+if _ANCHOR_MANIFEST.is_file():
+    _am = json.loads(_ANCHOR_MANIFEST.read_text())
+    _has_sde = any(a.get("anchor_id") == "env/SOURCE_DATE_EPOCH" for a in _am.get("anchors", []))
+    check(_has_sde, "§63.6: anchor_manifest_v1.json contains env/SOURCE_DATE_EPOCH")
+else:
+    check(False, "§63.6: anchor manifest present")
+
+# 63.7 — entry count == 19 (18 pre + 1 new)
+if _ANCHOR_MANIFEST.is_file():
+    _am = json.loads(_ANCHOR_MANIFEST.read_text())
+    check(
+        _am.get("anchor_count") == 19 and len(_am.get("anchors", [])) == 19,
+        "§63.7: anchor manifest entry count == 19",
+    )
+else:
+    check(False, "§63.7: anchor manifest count check requires manifest")
+
+# 63.8 — no PRNG under scripts/deprecation_and_anchor_pin/ (AST-grep)
+_dep_script_dir = WS / "scripts" / "deprecation_and_anchor_pin"
+_prng_hits = []
+if _dep_script_dir.is_dir():
+    import ast as _ast
+    _forbidden = ("random", "numpy.random", "secrets")
+    for _p in _dep_script_dir.rglob("*.py"):
+        try:
+            _tree = _ast.parse(_p.read_text())
+        except SyntaxError:
+            continue
+        for _node in _ast.walk(_tree):
+            if isinstance(_node, _ast.Import):
+                for _a in _node.names:
+                    for _m in _forbidden:
+                        if _a.name == _m or _a.name.startswith(_m + "."):
+                            _prng_hits.append(f"{_p}:{_a.name}")
+            elif isinstance(_node, _ast.ImportFrom):
+                if _node.module:
+                    for _m in _forbidden:
+                        if _node.module == _m or _node.module.startswith(_m + "."):
+                            _prng_hits.append(f"{_p}:{_node.module}")
+check(not _prng_hits, "§63.8: no PRNG under scripts/deprecation_and_anchor_pin/")
+
+# §62. _infra/pre-registration-gate-policy-scope-verification — c47 clone-1, Branch B.
+import hashlib as _hs_c47
+_C47_SCRIPTS = WS / "scripts" / "pre_reg_policy_verify"
+_C47_DATA = WS / "data" / "pre_reg_policy_verify"
+_C47_RUBRIC = WS / "docs" / "pre_registration_gate_policy_scope_verification_rubric.md"
+_C47_RUBRIC_HASH = _C47_DATA / "rubric_hash.txt"
+_C47_VERDICT = _C47_DATA / "verdict.json"
+_C47_MATRIX = _C47_DATA / "session_context_matrix.tsv"
+_C47_CLASSIFICATION = _C47_DATA / "commit_classification.tsv"
+_C47_ANCHOR = _C47_DATA / "anchor_preservation.json"
+_C47_POLICY = WS / "docs" / "pre_registration_gate_policy.md"
+
+# §62a — script presence (four required modules).
+_c47_required = ("__init__.py", "grep_git_log.py", "classify_commits.py",
+                 "session_context_matrix.py", "verdict.py")
+for _n in _c47_required:
+    check((_C47_SCRIPTS / _n).is_file(), f"c47 §62a: script present {_n}")
+
+# §62b — interpreter-guard string present in every non-__init__ module.
+_c47_guard_ok = True
+for _p in _C47_SCRIPTS.glob("*.py"):
+    if _p.name == "__init__.py":
+        continue
+    if "/usr/bin/python3" not in _p.read_text():
+        _c47_guard_ok = False
+        break
+check(_c47_guard_ok, "c47 §62b: interpreter guard in every script")
+
+# §62c — no PRNG in any script.
+_c47_prng_ok = True
+for _p in _C47_SCRIPTS.glob("*.py"):
+    _t = _p.read_text()
+    if "import random" in _t or "numpy.random" in _t or "secrets" in _t.split() or "np.random" in _t:
+        _c47_prng_ok = False
+        break
+check(_c47_prng_ok, "c47 §62c: no PRNG imports/uses")
+
+# §62d — no sidecar_nonfactor imports.
+_c47_sc_ok = True
+for _p in _C47_SCRIPTS.glob("*.py"):
+    if "sidecar_nonfactor" in _p.read_text():
+        _c47_sc_ok = False
+        break
+check(_c47_sc_ok, "c47 §62d: no sidecar_nonfactor references")
+
+# §62e — no c15 i4_stratified.py imported.
+_c47_i4_ok = True
+for _p in _C47_SCRIPTS.glob("*.py"):
+    if "i4_stratified" in _p.read_text():
+        _c47_i4_ok = False
+        break
+check(_c47_i4_ok, "c47 §62e: no i4_stratified imports")
+
+# §62f — verdict.json schema well-formed and verdict enum member.
+if _C47_VERDICT.is_file():
+    _v = json.loads(_C47_VERDICT.read_text())
+    _required = {"verdict", "rubric_hash", "counts_by_context",
+                 "evidence_commits_sample", "decision_rule_applied"}
+    check(_required <= set(_v.keys()), "c47 §62f: verdict.json schema keys present")
+    check(_v["verdict"] in {"HARNESS_CONSTRAINT_CONFIRMED",
+                             "HARNESS_CONSTRAINT_LIFTED", "MIXED"},
+          f"c47 §62f: verdict in enum ({_v['verdict']})")
+
+# §62g — rubric_hash three-way byte-equality (doc == on-disk == verdict).
+if _C47_RUBRIC.is_file() and _C47_RUBRIC_HASH.is_file() and _C47_VERDICT.is_file():
+    _doc_sha = _hs_c47.sha256(_C47_RUBRIC.read_bytes()).hexdigest()
+    _disk = _C47_RUBRIC_HASH.read_text().strip()
+    _v_sha = json.loads(_C47_VERDICT.read_text())["rubric_hash"]
+    check(_doc_sha == _disk == _v_sha,
+          "c47 §62g: rubric_hash three-way byte-equal")
+
+# §62h — anchor preservation: c22 stability harness + c46 canonical module unchanged.
+if _C47_ANCHOR.is_file():
+    _anchor = json.loads(_C47_ANCHOR.read_text())
+    _c22_ok = True
+    for _rel in ("scripts/ear/synthetic_labels.py", "scripts/ear/stability_metrics.py",
+                 "scripts/ear/stability_audit.py", "scripts/ear/features.py",
+                 "scripts/ear/model.py", "scripts/ear/corn.py",
+                 "scripts/ear/leak_test.py"):
+        _cur = _hs_c47.sha256((WS / _rel).read_bytes()).hexdigest() \
+            if (WS / _rel).is_file() else None
+        if _anchor.get(_rel) != _cur:
+            _c22_ok = False
+            break
+    check(_c22_ok, "c47 §62h: c22 stability harness SHA-manifest byte-identical pre==post")
+    _c46_rel = "scripts/ear_v2/adjudication/determinism_check_c46.py"
+    _c46_cur = _hs_c47.sha256((WS / _c46_rel).read_bytes()).hexdigest() \
+        if (WS / _c46_rel).is_file() else None
+    check(_anchor.get(_c46_rel) == _c46_cur,
+          "c47 §62h: c46 determinism_check_c46.py SHA byte-identical pre==post")
+
+# §61. M-EAR-1/real-label-training-v2.1 — c47 clone-0 Branch A (50-ctl SB3 re-verdict).
+_V2P1_DATA = WS / "data" / "ear_v2p1"
+_V2P1_RUBRIC = WS / "docs" / "ear_real_label_training_v2p1_rubric.md"
+_V2P1_HASH = _V2P1_DATA / "rubric_hash.txt"
+_V2P1_VERDICT = _V2P1_DATA / "verdict.json"
+_V2P1_REPORT = WS / "docs" / "ear_real_label_training_v2p1_report.md"
+_V2P1_SB3_R1 = _V2P1_DATA / "sb3_50ctl_run_1" / "sb3_50ctl_verdict_v2p1.json"
+_V2P1_SB3_R2 = _V2P1_DATA / "sb3_50ctl_run_2" / "sb3_50ctl_verdict_v2p1.json"
+_V2P1_ANCHOR = _V2P1_DATA / "anchor_preservation_v2p1.json"
+_V2P1_C22_HARNESS = ("synthetic_labels.py", "stability_metrics.py", "stability_audit.py")
+
+# §61a — verdict JSON schema well-formed
+if _V2P1_VERDICT.is_file():
+    _v = json.loads(_V2P1_VERDICT.read_text())
+    check(
+        _v.get("verdict") in {"EAR_v2p1_STABLE_FPR_PASS",
+                              "EAR_v2p1_BOUNDARY_TIP",
+                              "EAR_v2p1_FPR_STILL_OVERSHOOT"},
+        "v2p1 §61a: verdict label in allowed set",
+    )
+    check("mapping_label" in _v and "detection_v2p1" in _v
+          and "fpr_run_1" in _v and "fpr_run_2" in _v,
+          "v2p1 §61a: verdict fields present")
+# §61b — three-way rubric_hash byte-equality
+if _V2P1_VERDICT.is_file() and _V2P1_HASH.is_file() and _V2P1_RUBRIC.is_file():
+    _v = json.loads(_V2P1_VERDICT.read_text())
+    _h_disk = _V2P1_HASH.read_text().strip()
+    _h_doc = _hs_v2.sha256(_V2P1_RUBRIC.read_bytes()).hexdigest()
+    check(_v.get("rubric_hash") == _h_disk == _h_doc,
+          "v2p1 §61b: three-way rubric_hash byte-equality")
+# §61c — byte-determinism × 2 on SB3 verdict
+if _V2P1_SB3_R1.is_file() and _V2P1_SB3_R2.is_file():
+    _s1 = _hs_v2.sha256(_V2P1_SB3_R1.read_bytes()).hexdigest()
+    _s2 = _hs_v2.sha256(_V2P1_SB3_R2.read_bytes()).hexdigest()
+    check(_s1 == _s2,
+          "v2p1 §61c: byte-determinism × 2 on sb3_50ctl_verdict_v2p1.json")
+# §61d — c22 stability harness anchor SHAs unchanged
+if _V2P1_ANCHOR.is_file():
+    _a = json.loads(_V2P1_ANCHOR.read_text())
+    _entries = _a.get("entries", {})
+    _c22_ok = all(_entries.get(f"scripts/ear/{n}", {}).get("present")
+                  for n in _V2P1_C22_HARNESS)
+    check(_c22_ok, "v2p1 §61d: c22 stability harness anchors present")
+    check(_a.get("unchanged") is True,
+          "v2p1 §61d: anchor preservation unchanged pre==post")
+# §61e — c45 v2 verdict.json SHA unchanged (v2.1 does NOT modify v2)
+if (WS / "data" / "ear_v2" / "verdict.json").is_file() and _V2P1_VERDICT.is_file():
+    _v2sha_now = _hs_v2.sha256(
+        (WS / "data" / "ear_v2" / "verdict.json").read_bytes()
+    ).hexdigest()
+    _v = json.loads(_V2P1_VERDICT.read_text())
+    check(_v.get("c45_v2_verdict_json_sha256") == _v2sha_now,
+          "v2p1 §61e: c45 v2 verdict.json SHA pinned in v2.1 verdict")
+# §61f — c46 SB3 widening result SHA unchanged (READ-ONLY anchor)
+if (WS / "data" / "ear_v2" / "sb3_control_widening_result.json").is_file():
+    _c46_sb3_now = _hs_v2.sha256(
+        (WS / "data" / "ear_v2" / "sb3_control_widening_result.json").read_bytes()
+    ).hexdigest()
+    _v = json.loads(_V2P1_VERDICT.read_text()) if _V2P1_VERDICT.is_file() else {}
+    check(_v.get("c46_sb3_widening_result_sha256") == _c46_sb3_now,
+          "v2p1 §61f: c46 SB3 widening result SHA pinned in v2.1 verdict")
+# §61g — corpus-N caveat presence
+if _V2P1_REPORT.is_file():
+    _rp = _V2P1_REPORT.read_text()
+    check("43/80" in _rp and "preview_partial_corpus_v2p1" in _rp,
+          "v2p1 §61g: corpus-N caveat + preview_partial_corpus_v2p1 label present")
+# §61h — no re-verdict of SB1/SB2 (literal FAIL_unchanged_from_c45)
+if _V2P1_VERDICT.is_file():
+    _v = json.loads(_V2P1_VERDICT.read_text())
+    check(_v.get("sb1_status") == "FAIL_unchanged_from_c45",
+          "v2p1 §61h: SB1 literal FAIL_unchanged_from_c45")
+    check(_v.get("sb2_status") == "FAIL_unchanged_from_c45",
+          "v2p1 §61h: SB2 literal FAIL_unchanged_from_c45")
+# §61i — rubric-first mtime ordering for scripts/ear_v2p1/
+if _V2P1_RUBRIC.is_file():
+    _rmt = _V2P1_RUBRIC.stat().st_mtime
+    _script_dir = WS / "scripts" / "ear_v2p1"
+    _rubric_first_ok = True
+    if _script_dir.is_dir():
+        for _p in _script_dir.rglob("*.py"):
+            if _p.name == "__init__.py":
+                continue
+            if _p.stat().st_mtime < _rmt:
+                _rubric_first_ok = False
+                break
+    check(_rubric_first_ok, "v2p1 §61i: rubric doc mtime < all scripts under scripts/ear_v2p1/")
 
 print()
 print(f"result: {'PASS' if fail == 0 else 'FAIL'} ({fail} failures)")

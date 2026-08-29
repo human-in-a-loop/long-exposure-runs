@@ -1,7 +1,7 @@
 # Anchor manifest v1 (Cycle 35 Branch C, clone-2)
 
 **Schema version:** 1
-**Anchor count:** 18
+**Anchor count:** 19 *(18 c35 baseline + 1 c47 Branch C SOURCE_DATE_EPOCH pin)*
 **Long-exposure prefix (exemption):** `/home/user/human-in-a-loop/long-exposure`
 
 ## Anchors
@@ -26,6 +26,25 @@
 | 16 | `c34_palette_v2` | 34 | schema | 4 | 40 | True |
 | 17 | `c34_palette_render_cross_seed` | 34 | cross_seed | 4 | 40 | True |
 | 18 | `c34_gen_palette_batch_v1` | 34 | batch | 4 | 62 | True |
+| 19 | `env/SOURCE_DATE_EPOCH` | 47 | env_pin | 1 | 0 | True |
+
+### Anchor #19 — `env/SOURCE_DATE_EPOCH` (c47 Branch C, clone-2)
+
+Pinned by cycle 47 Branch C combined milestone
+`_infra/pin-source-date-epoch-anchor-clone-2`. Registers the campaign-wide
+`SOURCE_DATE_EPOCH=1756463424` environment pin (used across every
+byte-determinism × 2 assertion since cycle 6) as a first-class anchor
+entry with per-value SHA-256 and canonical-JSON entry SHA-256.
+
+- `value`: `1756463424`
+- `value_sha256`: `sha256(str(1756463424).encode("utf-8"))` =
+  `8ac32472d175ff32e0723cd23fbf5c193b944ccb4ef1e022deec4306e112d2a4`
+- `entry_sha256`:
+  `sha256(canonical_json({"key": ..., "value": ..., "value_sha256": ...}))`
+  = `30ebead368418cb1b49cce024f8aa45f59bb591dfc437f9bd9bbf19abc71e28c`
+- Closes c46 audit MINOR #3 ("SOURCE_DATE_EPOCH unregistered as anchor").
+- Append-only per the c35 anchor-manifest contract — 18 pre-existing
+  entries byte-identical before/after.
 
 ## Per-anchor path SHA summary
 
