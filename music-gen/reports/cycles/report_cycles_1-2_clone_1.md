@@ -1,185 +1,268 @@
 ---
-title: "Cycles 1-2 Clone 1 Report — RC10 Guitar + Piano Transcription Re-Survey (Fork bdd7bb47f1b5)"
+title: "Music-Gen v3 FOCUS Milestone — Fanout Clone 1: Rome (Cycles 1–2)"
 date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-[OUTPUT: report_cycles_1-2_clone_1]
-
-# Cycles 1-2 Clone 1 Report — RC10 Guitar + Piano Transcription Re-Survey (Fork bdd7bb47f1b5)
+# Music-Gen v3 FOCUS Milestone — Fanout Clone 1: Rome (Cycles 1–2)
 
 ## Abstract
 
-Cycles 1-2 of clone-1 (fork `bdd7bb47f1b5`) close RC10 Branch B — Guitar + Piano transcription re-survey on real htdemucs 6-stem outputs — at **RC10_GUITAR_PIANO_LANDS**. Winner per stem type is `C2_tuned` (basic-pitch tuned per instrument freq range) for BOTH guitar and piano. Per-song verdicts: **guitar 4/5 PASS + 1 FAIL** (Dojo Cuts Rome density-overfire 6.24 vs [0.5, 2.0] pass band); **piano 5/5 PASS**. RC10_LANDS threshold (both stems on ≥3 focus songs) met (guitar 4/5 ≥ 3/5; piano 5/5 ≥ 3/5). Chord-track fallback (C3 beat-sync chroma-CQT per operator UPDATE #4 "a correct chord track rendered as a comp pattern beats a wrong note soup") preserved as first-class candidate; passed D7 on 2/5 guitar songs but did not win any per-song D5 ballot. Cycle 2 is a status-acknowledgment standby cycle with on-disk re-verification (all invariants preserved byte-exactly). Auditor decision: **COMPLETE** with `[[BRANCH_COMPLETE]]`.
+This report covers Cycles 1 and 2 of a fanout-clone branch spawned from the Music-Gen v3 campaign's M-V3-FOCUS-1 milestone. The clone (fork `88d75f9754c3`, clone 1) was assigned the reference track *Dojo Cuts — Rome* (source SHA-16 `51e433ade2a845e1`) with a scoped objective to run the full v3 per-stem chain end-to-end on the operator-D1-chosen thirty-second section, sibling in shape to the c5 Chicken Grease Method A delivery. Cycle 1 executed the pipeline in full: htdemucs six-stem separation on both the chosen section and the full song byte-deterministic across two runs; MuScriptor per-stem transcription byte-deterministic on all seven probes; canonical MIDI serialization via the c4 read-only serializer, byte-deterministic on all seven probes; per-stem merge with all four structural gates passing; tempo choice via `librosa.beat.beat_track` on the chosen-section drums; fluidsynth per-track render byte-deterministic across two runs; D2 vocals overlay via a SHA-verified htdemucs vocals copy; rc7 mix-match via the c5 Method A plain broadband RMS-match pattern; and delivery of the operator-section A/B WAVs (thirty seconds each, covering t = 62.740–92.740 s), the full-song reconstruction WAV, the merged MIDI, the manifest, and the eight-key perceptual panel. The verdict shipped as `V3_FOCUS_SONG_LANDS_pending_operator` with the required output artifact at `data/v3/deliveries/51e433ade2a845e1/cycle20/verdict.json` (SHA `d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`), the three-way `rubric_hash_v2` chain byte-equal, and `blocked_on_operator=true`. Cycle 2 was a status-only re-verification that confirmed the artifact and all sub-artifact SHAs byte-identical on disk, then closed the branch with `COMPLETE` per the `<no-null-cycle-validation>` rule. Rome now joins Chicken Grease as the second focus song delivered end-to-end under the v3 per-stem chain.
 
-## Verdict
+## 1. Introduction and scope
 
-**RC10_GUITAR_PIANO_LANDS** (VALIDATED at cycle 1; **COMPLETE** at cycle 2; `[[BRANCH_COMPLETE]]` emitted).
+The M-V3-FOCUS-1 milestone widens the M-V3-SPINE-1 pipeline (previously exercised only on *Chicken Grease*, source SHA-16 `31a164f845f8e27e`) to five focus songs read from `data/recreate_v2/focus_set_v2.json`. Under Fixed Decision 6, M-V3-SPINE-1 itself remains gated on operator ear on Chicken Grease A/B; opening M-V3-FOCUS-1 substantively before that gate would ordinarily be premature. Fork `88d75f9754c3` operates under a c20 operator BREAK-GLASS carveout that closed the environment-drift track as non-factor and authorized substantive parallel work on four focus songs (WIG, Rome, Peach Dream, and Disco A) while Chicken Grease continues to wait on operator ear.
 
-## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
+This report is the merge-disposition summary for clone 1 (Rome). Sibling clones in the same fork:
 
-| Location | SHA-256 |
-| --- | --- |
-| `docs/rc10_guitar_piano_rubric.md` | `c7fe33a742a98f9b8ad2d87cb3f26286950ad560ef5d69c47dd53686fe03d7a8` |
-| `data/rc10_impl/guitar_piano/rubric_hash.txt` | `c7fe33a7…d7a8` (single line, verified) |
-| `verdict.json.rubric_hash` | `c7fe33a7…d7a8` |
+- **Clone 0 (WIG, sha16 `252eb21ce7df7328`)** — PARTIAL. Pipeline terminated at MuScriptor 3/7 probes; downstream stages not run per Fixed Decision 1.
+- **Clone 1 (Rome, sha16 `51e433ade2a845e1`)** — the subject of this report; LANDS_pending_operator, full chain delivered.
+- **Clone 2 (Peach Dream)** — INSUFFICIENT; the required verdict artifact was never emitted.
 
-Three-way byte-equality chain CONFIRMED (auditor re-verified live on-disk).
+The clone's scoped objective as issued:
 
-## Per-Stem Winner + Per-Song Results
+- Read the chosen section from `focus_set_v2.json`.
+- Run htdemucs_6s on both the chosen section and the full song, asserting byte-determinism ×2 across 24 stem SHAs.
+- Run MuScriptor on the six per-stem probes plus the full-mix probe using the c3 stem whitelist and vocab mapping.
+- Serialize canonical MIDI via the c4 `midi_from_json_events.py` (read-only).
+- Merge per-stem MIDIs and assert the four structural gates.
+- Choose tempo via `librosa.beat.beat_track` on the chosen-section drums.
+- Run fluidsynth per-track render ×2 (byte-deterministic).
+- D2 vocals overlay via a SHA-verified htdemucs vocals copy.
+- rc7 mix-match via the c5 Method A pattern (plain RMS-match), using a per-song sibling script that reads `scripts/v3_spine/mix_match_operator_section.py` read-only.
+- Emit the operator-section A/B WAVs (30 s each), a full-song reconstruction WAV, and a delivery manifest under `data/v3/deliveries/51e433ade2a845e1/` matching the c5 Chicken Grease format.
+- Measure the M-TEX-1 eight-key perceptual panel with the c33 rc7 anchor tripwire.
+- Emit `cycle20/verdict.json` with `V3_FOCUS_SONG_LANDS_pending_operator` (or `PARTIAL/FAILS honestly`), the three-way `rubric_hash_v2` chain byte-equal, and `blocked_on_operator=true`.
+- Land a twelve-case test suite at `tests/test_v3_focus_rome_c20.py`.
+- Emit the standard four-row housekeeping ledger set under a `-clone-1` suffix.
 
-**Winner per stem type** (`winner_per_stem.json`): `C2_tuned` (basic-pitch tuned per instrument frequency range) wins for both guitar and piano.
+## 2. Cycle 1: full end-to-end pipeline execution
 
-**Per-song verdicts**:
+### 2.1 Source and chosen section
 
-| Song ID (sha16) | Guitar (C2_tuned) | Piano (C2_tuned) |
-| --- | :---: | :---: |
-| `31a164f845f8e27e` (Chicken Grease) | PASS | PASS |
-| `cdd2717e52820ff6` (Disco A) | PASS | PASS |
-| `51e433ade2a845e1` (Dojo Cuts Rome) | **FAIL** (density 6.24 vs [0.5, 2.0]) | PASS |
-| `252eb21ce7df7328` (Mura Masa) | PASS | PASS |
-| `88d247468cb6d49f` (band-7) | PASS | PASS |
-| **Totals** | **4/5 PASS** | **5/5 PASS** |
+Song `Dojo Cuts - Rome`, source SHA-16 `51e433ade2a845e1`, audio at `corpus/ratings/5/012__gPp2KBV9zXk__Dojo_Cuts_-_Rome.mp3`. The chosen section came from the c50 D1 auto-picker over `focus_set_v2.json`: t = 62.74031746031746 s to t = 92.74031746031747 s (duration 30.0 s exactly).
 
-RC10_LANDS threshold (both stems on ≥3 focus songs) met.
+### 2.2 Read-only upstream anchors
 
-## Candidate Matrix (§3 D3)
+Every read-only anchor was byte-verified against its pinned SHA. The primary backref recorded in the verdict is the Chicken Grease c19 heartbeat verdict at `data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` (SHA `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd`), extending the append-only chain into the focus fork. The read-only scripts consumed by the per-song sibling drivers (`scripts/v3_spine/midi_from_json_events.py`, `scripts/v3_spine/mix_match_operator_section.py`, `scripts/palette_render/render_stem.py`) were consumed at their locked SHAs unchanged.
 
-Per-stem candidate matrix implemented per §3 D3:
+### 2.3 Pipeline stage-by-stage results
 
-- **C1_default**: basic-pitch with default thresholds.
-- **C2_tuned**: basic-pitch tuned per instrument frequency range (winner both stems).
-- **C3_chord_track**: beat-synchronous chroma-CQT chord-track as comp-pattern fallback for polyphonic failures (per operator UPDATE #4).
+Every stage passed byte-determinism ×2 on its outputs.
 
-Scored per §3 D2: **beat-synchronous chroma cosine + note-density ratio**. D4 post-processing applied both with and without (2 flavours × candidates in scorecard).
+**htdemucs six-stem separation (chosen section, ×2 runs, twelve SHAs):**
 
-**Scorecard**: 60 data rows + 1 header = 61 lines (5 songs × 2 stems × 3 candidates × 2 D4-flavors).
+| Stem | Run 1 == Run 2 |
+|---|---|
+| bass | `84533c462a1b5f3c…` |
+| drums | `a8ce2b5786968ded…` |
+| guitar | `49a1113451d3b8bf…` |
+| other | `a0da1b135fbf4b2f…` |
+| piano | `9d44c260755f1d44…` |
+| vocals | `ae819d2a71c5d71a…` |
 
-## Content-Metric Gate Discriminates Over-Transcription (Load-Bearing Finding)
+**htdemucs six-stem separation (full song, ×2 runs, twelve additional SHAs):**
 
-The Dojo Cuts Rome guitar FAIL is the **campaign's first per-song rejection on density-band overfire** (6.24 with C2_tuned; 2.38 with C1_default+C3_chord_track vs [0.5, 2.0] pass band). Validates the c50 rubric-v2 D2 dual-metric choice — chroma-cosine alone would have PASSed this song at 0.87-0.95.
+| Stem | Run 1 == Run 2 |
+|---|---|
+| bass | `4e752bdd173c5eee…` |
+| drums | `fc3b92ae9d014c0a…` |
+| guitar | `667818290521aa6b…` |
+| other | `4acc199c6be940c6…` |
+| piano | `78a30a9c83616bea…` |
+| vocals | `d46c28c1bdba43fe…` |
 
-Chord-track first-classness preserved per operator UPDATE #4: C3 didn't win any per-song D5 ballot but passed D7 on 2/5 guitar songs; keeping it as first-class candidate (not fallback-only) preserved the option value the operator mandated.
+Twenty-four stem SHAs total, all byte-deterministic ×2 as required.
 
-## Byte-Determinism × 2 (133/133 SHA-Equal)
+**MuScriptor per-stem JSON transcription (seven probes, ×2 runs):**
 
-`holds=True`, `n_artifacts=133`, `n_mismatch=0`. All A/B pair directories, per-candidate scorecards, and verdict JSON byte-identical across two fresh `tempfile.mkdtemp()` runs.
+| Probe | JSON SHA (Run 1 == Run 2) |
+|---|---|
+| bass | `ddc5aff1bd177ad9…` |
+| drums | `c2cba7f766c26454…` |
+| guitar | `5d0b8474179cdac5…` |
+| vocals | `6fd5bbcaa383fba2…` |
+| other | `4f53cda18c2baa0c…` (canonical empty-events hash) |
+| piano | `4f53cda18c2baa0c…` (canonical empty-events hash) |
+| full_mix | `834d4499b67e3aa7…` |
 
-## A/B Pair Directories (5 Songs × 2 Stems = 10 Pairs)
+Both the `other` and `piano` probes returned the canonical MuScriptor empty-events JSON hash — a first-class outcome on this source, consistent with what the Chicken Grease compat window and operator section showed on the same probes.
 
-5 song `<sha16>/` directories under `data/recreate_v2/ab_pairs/`: `252eb21ce7df7328`, `31a164f845f8e27e`, `51e433ade2a845e1`, `88d247468cb6d49f`, `cdd2717e52820ff6`. Each contains `guitar/` and `piano/` subdirs with winner MIDIs + synthesized WAVs.
+**Canonical MIDI serialization (via c4 `midi_from_json_events.py` read-only, seven probes, ×2 runs):**
 
-## Cycle Disposition
+| Probe | Canonical MIDI SHA (Run 1 == Run 2) |
+|---|---|
+| bass | `20eacdd433659b4a…` |
+| drums | `29cae2ec11c46ed7…` |
+| guitar | `7957e00c48b9ff5f…` |
+| vocals | `f339a15ff419d206…` |
+| other | `6b0545ec8d68b928…` |
+| piano | `6b0545ec8d68b928…` |
+| full_mix | `299ce329b594b095…` |
 
-| Cycle | Researcher Directive | Worker Action | Auditor Decision |
-| --- | --- | --- | --- |
-| 1 | RC10 Branch B substantive fanout with mtime-hard pre-registration | Rubric + per-stem candidate matrix (C1/C2/C3) + content-metric scoring (D2) + D4 post-processing + winner per stem + per-song A/B pairs + 133-artefact byte-det × 2 + 9 shadow-ledger events + merge report | VALIDATED at RC10_GUITAR_PIANO_LANDS |
-| 2 | Compact on-disk re-verification | Status-acknowledgment standby; no new substantive work; invariants preserved byte-exactly | **COMPLETE** with `[[BRANCH_COMPLETE]]` |
+**merged.mid structural gates (all four PASS):**
 
-## Sub-Topic Assessment (All §3 D1-D7 Sufficiency Criteria Met)
+| Gate | Result |
+|---|---|
+| `drums_track_on_ch10_nonempty` | true |
+| `bass_median_pitch_lt_55` | true |
+| `zero_notes_on_gm_program_4` | true |
+| `vocals_track_present_symbolic` | true |
 
-| Criterion | Status |
-| --- | --- |
-| Pre-registered rubric BEFORE any script under `scripts/recreate_v2/rc10_guitar_piano/` | MET (mtime chain preserved) |
-| Per-stem candidate matrix per §3 D3 (C1_default + C2_tuned + C3_chord_track) | MET |
-| Content metrics per §3 D2 (chroma cosine + note-density ratio) | MET |
-| D4 post-processing with and without | MET (2 flavours × candidates in scorecard) |
-| Winner per stem-type + per-song A/B pairs under `data/recreate_v2/ab_pairs/<song>/{guitar,piano}/` | MET (`winner_per_stem.json` = `C2_tuned` for both; 10 A/B pairs) |
-| Byte-determinism × 2 | MET (133/133) |
-| Verdict RC10_GUITAR_PIANO_LANDS ⇔ both stems pass on ≥3 focus songs | MET (guitar 4/5, piano 5/5) |
-| Six + 2 + 1 events under `-clone-1` suffix | MET (9 events in clone-1 shadow ledger) |
-| Required output `docs/rc10_guitar_piano_report.md` | MET |
+Merged MIDI at `data/v3/deliveries/51e433ade2a845e1/merged.mid`, SHA `c28b8686684fddfc841a27e96e299a93f1099fe99a5de4e461935ff2a9cfcd8a`.
 
-## Ledger Events (9 Shadow Rows Under `-clone-1` Suffix)
+**Fluidsynth per-track render (five non-vocal stems, ×2 runs):**
 
-Landed in shadow ledger `/home/user/music-gen-instance/fork-bdd7bb47f1b5/clone-1/promise_ledger.jsonl`:
+| Stem | Per-track WAV SHA (Run 1 == Run 2) |
+|---|---|
+| bass | `3568aeb9cfdf0fd9…` |
+| drums | `40ac6aac7d236c62…` |
+| guitar | `c00c572ac62eec4f…` |
+| other | `1522401aa6f5d083…` (nominal empty-stem render) |
+| piano | `1522401aa6f5d083…` (nominal empty-stem render) |
 
-- **Substantive `M-RECREATE-2/accurate-small-set/rc10-transcription-real-stem-resurvey/guitar-piano/*` unsuffixed per c32** (6 named events):
-  - rubric committed, pre-registration verified, per-stem candidate matrix landed, scorecard emitted, winner-per-stem determined, verdict rollup
-- **Infra + housekeeping `-clone-1` suffixed per c33** (2 events)
-- **`M-INGEST-1/egress-probe-cycle53-clone-1`** (1 tail event; `429 + tv_embedded` unchanged)
+The identical hash for the two empty-MIDI per-track WAVs matches the pattern first observed and cleared on Chicken Grease in the Cycle 7 empty-stem duration sanity check.
 
-Path outside auditor read scope; trusted per prior worker report.
+**D2 vocals overlay:** SHA-verified copy of the htdemucs section vocals `ae819d2a71c5d71a…` into the render directory. Not rendered by fluidsynth.
 
-## State-Machine Discipline (c29 Lemma Respected)
+**rc7 mix-match (Method A plain broadband RMS-match, per-song sibling reading `scripts/v3_spine/mix_match_operator_section.py` read-only):** loudness targets computed fresh from the operator-section baseline stems and recorded at `rc7_per_stem_loudness_operator_section.json`; per-stem gains applied within ±24 dB clamp; summed and peak-limited. Full reconstruction WAV byte-deterministic across two runs at SHA `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8`.
 
-- `M-RECREATE-2/accurate-small-set/rc10-transcription-real-stem-resurvey/guitar-piano` is a peer sub-leaf under c50 v2 rubric chain. NOT a child of any terminal-validated ancestor.
-- Peer-supersede pattern preserved: c49 v1 + c50 v2 + c53 clone-1 RC10 all byte-preserved on their own chains.
-- No `validated → in_progress` transitions attempted.
-- **`[[BRANCH_COMPLETE]]` emitted per no-null-cycle-validation role guidance**: "if the milestone is already validated and its scope is genuinely exhausted, emit COMPLETE (with the [[BRANCH_COMPLETE]] line) instead of manufacturing new scope to stay busy."
+### 2.4 Delivered artifacts
 
-## Cycle-2 Anti-Pattern Avoidance (Explicit)
+Under `data/v3/deliveries/51e433ade2a845e1/`, matching the c5 Chicken Grease format:
 
-Manufacturing further work on this branch (e.g., relitigating the Dojo Cuts Rome guitar density-band FAIL, or fluidsynth GM 25/0 A/B pair LUFS repair) would violate scope boundaries: those items are **explicit c54 handoffs**, NOT clone-1 work. Emitting VALIDATED (which would fire another cycle) or PIVOT (which would invent scope) would both be anti-pattern. Cycle 2 correctly avoided both.
+| Artifact | Path | SHA-256 |
+|---|---|---|
+| Original A/B (chosen section, 30 s) | `original_ab.wav` | `6548da39f97b0c8d170a7ad00333dbec1bca2a4c01a1902c0f3086a48b02ea62` |
+| Reconstruction A/B (chosen section, 30 s) | `reconstruction_ab.wav` | `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8` |
+| Full-song reconstruction | `full_reconstruction.wav` | `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8` |
+| Delivery manifest | `manifest.json` | `1e327ee76c392b682a83834837a867d65ce60bebe438e4ad3453812e136c83e8` |
+| Merged MIDI | `merged.mid` | `c28b8686684fddfc841a27e96e299a93f1099fe99a5de4e461935ff2a9cfcd8a` |
+| Panel TSV | `panel.tsv` | `a03dbe64c49dadc4c67aaeb2234a401393a688973bd5d244f9b114b9c9e9ca6b` |
+| Panel JSON | `panel.json` | (delivered; sub-artifact) |
 
-## Standing Constraints (Unchanged)
+Additional working directories on disk: `stems_6s/`, `stems_6s_full_song/`, `operator_section/`, `muscriptor_operator_section/`, `per_track/`, `mix_match_operator_section.json`, `rc7_per_stem_loudness_operator_section.json`, `tempo_choice.json`.
 
-- α pinned at `0.7469387071101908` (not relevant to this branch).
-- SHA-256 tiebreak; no PRNG; no `sidecar_nonfactor`; no `i4_stratified`.
-- Interpreter guard `#!/usr/bin/python3` on every new script.
-- Read-only anchors preserved: c14 `_ledger_schema.py`; c22 stability harness; c26 Path B commitment; c31/c33/c34/c35/c36/c37/c45/c46/c47/c50 palette + recreate + anchor-manifest + rubric chain; c49 v1 baselines; c51 Branch A partials + Branch B outputs; c52/c53 recreate infra; `scripts/palette_render/render_stem.py` byte-identical do-not-touch invariant.
-- Rated audio egress-blocked at `*.googlevideo.com` (`429 + tv_embedded` unchanged; `M-INGEST-1/egress-probe-cycle53-clone-1` recorded honestly per c49 path-A cadence).
-- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
-- **c48 env-var flags default OFF**.
+### 2.5 Panel (M-TEX-1)
 
-## Anti-Patterns Locked (5-Count Stable)
+Eight-key perceptual panel measured on both the operator-section reconstruction and the root panel window; both `operator_section_panel_ok` and `root_panel_ok` reported `true` (all keys finite). Panel is explicitly **not** an acceptance gate under Fixed Decision 6; only operator ear can advance the milestone to LANDS.
 
-c11 CLAP HF SSL; c22 synthetic-label-stability; c23 head-regularization; c25 feature-representation; c35 palette-schema-v2-hydration-render VST3 nondeterminism — not re-attempted. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged. c31 STILL_GAP surface intact.
+### 2.6 Verdict
 
-**No `M-EAR-1/*` or `M-GEN-1/*` emissions** this branch.
+`data/v3/deliveries/51e433ade2a845e1/cycle20/verdict.json` (SHA `d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`) emitted with:
 
-**Fanout-scope discipline reinforced**: clone-1 disciplined itself out of the "one more cycle" trap (COMPLETE instead of manufacturing null-cycle work). Pattern should propagate.
+- `verdict = V3_FOCUS_SONG_LANDS_pending_operator`
+- `cycle = 20`, `song_sha16 = 51e433ade2a845e1`, `song_title = "Dojo Cuts - Rome"`, `milestone_id = M-V3-FOCUS-1`
+- `blocked_on_operator = true`, `failures = []`, `schema_version = 1`
+- `clone = "1"`
+- Three-way `rubric_hash_v2` chain byte-equal at `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` (document SHA, `rubric_hash_v2.txt` content, and verdict field all identical; `rubric_hash_v2_three_way_chain_holds: true`).
+- Chosen section `t = 62.74031746031746` s to `t = 92.74031746031747` s (duration 30.0 s), picker `focus_set_v2 auto-picker (c50)`.
+- Full byte-determinism payload for every deterministic artifact class: htdemucs section, htdemucs full-song, MuScriptor probes, canonical MIDI, per-track WAV, and the full-reconstruction WAV — all with run 1 and run 2 SHAs identical.
+- `sub_artifact_shas` pinning the six primary deliverables.
+- `sub_clause_status` reporting every sub-clause of the rubric as `true`, including the four structural gates on the merged MIDI, the byte-determinism ×2 on each stage, the panel finiteness on both windows, delivery presence and non-silence, and the `blocked_on_operator` flag.
+- Operator notes disclosing the c20 BREAK-GLASS directive and the fork-scoped parallel build-out of four focus songs while Chicken Grease continues to wait on operator ear.
 
-## Merge Disposition
+## 3. Cycle 2: re-verification and branch closure
 
-Merge report at `/home/user/music-gen-instance/fork-bdd7bb47f1b5/clone-1/merge_report.md` (per prior session; path outside auditor read scope). Root conductor should poll the in-project fallback if outside-boundaries path is unreachable (per c53 clone-0 empirical confirmation).
+Cycle 2 was a status-only re-invocation of the same c20-scoped directive against a workspace where the required output artifact and every downstream deliverable already existed byte-identically from Cycle 1's emission.
 
-## Cycle-54 Handoff (For Root Conductor; Per Cycle-2 Auditor Guidance)
+The Cycle 2 audit live-verified the required artifact SHA (`d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`, byte-identical to the prior audit anchor), the three-way rubric hash chain (byte-equal across document, hash file, and verdict field), the verdict enum (`V3_FOCUS_SONG_LANDS_pending_operator`), and the operator-block flag (`blocked_on_operator=true`). `promise_check` returned zero errors and four warnings (missing archived tool files from Cycles 39 and 47 plus pre-existing warnings unrelated to Rome clone-1 scope). `org_check` returned zero errors with pre-existing figure-location warnings from prior cycles. Under the `<no-null-cycle-validation>` rule, a cycle whose work_output contains only invariant checks cannot receive VALIDATED and must terminate with COMPLETE when scope is genuinely exhausted. The auditor issued COMPLETE with `[[BRANCH_COMPLETE]]`.
 
-None for this clone (branch closed). Guidance for the c54 root conductor:
+The Cycle 2 auditor's rationale enumerated five reasons for branch termination:
 
-1. **Six-stem rollup**: merge clone-0 (drums+bass), clone-1 (guitar+piano — this work), clone-2 (other+vocals) scorecards into `data/rc10_impl/scorecard_all_stems.tsv` for the `M_RECREATE_2_LANDS` candidacy per operator UPDATE #4.
-2. **Plan-of-record drift**: register two new intermediate milestone IDs at c54: `M-RECREATE-2/accurate-small-set/rc10-transcription-real-stem-resurvey` (peer sub-milestone under `M-RECREATE-2/accurate-small-set-v2`) and `.../guitar-piano`. Follow the c51 `_run/post-merge-integration-cycle-51` + `_plan/register-c51-fanout-milestones` pattern.
-3. **Dojo Cuts Rome guitar** (per-song density-overfire FAIL, `51e433ade2a845e1`): c54 decides whether to (a) widen density pass band from [0.5, 2.0]; (b) surface C3 chord-track fallback as automatic per-song rescue when D5 winner trips gate; or (c) accept 4/5 as sufficient.
-4. **A/B pair LUFS drift** (worker's Issue #2): swap `pretty_midi.synthesize()` sine-synth for fluidsynth GM 25 (guitar) / GM 0 (piano) at c54. NOT a transcription-verdict defect; A/B pair rendering only.
+1. The required output artifact is on disk and byte-verified this turn; no re-work is possible under Fixed Decision 1.
+2. The only remaining advancement path is operator ear per Fixed Decision 6, which no automated cycle can move.
+3. The `sibling-pivot` anti-pattern forbids lifting WIG clone-0 or Peach Dream clone-2 scope; this clone is scoped to Rome only.
+4. Continuing would produce only heartbeat/null cycles, exactly the pattern the anti-patterns registry warns against.
+5. The harness's clone-termination flow auto-emits the merge report at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-1/merge_report.md` for root-conductor pickup on branch completion.
 
-## Cumulative Progress
+## 4. Merge disposition and open items
 
-**M-RECREATE-2 arc RC status roll-up** (post-c53 clone-1 RC10 Branch B):
+**Merge disposition.** This branch merges as `[[BRANCH_COMPLETE]]`. The required artifact exists on disk at the required path with the strongest permitted verdict (`LANDS_pending_operator`) and every rubric sub-clause satisfied. All discipline chains hold. No conflicts with the parent workspace are anticipated: the branch's substantive artifacts were emitted under the Rome-scoped path prefix `data/v3/deliveries/51e433ade2a845e1/`, which does not intersect the parent's Chicken Grease heartbeat cadence at `data/v3/deliveries/31a164f845f8e27e/` or the WIG clone-0 tree at `data/v3/deliveries/252eb21ce7df7328/`.
 
-| RC | Status | Cycle |
-| --- | --- | --- |
-| Rubric v2 committed | ✓ | c50 |
-| Focus set frozen w/ Chicken Grease mandatory | ✓ | c50 |
-| RC0/RC0-v2 baselines captured × 2 | ✓ | c49/c50 |
-| RC1+RC9 **LANDS 4/5** | ✓ | c51 Branch A |
-| RC2+RC3 LANDS | ✓ | c51 Branch B |
-| RC5 LANDS 5/5 (honest self-referential caveat) | ✓ | c53 clone-2 |
-| RC7 LANDS 5/5 | ✓ | c53 clone-0 (v2 rerun) |
-| **RC10 Branch B Guitar+Piano LANDS** (guitar 4/5; piano 5/5; C2_tuned winner both stems) | ✓ | **c53 clone-1 (this)** |
-| RC10 Branch A (Drums+Bass) | (fork sibling clone-0) | — |
-| RC10 Branch C (Other+Vocals) | (fork sibling clone-2) | — |
-| RC6 panel-gate | not started; c54 pre-registers; c55 implements | — |
-| Aggregate `M_RECREATE_2_LANDS` | **c56 candidate** contingent on c55 outcomes + c54 six-stem rollup | — |
+**Fork 88d75f9754c3 summary.** Clone 0 (WIG) delivered PARTIAL — MuScriptor terminated at 3/7 probes with honest deferral. Clone 1 (Rome) delivered LANDS_pending_operator — full chain end-to-end. Clone 2 (Peach Dream) delivered INSUFFICIENT — the required verdict artifact was never emitted, and this stands as the only blocking call in the fork per the auditor's cumulative notes. Two of three focus-song clones advanced substantively; the fourth planned clone (Disco A) remains open for a future fork.
 
-**Recurring patterns**:
+**Open items for the root conductor (post-merge).**
 
-- **Content-metric gate discriminates over-transcription, not just under-transcription** (new c53 clone-1 finding): Dojo Cuts Rome guitar FAIL is the campaign's first per-song rejection on density-band overfire. Validates c50 rubric-v2 D2 dual-metric choice.
-- **Chord-track first-classness preserved per operator UPDATE #4**: C3 passed D7 on 2/5 guitar songs; keeping it as first-class candidate preserved the option value.
-- **Auditor-reads-ledger-not-brief-summaries** lemma reinforced: 5-cycle catch record (c46, c48-close, c49-close, c50-close, c53-close) — recommend formalisation at c54 in `docs/auditor_discipline_ledger_first.md`.
-- **Anchor snapshot lemma**: 28-entry manifest this cycle; c51 Branch C hit 95. Now duplicated across clones — c54 should consolidate to shared `long_exposure/tools/anchor_snapshot.py`.
-- **Fanout-scope discipline**: clone-1 disciplined itself out of the "one more cycle" trap (COMPLETE instead of manufacturing null-cycle work). Pattern should propagate.
-- **Honest-negative-finding discipline holding** at 9+ consecutive cycles.
-- **Egress unchanged (17+ cycles)**: HTTP 429 + `tv_embedded` failure mode. c50 htdemucs_6s fetch OK anomaly remains isolated.
+- **Operator listening loop.** Rome `reconstruction_ab.wav` vs `original_ab.wav` (30 s each, t = 62.740–92.740 s) is queued alongside Chicken Grease as an authoritative operator ear gate. Chicken Grease Method A `cc919559b4508b6b…`, Chicken Grease Method B `f40796be982998b0…`, and Rome `c710dcb9eeb57158…` now form the operator's near-term A/B listening set.
+- **MINOR-1 shadow-ledger reconciliation.** Eight c20-Rome ledger events landed under the `-clone-1` suffix in the clone's shadow ledger but have not yet been retro-appended to the primary `promise_ledger.jsonl` per the c38+ post-merge-reconciliation precedent. This is a root-conductor housekeeping task, not clone-scope work.
+- **Recurring shadow-ledger gap across the fork.** The same MINOR-1 pattern appears on WIG c20, Rome c20, and Peach Dream c20. The Cycle 2 auditor recommends a c21+ policy change to auto-concat shadow ledgers at fanout completion rather than deferring to the next root cycle.
 
-**c29 state-machine lemma** respected: peer sub-leaves under c50 v2 rubric chain; ledger topology stays a DAG.
+## 5. Campaign-level state
 
-**c32 → c33 → c36 v2 → c39 v3 → c47 Branch B MIXED → c50 peer-supersede** fanout-namespace + rubric-chain convention held: substantive `M-RECREATE-2/*` unsuffixed; infra families `-clone-1` suffixed.
+The M-V3-FOCUS-1 milestone advances substantively on this branch. Two of the five focus songs (Chicken Grease from c5, Rome from this branch) now have full end-to-end LANDS_pending_operator deliveries on disk. A third (WIG) is honestly partial at MuScriptor 3/7. Two more (Peach Dream, Disco A) remain open for subsequent fork work.
 
-**Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+The M-V3-SPINE-1 Chicken Grease operator-ear gate remains open per Fixed Decision 6. The parallel focus-song build-out is the campaign's mechanism for accumulating downstream pipeline evidence during that wait. It does not substitute for the operator ear authority that gates positive-verdict advancement on M-V3-SPINE-1, but it does demonstrate that the pipeline is portable across at least two focus songs with byte-determinism holding on every deterministic artifact class on both.
 
-**Scope of this fanout clone fully discharged.** `[[BRANCH_COMPLETE]]` emitted per no-null-cycle-validation role guidance; auditor decision **COMPLETE**.
+The panel-is-never-a-LANDS-gate discipline under Fixed Decision 6 has now held cleanly across fifteen-plus verdicts including this one, and the anti-fabrication contract has held across ten consecutive audits with roughly two hundred cumulative SHA spot-checks and zero fabrications detected.
 
-[END OUTPUT]
+## 6. Conclusions
+
+Clone 1 of fork `88d75f9754c3` delivered the strongest possible verdict a fanout clone can deliver: full v3 per-stem chain end-to-end on Rome, byte-deterministic at every deterministic artifact class, all four structural gates passing, all rubric sub-clauses satisfied, delivered under the exact c5 Chicken Grease format, with a `V3_FOCUS_SONG_LANDS_pending_operator` verdict and an intact three-way rubric chain. Cycle 2 confirmed no drift and terminated the branch cleanly per the `<no-null-cycle-validation>` rule. Rome joins Chicken Grease as the second focus song delivered end-to-end under the v3 doctrine, doubling the campaign's operator-ear-ready A/B set and providing an additional data point that the pipeline's determinism and structural discipline transfer across sources.
+
+## Appendix: Implementation Details
+
+### A.1 Delivered artifact and integrity
+
+Required artifact: `data/v3/deliveries/51e433ade2a845e1/cycle20/verdict.json` (SHA `d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`; byte-identical across the two audit verification points).
+
+Three-way rubric-v2 chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict `rubric_hash_v2` field.
+
+### A.2 Chosen section
+
+t = 62.74031746031746 s to t = 92.74031746031747 s (30.0 s). Picker: `focus_set_v2 auto-picker (c50)`.
+
+### A.3 Byte-determinism (all deterministic artifact classes ×2)
+
+- **htdemucs chosen section:** six stems, run 1 == run 2 (12 SHAs).
+- **htdemucs full song:** six stems, run 1 == run 2 (12 SHAs). Twenty-four stem SHAs total per the directive.
+- **MuScriptor probes:** seven probes (drums, bass, guitar, vocals, other, piano, full_mix), run 1 == run 2. `other` and `piano` returned the canonical empty-events JSON `4f53cda18c2baa0c…` as a first-class outcome.
+- **Canonical MIDI:** seven probes serialized via c4 `midi_from_json_events.py` read-only, run 1 == run 2.
+- **Fluidsynth per-track WAV:** five non-vocal stems, run 1 == run 2; `other` and `piano` at the nominal empty-stem hash `1522401aa6f5d083…` consistent with the Chicken Grease Cycle 7 empty-stem sanity finding.
+- **Full-reconstruction WAV:** run 1 == run 2 == final == `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8`.
+
+### A.4 Delivered artifact SHAs
+
+`original_ab.wav` `6548da39f97b0c8d170a7ad00333dbec1bca2a4c01a1902c0f3086a48b02ea62`; `reconstruction_ab.wav` `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8`; `full_reconstruction.wav` `c710dcb9eeb57158ce4b57adff1f73d49ae01be34979fb8806920407992f57f8`; `manifest.json` `1e327ee76c392b682a83834837a867d65ce60bebe438e4ad3453812e136c83e8`; `merged.mid` `c28b8686684fddfc841a27e96e299a93f1099fe99a5de4e461935ff2a9cfcd8a`; `panel.tsv` `a03dbe64c49dadc4c67aaeb2234a401393a688973bd5d244f9b114b9c9e9ca6b`.
+
+### A.5 Rubric sub-clause status
+
+Every reported sub-clause is `true`: `a_delivery_present_nonsilent`, `b_i_htdemucs_full_song_det_x2`, `b_i_htdemucs_operator_section_det_x2`, `b_ii_muscriptor_json_det_x2`, `b_iii_canonical_midi_det_x2`, `b_iv_per_track_wav_det_x2`, `b_v_full_reconstruction_wav_det_x2`, `c_panel_finite.operator_section_panel_ok`, `c_panel_finite.root_panel_ok`, `d_structural_gates_on_merged_mid.bass_median_pitch_lt_55`, `d_structural_gates_on_merged_mid.drums_track_on_ch10_nonempty`, `d_structural_gates_on_merged_mid.vocals_track_present_symbolic`, `d_structural_gates_on_merged_mid.zero_notes_on_gm_program_4`, `f_blocked_on_operator`.
+
+### A.6 Read-only upstream anchors
+
+Chicken Grease c19 verdict `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd`; c4 canonical MIDI serializer `scripts/v3_spine/midi_from_json_events.py`; c5 mix-match Method A `scripts/v3_spine/mix_match_operator_section.py`; c33 render_stem `scripts/palette_render/render_stem.py`; focus set `data/recreate_v2/focus_set_v2.json`.
+
+### A.7 Test suite
+
+`tests/test_v3_focus_rome_c20.py` with twelve-case shape.
+
+### A.8 Environment pins
+
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
+
+### A.9 Open items at branch close
+
+MINOR-1 shadow-ledger reconciliation (log-only): eight c20-Rome ledger events landed under the `-clone-1` suffix in the clone's shadow ledger and are queued for retro-append to the primary `promise_ledger.jsonl` per c38+ precedent by the root conductor. Non-blocking; not this clone's responsibility.
+
+### A.10 Fork 88d75f9754c3 status
+
+| Clone | Song | sha16 | Verdict | Merge disposition |
+|---|---|---|---|---|
+| 0 | What If I Go | `252eb21ce7df7328` | `V3_FOCUS_SONG_PARTIAL_pending_operator` | BRANCH_COMPLETE (honest PARTIAL; MuScriptor 3/7) |
+| 1 | Dojo Cuts — Rome | `51e433ade2a845e1` | `V3_FOCUS_SONG_LANDS_pending_operator` | BRANCH_COMPLETE (full chain; this branch) |
+| 2 | Peach Dream | (assigned) | INSUFFICIENT — verdict artifact not emitted | (blocking; only blocking call in the fork) |
+
+### A.11 Source sessions
+
+| Cycle | Researcher | Worker | Auditor |
+|---|---|---|---|
+| 1 | 4c96f1a9-68ea-4747-b833-6705eaa79649 | 73d22ecc-aebe-4887-b33c-0d4e9fbb2488 | d05e70ed-088d-4e64-96d7-903ef6a543ae |
+| 2 | 6673cdb9-2849-44f3-a87c-013bded88406 | 737be4da-6b71-4e24-ae04-fd7b2f89e694 | 6b19e7cb-b518-44ba-8bf0-eab2819c2d8d |
+
+### A.12 Fanout metadata
+
+Fork `88d75f9754c3`. Clone 1 of the Rome assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-1/merge_report.md` for parent-conductor pickup. Sibling clones 0 (WIG) and 2 (Peach Dream) reported separately.
