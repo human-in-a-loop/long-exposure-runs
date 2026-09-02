@@ -19,3 +19,6 @@ data/ingestion/egress_status.jsonl
 *_venv/
 .venv/
 venv/
+
+# model weights live on disk only (sha256 receipts are tracked instead)
+workspace/models/
