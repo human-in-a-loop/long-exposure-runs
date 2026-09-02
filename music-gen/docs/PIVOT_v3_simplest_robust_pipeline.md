@@ -11,17 +11,22 @@ stem bleed, too-coarse drum vocabulary, hardest-input bias). The operator
 decision: kill the run, delete the dead transcription code, and rebuild the
 pipeline around a prebuilt state-of-the-art transcriber.
 
-## What was removed
+## Scope: replace the failing area only (operator correction, same day)
 
-- `scripts/recreate_v0*`, `scripts/recreate_v2/`, `scripts/transcribe/`,
-  `scripts/rc2_rc3_run/`, `scripts/test_drift_triage/` — the entire
-  basic-pitch / pyin / onset+GMM transcription lineage (94 tracked files).
-- `basic_pitch_venv` (2.1 GB) and the superseded iteration outputs under
-  `data/` (recreate_v0*, rc*-impl dirs, old texture chain, old palette
-  batches; `data/` went 4.0 GB → 0.6 GB).
-- Kept: corpus + provenance, htdemucs separation infra and the 6-stem
-  baselines for the focus songs, `data/rc10_gold_set`, render/DAW/palette
-  scripts, ear/rules/gen scripts, all docs.
+The pivot replaces **transcription** — the diagnosed failure — and keeps
+every proven stage. Removed for good: the basic-pitch / pyin / onset+GMM
+transcription lineage (`scripts/recreate_v0*`, `scripts/transcribe/`, the
+rc2/rc3/rc10 transcriber families), `basic_pitch_venv` (2.1 GB), and the
+superseded iteration outputs under `data/` (4.0 GB → 0.6 GB).
+
+Restored from history after an over-broad first sweep, because they are
+proven and functioning: `rc8_section_selection.py` (peak-section choice,
+byte-verified), `rc7_mix_balance.py`/`rc7_v2_rerun.py` (per-stem loudness +
+EQ mix matching, D4), `rc4*_gm_program_map.py`, `rc1_v2_hybrid.py` (vocal
+overlay, D2), `rc9_first_class_parts.py` (htdemucs_6s driver),
+`rc6*_panel_gate.py` (sanity panel), `rc5_tempo_beat_grid.py`,
+`rc10_gold_set/`. Also kept throughout: corpus + provenance, separation
+baselines, palette render stack, ear/rules/gen scripts, all docs.
 
 ## The new spine: MuScriptor
 

@@ -16,6 +16,27 @@ operator's ear. The postmortems live in
 cycle. Their central lesson is binding: **statistical plausibility gates are
 not accuracy; the ear is the gate.**
 
+This pivot is scoped, not a rewrite: **transcription is replaced wholesale;
+every proven pipeline stage is kept and reused.** The keep-strong inventory
+(all verified in the previous run, all on disk):
+
+- corpus ingest + sha256 provenance (`corpus/`, manifests, receipts)
+- htdemucs_6s separation driver (`scripts/recreate_v2/rc9_first_class_parts.py`)
+  and the focus-song 6-stem baselines (`data/recreate_v2/baseline/`)
+- peak-section selection (`rc8_section_selection.py`, byte-verified)
+- GM program mapping (`rc4_v2_gm_program_map.py`)
+- hybrid vocal overlay (`rc1_v2_hybrid.py`)
+- per-stem loudness + EQ mix matching (`rc7_mix_balance.py`, `rc7_v2_rerun.py`)
+- sanity panel (`rc6_v2_panel_gate.py`: mel-L1, centroid, RMS, LUFS, VGGish —
+  panel rule: no single metric confers success)
+- palette render stack (`scripts/palette_render*`, DawDreamer/Surge/sfizz)
+- gold-set tooling (`rc10_gold_set/`), byte-determinism harness, fan-out
+  namespacing v2, ear/rules/gen scripts for the later milestones
+
+Extend these where they fall short; replace one only when you can show the
+operator (with A/B evidence) that it is a clear shortcoming, and record the
+decision in the plan of record.
+
 ## Fixed decisions (not yours to reopen)
 
 1. **Transcription = MuScriptor, full mix, one call per song.** Installed and
@@ -30,23 +51,29 @@ not accuracy; the ear is the gate.**
    OFF, chunk boundaries) and otherwise you REPORT the failure to the
    operator with A/B evidence — hand-rolled DSP transcription is permanently
    banned in this campaign.
-2. **No section selection for transcription.** Transcribe whole songs.
-   Excerpts exist only for operator listening (30 s, the documented focus
-   section per focus song).
-3. **Render = MuScriptor instrument labels → fixed GM program map →
+2. **Transcribe whole songs; excerpt only for listening.** The proven
+   peak-section selector (`scripts/recreate_v2/rc8_section_selection.py`,
+   byte-verified) remains THE tool for choosing the 30 s operator-listening
+   and verification windows.
+3. **Render = MuScriptor instrument labels → GM program map
+   (`rc4_v2_gm_program_map.py`, extended to MuScriptor's group names) →
    fluidsynth (FluidR3_GM), drums on MIDI channel 10, per-track stems.**
-   Deterministic. Timbre upgrades (Surge XT via DawDreamer, sfizz) are
-   permitted only for songs whose GM render the operator has already
-   accepted on content.
-4. **Vocals are hybrid** (operator decision D2): htdemucs vocals stem
-   overlaid on the instrumental render; the transcribed voice track stays in
-   the MIDI, unsynthesized. htdemucs (`workspace` venvs, 6-stem baselines
-   under `data/recreate_v2/baseline/`) is used ONLY for the vocal overlay,
-   per-track gain reference, and verification — never as a transcription
+   Deterministic. GM validates content first; the palette stack
+   (Surge XT via DawDreamer, sfizz — proven in `scripts/palette_render*`)
+   is the established timbre-upgrade path once the operator accepts a
+   song's content.
+4. **Vocals are hybrid** (operator decision D2, proven in
+   `rc1_v2_hybrid.py`): htdemucs vocals stem overlaid on the instrumental
+   render; the transcribed voice track stays in the MIDI, unsynthesized.
+   htdemucs_6s (driver `rc9_first_class_parts.py`, baselines under
+   `data/recreate_v2/baseline/`) is used ONLY for the vocal overlay,
+   per-stem mix reference, and verification — never as a transcription
    input.
-5. **Mix match = per-track gain to the matching htdemucs stem loudness +
-   master LUFS to the original.** No global effects wash. EQ matching only
-   if the operator's listening feedback asks for it.
+5. **Mix match = the proven D4 stage** (`rc7_mix_balance.py` /
+   `rc7_v2_rerun.py`): per-stem render → per-stem loudness match to the
+   corresponding htdemucs stem → deterministic per-stem EQ curve fitted to
+   the original stem's average spectrum → sum, master LUFS matched. No
+   global effects wash.
 6. **Gate hierarchy**: operator listening > sanity panel. The sanity panel
    (onset/pitch agreement vs stems, tempo agreement, per-instrument
    note-density ratio, mel/centroid/LUFS/embedding panel) is a regression
