@@ -1,0 +1,579 @@
+{
+  "d2_gates": {
+    "other_residual": {
+      "density_ratio_range": [
+        0.5,
+        2.0
+      ],
+      "mean_chroma_cosine_min": 0.55
+    },
+    "vocals": {
+      "coverage_ratio_range": [
+        0.5,
+        2.0
+      ],
+      "f0_agreement_pct_min": 60.0
+    }
+  },
+  "focus_set_v2_sha256": "8908dae03202ae529282c08e74d490b336fadcf7ded4f93483a2b32756a1a5ca",
+  "milestone": "M-RECREATE-2/accurate-small-set/rc10-transcription-real-stem-resurvey",
+  "notes": [
+    "LUFS-I -23 approximated by RMS-dBFS -23 (pyloudnorm unavailable in venv).",
+    "o_b chroma cosine computed on templated MIDI pitch-class implication (see rubric deviation)."
+  ],
+  "other_residual_pass_count": 3,
+  "other_residual_winner": {
+    "candidate": "o_b",
+    "mean_metric": 0.664,
+    "postprocessed": false,
+    "songs_passed": 3,
+    "tiebreak_sha": "4efd907e91692e43664d3f580d9f31e3c2c9828be5789d6327cebe5c198a0aaf"
+  },
+  "per_song": [
+    {
+      "bpm_hint": 90.7258064516129,
+      "other_residual": {
+        "o_a": {
+          "pp": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 0.8,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.1473,
+            "n_notes_rendered": 24,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 0.8,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.1545,
+            "n_notes_rendered": 24,
+            "pass": false
+          }
+        },
+        "o_b": {
+          "pp": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 5.75,
+            "density_rendered_per_s": 4.6,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.5677,
+            "n_notes_rendered": 138,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 5.75,
+            "density_rendered_per_s": 4.6,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.5677,
+            "n_notes_rendered": 138,
+            "pass": false
+          }
+        }
+      },
+      "section_source": "baseline_full_0..30.00s (chosen_section 233.6..263.6s out of range)",
+      "song_id": "31a164f845f8e27e",
+      "vocals": {
+        "v_a": {
+          "pp": {
+            "f0_agreement_pct": 91.0995,
+            "frames_voiced_both": 191,
+            "pass": false,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 289,
+            "voiced_time_coverage_ratio": 0.2931
+          },
+          "raw": {
+            "f0_agreement_pct": 90.1554,
+            "frames_voiced_both": 193,
+            "pass": false,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 293,
+            "voiced_time_coverage_ratio": 0.2972
+          }
+        },
+        "v_b": {
+          "pp": {
+            "f0_agreement_pct": 88.4058,
+            "frames_voiced_both": 345,
+            "pass": true,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 518,
+            "voiced_time_coverage_ratio": 0.5254
+          },
+          "raw": {
+            "f0_agreement_pct": 87.9552,
+            "frames_voiced_both": 357,
+            "pass": true,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 539,
+            "voiced_time_coverage_ratio": 0.5467
+          }
+        },
+        "v_c": {
+          "pp": {
+            "f0_agreement_pct": 80.3922,
+            "frames_voiced_both": 816,
+            "pass": true,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 959,
+            "voiced_time_coverage_ratio": 0.9726
+          },
+          "raw": {
+            "f0_agreement_pct": 81.045,
+            "frames_voiced_both": 823,
+            "pass": true,
+            "voiced_frames_baseline": 986,
+            "voiced_frames_rendered": 967,
+            "voiced_time_coverage_ratio": 0.9807
+          }
+        }
+      },
+      "window_s": [
+        233.63918367346938,
+        263.63918367346935
+      ]
+    },
+    {
+      "bpm_hint": 119.68085106382979,
+      "other_residual": {
+        "o_a": {
+          "pp": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 1.9333,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.4065,
+            "n_notes_rendered": 58,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 1.9333,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.4099,
+            "n_notes_rendered": 58,
+            "pass": false
+          }
+        },
+        "o_b": {
+          "pp": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0862,
+            "density_rendered_per_s": 2.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.6458,
+            "n_notes_rendered": 63,
+            "pass": true
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0862,
+            "density_rendered_per_s": 2.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.6458,
+            "n_notes_rendered": 63,
+            "pass": true
+          }
+        }
+      },
+      "section_source": "baseline_full_0..30.00s (chosen_section 21.9..51.9s out of range)",
+      "song_id": "cdd2717e52820ff6",
+      "vocals": {
+        "v_a": {
+          "pp": {
+            "f0_agreement_pct": 100.0,
+            "frames_voiced_both": 20,
+            "pass": true,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 266,
+            "voiced_time_coverage_ratio": 1.5114
+          },
+          "raw": {
+            "f0_agreement_pct": 100.0,
+            "frames_voiced_both": 20,
+            "pass": true,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 319,
+            "voiced_time_coverage_ratio": 1.8125
+          }
+        },
+        "v_b": {
+          "pp": {
+            "f0_agreement_pct": 96.1538,
+            "frames_voiced_both": 52,
+            "pass": false,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 399,
+            "voiced_time_coverage_ratio": 2.267
+          },
+          "raw": {
+            "f0_agreement_pct": 88.4615,
+            "frames_voiced_both": 52,
+            "pass": false,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 405,
+            "voiced_time_coverage_ratio": 2.3011
+          }
+        },
+        "v_c": {
+          "pp": {
+            "f0_agreement_pct": 77.7778,
+            "frames_voiced_both": 171,
+            "pass": true,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 193,
+            "voiced_time_coverage_ratio": 1.0966
+          },
+          "raw": {
+            "f0_agreement_pct": 78.1609,
+            "frames_voiced_both": 174,
+            "pass": true,
+            "voiced_frames_baseline": 176,
+            "voiced_frames_rendered": 198,
+            "voiced_time_coverage_ratio": 1.125
+          }
+        }
+      },
+      "window_s": [
+        21.91963718820862,
+        51.91963718820862
+      ]
+    },
+    {
+      "bpm_hint": 152.02702702702703,
+      "other_residual": {
+        "o_a": {
+          "pp": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 1.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.1464,
+            "n_notes_rendered": 33,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 1.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.1507,
+            "n_notes_rendered": 33,
+            "pass": false
+          }
+        },
+        "o_b": {
+          "pp": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 6.9091,
+            "density_rendered_per_s": 7.6,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.6069,
+            "n_notes_rendered": 228,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 7.0,
+            "density_rendered_per_s": 7.7,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.6082,
+            "n_notes_rendered": 231,
+            "pass": false
+          }
+        }
+      },
+      "section_source": "baseline_full_0..30.00s (chosen_section 62.7..92.7s out of range)",
+      "song_id": "51e433ade2a845e1",
+      "vocals": {
+        "v_a": {
+          "pp": {
+            "f0_agreement_pct": 85.2063,
+            "frames_voiced_both": 1406,
+            "pass": true,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 1408,
+            "voiced_time_coverage_ratio": 0.6098
+          },
+          "raw": {
+            "f0_agreement_pct": 81.0198,
+            "frames_voiced_both": 1412,
+            "pass": true,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 1414,
+            "voiced_time_coverage_ratio": 0.6124
+          }
+        },
+        "v_b": {
+          "pp": {
+            "f0_agreement_pct": 83.8538,
+            "frames_voiced_both": 1505,
+            "pass": true,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 1507,
+            "voiced_time_coverage_ratio": 0.6527
+          },
+          "raw": {
+            "f0_agreement_pct": 73.9188,
+            "frames_voiced_both": 1503,
+            "pass": true,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 1505,
+            "voiced_time_coverage_ratio": 0.6518
+          }
+        },
+        "v_c": {
+          "pp": {
+            "f0_agreement_pct": 46.4758,
+            "frames_voiced_both": 2270,
+            "pass": false,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 2326,
+            "voiced_time_coverage_ratio": 1.0074
+          },
+          "raw": {
+            "f0_agreement_pct": 46.4758,
+            "frames_voiced_both": 2270,
+            "pass": false,
+            "voiced_frames_baseline": 2309,
+            "voiced_frames_rendered": 2321,
+            "voiced_time_coverage_ratio": 1.0052
+          }
+        }
+      },
+      "window_s": [
+        62.74031746031746,
+        92.74031746031747
+      ]
+    },
+    {
+      "bpm_hint": 200.89285714285714,
+      "other_residual": {
+        "o_a": {
+          "pp": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 6.8333,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.535,
+            "n_notes_rendered": 205,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 6.8333,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.5605,
+            "n_notes_rendered": 205,
+            "pass": true
+          }
+        },
+        "o_b": {
+          "pp": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.4781,
+            "density_rendered_per_s": 10.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.7717,
+            "n_notes_rendered": 303,
+            "pass": true
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.4781,
+            "density_rendered_per_s": 10.1,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.7717,
+            "n_notes_rendered": 303,
+            "pass": true
+          }
+        }
+      },
+      "section_source": "baseline_full_0..30.00s (chosen_section 72.8..102.8s out of range)",
+      "song_id": "252eb21ce7df7328",
+      "vocals": {
+        "v_a": {
+          "pp": {
+            "f0_agreement_pct": 77.5967,
+            "frames_voiced_both": 982,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 1076,
+            "voiced_time_coverage_ratio": 0.5566
+          },
+          "raw": {
+            "f0_agreement_pct": 81.8544,
+            "frames_voiced_both": 1003,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 1103,
+            "voiced_time_coverage_ratio": 0.5706
+          }
+        },
+        "v_b": {
+          "pp": {
+            "f0_agreement_pct": 79.9822,
+            "frames_voiced_both": 1124,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 1248,
+            "voiced_time_coverage_ratio": 0.6456
+          },
+          "raw": {
+            "f0_agreement_pct": 83.9965,
+            "frames_voiced_both": 1131,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 1253,
+            "voiced_time_coverage_ratio": 0.6482
+          }
+        },
+        "v_c": {
+          "pp": {
+            "f0_agreement_pct": 71.0739,
+            "frames_voiced_both": 1853,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 2020,
+            "voiced_time_coverage_ratio": 1.045
+          },
+          "raw": {
+            "f0_agreement_pct": 71.2766,
+            "frames_voiced_both": 1880,
+            "pass": true,
+            "voiced_frames_baseline": 1933,
+            "voiced_frames_rendered": 2034,
+            "voiced_time_coverage_ratio": 1.0523
+          }
+        }
+      },
+      "window_s": [
+        72.77133786848073,
+        102.77133786848073
+      ]
+    },
+    {
+      "bpm_hint": 122.28260869565217,
+      "other_residual": {
+        "o_a": {
+          "pp": {
+            "chroma_pass_gate": false,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 5.7,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.5424,
+            "n_notes_rendered": 171,
+            "pass": false
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0,
+            "density_rendered_per_s": 5.7,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.5605,
+            "n_notes_rendered": 171,
+            "pass": true
+          }
+        },
+        "o_b": {
+          "pp": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0351,
+            "density_rendered_per_s": 5.9,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.7266,
+            "n_notes_rendered": 177,
+            "pass": true
+          },
+          "raw": {
+            "chroma_pass_gate": true,
+            "density_ratio_vs_baseline": 1.0351,
+            "density_rendered_per_s": 5.9,
+            "duration_s": 30.0,
+            "mean_chroma_cosine": 0.7266,
+            "n_notes_rendered": 177,
+            "pass": true
+          }
+        }
+      },
+      "section_source": "baseline_full_0..30.00s (chosen_section 172.9..202.9s out of range)",
+      "song_id": "88d247468cb6d49f",
+      "vocals": {
+        "v_a": {
+          "pp": {
+            "f0_agreement_pct": 89.7774,
+            "frames_voiced_both": 2201,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2302,
+            "voiced_time_coverage_ratio": 0.9392
+          },
+          "raw": {
+            "f0_agreement_pct": 88.1157,
+            "frames_voiced_both": 2213,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2309,
+            "voiced_time_coverage_ratio": 0.9421
+          }
+        },
+        "v_b": {
+          "pp": {
+            "f0_agreement_pct": 89.4552,
+            "frames_voiced_both": 2276,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2377,
+            "voiced_time_coverage_ratio": 0.9698
+          },
+          "raw": {
+            "f0_agreement_pct": 88.806,
+            "frames_voiced_both": 2278,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2375,
+            "voiced_time_coverage_ratio": 0.969
+          }
+        },
+        "v_c": {
+          "pp": {
+            "f0_agreement_pct": 70.6678,
+            "frames_voiced_both": 2441,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2534,
+            "voiced_time_coverage_ratio": 1.0339
+          },
+          "raw": {
+            "f0_agreement_pct": 70.6171,
+            "frames_voiced_both": 2447,
+            "pass": true,
+            "voiced_frames_baseline": 2451,
+            "voiced_frames_rendered": 2523,
+            "voiced_time_coverage_ratio": 1.0294
+          }
+        }
+      },
+      "window_s": [
+        172.87256235827664,
+        202.87256235827664
+      ]
+    }
+  ],
+  "rubric_hash": "571296bca46991f69219377be4dd24184c9b1292d33fdc5c2f690e2732ab3620",
+  "verdict": "RC10_OTHER_VOCALS_LANDS",
+  "vocals_pass_count": 4,
+  "vocals_winner": {
+    "candidate": "v_a",
+    "mean_metric": 88.736,
+    "postprocessed": true,
+    "songs_passed": 4,
+    "tiebreak_sha": "7aef6eec08f965fab0e85f913d3166815380054da31eca84d8c6faff47df4969"
+  }
+}
