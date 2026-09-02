@@ -133,7 +133,16 @@ def _muscriptor_version() -> str:
 
 
 def build_env_pin_manifest() -> dict[str, Any]:
-    """Build the env_pin manifest dict (self-anchor NOT yet included)."""
+    """Build the env_pin manifest dict (self-anchor NOT yet included).
+
+    Note: subprocess-derived version strings (muscriptor --version,
+    fluidsynth --version) are EXCLUDED from the hashed body because
+    subprocess timeouts introduce non-determinism between calls.
+    Binary integrity is captured via binary_sha256 (muscriptor) and
+    file-level SF2 sha256. Version strings are surfaced by
+    write_env_pin() in a separate 'diagnostic' block that is NOT
+    part of env_pin_sha256.
+    """
     torch_info = _torch_info()
     manifest: dict[str, Any] = {
         "schema_version": 1,
@@ -165,7 +174,6 @@ def build_env_pin_manifest() -> dict[str, Any]:
         "muscriptor": {
             "binary_path": MUSCRIPTOR_BIN,
             "binary_sha256": _sha256(MUSCRIPTOR_BIN),
-            "version_string": _muscriptor_version(),
         },
         "htdemucs": {
             "weights_sha256_per_file": _htdemucs_weights_sha(),
@@ -175,7 +183,7 @@ def build_env_pin_manifest() -> dict[str, Any]:
             "sha256": _sha256(SF2_PATH),
         },
         "fluidsynth": {
-            "version": _fluidsynth_version(),
+            "binary_path": "/usr/bin/fluidsynth",
         },
         "model_safetensors": {
             "path": MUSCRIPTOR_MODEL,
@@ -197,10 +205,20 @@ def build_env_pin_manifest() -> dict[str, Any]:
 
 
 def write_env_pin(out_path: Path) -> dict[str, Any]:
+    """Write env_pin.json. Includes hashed manifest plus a 'diagnostic'
+    block (subprocess-derived version strings) that is NOT part of
+    env_pin_sha256 — those strings are informational only."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     m = build_env_pin_manifest()
+    # Diagnostic block: NOT hashed (see docstring on build_env_pin_manifest)
+    m_with_diag = dict(m)
+    m_with_diag["diagnostic"] = {
+        "muscriptor_version_string": _muscriptor_version(),
+        "fluidsynth_version_string": _fluidsynth_version(),
+        "diagnostic_note": "not part of env_pin_sha256 hash",
+    }
     tmp = out_path.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(m, sort_keys=True, indent=2) + "\n")
+    tmp.write_text(json.dumps(m_with_diag, sort_keys=True, indent=2) + "\n")
     tmp.replace(out_path)
     return m
 
