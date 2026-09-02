@@ -1,0 +1,132 @@
+{
+  "probe1_ratings_manifest": {
+    "per_band": {
+      "4": {
+        "local_files": 0,
+        "manifest_rows": 20,
+        "on_disk_mp3s": 10,
+        "parseable_filenames": 10,
+        "unparseable_filenames": [],
+        "yt_files": 10,
+        "yt_ids_matching_manifest": 10,
+        "yt_ids_not_in_manifest": 0
+      },
+      "5": {
+        "local_files": 0,
+        "manifest_rows": 30,
+        "on_disk_mp3s": 10,
+        "parseable_filenames": 10,
+        "unparseable_filenames": [],
+        "yt_files": 10,
+        "yt_ids_matching_manifest": 10,
+        "yt_ids_not_in_manifest": 0
+      },
+      "6": {
+        "local_files": 0,
+        "manifest_rows": 30,
+        "on_disk_mp3s": 13,
+        "parseable_filenames": 13,
+        "unparseable_filenames": [],
+        "yt_files": 13,
+        "yt_ids_matching_manifest": 13,
+        "yt_ids_not_in_manifest": 0
+      },
+      "7": {
+        "local_files": 10,
+        "manifest_rows": 0,
+        "on_disk_mp3s": 10,
+        "parseable_filenames": 10,
+        "unparseable_filenames": [],
+        "yt_files": 0,
+        "yt_ids_matching_manifest": 0,
+        "yt_ids_not_in_manifest": 0
+      }
+    },
+    "total_manifest_rows": 80
+  },
+  "probe2_egress_probe_coverage": {
+    "coverage_verdict": "GAP",
+    "missing_cycles_c46_c54": [
+      52
+    ],
+    "per_cycle_counts": {
+      "1": 2,
+      "35": 2,
+      "36": 2,
+      "45": 1,
+      "46": 1,
+      "47": 3,
+      "48": 3,
+      "49": 1,
+      "50": 1,
+      "51": 3,
+      "53": 3,
+      "54": 1
+    },
+    "total_probe_events": 23,
+    "unique_cycles": [
+      1,
+      35,
+      36,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      53,
+      54
+    ]
+  },
+  "probe3_test_suites": {
+    "c51_plus_expected": {
+      "test_c48_shadow_ledger_reconciliation.py": true,
+      "test_harness_and_writer_hardening_v3.py": true,
+      "test_pre_reg_policy_verify.py": true,
+      "test_rc10_drums_bass.py": true,
+      "test_rc10_guitar_piano.py": true,
+      "test_rc7_v2_rerun.py": true
+    },
+    "c51_plus_sha_refs": {
+      "test_c48_shadow_ledger_reconciliation.py": {
+        "line_count": 161,
+        "mentions_rubric_hash": false,
+        "mentions_sha256": true
+      },
+      "test_harness_and_writer_hardening_v3.py": {
+        "line_count": 367,
+        "mentions_rubric_hash": true,
+        "mentions_sha256": true
+      },
+      "test_pre_reg_policy_verify.py": {
+        "line_count": 297,
+        "mentions_rubric_hash": true,
+        "mentions_sha256": true
+      },
+      "test_rc10_drums_bass.py": {
+        "line_count": 133,
+        "mentions_rubric_hash": true,
+        "mentions_sha256": true
+      },
+      "test_rc10_guitar_piano.py": {
+        "line_count": 385,
+        "mentions_rubric_hash": true,
+        "mentions_sha256": true
+      },
+      "test_rc7_v2_rerun.py": {
+        "line_count": 273,
+        "mentions_rubric_hash": true,
+        "mentions_sha256": true
+      }
+    },
+    "total_test_files": 74
+  },
+  "probe4_full_ledger_validation": {
+    "invalid_count": 0,
+    "invalid_first_20": [],
+    "total_events": 920,
+    "valid": 920,
+    "verdict": "PASS"
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "P1_housekeeping_coverage": {
+    "adopt_covered": [
+      29,
+      30,
+      31,
+      45,
+      46,
+      49,
+      50,
+      52,
+      54
+    ],
+    "archive_covered": [
+      29,
+      30,
+      32,
+      33,
+      34,
+      35,
+      44,
+      45,
+      46,
+      49,
+      50,
+      52,
+      54
+    ],
+    "cycles_checked": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54
+    ],
+    "missing_or_incomplete": [
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 3
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 4
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 5
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 6
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 7
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 8
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 9
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 10
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 11
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 12
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 13
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 14
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 15
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 16
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 17
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 18
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 19
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 20
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 21
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 22
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 23
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 24
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 25
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 26
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 27
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 28
+      },
+      {
+        "adopt_present": true,
+        "archive_present": false,
+        "cycle": 31
+      },
+      {
+        "adopt_present": false,
+        "archive_present": true,
+        "cycle": 32
+      },
+      {
+        "adopt_present": false,
+        "archive_present": true,
+        "cycle": 33
+      },
+      {
+        "adopt_present": false,
+        "archive_present": true,
+        "cycle": 34
+      },
+      {
+        "adopt_present": false,
+        "archive_present": true,
+        "cycle": 35
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 36
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 37
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 38
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 39
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 40
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 41
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 42
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 43
+      },
+      {
+        "adopt_present": false,
+        "archive_present": true,
+        "cycle": 44
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 47
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 48
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 51
+      },
+      {
+        "adopt_present": false,
+        "archive_present": false,
+        "cycle": 53
+      }
+    ],
+    "n_missing": 44
+  },
+  "P2_anchor_manifest_sha": {
+    "claimed_entry_sha256": "30ebead368418cb1b49cce024f8aa45f59bb591dfc437f9bd9bbf19abc71e28c",
+    "claimed_value_sha256": "8ac32472d175ff32e0723cd23fbf5c193b944ccb4ef1e022deec4306e112d2a4",
+    "computed_entry_sha256": "30ebead368418cb1b49cce024f8aa45f59bb591dfc437f9bd9bbf19abc71e28c",
+    "computed_value_sha256": "8ac32472d175ff32e0723cd23fbf5c193b944ccb4ef1e022deec4306e112d2a4",
+    "entry_index_one_based": 19,
+    "entry_index_zero_based": 18,
+    "entry_sha_matches": true,
+    "key": "env/SOURCE_DATE_EPOCH",
+    "manifest_anchor_count": 19,
+    "n_entries_actual": 19,
+    "value": 1756463424,
+    "value_sha_matches": true
+  },
+  "P3_live_network_imports": {
+    "files_scanned": [
+      "scripts/ear/train_armed_harness.py",
+      "scripts/egress_ready/__init__.py",
+      "scripts/egress_ready/cli.py",
+      "scripts/egress_ready/state.py",
+      "scripts/egress_ready/subprocess_hooks.py",
+      "scripts/egress_ready/trigger.py",
+      "scripts/ear/sb_dry_run.py"
+    ],
+    "forbidden_modules_checked": [
+      "urllib",
+      "requests",
+      "socket",
+      "httpx",
+      "aiohttp",
+      "http.client",
+      "urllib3"
+    ],
+    "n_files_scanned": 7,
+    "n_violations": 0,
+    "violations": []
+  },
+  "P4_manager_unresolved": {
+    "n_manager_milestones": 24,
+    "n_terminal_or_resolved": 22,
+    "n_unresolved": 2,
+    "unresolved": [
+      {
+        "latest_cycle": 36,
+        "latest_status": "in-progress",
+        "latest_ts": "2026-08-29T06:05:00Z",
+        "milestone_id": "_manager/background-job-supervision-clone-0",
+        "n_events": 1,
+        "narrative_head": "Silent-background-job-death has now been observed twice in this campaign: (1) c31 fixture-run (armed-harness fixture reinforcement clone) and (2) c36 extraction (this cycle - feature extraction backgr"
+      },
+      {
+        "latest_cycle": 48,
+        "latest_status": "in-progress",
+        "latest_ts": "2026-08-29T17:59:00Z",
+        "milestone_id": "_manager/M-INGEST-1-corpus-expansion-plan-c48-queued-clone-1",
+        "n_events": 1,
+        "narrative_head": "c48 Branch B (corpus-expansion-plan) reconciliation bookkeeping. On-disk check confirms data/corpus_expansion_plan/ exists but no c48-authored artifacts; no docs/corpus_expansion_plan_report.md; docs/"
+      }
+    ]
+  }
+}
