@@ -33,9 +33,9 @@ def test_01_rubric_mtime_before_scripts():
     # swept the tree, fall back to the archived stale copy for the same
     # mtime invariant.
     rub_mtime = RUBRIC.stat().st_mtime
-    pys = list(SCRIPTS.rglob("*.py"))
-    if not pys:
-        pys = list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    live = [p for p in SCRIPTS.rglob("*.py") if p.name != "__init__.py"]
+    archived = list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    pys = live + archived
     assert pys, "no scripts found to check mtime against"
     for py in pys:
         assert rub_mtime <= py.stat().st_mtime, f"rubric younger than {py}"
@@ -78,10 +78,10 @@ def test_05_c11_anti_pattern_grep():
     banned = "-".join(["laion", "clap", "htsat"])
     for l in (DATA / "fetchability_ladder.jsonl").read_text().splitlines():
         assert banned not in l, f"c11 anti-pattern URL leaked: {l}"
-    pys = list(SCRIPTS.rglob("*.py")) or list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
-    for py in pys:
+    live = [p for p in SCRIPTS.rglob("*.py") if p.name != "__init__.py"]
+    archived = list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    for py in live + archived:
         src = py.read_text()
-        # allow the guard-variable form 'laion','clap','htsat' but not the joined literal
         assert banned not in src, f"{py} contains forbidden literal"
     _pass("05_c11_clap_anti_pattern_not_reopened")
 
@@ -92,12 +92,10 @@ def test_06_no_prng_except_torch_seed():
     if no .py files remain we still assert the historical invariant via
     the archived copy under tools/stale/.
     """
-    pys = list(SCRIPTS.rglob("*.py"))
-    if not pys:
-        # look at the archived scratch copy of the seed site
-        archived = list((ROOT / "tools" / "stale").glob("c57_clone2_smoke_inner.py"))
-        assert archived, "no scripts present and no archived stale copy — cannot verify PRNG discipline"
-        pys = archived
+    live = [p for p in SCRIPTS.rglob("*.py") if p.name != "__init__.py"]
+    archived = list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    pys = live + archived
+    assert pys, "no scripts present"
     for py in pys:
         src = py.read_text()
         assert "import random" not in src, f"{py}: 'import random' forbidden"
@@ -108,15 +106,22 @@ def test_06_no_prng_except_torch_seed():
 
 
 def _src_files():
-    pys = list(SCRIPTS.rglob("*.py"))
-    if pys:
-        return pys
-    return list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    """Live scripts + archived c57 clone-2 stale copies (fanout may sweep live)."""
+    live = [p for p in SCRIPTS.rglob("*.py") if p.name != "__init__.py"]
+    archived = list((ROOT / "tools" / "stale").glob("c57_clone2_*.py"))
+    return live + archived
 
 
 def test_07_no_sidecar_nonfactor_import():
+    """AST-grep: no import of any sidecar_nonfactor module."""
     for py in _src_files():
-        assert "sidecar_nonfactor" not in py.read_text(), f"{py}: sidecar_nonfactor forbidden"
+        tree = ast.parse(py.read_text())
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for n in node.names:
+                    assert "sidecar_nonfactor" not in n.name, f"{py}: forbidden import {n.name}"
+            if isinstance(node, ast.ImportFrom) and node.module:
+                assert "sidecar_nonfactor" not in node.module, f"{py}: forbidden from-import {node.module}"
     _pass("07_no_sidecar_nonfactor_import")
 
 

@@ -54,9 +54,13 @@ song, that is a finding to report, not a reason to hand-roll DSP again.
 ## The v3 pipeline (simplest robust path, in order)
 
 1. **Ingest** (exists, unchanged): rated corpus 4–7, sha256 provenance.
-2. **Transcribe**: one MuScriptor call per song on the FULL MIX. No section
-   selection, no per-stem transcription, no hand-rolled DSP. Output: MIDI
-   (authoritative) + JSON events (analysis) + tempo map.
+2. **Transcribe** (operator decision 2026-09-02): htdemucs_6s separation
+   first — isolation is a quality layer that helps transcription — then one
+   MuScriptor call PER STEM with a stem-matched `--instruments` whitelist,
+   merged back into one multi-track MIDI on a shared tempo map. A full-mix
+   pass is allowed only as a cross-check for separation-artifact losses.
+   No hand-rolled DSP. Output: MIDI (authoritative) + JSON events + tempo
+   map.
 3. **Render**: fixed lookup from MuScriptor instrument groups → GM programs →
    fluidsynth (FluidR3_GM), drums on channel 10, per-track stems rendered
    separately. Deterministic. Palette upgrades (Surge/sfizz) only AFTER the
@@ -85,6 +89,8 @@ song, that is a finding to report, not a reason to hand-roll DSP again.
   replaced by a stronger model, never by threshold tuning.
 - The gate hierarchy is explicit: operator ear > objective sanity panel.
   No metric may confer LANDS on audible quality.
-- Full-mix transcription first; stems only for verification and the vocal
-  overlay. Separation bleed can no longer corrupt transcription.
+- Separation is a quality layer FOR transcription: per-stem MuScriptor with
+  stem-matched instrument whitelists, recombined; full-mix pass only as a
+  cross-check. Bleed is handled by the whitelists plus reconciliation, not
+  by hand-rolled classifiers.
 - One tool per stage, one call per song, deterministic flags everywhere.

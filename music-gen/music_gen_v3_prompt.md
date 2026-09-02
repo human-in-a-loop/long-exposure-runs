@@ -39,14 +39,23 @@ decision in the plan of record.
 
 ## Fixed decisions (not yours to reopen)
 
-1. **Transcription = MuScriptor, full mix, one call per song.** Installed and
-   smoke-verified in `workspace/learned_transcribers_venv` (CLI
-   `muscriptor transcribe`). Local weights:
-   `workspace/models/muscriptor-medium/model.safetensors` (pass via `-m`,
-   with `-d cpu`; greedy decode default = deterministic; use
+1. **Transcription = MuScriptor on SEPARATED stems, then recombine**
+   (operator decision, 2026-09-02). Sound isolation is a quality layer that
+   helps transcription: run htdemucs_6s first, then one MuScriptor call PER
+   STEM with an `--instruments` whitelist matched to that stem (drums stem →
+   drums; bass → electric/acoustic bass; guitar → guitar groups; piano →
+   piano/organ/electric_piano; other → remaining pitched groups; vocals →
+   voice, symbolic record only), then merge the per-stem MIDIs into one
+   multi-track MIDI on a shared tempo map. A full-mix MuScriptor pass may be
+   used as a CROSS-CHECK to catch what separation artifacts destroy
+   (reconcile in per-stem's favor unless A/B evidence says otherwise), never
+   as the primary. MuScriptor is installed and smoke-verified in
+   `workspace/learned_transcribers_venv` (CLI `muscriptor transcribe`).
+   Local weights: `workspace/models/muscriptor-medium/model.safetensors`
+   (pass via `-m`, with `-d cpu`; greedy decode default = deterministic; use
    `--detect-tempo`, `--format midi` for the authoritative artifact and
    `--format json` for analysis). You never write a transcription algorithm.
-   You never tune one. If MuScriptor is wrong on a song, you may steer it
+   You never tune one. If MuScriptor is wrong on a stem, you may steer it
    only through its own interface (`--instruments` whitelist, temperature
    OFF, chunk boundaries) and otherwise you REPORT the failure to the
    operator with A/B evidence — hand-rolled DSP transcription is permanently
@@ -66,9 +75,9 @@ decision in the plan of record.
    `rc1_v2_hybrid.py`): htdemucs vocals stem overlaid on the instrumental
    render; the transcribed voice track stays in the MIDI, unsynthesized.
    htdemucs_6s (driver `rc9_first_class_parts.py`, baselines under
-   `data/recreate_v2/baseline/`) is used ONLY for the vocal overlay,
-   per-stem mix reference, and verification — never as a transcription
-   input.
+   `data/recreate_v2/baseline/`) is the isolation layer feeding per-stem
+   transcription (decision 1) and also serves the vocal overlay, per-stem
+   mix reference, and verification.
 5. **Mix match = the proven D4 stage** (`rc7_mix_balance.py` /
    `rc7_v2_rerun.py`): per-stem render → per-stem loudness match to the
    corresponding htdemucs stem → deterministic per-stem EQ curve fitted to
