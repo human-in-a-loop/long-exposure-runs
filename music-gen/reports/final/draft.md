@@ -762,3 +762,166 @@ finding.
   keeping the two signals distinct is a load-bearing part of the
   ear-model design.
 
+# 7. The Ear Model (M-EAR-1)
+
+## 7.1 What M-EAR-1 is (and is not)
+
+M-EAR-1 is an ordinal listener model: given a 30-second music chunk it
+emits a real-valued score whose *rank* — not its calibrated magnitude —
+is the object of interest. Trained on the operator's rated corpus (ear
+bands 6/5/4), it predicts whether one chunk is likely to be preferred
+over another by the same operator, and it is used downstream in
+Section 8 to rank generation candidates without requiring the operator
+in the loop for every sample.
+
+Two disclaimers up front. First, M-EAR-1 is a *listener model*, not a
+music-quality model: it captures one specific operator's ordering, and
+the leak-test in §7.5 explicitly demonstrates it does not — must not —
+consume any of the seven non-factor fields from Section 2.4. Second,
+M-EAR-1 is deliberately held **in progress** at the report date, for
+reasons that are load-bearing and are the point of this section.
+
+## 7.2 The CORN ordinal-regression head
+
+The training objective is CORN: consistent rank logits for ordinal
+regression, in the sense of Cao/Mirjalili/Raschka. CORN decomposes an
+ordinal target of $K$ classes into $K-1$ conditional binary
+classification tasks arranged as a staircase, and uses a single shared
+backbone with $K-1$ output logits whose monotonicity is enforced by
+construction. For this project's three-band operator rating (6/5/4),
+$K = 3$ so the head has two output logits.
+
+CORN is preferred over softmax-cross-entropy for two properties: the
+predicted class order is guaranteed monotone (a chunk cannot be
+scored "band 6 with probability 0.6 and band 4 with probability 0.7"),
+and the training loss is decomposable per boundary, so the two
+boundary decisions (band-6-vs-not, band-≥-5-vs-band-4) can be tuned
+independently by re-weighting per-boundary loss terms.
+
+## 7.3 The Path B commit doc and the three-threshold pre-registration
+
+At c26 the project committed to Path B: rather than tuning M-EAR-1's
+operating point post hoc, three thresholds SB1 / SB2 / SB3 were
+**pre-registered** in a commit document that pinned the exact
+`focus_set` and the exact test statistics under which the model would
+be judged:
+
+- **SB1** — band-6 recall on the held-out slice.
+- **SB2** — band-4 precision on the held-out slice.
+- **SB3** — Spearman rank correlation between predicted scores and
+  operator labels on the full available corpus.
+
+Path B's discipline is that the three thresholds are set *before*
+observing any test-set metric. Once set, they are the model's
+acceptance criteria; the model is not tuned to satisfy them
+retrospectively.
+
+## 7.4 EAR_v2_PARTIAL and the IMPROVEMENT criterion
+
+M-EAR-1 v2 was evaluated against SB1/SB2/SB3 at c45. The verdict was
+**EAR_v2_PARTIAL**: v2 improves over v1 on all three thresholds
+simultaneously but does not clear the pre-registered PASS bar on any
+of them at full statistical confidence given the current corpus
+coverage.
+
+A follow-up adjudication at c46 clarified the mapping: PARTIAL fires
+under an IMPROVEMENT criterion (v2 - v1 > 0 on each of the three
+metrics, tested independently), which is distinct from the PASS
+criterion (v2 exceeds the pre-registered SB1/SB2/SB3 thresholds
+absolute). The c47 sub-leaves (per-boundary calibration
+sub-milestones) individually validate on the smaller subsets they are
+scoped to. The parent M-EAR-1 is held **in progress by design**
+until real-label calibration on the full 80-song corpus can be run —
+which itself waits on the egress unblock discussed in Section 2.
+
+The audit reflects this cleanly: M-EAR-1 in-progress / high
+confidence / 27 evidence rows; M-EAR-1/real-label-training-v2
+in-progress / medium confidence / 6 evidence rows; three v2.1
+sub-leaves validated at c47.
+
+## 7.5 The leak test: non-factors go unread
+
+The seven non-factor fields registered per song in Section 2.4 —
+genre, country, release date, language, instrumental-vs-lyrics,
+live-vs-studio, artist — exist chiefly so the ear model can be tested
+against them. The leak-test harness runs the following experiment on
+every candidate model:
+
+1. **Plant a strong signal.** For each non-factor, construct an
+   *adversarial* training/test split in which the field perfectly
+   predicts the operator rating on the training half (rating and
+   field are correlated at $r = 1$) and is decorrelated on the test
+   half.
+2. **Run the model unchanged.** Train the ear model on the training
+   half with the non-factor fields present in the sidecar (as they
+   always are), evaluate on the test half.
+3. **Require failure to detect.** If the model has consumed the
+   planted non-factor even indirectly, its test-half accuracy will
+   collapse (the correlation the model latched onto is not there).
+   The leak-test *requires* that test-half accuracy remain
+   indistinguishable from the no-plant baseline. Passing the leak
+   test means the model *did not* find the signal it was invited to.
+
+M-EAR-1 v2 passes the leak test on all seven non-factors at the
+confidence level set by the training-half plant strength. This is
+reported as a positive result about the model's *inductive
+architecture*, not about any specific corpus split: the leak test
+manipulates the split precisely to make the plant strength independent
+of natural correlations in the corpus.
+
+## 7.6 The armed-harness sub-milestone
+
+M-EAR-1/armed-harness is the mechanical readiness state that will
+enable a full real-label calibration run automatically once egress
+opens. Its readiness gate is precisely the two-consecutive
+`media_ok=true` production probes described in Section 2.5. It is
+fixture-verified at c26 and re-verified at c31 (the fixture emits a
+synthetic ratings-manifest CSV and a synthetic 80-song audio bundle,
+runs the calibration end-to-end, and checks that the resulting model
+lands its verdict under the pre-registered rubric hash). The
+sub-milestone is in-progress because its production-mode gate has
+not fired.
+
+## 7.7 The corpus gap and its downstream consequences
+
+At the report date 43 of the 80 rated songs have on-disk audio; the
+remaining 37 have full provenance rows in
+`corpus/ratings/ratings_manifest.tsv` but blocked audio. The corpus
+gap directly limits three things:
+
+- **Statistical power of SB1/SB2/SB3.** The pre-registered thresholds
+  were chosen with an 80-song evaluation in mind. On 43 songs the
+  confidence intervals around each threshold's test statistic are
+  wider by roughly a factor of $\sqrt{80/43} \approx 1.36$, and the
+  PASS bar is therefore stricter in effect than in intent.
+- **Band-boundary calibration.** The band-4 slice is the smallest of
+  the three in the operator's distribution; losing any of its songs
+  to egress makes the band-4 boundary the tightest to calibrate
+  cleanly. The c47 sub-leaves that individually validate at high
+  confidence are, in effect, the band-6/band-5 boundary work,
+  precisely because it has the most surviving data.
+- **Full-corpus real-label training.** The v2 head was trained on
+  the 43 available songs; a v3 head on the full 80 songs is the
+  gated next step. The commit-doc rubric hash for v3 is registered
+  and the ARMED harness is ready; only the egress gate remains.
+
+The audit records a separate provenance drift here: the manifest is
+missing 10 band-7 rows despite RECEIPTS.md claiming an update. Band 7
+is the exemplar-only ceiling from Section 2.1 and is used as a
+positive-control channel for M-RECREATE-1/first-real-audio rather
+than as a training band for M-EAR-1, but the reconciliation belongs
+in future work either way.
+
+## 7.8 What the reader should carry forward
+
+- M-EAR-1 is an ordinal listener model with a CORN head and
+  pre-registered PASS bars SB1/SB2/SB3.
+- The current verdict is EAR_v2_PARTIAL: v2 monotonically improves
+  on v1 across all three bars but does not clear PASS at full
+  confidence given the corpus coverage.
+- Non-factor leak testing is a load-bearing part of the design and
+  is passing.
+- The parent milestone is held in-progress by design, pending an
+  automatic full-corpus real-label calibration whose only remaining
+  gate is the egress-ready state machine of Section 2.5.
+
