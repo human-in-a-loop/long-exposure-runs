@@ -629,3 +629,136 @@ determinism guarantee.
   the generation stage in Section 8 hash renders and deduplicate at
   the payload level.
 
+# 6. The Texture Panel (M-TEX-1)
+
+## 6.1 The refuse-to-aggregate contract
+
+The texture panel is the single largest concession this project makes
+to honesty over convenience. Every mature evaluation tradition — for
+speech synthesis, for image generation, for music tagging — offers a
+one-number scalar quality score. M-TEX-1 explicitly refuses that. The
+panel reports **a vector of side-by-side distances** on every
+comparison it makes, and it exposes the family disagreements between
+those distances rather than smoothing them into a mean.
+
+The rationale is that no single mel-, spectral-, or embedding-derived
+distance measures texture faithfulness well enough to be trusted alone.
+Each family has known blind spots — mel L1 is insensitive to fine
+timbral colour, VGGish is content-dependent, CLAP over-weights
+semantic tags, the loudness envelope ignores spectral balance —
+and averaging their normalised values produces a number that looks
+authoritative and is not. The contract is therefore: **the panel is
+the answer; the answer is not a scalar**.
+
+## 6.2 What the panel measures
+
+The panel emits four families of distances per comparison, at multiple
+scales where the metric admits scale:
+
+- **Multi-scale mel L1.** Log-mel spectrograms are computed at three
+  window/hop pairs (2048/512, 4096/1024, 8192/2048), L1 distance is
+  taken per scale, and all three are reported.
+- **Spectral centroid, bandwidth, rolloff, flatness.** Four
+  librosa-family low-order spectral statistics, each reported as
+  frame-mean L1.
+- **Loudness envelope.** Short-window RMS envelope L1, with an
+  additional cross-correlation `env_corr` figure (the same statistic
+  used to characterise the DawDreamer automation delivery in Section
+  5.3).
+- **CLAP and VGGish perceptual embedding distances.** Cosine and L2
+  distances in each embedding space, reported separately (they
+  disagree, and the disagreement is the point).
+
+For a single pairwise comparison this produces on the order of a dozen
+scalar entries. The panel does not reduce them.
+
+## 6.3 The stage-by-stage comparison
+
+The comparison the panel is designed for is not "recreation vs
+original" alone. It is three-way: **original ↔ bare-MIDI ↔
+effects-layered**, where:
+
+- *original* is the source audio,
+- *bare-MIDI* is the merged score of Section 4 rendered through the
+  DAW stack of Section 5 with palette instruments but no effects
+  chain,
+- *effects-layered* is the same render with the rules-ledger-derived
+  effects chain applied (EQ, compression, reverb, delay).
+
+The three-way structure lets the panel disentangle two questions the
+project genuinely cared about separately: how much of the texture gap
+is symbolic (bare-MIDI vs original) vs how much is production
+(effects-layered vs bare-MIDI). On the seed song, roughly two-thirds
+of the mel L1 gap and roughly half of the VGGish cosine gap closed
+between bare-MIDI and effects-layered, consistent with production
+being a large but not dominant contributor to texture faithfulness.
+
+## 6.4 Widening: three seeds, 72 finite numbers
+
+Initial evaluation was on a single seed; widening to three seeds
+produced 72 finite scalar entries (three seeds × three stages × four
+families × the family-appropriate number of sub-scales). "Finite" is
+literal — the panel refuses to emit NaN and refuses to fall back to
+imputation. A metric that cannot be computed for a given comparison
+(for example, VGGish cosine on a stem below the model's minimum
+duration) is reported as an explicit absent row, not as zero.
+
+Across the three seeds the panel's headline observation was that no
+single distance ordered the three stages consistently. Multi-scale
+mel L1 preferred effects-layered on all three seeds. VGGish cosine
+preferred effects-layered on two seeds and bare-MIDI on one. CLAP
+cosine preferred effects-layered on the two ensemble seeds and was
+essentially tied on the monophonic seed. This is the family
+disagreement the panel exists to surface.
+
+## 6.5 The content-flip embedding analysis
+
+The one persistent VGGish flip — bare-MIDI preferred over
+effects-layered on a specific seed — was drilled into as a dedicated
+sub-milestone: the content-flip embedding analysis. The finding is
+that the flip is **content-dependent, not seed-random**:
+
+- On polyphonic material, VGGish's cosine geometry places the
+  effects-layered render closer to the original: the model rewards
+  the spectral density that the effects chain adds.
+- On monophonic decaying-triad material (the specific seed that
+  flipped), VGGish places the bare-MIDI render closer: the effects
+  chain's reverb tail moves the embedding *away* from the
+  dry-monophonic original along a dimension the model uses.
+
+The analysis's importance is not to fix the flip — it is a true fact
+about VGGish, not a bug in the pipeline — but to make it legible in
+the panel output. The relevant panel row now carries a
+`content_class ∈ \{polyphonic, monophonic-decaying-triad, mixed\}`
+tag that tells a downstream reader when this flip is expected.
+
+One book-keeping note: the c14 clone-2 closure event pinned 13
+artefacts plus an adopt event for a `variants/` directory of
+content-flip case studies. That directory is only partially present
+on disk today; the analysis's *findings* survive intact in the
+verdict JSONs and in the tagged panel rows, but the illustrative
+per-case variants would need to be regenerated to restore the
+directory to its pinned form. The audit records this as evidence
+drift, tracked but not blocking.
+
+## 6.6 A note on figures
+
+The M-TEX-1 content-flip analysis has figures on disk under
+`docs/figures/`; the M-RECREATE-2 RC0..RC10 scorecards are tabular
+only and would benefit from before/after mel and centroid plots that
+we did not generate in-run. The audit's figure-coverage assessment
+flags this as an outstanding item; it does not change any numeric
+finding.
+
+## 6.7 What the reader should carry forward
+
+- The panel is the answer; there is no single texture number.
+- Every panel row is a real measurement, not a smoothed average or
+  an imputation.
+- Family disagreements — especially VGGish vs mel L1 on monophonic
+  decaying material — are surfaced by construction, not swept up.
+- The panel is what Section 7's ear model is calibrated *against*
+  as a separate signal from the ear model's own ordinal loss;
+  keeping the two signals distinct is a load-bearing part of the
+  ear-model design.
+
