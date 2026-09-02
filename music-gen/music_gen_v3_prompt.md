@@ -69,8 +69,10 @@ decision in the plan of record.
    fluidsynth (FluidR3_GM), drums on MIDI channel 10, per-track stems.**
    Deterministic. GM validates content first; the palette stack
    (Surge XT via DawDreamer, sfizz — proven in `scripts/palette_render*`)
-   is the established timbre-upgrade path once the operator accepts a
-   song's content.
+   is the established timbre-upgrade path. Operator decision 2026-09-02:
+   once ONE palette render is proven on Chicken Grease (chain works,
+   byte-determinism holds), the palette becomes the PRIMARY render for all
+   subsequent deliveries; GM demotes to an internal debug artifact.
 4. **Vocals are hybrid** (operator decision D2, proven in
    `rc1_v2_hybrid.py`): htdemucs vocals stem overlaid on the instrumental
    render; the transcribed voice track stays in the MIDI, unsynthesized.
@@ -83,13 +85,16 @@ decision in the plan of record.
    corresponding htdemucs stem → deterministic per-stem EQ curve fitted to
    the original stem's average spectrum → sum, master LUFS matched. No
    global effects wash.
-6. **Gate hierarchy**: operator listening > sanity panel. The sanity panel
-   (onset/pitch agreement vs stems, tempo agreement, per-instrument
-   note-density ratio, mel/centroid/LUFS/embedding panel) is a regression
-   tripwire; no metric or metric combination may declare a recreation
-   successful. Deliver A/B audio to the operator EVERY iteration and mark
-   the milestone blocked-on-operator until their verdict arrives via the
-   guidance channel.
+6. **Gate hierarchy**: operator listening remains the final authority on
+   quality, but it is exercised POST-HOC (operator decision 2026-09-02:
+   the run builds to completion; the operator verifies afterward). The
+   sanity panel (onset/pitch agreement vs stems, tempo agreement,
+   per-instrument note-density ratio, mel/centroid/LUFS/embedding panel)
+   is a regression tripwire; no metric may be gamed into a success claim.
+   Deliver A/B audio for EVERY song and keep the delivery manifests
+   current so the operator can review any time — but never idle a cycle
+   waiting for a verdict. If a verdict arrives via guidance, it outranks
+   everything and reopens the affected song.
 7. **Model**: this run uses the configured model verbatim; never change
    engine config.
 
@@ -99,23 +104,41 @@ decision in the plan of record.
   31a164f845f8e27e): MuScriptor → MIDI → GM render → vocal overlay → mix
   match → A/B excerpt + full-song render emitted for the operator.
   Byte-determinism ×2 on the whole chain. Deliverable before anything else.
-- **M-V3-FOCUS**: same chain on the 5-song focus set (Chicken Grease, What
-  If I Go 252eb21ce7df7328, Rome 51e433ade2a845e1, Peach Dream
-  88d247468cb6d49f, Disco A cdd2717e52820ff6). Iterate per operator
-  feedback. LANDS only when the operator accepts ≥3 of 5, Chicken Grease
-  mandatory.
-- **M-V3-CORPUS**: batch the full rated corpus (43 songs on disk; manifest
-  `corpus/ratings/ratings_manifest.tsv`), emit per-song recreations +
-  sanity-panel scorecards, flag the worst 5 for operator listening.
-- **M-V3-RULES**: extract compositional rules/statistics from the validated
-  MIDI corpus (harmony, groove, arrangement, per-rating-band contrasts).
-- **M-V3-EAR**: train the 1–7 ear on rated-corpus features; validate against
-  held-out ratings.
-- **M-V3-GEN**: generate novel songs from the rules, render through the
-  validated chain, score with the ear, deliver samples for operator rating.
+- **M-V3-FOCUS**: same chain on the 5-song focus set (Chicken Grease
+  [operator-accepted 2026-09-02], What If I Go 252eb21ce7df7328, Rome
+  51e433ade2a845e1, Peach Dream 88d247468cb6d49f, Disco A
+  cdd2717e52820ff6). Build and deliver A/B for all five; LANDS on internal
+  gates (chain complete, panel sane, byte-determinism ×2, delivery emitted).
+  Operator listening is post-hoc verification, not a blocker (operator
+  decision 2026-09-02: "the long exposure builds the architecture; I verify
+  later").
+- **M-V3-RULES**: extract compositional rules/statistics from the
+  transcribed corpus (harmony, groove, arrangement, per-rating-band
+  contrasts). Transcribe additional corpus songs beyond the focus set as
+  needed to make the rules robust — full-corpus recreation A/Bs are OUT OF
+  SCOPE (operator decision 2026-09-02); only transcriptions/features are
+  needed here.
+- **M-V3-EAR**: train the 1–7 ear on AUDIO ONLY — embeddings of rendered/
+  original audio (VGGish-class), validated against held-out ratings
+  (operator decision 2026-09-02).
+- **M-V3-GEN** (completion milestone): generate NOVEL INSTRUMENTAL songs
+  (no vocals — operator decision) in the style of the band-6/7 corpus, and
+  ALSO implement an interpolation-hybrid mode (blend two named corpus
+  songs' styles) as an available option with at least one demo output.
+  Mix via DONOR-SONG MATCH: each generated song names one corpus song as
+  mix donor and matches its stem balance/master LUFS. Render palette-first
+  (see decision 3). **The campaign completes when 5 novel songs each
+  scoring ≥6 on the trained ear are delivered** under
+  `data/v3/deliveries/generated/` with a batch manifest, plus the
+  interpolation demo. Then write the completion report, update all docs,
+  and END THE RUN cleanly (declare the topic complete; do not idle waiting
+  for operator verdicts — the operator rates the batch after the run
+  closes).
 
-Do not start a milestone before its predecessor LANDS (operator-gated where
-stated). Depth over breadth: a failed focus song outranks any new milestone.
+Milestones run in this order, but a later milestone may start once its
+predecessor's ARTIFACTS exist (it never waits on operator listening).
+Depth over breadth still applies to build failures: a broken chain on a
+focus song outranks new milestones.
 
 ## Operating rules
 
