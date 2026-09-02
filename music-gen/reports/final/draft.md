@@ -925,3 +925,164 @@ in future work either way.
   automatic full-corpus real-label calibration whose only remaining
   gate is the egress-ready state machine of Section 2.5.
 
+# 8. Recreation, the Accurate-Small-Set Programme, Generation, and the Collision Arc
+
+## 8.1 The recreation-before-generation bet
+
+The project's structural bet — set at the top of this report — is
+that faithful recreation of an existing rated song is a prerequisite
+for meaningful generation. Sections 3 through 7 built the toolchain;
+Section 8 exercises it end-to-end. Two milestone families do the
+exercising: M-RECREATE-1 recreates single rated songs to prove the
+pipeline closes on real audio at all, and M-RECREATE-2
+(accurate-small-set) hardens the closure on a five-song focus set
+with pre-registered per-stage rubrics.
+
+## 8.2 M-RECREATE-1: first end-to-end recreation
+
+The first end-to-end recreation of a rated song ran on the band-7
+exemplar `016__LOCAL__05_02.mp3` and closed with verdict
+**RECREATION_LANDS**. The headline number is
+$\Delta \text{mel\_l1\_db} = +5.906\text{ dB}$ improvement of the
+effects-layered render over the bare-MIDI render (measured against
+the original). Both terms are texture-panel measurements (Section 6);
+the improvement is exactly the kind of "how much does production add"
+question the three-way stage-by-stage comparison was built to answer,
+now on a real rated song rather than the 8-bar seed.
+
+The audit records one downstream schema drift for this milestone:
+`verdict.json` lacks a top-level `rubric_hash` key, breaking the
+three-way byte-equality convention used by later milestones. The
+verdict content is intact and reproducible; the schema wart is
+tracked as future work, not as a substantive result to revisit.
+
+## 8.3 The M-RECREATE-2 accurate-small-set programme
+
+M-RECREATE-2 hardens recreation on a five-song focus set drawn from
+bands 6 and 5. The programme is decomposed into recreation cells
+RC0–RC10, each with a pre-registered rubric and a per-song scorecard:
+
+- **RC0** — baseline: current-pipeline recreation without per-stage
+  hardening. Sets the floor every RC$n$ has to beat.
+- **RC1** — vocals transcription (Branch A, verdict RC1_RC9_LANDS,
+  **4/5 focus songs**).
+- **RC2** — drums stem transcription.
+- **RC3** — bass stem transcription.
+- **RC4** — GM program map (folded into RC1/RC2/RC3 substantive
+  branches; the c50 stub records the intent).
+- **RC5** — tempo/beat grid estimation (Branch B carried the
+  substantive tempo work at c51).
+- **RC6** — panel-gate: verifies that Section 6's panel does not
+  regress on the RC1–RC3 outputs.
+- **RC7** — mix balance (EQ + loudness match): **5/5 focus songs,
+  20/20 stem accepts** on substantive per-stem MIDIs, rerun at
+  c1-1_clone_0 and reconfirmed.
+- **RC9** — first-class parts (per-part identity and role tagging):
+  **5/5 focus songs** under Branch A of c51.
+- **RC10** — transcription real-stem resurvey with post-processing:
+  drums-and-bass impl-per-stem, winner-per-stem selection, and
+  post-processing applied. Validated end-to-end at cycle 54 with
+  five sub-milestones landing under the accurate-small-set parent
+  (`drums-bass-pre-registration`, `-impl-per-stem`,
+  `-winner-selected`, `-post-processing-applied`,
+  `-verdict-emitted`).
+
+Two book-keeping notes carried by the audit and named here for
+completeness: (a) the plan pre-registered an accurate-small-set-v2
+supersede parent that never emitted its own firing events (all c50+
+leaves fired under the v1 parent), a plan-ledger drift slated for a
+single supersede event in future work; and (b) the RC0..RC10
+scorecards are tabular only — before/after mel and centroid plots
+would help a reader as figures and were not generated in-run.
+
+## 8.4 M-GEN-1: the generation-batch arc
+
+M-GEN-1 exercises generation independent of recreation quality: it
+draws from the rules ledger (Section 4), constructs candidate merged
+scores, renders them through the DAW palette (Section 5), and scores
+the results with the ear model (Section 7) and the texture panel
+(Section 6). Six batch revisions were produced:
+
+- **batch-v1** — baseline: random rule draws, uniform palette.
+- **batch-v2** — rule-cluster-conditioned draws (per rule-type
+  clusters extracted from the ledger).
+- **batch-v3** — first attempt at palette-conditioned rendering
+  (palette chosen by rule-cluster).
+- **batch-v4** — palette-driven-v4: palette chosen by
+  rule-cluster *and* re-conditioned on the M-EAR-1 v2 ranking of
+  candidate palettes on prior batches.
+- **batch-v5** — batch-vs-cluster: measured whether cluster-anchored
+  draws Pareto-dominate uniform draws on the panel; result was
+  mixed by content class, consistent with the Section 6.5
+  content-flip finding.
+- **batch-v6** — the current top: palette-driven, cluster-anchored,
+  ear-ranked, with a deduplication pass on payload hash.
+
+Every batch's verdict JSON and provenance row survives on disk. The
+audit notes that **684 ledger-referenced generation artefacts are
+absent from disk** (artifact loss under M-GEN-1/batch-v-cluster):
+these are the rendered audio outputs themselves, which are
+*deterministically regenerable* from the seeded ledger by re-running
+the render sweep. The verdicts and the panel scores that gate the
+verdicts are intact; only the audio bytes downstream of them would
+need to be re-materialised. A single deterministic sweep re-produces
+them, and the regeneration is called out as a discrete future-work
+item.
+
+## 8.5 The collision-modelling arc: PARTIAL_BP_UNRESOLVED_SHAPE
+
+Independent of both recreation and generation, one investigation ran
+its course to a fully-negative published outcome and deserves
+naming: the collision-modelling arc. The question was whether
+observed generation-output collisions (two different rule-payload
+draws producing byte-identical rendered audio) are explained by any
+of four structural mechanisms:
+
+- **M1 — coherence-gate coercion.** Hypothesis: the coherence gate
+  in the palette-choice step deterministically maps distinct
+  payloads to the same rendered output. Verdict: **structurally
+  disqualified** — the gate's output alphabet is strictly larger
+  than the number of observed collisions per bucket, so it cannot
+  be the exhaustive cause.
+- **M2 — effective-K.** Hypothesis: the effective number of distinct
+  render outputs $K_{\text{eff}}$ per rule-type is small enough that
+  a birthday-paradox collision rate matches observations. Verdict:
+  **refuted** — measured $K_{\text{eff}}$ per rule-type is at least
+  an order of magnitude larger than what would reproduce the
+  observed collision rate.
+- **M3 — hash-space geometry.** Hypothesis: colliding payloads
+  cluster geometrically in the hash space, per
+  (rule_type × salt) cell. Verdict: **collapsed under
+  multiple-testing correction** — apparent per-cell clustering did
+  not survive correction across the 40+ cells tested.
+- **M4 — semantic-cluster overlap.** Hypothesis: colliding payloads
+  share a semantic cluster in the rules ledger's cluster space
+  (Section 4). Verdict: **refuted** — collision rates within and
+  across clusters are statistically indistinguishable.
+
+The final verdict on the arc is **PARTIAL_BP_UNRESOLVED_SHAPE**: the
+observed collision rate is real, but no candidate mechanism accounts
+for it, and the arc is closed with the negative result published
+rather than left to accumulate follow-ons. This is the honest form
+of the finding: a genuinely-open shape question about the
+distribution of collisions, with the four best-motivated candidates
+each independently ruled out. The candidate list is what was ruled
+out, not a full search of the hypothesis space; the arc's closure
+document is explicit that unexamined mechanisms remain possible.
+
+## 8.6 What the reader should carry forward
+
+- The pipeline closes end-to-end on a real rated song
+  (M-RECREATE-1, +5.906 dB effects-over-bare on the band-7
+  exemplar).
+- The five-song focus set is hardened across RC0–RC10 with
+  per-stem pre-registration; RC7 (mix balance) and RC9
+  (first-class parts) both land 5/5 focus songs.
+- Six generation batch revisions were produced; verdicts and
+  provenance are intact and the 684 missing audio artefacts are
+  deterministically regenerable from the seeded ledger.
+- The collision-modelling arc closes with a published negative
+  result across four structurally-motivated candidate mechanisms.
+  The unexplained-collision distribution remains a live open
+  question, carried into future work.
+
