@@ -459,3 +459,173 @@ of arbitrary length".
   choice in the DAW render — reads from the ledger, not from the
   merged score directly.
 
+# 5. The DAW Stack and the Palette-Instrument Determinism Arc
+
+## 5.1 The 2026-08-28 stack reversal
+
+The project's original DAW choice was Ableton Live plus Pro Tools,
+driven by their strong plugin ecosystems and mature MIDI-clip authoring.
+That choice was reversed on 2026-08-28 in favour of **Ardour +
+DawDreamer + open-source plugins** (LV2 and open VST3s). Three reasons
+converged:
+
+1. **Redistribution constraints.** Ableton and Pro Tools cannot be
+   installed unattended in a reproducible workspace; every worker would
+   have needed a manually-managed license seat. Ardour installs from
+   package under an open licence, and DawDreamer is `pip install`-able.
+2. **Determinism reach.** DawDreamer exposes plugin state as
+   Python-native parameter maps that can be dumped, hashed, and diffed;
+   commercial DAWs' automation formats are opaque binary blobs whose
+   byte-identity across saves is not guaranteed even without semantic
+   change.
+3. **Automation as first-class data.** DawDreamer's `set_automation`
+   accepts a per-parameter time-series directly, so automation curves
+   are inputs the pipeline can construct programmatically from the
+   rules ledger, rather than clip-region drawings maintained by hand.
+
+The reversal was carried out as a bounded validation spike — M-DAW-SPIKE-1
+— rather than a wholesale rewrite; the spike's purpose was to answer
+"can this stack render a merged score with automation, deterministically,
+end to end" before any downstream code was re-pointed.
+
+## 5.2 What the spike proved and its two documented gaps
+
+The spike closed the end-to-end path for a single seed song: merged
+score → per-part MIDI → Ardour session with correct automation lanes →
+render to WAV → panel input. Two gaps surfaced during the spike and were
+documented rather than papered over:
+
+- **GAP-1: Ardour Lua MIDI-file import.** Ardour's Lua scripting API
+  does not expose a stable programmatic path for importing a
+  standalone MIDI file into a new track region. Manual UI import
+  works; scripted import does not (the API surface exists, but its
+  behaviour across Ardour patch releases was not stable enough to
+  build on).
+- **GAP-2: Ardour VST3 automation delivery.** Even when a VST3 plugin
+  is instantiated in an Ardour track and an automation lane is drawn
+  onto it, parameter changes were observed not to reach the plugin's
+  audio-thread state on render. Initial diagnosis pointed to VST3
+  specifically; later work sharpened this: the delivery gap affects
+  **both VST3 and LV2** paths on the versions of Ardour available in
+  the workspace.
+
+GAP-1 was closed by a **redefinition**: rather than route MIDI through
+Ardour's importer at all, the pipeline pre-renders each MIDI part to
+audio via `fluidsynth` (with a pinned SoundFont per part) and then
+authors the Ardour audio-region XML by hand. Hand-authored XML uses
+Ardour's stable on-disk schema (which is stable across the patch
+releases we tested) rather than its unstable scripting API. The audit
+records this closure as a REDEFINED-GAP, not a fix — a signal to future
+readers that the underlying Lua import path is still not exercisable.
+
+GAP-2 remains **STILL-GAP** at the time of writing. The pipeline works
+around it with a two-step render (rendered stems from fluidsynth, then
+DawDreamer for parameter-automation-driven effect passes on those
+stems); the workaround is documented in the DAW-stack README and is
+consumed by the palette-instrument work in §5.4.
+
+## 5.3 DawDreamer `set_automation` gap-closure and `env_corr`
+
+Independent of the Ardour VST3/LV2 gap, DawDreamer's own
+`set_automation` path was exercised as the primary automation-delivery
+mechanism. The gap-closure metric is `env_corr`: the Pearson correlation
+between the rendered stem's short-window RMS envelope and the target
+envelope encoded by the automation curve. Two bars were pre-registered:
+
+- **Primary bar:** `env_corr ≥ 0.9` on a sinusoidal AM-envelope target.
+- **Secondary bar:** `env_corr ∈ [0.15, 0.3]` — a floor that
+  distinguishes "automation is delivered at all" from "automation has
+  no measurable effect."
+
+The observed number after gap-closure was **env_corr = 0.487**. This
+misses the primary bar and satisfies the secondary bar. The result is
+reported as a **partial closure**, not a pass: it demonstrates that
+`set_automation` reliably delivers a monotonic control signal to the
+plugin's audio thread, but the sinusoidal target's high-frequency
+detail is smoothed by parameter-quantisation and per-block latency in
+the plugins we tested. Downstream panel input is computed on the actual
+rendered envelope, not on the target — so the panel measurements remain
+faithful even where the primary bar is missed.
+
+## 5.4 The palette-instrument determinism arc
+
+Beyond the automation gap, the pipeline needed a *palette* of
+instruments — synths and samplers whose per-parameter state can be set
+programmatically and whose rendered output is byte-deterministic for a
+given parameter payload. Two plugins were adopted:
+
+- **Surge XT** (open-source hybrid synth) for pitched tonal content.
+- **Dexed** (open-source FM synth, DX7-family) for FM-specific timbres
+  and for the leak-test control condition of a strong,
+  spectrally-narrow reference tone.
+
+Each is rendered via DawDreamer under a fixed sample rate (44.1 kHz), a
+fixed block size, and a fixed parameter payload. Byte-identity was
+verified across:
+
+- **Independent invocations** on the same host (same worker, cold
+  cache): identical bytes.
+- **Salted invocations** across a set of five deterministic-salt seeds
+  intended to perturb any hidden nondeterminism (thread scheduling,
+  allocator interleavings, floating-point summation order): identical
+  bytes.
+- **Two hosts** with matching CPU family: identical bytes.
+
+Both plugins passed. The determinism proof is *conditioned* on the CPU
+family being homogeneous across workers — the pipeline pins workers to
+a single family precisely because we did not want to promise
+cross-family byte identity we could not measure.
+
+## 5.5 The c31 STILL_GAP-to-activation closure
+
+The palette-instrument work started as a STILL_GAP: the fixture at
+c26 showed byte-identity on a synthetic sine-wave rendering, but the
+first attempt at rendering a real merged-score part through the same
+path exposed a mismatch between the fixture's parameter payload and
+the shape the real path fed the plugin (an additive-kwargs mismatch in
+`scripts/palette_render/render_stem.py`). The c31 activation closure
+resolved this: the render function was extended additively (new
+kwargs default to a value that recovers the fixture's behaviour), the
+fixture was re-run to confirm no regression, and a real merged-score
+part was rendered end-to-end with byte-identical output across the
+determinism grid above.
+
+The audit notes one downstream consequence: the anchor manifest that
+pinned the pre-c31 form of `render_stem.py` was not republished after
+the c31 additive-kwargs edit. The manifest's contract still holds
+(`parameter_dict=None` recovers the pinned c33 anchor byte-for-byte),
+but this backwards-compat guarantee lives in the code and the audit,
+not in the manifest itself. Republishing the manifest as `_v2` with
+the post-edit SHA and an explicit backwards-compat clause is called
+out under future work.
+
+## 5.6 A schema wart worth noting
+
+The palette-instrument determinism milestone emits its per-song
+determinism verdict as a row in a TSV (`data/palette_determinism/
+scorecard.tsv`) rather than as a top-level `verdict.json`. This is
+faithful to the milestone's rubric (which is defined per-row) but
+breaks the cross-milestone convention that verdicts live at the top
+level as JSON with a `rubric_hash` key. The audit flags this as
+verdict-schema drift; consolidating the TSV row into a wrapper
+`verdict.json` (referencing the TSV as an artefact rather than as the
+verdict itself) is a small future-work item that does not change the
+determinism guarantee.
+
+## 5.7 What the reader should carry forward
+
+- The DAW stack is Ardour + DawDreamer + open plugins, chosen for
+  determinism reach and unattended reproducibility.
+- One documented gap (GAP-1, Ardour Lua MIDI import) is closed by a
+  hand-authored XML redefinition; one (GAP-2, Ardour VST3/LV2
+  automation delivery) remains open and is worked around by a
+  two-step render.
+- DawDreamer's `set_automation` delivers monotonic control signals
+  (`env_corr = 0.487`, primary bar 0.9 missed, secondary bar
+  0.15/0.3 satisfied).
+- Surge XT and Dexed render byte-deterministically across independent
+  invocations, salt sweeps, and paired hosts within a pinned CPU
+  family. This byte-identity is the load-bearing property that lets
+  the generation stage in Section 8 hash renders and deduplicate at
+  the payload level.
+
