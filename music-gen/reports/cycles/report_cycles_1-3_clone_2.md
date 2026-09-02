@@ -1,224 +1,185 @@
 ---
-title: "Cycles 1-3 Clone 2 Report — RC5 Tempo/Beat-Grid Full Implementation (Fork 18817b483ed4)"
-date: "2026-08-29"
+title: "Music-Gen v3 FOCUS Milestone — Fanout Clone 2: Peach Dream (Cycles 1–3)"
+date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-[OUTPUT: report_cycles_1-3_clone_2]
-
-# Cycles 1-3 Clone 2 Report — RC5 Tempo/Beat-Grid Full Implementation (Fork 18817b483ed4)
+# Music-Gen v3 FOCUS Milestone — Fanout Clone 2: Peach Dream (Cycles 1–3)
 
 ## Abstract
 
-Cycles 1-3 of clone-2 (fork `18817b483ed4`) land the c53 Branch C substantive full RC5 tempo/beat-grid implementation for `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid` at **RC5_LANDS** (5/5 focus songs PASS). All 5 focus songs measured with `librosa.beat.beat_track(y, sr, hop_length=512, start_bpm=120.0, tightness=100)` deterministic invocation; tempo-octave-correction applied via deterministic argmin tiebreak; per-song RC5 verdict PASS if `|corrected_estimate - baseline_bpm| ≤ 2`. **Mura Masa (`252eb21ce7df7328`) is the ONLY song exercising the correction algorithm's non-trivial branch** (raw 100.4464 → variant [1] ×2 → corrected 200.8929; diff=0.000). All other songs report matched-detector baseline (diff=0.000) — honest self-referential caveat scoped to c54 §3.1 handoff for RC5.1 independent-detector adjudication. Byte-determinism × 2 across all 10 per-song output pairs. Auditor decision: **VALIDATED** (state stable across two verification passes post-auto-compact restore).
+This report covers Cycles 1 through 3 of a fanout-clone branch spawned from the Music-Gen v3 campaign's M-V3-FOCUS-1 milestone. The clone (fork `88d75f9754c3`, clone 2) was assigned the reference track *Peach Dream* (source SHA-16 `88d247468cb6d49f`) with the same scoped objective as its sibling clones on WIG and Rome: run the full v3 per-stem chain end-to-end on the operator-D1-chosen thirty-second section, matching the c5 Chicken Grease Method A delivery format exactly, and emit `data/v3/deliveries/88d247468cb6d49f/cycle20/verdict.json` with `V3_FOCUS_SONG_LANDS_pending_operator` or `PARTIAL/FAILS honestly`. Cycle 1 executed substantive setup work — pre-registration, tempo choice, inherited chosen-section stems, thirteen per-song sibling scripts, a twelve-case test file, and a background launch of htdemucs on the full song — but did not complete the pipeline within its turn. Cycles 2 and 3 both emitted only "pause memos" waiting for the background completion notification, producing zero substantive authorship despite the Cycle 2 research brief carrying explicit anti-Hold-Pattern gating language. On-disk state advanced only through inherited background completion (the full-song htdemucs landed with 24 SHAs byte-deterministic ×2 during the Cycle 2 wait) and did not advance at all during Cycle 3. The required output artifact `cycle20/verdict.json` remained absent for the full arc. The Cycle 3 auditor issued PIVOT with a CRITICAL escalation to the root conductor: three consecutive turns of the Hold Pattern anti-pattern have confirmed the failure mode as structural on this clone, and the auditor recommends the root conductor pick one of three named options rather than continue this clone. The branch merges as INSUFFICIENT — the only blocking call in fork `88d75f9754c3`, with substantial on-disk positive state preserved for whichever recovery path the root conductor selects.
 
-## Verdict
+## 1. Introduction and scope
 
-**RC5_LANDS** (VALIDATED; 5/5 focus songs PASS; RC5_LANDS threshold ≥3 met; MODERATE self-referentiality caveat scoped to c54 §3.1 RC5.1 handoff).
+The M-V3-FOCUS-1 milestone widens the M-V3-SPINE-1 pipeline to five focus songs read from `data/recreate_v2/focus_set_v2.json`. Fork `88d75f9754c3` operates under a Cycle 20 operator BREAK-GLASS carveout that authorized parallel substantive work on four focus songs while Chicken Grease continues to wait on operator ear under Fixed Decision 6.
 
-## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
+This report is the merge-disposition summary for clone 2 (Peach Dream). Sibling clones in the same fork:
 
-| Location | SHA-256 |
-| --- | --- |
-| `docs/rc5_tempo_beat_grid_rubric.md` | `11ab92c61231942ec78def6ef06ec8056bb55d601c032c7aea66ba2ee8659736` |
-| `data/rc5_impl/rubric_hash.txt` | `11ab92c6…9736` |
-| `verdict.json.rubric_hash` | `11ab92c6…9736` |
+- **Clone 0 (WIG, sha16 `252eb21ce7df7328`)** — BRANCH_COMPLETE, PARTIAL (MuScriptor 3/7).
+- **Clone 1 (Rome, sha16 `51e433ade2a845e1`)** — BRANCH_COMPLETE, LANDS_pending_operator (full end-to-end chain).
+- **Clone 2 (Peach Dream, sha16 `88d247468cb6d49f`)** — this branch. INSUFFICIENT.
 
-Three-way byte-equality chain CONFIRMED via direct byte-equality of all three values.
+The clone's scoped objective as issued was identical in shape to its siblings: read the chosen section from `focus_set_v2.json`; run htdemucs_6s on both the chosen section and the full song with 24 stem SHAs byte-deterministic ×2; run MuScriptor on the seven probes; canonicalize MIDI via the read-only c4 serializer; merge with four structural gates; choose tempo via `librosa.beat.beat_track` on the chosen-section drums; render per-track ×2 via fluidsynth; overlay D2 vocals via a SHA-verified htdemucs vocals copy; mix-match via the c5 Method A pattern; emit A/B WAVs, full-song WAV, and manifest under `data/v3/deliveries/88d247468cb6d49f/` matching the c5 Chicken Grease format; measure the M-TEX-1 eight-key perceptual panel; emit `cycle20/verdict.json` with the strongest permitted verdict and the three-way rubric chain byte-equal; land a twelve-case test suite at `tests/test_v3_focus_peach_dream_c20.py`; emit the standard four-row housekeeping under a `-clone-2` suffix. Required deliverable: `data/v3/deliveries/88d247468cb6d49f/cycle20/verdict.json`.
 
-## Pre-Registration mtime Discipline (Clean Ordering)
+## 2. Cycle 1: substantive setup and background launch
 
-- Rubric mtime **20:28** < script mtime **20:29** < verdict **20:29** < byte-det **20:30** < anchor-preserve **20:31** < report **20:34**.
-- Rubric pre-registered BEFORE any Python edit under `scripts/recreate_v2/rc5_tempo_beat_grid.py` (mtime-hard gate honored per c46 path (ii) amendment).
+Cycle 1 was the branch's only cycle with substantive authorship. The worker executed the pipeline prologue in the following order and completed each named step:
 
-## Per-Song Verdict Table
+- Pre-registered the sub-leaves in the plan-of-record with the `-clone-2` suffix.
+- Read the chosen section from `focus_set_v2.json`.
+- Landed the inherited chosen-section six-stem WAVs at `data/v3/deliveries/88d247468cb6d49f/stems_6s/`.
+- Ran `librosa.beat.beat_track` on the chosen-section drums stem and recorded the tempo choice.
+- Landed thirteen per-song sibling scripts under `scripts/v3_spine/peach_dream_c20_*.py` — the individual drivers for htdemucs, MuScriptor, canonicalize, merge, render, vocals-overlay, mix-match, deliver, panel, and verdict, each of which reads its c5 sibling script (`mix_match_operator_section.py`, `midi_from_json_events.py`, etc.) read-only.
+- Landed the twelve-case test suite at `tests/test_v3_focus_peach_dream_c20.py`.
+- Ran MuScriptor synchronously on three probes (drums, bass, guitar) with the guitar transcription returning the canonical empty-events JSON (two bytes, `{}`).
+- Launched htdemucs on the full song as a background task with the expectation that the completion notification would surface in a subsequent turn.
 
-| Song ID (sha16) | Title | Baseline BPM | Raw | Octave | Corrected | Abs Diff | Verdict |
-| --- | --- | ---: | ---: | :---: | ---: | ---: | :---: |
-| `31a164f845f8e27e` | Chicken Grease | 90.7258 | 90.7258 | none | 90.7258 | 0.000 | PASS |
-| `cdd2717e52820ff6` | Disco A | 119.6809 | 119.6809 | none | 119.6809 | 0.000 | PASS |
-| `51e433ade2a845e1` | Dojo Cuts | 152.0270 | 152.0270 | none | 152.0270 | 0.000 | PASS |
-| `252eb21ce7df7328` | Mura Masa | 200.8929 | **100.4464** | **double** | 200.8929 | 0.000 | PASS |
-| `88d247468cb6d49f` | (band-7) | 122.2826 | 122.2826 | none | 122.2826 | 0.000 | PASS |
+At Cycle 1 close the on-disk state was:
 
-**5/5 PASS**; RC5_LANDS threshold ≥3 met; max abs_diff = 0.000.
+- `data/v3/deliveries/88d247468cb6d49f/stems_6s/` — six chosen-section stem WAVs present.
+- `data/v3/deliveries/88d247468cb6d49f/stems_6s_full_song/` — created as the background htdemucs output directory.
+- `data/v3/deliveries/88d247468cb6d49f/muscriptor_operator_section/` — three probes (drums, bass, guitar) with JSON + MIDI pairs; guitar.json at the canonical empty-events size of two bytes.
+- `data/v3/deliveries/88d247468cb6d49f/operator_section/` and `.../per_track/` — empty (downstream stages had not run).
+- `data/v3/deliveries/88d247468cb6d49f/cycle20/` — empty (required verdict artifact not yet emitted).
 
-## Algorithm Implementation
+The Cycle 1 audit accepted the substantive setup work as valid partial progress toward the c20 objective and did not raise a Hold Pattern finding at that point; the background launch was consistent with the standard fanout-clone pattern of dispatching htdemucs full-song and returning to close the pipeline once it completes.
 
-Per-focus-song:
-1. Load original mix.
-2. Run `librosa.beat.beat_track(y, sr, hop_length=512, start_bpm=120.0, tightness=100)` — deterministic invocation, NO PRNG.
-3. Apply tempo-octave-correction: compute `est_variants=[est, est*2, est/2]`; adopt `argmin_i |est_variants[i] - baseline_bpm|` with deterministic index tiebreak (`min(range(3), key=lambda i: abs(v[i]-baseline))`).
-4. Write `data/rc5_impl/<sha16>/rc5_tempo_estimate.json` with `raw_estimate`, `corrected_estimate`, `octave_correction_applied`, `abs_diff_vs_baseline`.
-5. Load more complete partial (`data/rc1_rc9_impl/per_song/<sha16>/merged_partial.midi` if RC1+RC9 present, else `data/rc2_rc3_impl/<sha16>/merged.midi`); re-tempo against corrected estimate via music21 9.1.0 (READ-ONLY import — c37 lesson); write `data/rc5_impl/<sha16>/merged_retempo.midi + merged_retempo.musicxml`.
-6. Emit per-song RC5 verdict PASS if `|corrected − baseline| ≤ 2`, else FAIL.
+## 3. Cycle 2: first pause memo, background htdemucs lands
 
-**Test 06 assertion** (algorithmic correctness independent of self-referential real-data agreement): synthetic 100 BPM vs 200 BPM baseline → `corr=200.0, label=double, idx=1`. Correctness anchor permits VALIDATED even under honest self-referentiality caveat.
+Cycle 2 produced no new substantive authorship. The worker output was a "pause memo" of the shape *"I'll wait for the muscriptor completion notification. The background task will notify when muscriptor_determinism.json lands"* — a wait-on-notification note without any script invocation, synchronous MuScriptor advance, downstream chain execution, verdict emission, or housekeeping row.
 
-## Byte-Determinism × 2 (10/10 Pairs SHA-Equal)
+On-disk state did advance during the wait, but not through this turn's authorship: the background htdemucs full-song task launched in Cycle 1 completed, and `data/v3_spine/88d247468cb6d49f/htdemucs_determinism.json` landed with the full-song 24 SHAs byte-deterministic across two runs. This is genuine positive on-disk state on the branch, but under the harness's authorship discipline it is inherited background output rather than Cycle 2 work.
 
-`data/rc5_impl/byte_determinism.json`: `all_equal: true`; **5 songs × 2 tracked artefacts** (`rc5_tempo_estimate.json`, `merged_retempo.midi`) = **10 pairs equal**.
+The Cycle 2 audit flagged the Hold Pattern anti-pattern as MODERATE, disclosed the escalation threshold explicitly — *"Two consecutive deferral cycles on this clone. If c21 also produces pause memo, escalate to CRITICAL and hand back to root conductor for scope compression or reassignment."* — and issued PIVOT back to the researcher. The research brief for Cycle 3 was drafted with explicit anti-Hold-Pattern gating language: *"Do NOT `run_in_background` and wait."*
 
-## Anchor Preservation (21/21 Entries Byte-Identical)
+## 4. Cycle 3: second pause memo, escalation
 
-`data/rc5_impl/anchor_preservation.json`: 21 entries pre==post covering:
-- c50 v2 rubric (`0e11f704…debe1f`) + c49 v1 rubric (`958ade38…3fe58b9d`).
-- 5 c49 baselines (`data/recreate_v2/baseline/<sha16>/rc5_tempo_bpm.json`).
-- 5 c51 Branch A partials (`data/rc1_rc9_impl/per_song/<sha16>/merged_partial.midi`).
-- c51 Branch B consolidated observed BPMs (`data/recreate_v2/rc5_tempo_bpm_observed.json`).
-- `scripts/palette_render/render_stem.py` do-not-touch invariant.
+Cycle 3 produced no new substantive authorship and no new on-disk advancement. The worker output was again a pause memo of the same shape as Cycle 2, despite the Cycle 2 research brief's explicit anti-Hold-Pattern gate. No script was invoked, no synchronous MuScriptor completion attempted, no downstream chain executed, no verdict emitted, no housekeeping row landed. Every stage of the c20 pipeline downstream of htdemucs full-song remained in the same state it was in at Cycle 2 close:
 
-Contract required ≥15 SHAs; 21 delivered.
+- MuScriptor: still 3/6 probes, guitar.json still the canonical two-byte empty-events file, unchanged bytes and mtime.
+- Canonical MIDI, merge, per-track render, vocals overlay, mix-match, delivery, panel, tests, housekeeping — all `not_run`.
+- `data/v3/deliveries/88d247468cb6d49f/cycle20/` still empty; required verdict artifact still absent.
 
-## Test Surface (15/15 PASS)
+The Cycle 3 auditor issued **PIVOT with CRITICAL escalation to root conductor**. The rationale cites four converging constraints:
 
-| Suite | Result |
-| --- | --- |
-| `tests/test_rc5_tempo_beat_grid.py` | **15/15 PASS** (target ≥12/15) |
-| `promise_check` | **0 ERRORs** (WARNs unchanged from c52 baseline) |
+1. **Cannot VALIDATE** — the `<no-null-cycle-validation>` rule forbids VALIDATED on a cycle whose work_output is a bare pause memo with no authored substantive artifact.
+2. **Cannot fabricate LANDS** — Fixed Decision 1 forbids fabricating positive verdicts on absent artifacts.
+3. **Cannot COMPLETE** — the branch scope is genuinely incomplete: the required deliverable does not exist on disk, so `COMPLETE`/`[[BRANCH_COMPLETE]]` is not available.
+4. **Cannot INVALIDATE** — there is no prior VALIDATED judgment on this milestone to reverse.
 
-Coverage: rubric-first mtime-hard; three-way `rubric_hash` byte-equality; librosa invocation kwargs verbatim; tempo-octave-correction argmin determinism (test 06 synthetic assertion); NO PRNG (test 14 AST scan); `/usr/bin/python3` guard; music21 READ-ONLY import (c37 lesson); c48 env-var flags DEFAULT OFF; byte-determinism × 2; anchor preservation × 21.
+The auditor's assessment against the fourteen c20 rubric sufficiency criteria: 0/14 met. The verdict artifact is absent; the three-way `rubric_hash_v2` chain has no verdict to chain against; MuScriptor is 3/6 not 6/6, with no run-2 for the landed three; canonical MIDI, merge with four structural gates, per-track render, D2 vocals overlay, rc7 Method A mix-match, A/B WAVs, full-song WAV, manifest, eight-key panel, twelve-case test execution, four-row housekeeping, c19 backref verification, anchor preservation POST snapshot — none have run. Sub-topic completion has regressed into a repeated no-op state.
 
-## Ledger Events (9 Shadow Rows Under `-clone-2` Suffix)
+Under the operating protocol's "Max regressions before halt: 2" rule and the third-regression escalation clause, the auditor determined that three consecutive Hold Pattern turns confirm the pattern as structural on this specific clone rather than incidental, and that continuing to PIVOT back to the researcher would burn cycles without breaking the loop. Escalation to root conductor is the honest verdict.
 
-Landed at shadow ledger `/home/user/music-gen-instance/fork-18817b483ed4/clone-2/promise_ledger.jsonl`:
+## 5. Root-conductor escalation
 
-- **Substantive `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid/*` unsuffixed per c32** (6 named events):
-  - rubric committed, pre-registration verified, impl landed, byte-determinism × 2 verified, anchor-preservation verified, verdict rollup
-- **Infra + housekeeping `-clone-2` suffixed per c33** (2 events)
-- **`M-INGEST-1/egress-probe-cycle53-clone-2`** (1 tail event; `429 + tv_embedded` unchanged; c49 path-A cadence)
+The Cycle 3 auditor's escalation packet names three viable options for the root conductor:
 
-Path outside auditor read scope; trusted per prior worker report.
+**Option 1 — Reassign the Peach Dream fanout branch to a fresh clone under a new fork.** This clone's turn cadence has entered a stable no-op attractor; a context reset is likely necessary to break the Hold Pattern loop. Substantive on-disk state from Cycle 1 (pre-registration, tempo choice, inherited chosen-section stems, background-landed full-song htdemucs) and the thirteen sibling scripts and test file all carry forward to any successor clone.
 
-## Cycle Disposition
+**Option 2 — Scope-compress.** Split the c20 objective into two sub-branches: one branch completes MuScriptor 3/6 → 6/6 only (roughly five minutes of synchronous wall time), and a second branch runs the downstream sweep from a landed 6/6 MuScriptor state. Empirically the "full end-to-end chain in one turn" scope has not converged on this clone. A benefit of the MuScriptor-only sub-branch is that it would explicitly stress-test the c3 anti-pattern (`muscriptor-nondeterministic-falsified`, the MuScriptor bass MIDI container encoding drift), which Cycle 1's Run-1-only 3/6 landing did not touch.
 
-| Cycle | Researcher Directive | Worker Action | Auditor Decision |
-| --- | --- | --- | --- |
-| 1 | RC5 full-impl per c50 v2 §RC5; mtime-hard pre-registration | Rubric + script + verdict + byte-det + anchor-preserve + report landed | (audit) |
-| 2 | Re-verify post-auto-compact restore | (verification only) | (re-affirmation) |
-| 3 | Final verification; state stable across two passes | (verification only) | **VALIDATED** (state stable) |
+**Option 3 (auditor's recommendation) — Accept the current 3-turn deferral as terminal for this clone and merge the substantive Cycle 1 and background-landed deliverables as a first-class `V3_FOCUS_SONG_PARTIAL` outcome per Fixed Decision 1**, with `honest_partial_reasons = ["clone_hold_pattern_terminal_3_turns", "muscriptor_incomplete_3_of_6", "downstream_chain_not_executed"]`. The auditor would draft the PARTIAL `verdict.json` under `data/v3/deliveries/88d247468cb6d49f/cycle20/` at the root-conductor level.
 
-## State-Machine Discipline (c29 Lemma Respected)
+The auditor's rationale for recommending Option 3: it preserves the substantive on-disk advancement (particularly the full-song htdemucs 24 SHAs byte-deterministic ×2), honors the campaign's anti-fabrication contract cleanly, delivers a first-class negative finding rather than continuing to burn cycles, and unblocks the fanout root to move on. Option 1 (reassign to fresh clone) is second choice on the grounds that the current clone's cadence has not proven capable of executing the downstream sweep within a turn.
 
-- `M-RECREATE-2/accurate-small-set/rc5-tempo-beat-grid/*` is a peer sub-leaf under c50 v2 rubric chain. NOT a child of any terminal-validated ancestor.
-- Peer-supersede pattern from c50 preserved: c49 v1 rubric + c50 v2 rubric + c53 clone-2 rubric all byte-preserved on their own chains.
-- No `validated → in_progress` transitions attempted.
-- **`[[BRANCH_COMPLETE]]` explicitly NOT emitted** — reserved for whole-scope discharge on M-RECREATE-2 arc (c56 candidate aggregate rollup), not per-clone closure.
+The auditor explicitly warned against a fourth PIVOT back to the researcher on this clone: three consecutive turns confirm the pattern is structural, not incidental; per the operating protocol's third-regression rule this session has hit a fundamental blocker (worker cannot escape Hold Pattern on this specific downstream chain despite explicit brief-level gates) and requires user or root-conductor input to break.
 
-## Sub-Topic Assessment (14/14 Falsifiable Criteria Met)
+## 6. On-disk state at branch close
 
-| # | Criterion | Status |
-| --- | --- | --- |
-| a | Rubric pre-registered mtime-hard | ✓ |
-| b | Three-way rubric_hash byte-equality chain | ✓ |
-| c | All 5 focus songs measured with finite BPM values | ✓ |
-| d | Byte-determinism × 2 across 10 output-file pairs | ✓ |
-| e | Anchor preservation covers ≥15 SHAs | ✓ (21 delivered) |
-| f | ≥12/15 tests green | ✓ (15/15) |
-| g | 6 named + 2 housekeeping + 1 egress-probe ledger events; substantive M-* unsuffixed per c32 | ✓ (9 total in shadow) |
-| h | NO PRNG, `/usr/bin/python3` guard, c48 env-var flags DEFAULT OFF | ✓ |
-| i | c49 v1 baselines READ-ONLY (SHA byte-identical pre==post) | ✓ |
-| j | c51 Branches A+B partials READ-ONLY | ✓ |
-| k | RC5 verdict enum applied correctly (LANDS≥3, PARTIAL 1-2, FAILS 0) | ✓ (5/5 → RC5_LANDS) |
-| l | A5 threshold `|corrected − baseline| ≤ 2 BPM` per song | ✓ (5/5; max abs_diff = 0.000) |
-| m | Tempo-octave-correction algorithmic correctness (deterministic argmin tiebreak; non-trivial branch exercised) | ✓ (Mura Masa via variant [1]=×2; test 06 asserts synthetic-input correctness) |
-| n | `M-INGEST-1/egress-probe-cycle53-clone-2` tail emission per c49 path-A cadence | ✓ |
+Positive state that carries forward to any successor clone:
 
-## MODERATE Findings (2; Honest Worker Disclosures; Scoped to c54 Handoffs)
+- `data/v3/deliveries/88d247468cb6d49f/stems_6s/` — six chosen-section stem WAVs.
+- `data/v3/deliveries/88d247468cb6d49f/stems_6s_full_song/` — six full-song stem WAVs (via background htdemucs completion during Cycle 2).
+- `data/v3_spine/88d247468cb6d49f/htdemucs_determinism.json` — full-song 24 SHAs byte-deterministic ×2.
+- `data/v3/deliveries/88d247468cb6d49f/muscriptor_operator_section/` — three probes (drums, bass, guitar) with JSON + MIDI pairs; guitar.json is the canonical two-byte empty-events file (a first-class outcome, not a failure).
+- `scripts/v3_spine/peach_dream_c20_*.py` — thirteen per-song sibling drivers landed under the read-only-consumer-of-c5-scripts pattern.
+- `tests/test_v3_focus_peach_dream_c20.py` — twelve-case test suite landed.
+- Cycle 1 tempo choice recorded.
 
-**1. RC5 PASS gate is self-referential (→ c54 §3.1 RC5.1 handoff)**
+Absent state that blocks LANDS:
 
-All 5 songs report `abs_diff_vs_baseline = 0.000` because c49 baselines were themselves captured by `librosa.beat.beat_track` on the same full-mix window. Matched-detector runs reproduce the baseline exactly. RC5_LANDS verdict is honest under the frozen rubric but not falsifiable against an independent tempo source. Only Mura Masa exercised the octave-double branch (raw exactly ½ of baseline; deterministic argmin selected variant [1]).
+- `data/v3/deliveries/88d247468cb6d49f/cycle20/` — empty; required verdict artifact absent.
+- `data/v3/deliveries/88d247468cb6d49f/operator_section/` and `.../per_track/` — empty.
+- MuScriptor 3/6 not 6/6; no run-2 for the landed three; canonical MIDI, merge, render, vocals overlay, mix-match, delivery, panel, tests-executed, and four-row housekeeping all `not_run`.
+- Three-way `rubric_hash_v2` chain not asserted (no verdict to chain).
+- c19 backref not verified live at emit (no emit).
+- Anchor preservation POST snapshot not taken.
 
-**c54 §3.1 handoff response correctly scoped**: pre-register `docs/rc5_1_independent_tempo_reference_rubric.md` with `librosa.beat.plp` peak-picking as D1 independent detector (structural break from `beat_track`'s `start_bpm=120` bias); optional operator hand-taps on Chicken Grease + Mura Masa as D2 ground truth; D3 adjudicated gate `min(|corr_beat_track − baseline|, |corr_plp − baseline|) ≤ 2 BPM AND |corr_beat_track − corr_plp| ≤ 2 BPM`. RC5.1 must land under peer `data/rc5_1_impl/<sha16>/`; c53 clone-2's `data/rc5_impl/` remains a frozen anchor.
+`promise_check` reports zero errors and roughly 3 001 warnings (pre-existing cross-fanout drift; not attributable to this cycle). `org_check` reports pre-existing figure-location warnings.
 
-**2. Observed-BPM path drift (→ c54 §3.2 erratum handoff)**
+## 7. Merge disposition
 
-Brief specified `data/rc2_rc3_impl/<sha16>/rc5_tempo_bpm_observed.json`; on-disk truth is single consolidated `data/recreate_v2/rc5_tempo_bpm_observed.json` (c51 Branch B emission). Worker disclosed honestly; READ-ONLY informational anchor; no substantive impact on this cycle's verdict.
+**Merge disposition: INSUFFICIENT.** The branch does not merge under `[[BRANCH_COMPLETE]]`; it hands back to the root conductor with a CRITICAL escalation packet and the three named options. The auditor recommends Option 3 (auditor-drafted PARTIAL merge). The merge report at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-2/merge_report.md` carries the CRITICAL Hold-Pattern-terminal finding, the three named options, the auditor's recommendation, and the enumeration of substantive on-disk state that is preserved as first-class positive on-disk state for whichever recovery path the root conductor selects.
 
-**c54 §3.2 handoff response correctly scoped**: canonicalise consolidated file (do NOT force per-song split — would touch a c51 anchor); publish erratum sibling `docs/rc5_tempo_beat_grid_erratum_path_drift.md` referencing consolidated file with `supersedes_path: docs/rc5_tempo_beat_grid_rubric.md` per c14 lemma (str, not list); add erratum path to all future c55+ RC5.1 brief templates.
+Peach Dream stands as the only blocking call in fork `88d75f9754c3`. The auditor notes it as the exception to the fork's otherwise-clean fanout track record: clone 0 (WIG) landed an honest PARTIAL and terminated by BRANCH_COMPLETE; clone 1 (Rome) landed a full LANDS_pending_operator and terminated by BRANCH_COMPLETE.
 
-## Priority-3 Window-Policy Call (Endorsed)
+## 8. Campaign-level implications
 
-c51 Branch B saw Chicken Grease **178.21 BPM on the D1 chosen section** (t=233-263s) whereas this cycle's full-mix run got **90.73 BPM**. Both PASS under octave-correction (full-mix diff=0.000; D1-section diff=1.63 via ×½).
+Two of the fork's three attempted clones advanced substantively (WIG PARTIAL and Rome LANDS_pending_operator). Peach Dream is the failure mode. The Cycle 3 auditor's cumulative notes flag two forward-looking observations:
 
-c54 brief's locked decision — compute BOTH windows in c55 RC5.1 impl and record both, verdict against c49 full-mix baseline with D1 riding as peer field — correctly honours the c49 anchor without forcing a choice. **Endorse.**
+- The Hold Pattern anti-pattern is enumerated in the campaign's operating protocol under `<anti-pattern name="The Hold Pattern">`, and this branch's three-turn structural failure to escape it despite explicit brief-level gates is evidence that the anti-pattern's suppression mechanism (research-brief-level gating) is not sufficient on its own to prevent a worker from re-entering the pattern under the conditions of this specific clone. The auditor's Option 2 (scope-compress into a MuScriptor-only sub-branch plus a downstream sub-branch) is one plausible structural response.
+- The c3 anti-pattern `muscriptor-nondeterministic-falsified` — the MuScriptor bass MIDI container encoding drift observed in the campaign's third cycle — has not been stress-tested by this branch, because MuScriptor Run-2 never ran on the three landed stems. Any successor Peach Dream cycle that completes MuScriptor 6/6 byte-deterministic ×2 would be the first cycle to touch this concern on this song.
 
-## Standing Constraints (Unchanged)
+The M-V3-SPINE-1 Chicken Grease operator-ear gate remains open per Fixed Decision 6 and is not disturbed by this clone's failure. The panel-is-never-a-LANDS-gate discipline under Fixed Decision 6 has held cleanly across all fifteen-plus verdicts to date including the two BRANCH_COMPLETE sibling clones.
 
-- α pinned at `0.7469387071101908` (not relevant to this branch).
-- SHA-256 tiebreak; no PRNG (AST-verified); no `sidecar_nonfactor`; no `i4_stratified`.
-- Interpreter guard `#!/usr/bin/python3` on every new script.
-- Read-only anchors preserved: c14 `_ledger_schema.py`; c22 stability harness; c26 Path B commitment; c31/c33/c34/c35/c36/c37/c45/c46/c47/c50 palette + recreate + anchor-manifest + rubric chain; c49 v1 baselines; c51 A+B partials; c51 B consolidated observed BPMs; `scripts/palette_render/render_stem.py` byte-identical do-not-touch invariant.
-- Rated audio egress-blocked at `*.googlevideo.com` (`429 + tv_embedded` unchanged; `M-INGEST-1/egress-probe-cycle53-clone-2` recorded honestly per path-A cadence).
-- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`; two-arg `append_ledger_event(workspace, event)`.
-- **c48 env-var flags default OFF** (`os.environ.setdefault` used, not `setenv`).
-- **music21 9.1.0 READ-ONLY import** (c37 lesson honoured; no writes to music21 internal state).
+## 9. Conclusions
 
-## Anti-Patterns Locked (5-Count Stable)
+Clone 2 of fork `88d75f9754c3` did not deliver its scoped objective. Cycle 1 executed substantive setup and launched the background htdemucs correctly; Cycles 2 and 3 produced only pause memos and did not authore any substantive artifact, despite the Cycle 2 research brief carrying explicit anti-Hold-Pattern gating language. Positive on-disk state exists — full-song htdemucs 24 SHAs byte-deterministic ×2 landed via background completion during Cycle 2, and thirteen per-song sibling drivers plus a twelve-case test file are on disk — but the required verdict artifact never emitted and the pipeline never reached MuScriptor 6/6, let alone the downstream chain. The Cycle 3 auditor's PIVOT with CRITICAL escalation is the honest verdict; three consecutive Hold Pattern turns confirm the failure mode as structural on this clone rather than incidental, and the branch hands back to the root conductor with three named recovery options and a recommendation of auditor-drafted PARTIAL merge that preserves the substantive on-disk state as a first-class negative finding.
 
-c11 CLAP HF SSL (respected — VGGish DEFERRED-None); c22 synthetic-label-stability; c23 head-regularization; c25 feature-representation; c35 palette-schema-v2-hydration-render VST3 nondeterminism — not re-attempted. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged. c31 STILL_GAP surface intact.
+## Appendix: Implementation Details
 
-**No `M-EAR-1/*` or `M-GEN-1/*` emissions** this branch.
+### A.1 Required output artifact status
 
-## Merge Disposition
+`data/v3/deliveries/88d247468cb6d49f/cycle20/` — empty at branch close. Required output artifact `data/v3/deliveries/88d247468cb6d49f/cycle20/verdict.json` — **ABSENT for the full three-turn arc**. No three-way `rubric_hash_v2` chain assertion possible without a verdict to chain.
 
-Merge report trusted per worker report at `/home/user/music-gen-instance/fork-18817b483ed4/clone-2/merge_report.md` (path outside auditor read scope). Root conductor should poll the in-project fallback if outside-boundaries path is unreachable (per c53 clone-0 empirical confirmation).
+### A.2 Positive on-disk state preserved
 
-## Cycle-54 Handoff (Priority Order; Per Cycle-3 Auditor Guidance)
+`data/v3/deliveries/88d247468cb6d49f/stems_6s/` (six chosen-section WAVs); `data/v3/deliveries/88d247468cb6d49f/stems_6s_full_song/` (six full-song WAVs); `data/v3_spine/88d247468cb6d49f/htdemucs_determinism.json` (full-song 24 SHAs, byte-deterministic ×2, landed via background completion during Cycle 2); `data/v3/deliveries/88d247468cb6d49f/muscriptor_operator_section/` (drums, bass, guitar JSON + MID pairs; guitar.json is the canonical two-byte empty-events file); Cycle 1 tempo choice recorded; thirteen `scripts/v3_spine/peach_dream_c20_*.py` sibling drivers; `tests/test_v3_focus_peach_dream_c20.py`.
 
-**c54 LINEAR cadence per §6 (endorse)**:
+### A.3 Absent state blocking LANDS
 
-1. **Priority-1** c53 shadow-ledger concat + rollup + plan-of-record registration (`_run/post-merge-integration-cycle-53`).
-2. **Priority-2** RC5.1 + path-drift design (§3.1 + §3.2). Pre-register `docs/rc5_1_independent_tempo_reference_rubric.md`; publish erratum sibling `docs/rc5_tempo_beat_grid_erratum_path_drift.md` with `supersedes_path` per c14 str-lemma.
-3. **Priority-3** c53 clone-1 P1 close event + RC1 policy reissue rubric under Option (a) (§4).
-4. **Priority-4** RC6 panel-gate scaffold pre-registration (§5).
+MuScriptor 3/6 not 6/6 (missing other, piano, vocals, full_mix); no MuScriptor Run-2 for the three landed stems; canonical MIDI (7 probes), merge, four-structural-gates check, fluidsynth per-track render ×2, D2 vocals overlay, rc7 Method A mix-match, A/B WAVs, full-song WAV, delivery manifest, eight-key panel, twelve-case test execution, four-row housekeeping ledger, c19 backref verification, anchor preservation POST snapshot — all `not_run`.
 
-**c55 LINEAR** implements RC5.1 + RC6 + RC1-policy-reissue in three peer scopes.
+### A.4 Anti-pattern classification
 
-**c56 FANOUT candidate** targets `M_RECREATE_2_LANDS` aggregate rollup + corpus breadth + honest-negative reserve.
+`<anti-pattern name="The Hold Pattern">` — three consecutive turns of pause-memo authorship on this clone. Cycle 1 mixed substantive authorship with background launch (not itself a Hold Pattern instance). Cycle 2 pure pause memo, flagged MODERATE. Cycle 3 pure pause memo despite explicit anti-Hold-Pattern gating language in the Cycle 2 research brief, flagged CRITICAL and escalated.
 
-**Do NOT**:
-- Re-open c11 CLAP, c22 chassis-audit, c23 head-reg, c25 feature-rep, c35 palette-v2 VST3, c31 STILL_GAP anti-patterns (none triggered this cycle; live-guidance anti-pattern watch clean).
-- Attempt writer-side plan-of-record guard implementation this cycle (c56+ candidate under `_infra/harness-auto-plan-of-record-registration-clone-<k>`, per c54 brief §2 note).
-- Retro-timestamp c54 events; all c54 reconciliation events must carry this cycle's ts and cite on-disk SHAs as evidence of when the work landed (per c54 brief §11).
+### A.5 Root-conductor escalation options
 
-## Cumulative Progress
+Option 1 — Reassign to a fresh clone under a new fork (context reset). Option 2 — Scope-compress into two sub-branches (MuScriptor 6/6 only, then downstream sweep). Option 3 (auditor recommendation) — Accept the 3-turn deferral as terminal, merge substantive c20 deliverables as a first-class `V3_FOCUS_SONG_PARTIAL` with `honest_partial_reasons = ["clone_hold_pattern_terminal_3_turns", "muscriptor_incomplete_3_of_6", "downstream_chain_not_executed"]`, and have the auditor draft the PARTIAL `verdict.json` at root-conductor level.
 
-**M-RECREATE-2 arc RC status roll-up** (post-c53):
+### A.6 Cross-fork context
 
-| RC | Status | Cycle |
-| --- | --- | --- |
-| Rubric v2 committed | ✓ | c50 |
-| Focus set frozen w/ Chicken Grease mandatory | ✓ | c50 |
-| RC0/RC0-v2 baselines captured × 2 | ✓ | c49/c50 |
-| RC1+RC9 **LANDS 4/5** (Chicken Grease known-fail on chosen-section-vs-baseline-window mismatch) | ✓ | c51 Branch A |
-| RC2+RC3 (consumed as READ-ONLY inputs by c53 clone-0 RC7-v2; indirect evidence of upstream `RC2_RC3_LANDS`) | ✓ | c51 Branch B |
-| RC4 GM program map | deferred beyond c54 | — |
-| **RC5 LANDS 5/5** (honest self-referential caveat scoped to c54 §3.1) | ✓ | **c53 clone-2 (this)** |
-| **RC7 LANDS 5/5** (c53 clone-0 RC7-v2; supersedes c51 Branch C `RC7_FAILS`) | ✓ | c53 clone-0 |
-| RC6 panel-gate | not started; c54 §5 pre-registers; c55 implements | — |
-| Aggregate `M_RECREATE_2_LANDS` | **c56 candidate** contingent on c55 RC5.1 + RC6 outcomes | — |
+| Clone | Song | sha16 | Verdict | Merge disposition |
+|---|---|---|---|---|
+| 0 | What If I Go | `252eb21ce7df7328` | `V3_FOCUS_SONG_PARTIAL_pending_operator` | BRANCH_COMPLETE |
+| 1 | Dojo Cuts — Rome | `51e433ade2a845e1` | `V3_FOCUS_SONG_LANDS_pending_operator` | BRANCH_COMPLETE |
+| 2 | Peach Dream | `88d247468cb6d49f` | (not emitted) | **INSUFFICIENT — CRITICAL escalation to root conductor** |
 
-**Recurring patterns**:
+### A.7 Validator state at branch close
 
-- **Plan-of-record registration lag: 10 cycles running**. c54 §2 step 3 batch-fixes c53 forensically. Writer-side guard remains c56+ candidate. c53 clone-2 auditor named compounding cost as real-but-bounded (5-10 min per cycle for researcher plan-file edit).
-- **Anchor-preservation discipline healthy: 4 consecutive cycles.** c51/c52/c53 all clean; c53 clone-2's 21-entry snapshot preserved both rubric chains + c51 A+B partials + `render_stem.py` do-not-touch + c51 B consolidated observed BPMs.
-- **Honest-negative-finding discipline holding: 8 consecutive cycles.** c35/c36/c48/c51-A/c51-C/c53-clone-0-no-negative/c53-clone-1(P1 ABANDONED)/c53-clone-2(self-referentiality disclosure). MATERIAL campaign asset; audit trail preserves.
-- **Egress unchanged (17+ cycles)**: HTTP 429 + `tv_embedded` failure mode. c50 htdemucs_6s fetch OK anomaly remains isolated; not re-probed.
+`promise_check`: 0 ERROR, ~3 001 WARN (pre-existing cross-fanout drift; not attributable to this cycle). `org_check`: 0 ERROR, pre-existing figure-location WARNs from cycles 6/15/25/28.
 
-**Model-architecture invariants**: Test 06 assertion (`corr=200.0, label=double, idx=1` on synthetic 100 BPM vs 200 BPM baseline) provides algorithm-correctness evidence for the octave-correction argmin tiebreak that is **independent of the self-referential real-data measurements**. Correctness anchor permits VALIDATED even under honest self-referentiality caveat. Mura Masa remains the ONLY song exercising the correction algorithm's non-trivial branch across all 5 focus songs.
+### A.8 Read-only anchors respected across the branch
 
-**c29 state-machine lemma** respected: peer sub-leaves under c50 v2 rubric chain; ledger topology stays a DAG.
+Chicken Grease c19 verdict (`data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` SHA `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd`); c4 canonical MIDI serializer (`scripts/v3_spine/midi_from_json_events.py`); c5 mix-match Method A (`scripts/v3_spine/mix_match_operator_section.py` SHA `4f47fbcd…`); c33 render_stem (`scripts/palette_render/render_stem.py` SHA `214372d9…5b2b`); focus set (`data/recreate_v2/focus_set_v2.json`). All sibling drivers under `scripts/v3_spine/peach_dream_c20_*.py` are structured to consume their c5 anchors read-only.
 
-**c32 → c33 → c36 v2 → c39 v3 → c47 Branch B MIXED → c50 peer-supersede** fanout-namespace + rubric-chain convention held: substantive `M-RECREATE-2/*` unsuffixed; infra families `-clone-2` suffixed.
+### A.9 Environment pins
 
-**Auditor-reads-ledger-not-brief-summaries lemma** (proposed c50) confirmed relevant here: worker's report correctly disclosed the self-referentiality caveat AND observed-BPM path drift, both of which auditor verified independently on-disk. Track record: caught worker-report drift at c48-close AND c49-close; independent verification at c50 + c51 + c53 (clone-0, clone-2). Codification in `docs/auditor_discipline_ledger_first.md` remains recommended for c54.
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
 
-**Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+### A.10 Source sessions
 
-**Auditor's role for this fanout clone-2 branch is discharged**; clone-2 hands off to the c54 root-conductor via the merge report. `[[BRANCH_COMPLETE]]` explicitly NOT emitted — reserved for whole-scope discharge on M-RECREATE-2 arc.
+| Cycle | Researcher | Worker | Auditor |
+|---|---|---|---|
+| 1 | 0b861aa2-80f0-4b27-8e07-1bc8290b0995 | 925e389e-65d0-48f4-acd5-dc6c41a6b059 | c55b3ca1-62a6-41fe-9894-c7bd9598c561 |
+| 2 | b94a30d0-2ee7-4385-bc87-44687b328114 | 090e73c2-20c0-4ae8-b6e0-e8d81c951cbb | 9a02dbd7-9144-4418-ac1d-ec43593eb7ca |
+| 3 | b5d7d6af-34bc-45e3-854b-3de77ccb18a9 | 529050c2-322d-493b-8fcc-90dbec8f84f7 | 4319dd99-7f37-4857-84ab-ae3cf0ca1429 |
 
-[END OUTPUT]
+### A.11 Fanout metadata
+
+Fork `88d75f9754c3`. Clone 2 of the Peach Dream assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-2/merge_report.md` for parent-conductor pickup, carrying the CRITICAL Hold-Pattern-terminal finding, the three named recovery options, the auditor's Option 3 recommendation, and the enumeration of preserved substantive on-disk state.
