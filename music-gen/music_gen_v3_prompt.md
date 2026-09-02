@@ -121,6 +121,24 @@ decision in the plan of record.
 - **M-V3-EAR**: train the 1–7 ear on AUDIO ONLY — embeddings of rendered/
   original audio (VGGish-class), validated against held-out ratings
   (operator decision 2026-09-02).
+- **Determinism stance (applies to EVERY milestone below, operator decision
+  2026-09-02): deterministic wherever possible, agentic only where
+  necessary.** Agent cycles design, build, and improve PROGRAMS; songs,
+  features, scores, and renders are outputs of those programs, reproducible
+  from pinned inputs + recorded seeds. Concretely: M-V3-RULES extraction is
+  a deterministic program over the transcribed corpus (same corpus in, same
+  rules out); M-V3-EAR training is a seeded deterministic pipeline (fixed
+  seeds, pinned env, recorded splits — retraining reproduces the same model
+  and scores); M-V3-GEN composition is a SEEDED GENERATOR PROGRAM built
+  from the rules — the agent's creativity goes into designing the
+  generator, not into hand-writing songs; each delivered song is
+  `generator(rules, seed, config)` and is byte-reproducible from its
+  recorded seed through the same unified render/mix driver used for
+  recreations (donor-mix module included). Every generated delivery's
+  manifest records seed, generator version hash, rules hash, and env pins.
+  Hand-composed agent output is permitted only as a documented fallback if
+  a generator cannot reach the ear >=6 bar, and each such song must be
+  flagged `agentic_composition: true` in its manifest.
 - **M-V3-GEN** (completion milestone): generate NOVEL INSTRUMENTAL songs
   (no vocals — operator decision) in the style of the band-6/7 corpus, and
   ALSO implement an interpolation-hybrid mode (blend two named corpus
