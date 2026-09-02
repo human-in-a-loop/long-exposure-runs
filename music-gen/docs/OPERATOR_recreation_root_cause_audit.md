@@ -110,3 +110,47 @@ Stop breadth. Focus on **accurate reconstruction of 3–5 songs** with strong
 rhythm sections (must include Chicken Grease), fixing RC1–RC10 under the
 design decisions above, with pre-registered per-stem acceptance criteria on
 all six parts, before any other new work.
+
+## Fourth-pass audit (2026-09-02): conceptual blind spots
+
+User verdict on the v2 gated winners (Chicken Grease + Peach Dream drums via
+per-song GMM classification, Rome bass via onset-segmented pyin): **"ALL OF
+THESE SAMPLES are still far off from the correct transcription."** v2 passed
+its own gates and failed the ear — the gates themselves are the problem.
+Operator audit identified seven structural blind spots:
+
+**BS1 — Gates measure plausibility, not correctness; the F1 reference is
+circular.** Onset F1 is computed against onsets from the same detector
+family that feeds the transcriber. Nothing compares output to ground truth.
+
+**BS2 — No musical time.** Absolute seconds only; no tempo map, beat grid,
+or bars. Syncopation is unrepresentable and the ~15x-repeated groove loop is
+never exploited — ~150 independent noisy decisions instead of repeats voting.
+
+**BS3 — Model-class ceiling.** pyin / onset+GMM / basic-pitch are classical
+or lightweight tools near their ceilings on real stems; threshold iteration
+cannot recover what the representations never capture.
+
+**BS4 — Verification lens conflates transcription with timbre.** GM
+fluidsynth renders make even a correct transcription unverifiable by ear.
+
+**BS5 — Independent per-stem transcription despite bleed coupling.** The
+kick over-count was bass bleed; no cross-stem event reconciliation exists.
+
+**BS6 — Drum vocabulary too coarse.** {kick,snare,hat} forces open/closed
+hat, ghost snares, toms, cymbals into 3 clusters. Bass ghost detector found
+0 ghosts across all five songs.
+
+**BS7 — Peak-density section is the hardest possible input**; no easy-first
+curriculum (a D1 side-effect).
+
+**Directive queued (supersedes threshold tuning):** W1 gold-set reference
+transcription (2–4 bars, Chicken Grease + What If I Go) as the accuracy
+standard for all gates; W2 beat-grid + micro-timing + loop-repetition
+evidence aggregation; W3 learned-transcriber re-survey (E-GMD/ADT drums,
+CREPE f0, ByteDance piano, MT3-class) evaluated against gold; W4
+concatenative resynthesis from the song's own hits as the primary A/B
+listening artifact. Integrated: cross-stem reconciliation, BIC-chosen drum
+vocabulary ≥7 classes, one sparse section per song alongside the peak
+section. No transcription LANDS without gold-bar accuracy + resynthesis A/B
++ operator ear confirmation.
