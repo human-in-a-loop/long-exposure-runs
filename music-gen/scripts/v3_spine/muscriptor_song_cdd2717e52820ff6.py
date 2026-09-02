@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""c20 clone-0: MuScriptor on WIG operator-section stems + full-mix x2 (sibling of c5)."""
+"""c20 Rome: MuScriptor on operator-section stems + full-mix x2 (sibling of c5)."""
 from __future__ import annotations
 import hashlib
 import json
@@ -13,7 +13,8 @@ from pathlib import Path
 
 MUSCRIPTOR = "workspace/learned_transcribers_venv/bin/muscriptor"
 MODEL = "workspace/models/muscriptor-medium/model.safetensors"
-SEC_DIR = Path("data/v3_spine/252eb21ce7df7328/operator_section")
+SHA16 = "cdd2717e52820ff6"
+SEC_DIR = Path(f"data/v3_spine/{SHA16}/operator_section")
 STEM_DIR = SEC_DIR / "rc9_6stem"
 SECTION_WAV = SEC_DIR / "section.wav"
 OUT_MUS = SEC_DIR / "muscriptor"
@@ -54,7 +55,7 @@ def env():
     return e
 
 
-def run_muscriptor(wav: Path, out_path: Path, instruments, fmt: str):
+def run_muscriptor(wav: Path, out_path: Path, instruments, fmt):
     cmd = [
         MUSCRIPTOR, "transcribe",
         str(wav),
@@ -68,54 +69,29 @@ def run_muscriptor(wav: Path, out_path: Path, instruments, fmt: str):
         cmd += ["--instruments", instruments]
     r = subprocess.run(cmd, env=env(), capture_output=True)
     if r.returncode != 0:
-        raise RuntimeError(f"muscriptor failed rc={r.returncode}: {r.stderr.decode('utf-8','replace')[-2000:]}")
+        raise RuntimeError(f"muscriptor rc={r.returncode}: {r.stderr.decode('utf-8','replace')[-2000:]}")
 
 
 def main():
     t0 = time.time()
-    # c21 clone-1 RESUME: skip probes already frozen by c20 clone-0
-    C20_FROZEN = {
-        "drums": "a8c28773a4d7a4571a5927b80306ac296211cb9cae722fc62f97ffc3d2b51c68",
-        "bass":  "8060faaa728092546b38b83ced62f6738bf1a5cdac9fa64aa0a1373ad4af6904",
-        "guitar":"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    }
-    report = {"cycle": 21, "clone": "1", "song_sha16": "252eb21ce7df7328", "probes": {}}
+    report = {"cycle": 20, "song_sha16": SHA16, "probes": {}}
     for name, wav in PROBES:
         white = WHITELIST[name]
-        t_probe = time.time()
-        canonical_json = OUT_MUS / f"{name}.json"
-        if name in C20_FROZEN and canonical_json.exists():
-            on_disk_sha = hashlib.sha256(canonical_json.read_bytes()).hexdigest()
-            if on_disk_sha == C20_FROZEN[name]:
-                mid_path = OUT_MUS / f"{name}.mid"
-                mid_sha = hashlib.sha256(mid_path.read_bytes()).hexdigest() if mid_path.exists() else "MISSING"
-                report["probes"][name] = {
-                    "input_wav": str(wav),
-                    "instruments_whitelist": white,
-                    "run1_json_sha256": on_disk_sha,
-                    "run2_json_sha256": on_disk_sha,
-                    "byte_deterministic": True,
-                    "midi_debug_sha256": mid_sha,
-                    "wall_s": 0.0,
-                    "status": "frozen_c20_preserved",
-                }
-                print(f"[t={time.time()-t0:6.1f}s] {name:10s} FROZEN c20 sha={on_disk_sha[:16]}")
-                continue
-        with tempfile.TemporaryDirectory(prefix=f"v3_c21wig_{name}_r1_") as d1:
+        tp = time.time()
+        with tempfile.TemporaryDirectory(prefix=f"v3_c20_rome_{name}_r1_") as d1:
             p1 = Path(d1) / "events.json"
             run_muscriptor(wav, p1, white, "json")
             sha_r1 = hashlib.sha256(p1.read_bytes()).hexdigest()
             r1_data = p1.read_bytes()
-        with tempfile.TemporaryDirectory(prefix=f"v3_c21wig_{name}_r2_") as d2:
+        with tempfile.TemporaryDirectory(prefix=f"v3_c20_rome_{name}_r2_") as d2:
             p2 = Path(d2) / "events.json"
             run_muscriptor(wav, p2, white, "json")
             sha_r2 = hashlib.sha256(p2.read_bytes()).hexdigest()
         equal = sha_r1 == sha_r2
-
+        canonical_json = OUT_MUS / f"{name}.json"
         canonical_json.write_bytes(r1_data)
-
         try:
-            with tempfile.TemporaryDirectory(prefix=f"v3_c21wig_{name}_mid_") as dm:
+            with tempfile.TemporaryDirectory(prefix=f"v3_c20_rome_{name}_mid_") as dm:
                 pm = Path(dm) / "events.mid"
                 run_muscriptor(wav, pm, white, "midi")
                 mid_sha = hashlib.sha256(pm.read_bytes()).hexdigest()
@@ -129,22 +105,20 @@ def main():
             "run2_json_sha256": sha_r2,
             "byte_deterministic": equal,
             "midi_debug_sha256": mid_sha,
-            "wall_s": round(time.time() - t_probe, 1),
-            "status": "fresh_c21",
+            "wall_s": round(time.time() - tp, 1),
         }
-        print(f"[t={time.time()-t0:6.1f}s] {name:10s} equal={equal} json_sha={sha_r1[:16]} mid_sha={str(mid_sha)[:16]}")
-
-    n_probes = len(PROBES)
-    n_equal = sum(1 for p in report["probes"].values() if p["byte_deterministic"])
-    report["n_probes"] = n_probes
-    report["n_deterministic"] = n_equal
-    report["all_deterministic"] = n_equal == n_probes
+        print(f"[t={time.time()-t0:6.1f}s] {name:10s} equal={equal} json={sha_r1[:16]} mid={str(mid_sha)[:16]}")
+    n = len(PROBES)
+    ne = sum(1 for p in report["probes"].values() if p["byte_deterministic"])
+    report["n_probes"] = n
+    report["n_deterministic"] = ne
+    report["all_deterministic"] = ne == n
     report["wall_time_s"] = round(time.time() - t0, 2)
     out = SEC_DIR / "muscriptor_determinism.json"
     out.write_text(json.dumps(report, indent=2, sort_keys=True))
-    print(f"[t={time.time()-t0:6.1f}s] wrote {out} — {n_equal}/{n_probes} probes deterministic")
+    print(f"wrote {out} — {ne}/{n} probes deterministic")
     if not report["all_deterministic"]:
-        print("STOP: MuScriptor WIG operator-section JSON nondeterministic", file=sys.stderr)
+        print("STOP: Disco A MuScriptor nondeterministic", file=sys.stderr)
         sys.exit(2)
 
 
