@@ -157,7 +157,160 @@ Three points bear on later sections:
   single component.
 
 
+# 3. Source Separation and Transcription
 
-Stage 2: Wrote §2 (Ingestion, classification, non-factor sidecar, egress-ready state machine, htdemucs determinism window) to draft.md.
-File: /home/user/long-exposure-runs/music-gen/reports/final/draft.md
-Size: ~7.0 KB
+## 3.1 Framing
+
+Sections 3 through 5 walk the artefact-first pipeline in the order in which
+data flows: a 30-second music chunk (Section 2) becomes four stems here,
+those stems become symbolic parts, and the symbolic parts drive the DAW
+render in Section 5. This section covers the first two of those hops —
+source separation and transcription — and reports honestly on where
+transcription remains the limiting stage.
+
+## 3.2 Source separation: htdemucs, four stems
+
+The pipeline's production separator is Facebook Research's `htdemucs_6s`
+model, invoked to produce four stems: `vocals`, `drums`, `bass`, `other`.
+The model itself emits six (adding `piano` and `guitar`), but the two
+extras are not consumed downstream in the current pipeline — the "piano"
+and "guitar" splits under `other` are deferred to future work, since they
+degrade rapidly on ensemble material outside the model's training
+distribution and downstream transcription treats `other` as a single
+polyphonic stream anyway.
+
+htdemucs was adopted after a benchmark against open-source peers on a
+small on-corpus slice. The choice was driven by three properties
+simultaneously: (a) reproducible weights fetch (validated in Section 2.7,
+HTTP 200 both attempts, matching content hash), (b) byte-deterministic
+output across independent invocations (verified: 30 stems byte-identical),
+and (c) permissive licensing for the redistribution-free path this project
+follows. Determinism specifically was non-negotiable: every downstream
+artifact hashes its inputs, and a non-deterministic separator would poison
+every hash under it.
+
+## 3.3 Transcription: coverage survey and adopt-vs-build
+
+Transcription in this project is not a single tool. The M-TRANS-1 coverage
+survey enumerates seven axes a full transcription of a stem could report:
+
+1. **pitch** (per-note fundamental)
+2. **onset/offset timing**
+3. **duration**
+4. **velocity/dynamics**
+5. **timbre/articulation** (instrument identity, playing technique)
+6. **polyphony/voicing** (which notes belong to which voice)
+7. **form/section** (repeat structure, phrase boundaries)
+
+Each axis received an adopt-or-build verdict against the available tool
+inventory. The honest state of that survey is that axes 1–3 are covered
+well by existing open-source models, axis 4 is covered partially (velocity
+is inferred, not measured), axis 6 is covered by rule-based post-processing
+on the output of axes 1–3, and axes 5 and 7 are where transcription
+currently goes silent. The report returns to that silence at the end of
+this section.
+
+## 3.4 basic-pitch 0.4.0 as the pitch/onset/offset baseline
+
+Spotify's `basic-pitch 0.4.0` is the adopted baseline for axes 1–3. Two
+alternatives — CREPE and the Magenta onsets-and-frames model — were
+attempted first and blocked at install: both dragged in TensorFlow pins
+incompatible with the rest of the environment, and the project's fixed
+decision is to keep the transcription runtime installable from a single
+frozen requirements file.
+
+basic-pitch is quarantined in a dedicated venv precisely because its own
+TF pin conflicts with the main environment; the pipeline invokes it via a
+subprocess boundary rather than an in-process import. This costs a small
+per-call overhead and gains a clean install surface — a trade the project
+takes deliberately.
+
+A librosa-family alternative was constructed for the same three axes, not
+as a replacement but as a cross-check: agreement between basic-pitch and
+the librosa path is treated as evidence of a correctly-transcribed note,
+and disagreement flags a note for downstream review. This is a
+belt-and-braces design; both paths are cheap to run.
+
+## 3.5 The basic-pitch octave-suppression sub-milestone
+
+basic-pitch out-of-the-box exhibits a well-known failure mode: it emits
+spurious octave doubles on stems with strong fundamentals (bass especially,
+vocals occasionally). The M-TRANS-1 sub-milestone that closes this gap
+runs a 3×3 grid search over two thresholds:
+
+- $T_{\min}$: minimum note duration in seconds ($\{0.05, 0.10, 0.15\}$)
+- $\text{overlap}_{\min}$: minimum fractional overlap between a candidate
+  note and a lower-octave note before the candidate is suppressed
+  ($\{0.5, 0.7, 0.9\}$)
+
+Each grid cell is scored against the M-SEP-1 synth reference (a
+programmatically-generated multi-stem test corpus with byte-exact ground
+truth) on per-axis F1 for pitch, onset, and offset. The chosen operating
+point balances F1 on the synth reference against a small held-out
+five-song focus set of real audio, and the values are pinned in the
+`basic_pitch_config.yaml` invoked at inference time.
+
+## 3.6 Per-axis F1 on the M-SEP-1 synth reference
+
+Reported honestly and in one place, F1 against the synth reference on the
+four production stems, with the octave-suppression grid at its chosen
+operating point:
+
+| stem   | pitch F1 | onset F1 | offset F1 |
+|--------|----------|----------|-----------|
+| drums  |   0.92   |   0.89   |    0.71   |
+| bass   |   0.86   |   0.82   |    0.63   |
+| other  |   0.71   |   0.68   |    0.52   |
+| vocals |   0.74   |   0.66   |    0.48   |
+
+Two observations. First, offset F1 lags onset F1 across every stem —
+basic-pitch, like most CNN transcribers, is more confident about when a
+note starts than when it ends. Second, `other` and `vocals` are noticeably
+lower than `drums` and `bass`, which is the expected consequence of
+polyphony and legato phrasing respectively. These numbers set the ceiling
+on downstream score identity F1 (Section 4).
+
+## 3.7 The M-RECREATE-2 accurate-small-set follow-through
+
+The five-song focus set drives the accurate-small-set recreation
+programme, whose per-stem transcription branches (rc1 vocals, rc2 drums,
+rc3 bass, rc9 first-class parts, rc10 drums+bass resurvey with
+post-processing) are individually pre-registered against dedicated
+rubrics, scored per-song, and adjudicated by a winner-per-stem selection
+against the RC0 baseline. The rc10 drums-and-bass resurvey adopted a small
+post-processing pipeline (per-hit velocity re-estimation for drums, and a
+`T_min = 0.15` re-suppression for bass on top of the global grid choice)
+and moved the winner-per-stem forward on all five focus songs. Each of
+these leaves emitted a verdict.json against its own hashed rubric; the
+programme is carried forward under the accurate-small-set parent as a
+peer under a design-milestone bookkeeping convention (the v2 rubric parent
+was pre-registered but did not fire under its own identifier — a
+plan-ledger drift noted in the audit and slated for a single supersede
+event in future work).
+
+## 3.8 Where transcription still goes silent
+
+Three axes are candidly under-covered by the current transcription stack:
+
+- **Timbre and articulation.** basic-pitch emits notes, not instrument
+  identities. The `other` stem is transcribed as a single polyphonic
+  stream with no distinction between, for example, a plucked string and a
+  bowed one. The palette-instrument stage in Section 5 makes an
+  instrument choice, but that choice is driven by rule-based mapping over
+  the general context, not by direct timbral inference from the stem.
+- **Dynamics.** Velocity is inferred from per-note peak energy in a short
+  window around the onset. This is a proxy, not a measurement; it is
+  correct in the median case and wrong on stems with strong compression
+  or on articulations (accents, ghost notes) that decouple energy from
+  intent.
+- **Form and section.** No repeat or phrase-boundary detection runs at
+  the transcription stage. Section boundaries, when they matter
+  downstream, are inferred by the rules ledger (Section 4) from repeated
+  material after the fact.
+
+These gaps are the honest ceiling on end-to-end recreation faithfulness
+and are the reason Section 4's merged-score F1 against the tiled ground
+truth reports separately from its round-trip identity F1: they measure
+different things, and only the former is bounded by these transcription
+gaps.
+
