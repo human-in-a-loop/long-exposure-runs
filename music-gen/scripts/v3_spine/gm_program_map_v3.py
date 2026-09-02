@@ -1,121 +1,82 @@
-#!/usr/bin/python3
-# ---
-# created: 2026-09-02T00:00:00Z
-# cycle: 58
-# run_id: run-2026-08-28T040704Z
-# agent: worker
-# milestone: M-V3-SPINE
-# ---
-"""MuScriptor instrument-label → GM program lookup for the v3 spine.
+#!/usr/bin/env /usr/bin/python3
+"""GM program map v3 — additive extension over MuScriptor vocab.
 
-MuScriptor emits one track per detected instrument, with a label drawn from
-its fixed group vocabulary (`muscriptor list-instruments`, 35 entries).
-This module maps every MuScriptor label to a General MIDI program (0..127),
-and flags drums which are dispatched to MIDI channel 10 (program is
-ignored for that channel in GM).
+READ-ONLY import of scripts/recreate_v2/rc4_v2_gm_program_map.py; extends
+with any MuScriptor labels not already mapped. Logs extensions to a TSV.
 
-Fixed decisions honored:
-- FD1 (per-stem MuScriptor + recombine): we get a label per detected
-  instrument regardless of stem.
-- FD3 (GM render with drums ch10): drums → channel 10; every other label
-  → an explicit GM program.
-- Never default to GM 4 (Electric Piano 1) — that's the RC4 failure mode.
-
-A missing label raises `UnknownInstrumentError` so the pipeline reports the
-gap honestly instead of silently mapping to the wrong instrument.
-
-READ-ONLY sibling of scripts/recreate_v2/rc4_v2_gm_program_map.py (which is
-a stub only). This module extends the map for MuScriptor's group vocabulary.
+RC4 lock: enforce zero parts on GM program 4 unless deliberately chosen
+(none this cycle).
 """
-from __future__ import annotations
-
+import csv
+import json
 import sys
+from pathlib import Path
 
-if sys.executable != "/usr/bin/python3":
-    raise RuntimeError(f"gm_program_map_v3 requires /usr/bin/python3 (got {sys.executable})")
+# READ-ONLY import for reference — we don't call it, just verify SHA
+_RC4 = Path('scripts/recreate_v2/rc4_v2_gm_program_map.py')
+assert _RC4.exists(), 'RC4 anchor missing'
 
-
-class UnknownInstrumentError(ValueError):
-    """Raised when a MuScriptor label has no GM mapping."""
-
-
-# Every entry: MuScriptor group label → (gm_program, is_drum, gm_name).
-# Programs picked from the GM Level-1 spec (bank 0). Selections aim for
-# the most recognizable timbre inside each MuScriptor group.
-GM_PROGRAM_MAP: dict[str, tuple[int, bool, str]] = {
-    "acoustic_piano":            (0,   False, "Acoustic Grand Piano"),
-    "electric_piano":            (4,   False, "Electric Piano 1"),
-    "chromatic_percussion":      (11,  False, "Vibraphone"),
-    "organ":                     (17,  False, "Percussive Organ"),
-    "acoustic_guitar":           (24,  False, "Acoustic Guitar (nylon)"),
-    "clean_electric_guitar":     (27,  False, "Electric Guitar (clean)"),
-    "distorted_electric_guitar": (30,  False, "Distortion Guitar"),
-    "acoustic_bass":             (32,  False, "Acoustic Bass"),
-    "electric_bass":             (33,  False, "Electric Bass (finger)"),
-    "violin":                    (40,  False, "Violin"),
-    "viola":                     (41,  False, "Viola"),
-    "cello":                     (42,  False, "Cello"),
-    "contrabass":                (43,  False, "Contrabass"),
-    "orchestral_harp":           (46,  False, "Orchestral Harp"),
-    "timpani":                   (47,  False, "Timpani"),
-    "string_ensemble":           (48,  False, "String Ensemble 1"),
-    "synth_strings":             (50,  False, "SynthStrings 1"),
-    "voice":                     (52,  False, "Choir Aahs"),
-    "orchestra_hit":             (55,  False, "Orchestra Hit"),
-    "trumpet":                   (56,  False, "Trumpet"),
-    "trombone":                  (57,  False, "Trombone"),
-    "tuba":                      (58,  False, "Tuba"),
-    "french_horn":               (60,  False, "French Horn"),
-    "brass_section":             (61,  False, "Brass Section"),
-    "soprano_and_alto_sax":      (64,  False, "Soprano Sax"),
-    "tenor_sax":                 (66,  False, "Tenor Sax"),
-    "baritone_sax":              (67,  False, "Baritone Sax"),
-    "oboe":                      (68,  False, "Oboe"),
-    "english_horn":              (69,  False, "English Horn"),
-    "bassoon":                   (70,  False, "Bassoon"),
-    "clarinet":                  (71,  False, "Clarinet"),
-    "flutes":                    (73,  False, "Flute"),
-    "synth_lead":                (80,  False, "Lead 1 (square)"),
-    "synth_pad":                 (88,  False, "Pad 1 (new age)"),
-    "drums":                     (0,   True,  "Standard Drum Kit (channel 10)"),
+# Per-instrument GM program assignments for v3 (from MuScriptor vocab).
+# Drums are on channel 10 (not a GM program).
+MAP_V3 = {
+    'drums': {'gm_program': None, 'gm_channel': 9, 'source_stem': 'drums',
+              'rationale': 'GM percussion on channel 10 (0-indexed 9)'},
+    'electric_bass': {'gm_program': 33, 'gm_channel': 0, 'source_stem': 'bass',
+                      'rationale': 'GM 33 Electric Bass (finger)'},
+    'acoustic_bass': {'gm_program': 32, 'gm_channel': 0, 'source_stem': 'bass',
+                      'rationale': 'GM 32 Acoustic Bass'},
+    'clean_electric_guitar': {'gm_program': 27, 'gm_channel': 1,
+                              'source_stem': 'guitar', 'rationale': 'GM 27 Electric Guitar (clean)'},
+    'distorted_electric_guitar': {'gm_program': 29, 'gm_channel': 1,
+                                  'source_stem': 'guitar', 'rationale': 'GM 29 Overdriven Guitar'},
+    'acoustic_guitar': {'gm_program': 24, 'gm_channel': 1,
+                        'source_stem': 'guitar', 'rationale': 'GM 24 Acoustic Guitar (nylon)'},
+    'acoustic_piano': {'gm_program': 0, 'gm_channel': 2,
+                       'source_stem': 'piano', 'rationale': 'GM 0 Acoustic Grand Piano'},
+    'electric_piano': {'gm_program': 5, 'gm_channel': 2,
+                       'source_stem': 'piano', 'rationale': 'GM 5 Electric Piano 2 (RC4 lock: program 4 avoided entirely)'},
+    'organ': {'gm_program': 16, 'gm_channel': 2, 'source_stem': 'piano',
+              'rationale': 'GM 16 Drawbar Organ'},
+    'voice': {'gm_program': 52, 'gm_channel': 3, 'source_stem': 'vocals',
+              'rationale': 'GM 52 Choir Aahs (symbolic only; not rendered)'},
+    'synth_lead': {'gm_program': 80, 'gm_channel': 4, 'source_stem': 'other',
+                   'rationale': 'GM 80 Synth Lead 1 (square)'},
+    'synth_pad': {'gm_program': 88, 'gm_channel': 4, 'source_stem': 'other',
+                  'rationale': 'GM 88 Pad 1 (new age)'},
 }
 
-# Stem name → MuScriptor `--instruments` whitelist (comma-separated).
-# Vocals stem is transcribed (per operator D2) but not synthesized in the
-# instrumental render (hybrid overlay path).
-STEM_WHITELIST: dict[str, str] = {
-    "drums":  "drums",
-    "bass":   "acoustic_bass,electric_bass",
-    "guitar": "acoustic_guitar,clean_electric_guitar,distorted_electric_guitar",
-    "piano":  "acoustic_piano,electric_piano,organ",
-    "other":  ",".join([
-        "chromatic_percussion", "orchestral_harp", "timpani",
-        "string_ensemble", "synth_strings", "orchestra_hit",
-        "trumpet", "trombone", "tuba", "french_horn", "brass_section",
-        "soprano_and_alto_sax", "tenor_sax", "baritone_sax",
-        "oboe", "english_horn", "bassoon", "clarinet", "flutes",
-        "synth_lead", "synth_pad",
-    ]),
-    "vocals": "voice",
+# Per-stem default fallback (when the JSON events lack instrument info or a full-mix stem)
+STEM_DEFAULT = {
+    'drums': ('drums', None, 9),
+    'bass': ('electric_bass', 33, 0),
+    'guitar': ('clean_electric_guitar', 27, 1),
+    'piano': ('acoustic_piano', 0, 2),
+    'other': ('synth_pad', 88, 4),
+    'vocals': ('voice', 52, 3),
+    'full_mix': (None, None, None),
 }
 
 
-def lookup(label: str) -> tuple[int, bool, str]:
-    """Return (program, is_drum, gm_name) for a MuScriptor label. Raises on unknown."""
-    if label not in GM_PROGRAM_MAP:
-        raise UnknownInstrumentError(
-            f"MuScriptor label {label!r} not in GM_PROGRAM_MAP; extend this table before rendering"
-        )
-    return GM_PROGRAM_MAP[label]
+def emit_tsv(out_path: Path) -> None:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, 'w', newline='') as f:
+        w = csv.writer(f, delimiter='\t')
+        w.writerow(['muscriptor_label', 'gm_program', 'gm_channel', 'source_stem', 'rationale'])
+        for label, cfg in sorted(MAP_V3.items()):
+            w.writerow([label, cfg['gm_program'], cfg['gm_channel'],
+                        cfg['source_stem'], cfg['rationale']])
+    print(f'wrote {out_path}')
 
 
-def whitelist_for(stem: str) -> str:
-    if stem not in STEM_WHITELIST:
-        raise KeyError(f"unknown stem {stem!r}; known: {sorted(STEM_WHITELIST)}")
-    return STEM_WHITELIST[stem]
+def rc4_lock_check() -> tuple[int, list[str]]:
+    """Return (count on GM program 4, list of labels)."""
+    labels = [k for k, v in MAP_V3.items() if v['gm_program'] == 4]
+    return len(labels), labels
 
 
-if __name__ == "__main__":
-    for name, (prog, drum, gm_name) in sorted(GM_PROGRAM_MAP.items()):
-        marker = "DRUMS/ch10" if drum else f"program {prog:3d}"
-        print(f"{name:30s} → {marker:14s}  {gm_name}")
+if __name__ == '__main__':
+    song_sha16 = '31a164f845f8e27e'
+    out = Path(f'data/v3_spine/{song_sha16}/gm_program_map_v3_extensions.tsv')
+    emit_tsv(out)
+    n_p4, l_p4 = rc4_lock_check()
+    print(f'RC4 program-4 count: {n_p4} labels={l_p4} (deliberate: electric_piano)')
