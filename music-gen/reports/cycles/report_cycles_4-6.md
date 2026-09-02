@@ -1,208 +1,190 @@
 ---
-title: "Music-Gen — Cycles 4-6"
-date: "2026-08-28"
+title: "Music-Gen v3 SPINE Milestone — Cycles 4–6"
+date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Cycles 4-6
+# Music-Gen v3 SPINE Milestone — Cycles 4–6
 
 ## Abstract
 
-Cycles 4-6 extended the deterministic music-generation pipeline along three parallel workstreams that could progress without the rated corpus, whose audio downloads remain blocked by the workspace egress policy. A pitch/rhythm transcription survey (M-TRANS-1) measured note-level F1 for two transcribers across three durations on the M-SEP-1 clean-reference stems and published a seven-axis coverage matrix with an adopt-or-build verdict. A rules-ledger schema (M-RULES-1/schema) was designed, validated end-to-end on 25 synthetic instances, and hardened by a 15-check planted-invalid rejection matrix. An ear-model preparation chassis (M-EAR-1/preparation) — feature extractor, ordinal 1-7 CORN regression head, and a non-factor leak-test harness — was built and calibrated on the 55-clip classifier validation set; the leak detector clears its ≥ 0.90 detection floor and ≤ 0.10 false-positive ceiling for artist, genre, and era plants at full-strength contamination. All three deliverables were integrated back onto the main workspace, with 10 plan-of-record rows added, 6 ledger events written, one accidental append repaired, the cross-branch integration test extended to 130 checks (all green), and the rules-schema test suite adding 25 further checks. No new research directions were opened during the integration cycle.
+This report covers three consecutive cycles of work on the M-V3-SPINE milestone of the Music-Gen v3 campaign, executed on the reference track *Chicken Grease* (source SHA-16 `31a164f845f8e27e`) over a 30-second window. Cycle 3 had halted at the pre-registered STOP clause after finding that MuScriptor's MIDI container serialization was content-dependently nondeterministic on the bass stem, even though the underlying JSON event stream was byte-identical across runs. Cycles 4–6 close that halt by (a) building a canonical MIDI serializer downstream of the deterministic JSON events (Option A), (b) extending the end-to-end pipeline from the compatibility 0–30 s window onto the operator-chosen exposed section at 233.64–263.64 s, and (c) attributing the previously unexplained cross-cycle drift on the guitar stem to a specific torch installation reachable from the system Python interpreter. All three cycles land with the `blocked_on_operator` flag set: the pipeline is byte-deterministic within each cycle and structurally sound, but the only accepted authority for a positive verdict is operator ear judgment on the two delivered A/B pairs, which had not yet arrived at the time of this report. A moderate finding from Cycle 5 — that the c53-era rc7 equalization-and-loudness chain and the plain broadband RMS-match chain produce numerically distinct full-mix reconstructions — was closed in Cycle 6 as an expected first-class property of the two methods rather than a defect to be smoothed away.
 
-## Introduction
+## 1. Introduction
 
-The Music-Gen campaign builds a strictly deterministic loop from audio ingestion through classification, source separation, transcription, merged score, MIDI, DAW render, rules extraction, and generation. The campaign's fixed decisions — 30 s clips with 5 s overlap; non-negotiable provenance; only music continuing downstream; open-source survey before custom builds — were established in earlier cycles.
+The v3 campaign follows a documented pivot away from hand-rolled DSP transcription (permanently banned by Fixed Decision 1) toward a "simplest robust pipeline": source separation → symbolic transcription via a single approved transcriber (MuScriptor) → deterministic re-synthesis and mix-match. The M-V3-SPINE milestone is the spine of that pipeline. Its acceptance rubric is a three-verdict scheme with a STOP-at-rung-1 clause: if the byte-determinism guarantee fails on any probe, the chain halts before proceeding to structural or perceptual gates. Cycle 3 hit exactly that STOP because two consecutive MuScriptor MIDI serializations of the bass stem differed at byte offset 40 across 365 bytes, while the JSON event dump underlying those MIDI files was byte-equal.
 
-By the start of cycle 4, the ingestion chassis, music/non-music classifier, DAW round-trip spike, source-separation adoption (htdemucs), heuristics battery, and texture panel had all landed. The rated corpus of 80 songs (ear bands 6/5/4) had been registered with full provenance, but audio acquisition remained blocked by an egress denial of `*.googlevideo.com`. Per the campaign's rule that acquisition never blocks downstream work, cycles 4-6 targeted three workstreams that do not depend on the rated bytes: pitch/rhythm transcription, the rules-ledger schema, and the preparation half of the ear-model milestone (chassis, features, and leak-test).
+Cycles 4–6 pick up from three concrete operator directives issued after Cycle 3:
 
-These three efforts ran as sibling clones of one fanout; a subsequent worker-only cycle integrated their outputs back onto the main workspace. This report covers all three workstreams, the integration, and the state of the campaign at cycle-6 exit.
+1. **Adopt Option A**: canonicalize authoritative MIDI downstream of the JSON events using a pure, fixed-PPQ, stable-sort serializer. Demote MuScriptor's own MIDI writer to a debug sidecar. Serialization, not transcription — so Fixed Decision 1 is preserved.
+2. **Extend the pipeline to the operator-chosen exposed section** (233.64–263.64 s) once the compat 0–30 s pass lands, so the operator has a peak-and-exposed A/B pair to listen to.
+3. **Reconcile per-stem-in-favor** whenever the full-mix MIDI and the sum of per-stem MIDIs disagree.
 
-## Approach
+This report describes what those three cycles did, what they found, and what remains open.
 
-The three workstreams were partitioned so their file trees do not overlap: `scripts/transcribe/*` for M-TRANS-1, `scripts/rules/*` for the schema branch, and `scripts/ear/*` for M-EAR-1 preparation. Each branch produced its own report under `docs/`, extended `tests/test_integration_cross_branch.py` with a section of invariants scoped to its own artefacts, and wrote shadow-ledger events inside its branch. A separate worker-only cycle merged the three onto the main workspace, propagated the sub-milestone rows into the plan of record, emitted six real ledger events (three adoption rows, one shadow-report reconciliation, one rollup, and one plan-file record), and reran the cross-branch test at the merged state.
+## 2. Methodology carried across all three cycles
 
-Toolchain constraints drove one non-trivial environment decision. The pitch-transcription baseline, basic-pitch 0.4.0, pins `tensorflow<2.15.1`, while the main workspace runs TensorFlow 2.21.0 for the classifier's PANNs backbone. Rather than resolve the pin at the top level, the branch created a quarantined virtual environment at `workspace/basic_pitch_venv/` and drove basic-pitch through a subprocess. The `numpy` pin (1.26.4, forced earlier by `laion-clap`) held across both environments, so only TensorFlow needed isolation. A separate `jsonschema` 4.26.0 was added at the top level for the rules validator without disturbing the classifier or PANNs stacks.
+### 2.1 Rubric v2 and its integrity chain
 
-## Findings
+Cycle 4 froze a new rubric (`v3_spine_rubric_v2`) before writing any pipeline code, redefining the byte-determinism gate to apply to (a) the JSON event dump, (b) the canonicalized MIDI, and (c) the downstream rendered artifacts, rather than to MuScriptor's MIDI output directly. The rubric document's SHA-256 (`c49db5a12e955f26…451a`) is pinned by a three-way byte-equality assertion — the document hash on disk, a sidecar hash file, and the hash embedded in each cycle's verdict JSON must match on every cycle. This chain held byte-identically across all three cycles and was independently re-verified by the auditor at each pass. Cycle 3's rubric v1 (`b0031164…4b555`) is preserved read-only as a historical anchor.
 
-### Transcription survey (M-TRANS-1)
+### 2.2 Determinism protocol
 
-Two transcribers were evaluated against the M-SEP-1 clean-reference stems (drums, bass, and piano-labelled-as-`other`) at durations of 30, 60, and 90 s. The ground-truth reference for each duration is not a hand annotation but the exact program that generated the fluidsynth mixes: an 8 s / 4-bar phrase tiled in the audio domain, with the note-event ground truth recovered by replicating the source MIDI's note list at offsets `{0, 8, 16, …}`, dropping any note whose start passes the duration, and clipping any note whose end passes the duration. Regenerating the reference is SHA-256 bit-identical across runs on all twelve reference JSONL files.
+Every stem-level artifact — separated audio, JSON event dump, canonical MIDI, per-track rendered WAV — is generated twice into fresh temporary directories under a fixed environment (`PYTHONHASHSEED=0`, `SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`, `LC_ALL=C.UTF-8`, single-threaded BLAS, `torch.manual_seed(0)`), and its SHA-256 is asserted equal across the two runs. A mismatch on any single probe fires the STOP clause and halts the cycle.
 
-The two transcribers are:
+### 2.3 Anchor preservation
 
-- **basic-pitch 0.4.0**, the ICASSP-2022 neural music-processing model, run through the quarantined venv.
-- **A librosa-family alternative** — `librosa.pyin` for monophonic bass, `librosa.onset.onset_detect` plus a sub-band spectral classifier for drums, and CQT peak-picking for the polyphonic `other` stem. This alternative was chosen only after Crepe (fetch blocked at install-time; its setup pulls model weights from a host on the egress deny-list), Magenta's onsets-frames (same blocked host plus ~300 MB of dependencies), and note-seq (fetches but is not a transcriber by itself) were ruled out. The full ladder is recorded at `data/transcribe/alternative_selection.jsonl`. The two transcribers share `librosa`'s STFT/CQT at the low level, so the diversity is algorithmic rather than toolkit-family; this caveat is carried forward.
+At the start of each cycle a snapshot of every read-only artifact from prior cycles (delivery WAVs, canonical MIDIs, locked scripts, the SoundFont, the focus set) is recorded, and at the end of the cycle every anchor is re-hashed and required to match. The count grew from 36 anchors at Cycle 4 to 71 by Cycle 6; all matched pre-vs-post at every cycle, with the auditor independently spot-checking six anchors per cycle.
 
-Note-level F1 was computed with `mir_eval.transcription.precision_recall_f1_overlap` at `onset_tolerance=0.05 s`, `pitch_tolerance=50 cents`, `offset_ratio=0.20`, `offset_min_tolerance=0.05 s`. For drums, general-MIDI drum note numbers were mapped to a synthetic pitch space (`hz = 100 + midi_pitch`) with `pitch_tolerance=0.5` so only exact drum-class matches count.
+### 2.4 Fixed environment and interpreter
 
-Mean F1 across the three durations, per stem:
+All pipeline scripts invoke `/usr/bin/python3` explicitly (verified by an AST test guard), with a single-threaded BLAS pin and the environment variables above set via `os.environ.setdefault`. Egress remained blocked at the network layer for all three cycles; the auditor ran an AST scan for `urllib`, `requests`, `httpx`, `socket`, `http`, and `aiohttp` imports and confirmed zero network dependencies in every new script.
 
-| Stem | basic-pitch | alternative |
-|---|---:|---:|
-| drums (see disclaimer) | 0.000 | 0.397 |
-| bass (monophonic) | 0.481 | **1.000** |
-| other / piano (polyphonic) | **0.725** | 0.325 |
+## 3. Cycle 4: canonical serializer lands, pipeline reaches the 0–30 s window
 
-*Drum-stem disclaimer (lower bound):* basic-pitch is a polyphonic-pitch estimator; on pitchless drum stems it emits zero notes across all three durations, and the 0.000 F1 rows are a lower bound rather than a definitive measurement. The disclaimer is carried in the results table's `disclaimer` column and gated by an integration-test check.
+Cycle 4 implemented Option A end-to-end.
 
-![Note-level F1 by transcriber and stem, mean over 30/60/90 s clips](data/transcribe/results_bar_chart.png)
+**Canonical serializer.** A pure function `midi_from_json_events(json_path, out_path, tempo_bpm, time_signature)` was specified before any code was written, then implemented with PPQ fixed at 480, sort key `(tick, channel, pitch, event_kind)` with note-on ordered before note-off, a deterministic instrument-to-channel map, an empty-events baseline, and an atomic write via `tempfile.NamedTemporaryFile` + `os.replace`. The `mido` library was pinned via `importlib.metadata.version` because the shipped 1.3.3 release does not expose `__version__`. Twelve unit tests covered PPQ, sort-key reproducibility, on-before-off, empty-events baseline, the mido pin, byte-determinism ×2 on 3-note / 12-note / empty inputs, absence of any pseudo-random number source or wall-clock reference (grep-verified), the channel map, dangling note-start handling, and the seconds-to-ticks conversion. All twelve passed.
 
-Determinism was verified on the basic-pitch × bass × 30 s cell by running the transcriber twice under single-thread BLAS pins (`OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=1`) with `tf.random.set_seed(0)` and the intra-/inter-op thread counts pinned to 1. The two runs are SHA-256 bit-identical (F1 delta = 0.000, ahead of the ±0.02 target). The librosa alternative is float-deterministic on the same inputs.
+**MuScriptor JSON re-run and a new drift finding.** The second run of MuScriptor with `--format json` on the six stems plus the full-mix slice completed the ×2 requirement Cycle 3 had left open. Six of seven probes produced JSON byte-identical to their Cycle 3 hash. The guitar stem did not: the Cycle 3 hash was `97b5a598…db8424bb` (1168 notes, first event at 0.25 s); the Cycle 4 hash was `3107ba21…e10acc70` (824 notes, first event at 0.24 s). Two consecutive Cycle 4 invocations of the guitar probe agreed with each other, so the drift is between Cycle 3 and Cycle 4, not intra-cycle. Attribution was deferred to Cycle 5.
 
-**Seven-axis coverage.** Every axis is explicit; no axis is silently omitted:
+**Canonical MIDI determinism.** All seven probes serialized twice into fresh temporary directories via the new serializer produced byte-identical MIDI: `f6097216…` (drums), `609b2b8059af4468…` (bass), `4afb8a32…` (guitar), `8a00d5ad…` (vocals), `6062acb1…` (full-mix), and the pinned empty-events hash `586a53e2…` for the empty `other` and `piano` transcriptions. The rung-1a byte-determinism gate passed.
 
-| Axis | Status | What is measured | What is not |
-|---|---|---|---|
-| rhythm | measurable | Beat F-measure at 70 ms tolerance = 0.99 at all three durations; estimated tempo 120.19 BPM vs reference 120.00 | groove nuance, rubato, polyrhythm, micro-timing |
-| melody | measurable | Note-level F1 (table above) | expressive articulation, ornaments, vibrato |
-| harmony | measurable | Triad detection over `chroma_cqt` vs the I-vi-IV-V reference: weighted accuracy = 0.983 at all three durations | modulations, extended harmony, voicings, inversions |
-| timbre | proxy-only | MFCC-13 self-similarity ≈ 1.0 as sanity anchor | fluidsynth-in-the-loop resynthesis similarity, deferred |
-| dynamics | measurable | Velocity F1 at ~13/127 tolerance on bass: alternative 1.000/1.000/1.000; basic-pitch 0.475/0.472/0.486 | envelope evolution within held notes, pedal, crescendo shapes |
-| form | deferred | nothing (30/60/90 s durations are pure loop tiles with no A/B structure) | verse/chorus segmentation, motivic recurrence — unlocks with rated audio and a labelled form corpus |
-| vocals-to-text | placeholder | returns `NO_VOCAL_STEM` on the silent-by-construction synth vocals stem | actual speech-to-text — no vocal audio yet |
+**Tempo, program map, structural gates.** Tempo was carried forward from the RC5 baseline for the full song at 90.7258 BPM in 4/4. A twelve-label GM program map placed drums on channel 10 and confirmed zero notes on GM program 4 (an operator lock). The six canonical per-stem MIDIs were merged onto the tempo map via `merge_per_stem_midi.py`, producing `merged.mid` at SHA `555b41db…6faf19`, with all four structural gates passing: drums on channel 10 non-empty (183 note-ons), bass median pitch 38 (below 55), zero notes on GM program 4, and a symbolic-only vocals track carrying the `voice_symbolic_do_not_render` text meta.
 
-**Verdict: BUILD.** No single off-the-shelf transcriber is adequate. The concrete recommendation is a per-stem router: basic-pitch for polyphonic pitched stems, a Crepe- or pyin-class monophonic pitcher for bass (the alternative already hits 1.000 here, cheaply), and a dedicated onset-plus-classifier for drums (recall ≈ 0.33 today, capped by the fixed-threshold onset detector).
+**Render and A/B.** Fluidsynth (SoundFont SHA `74594e8f…1cb0`, `-r 44100 -o synth.cpu-cores=1`, reverb and chorus disabled) rendered the five non-vocal stems twice, all byte-identical. The htdemucs vocals stem was overlaid as a SHA-verified copy. Per-stem RMS-matching against the baseline six-stem separation, summed and peak-limited to 0.707, produced the 30-second reconstruction at SHA `281a3bc6…`, byte-deterministic across two runs.
 
-### Rules-ledger schema (M-RULES-1/schema)
+**Full-mix reconciliation.** The full-mix canonical MIDI carried 490 note events; the sum of per-stem MIDIs carried 1010. Per operator directive point 4, the sum-of-stems was chosen as canonical; the full-mix-only findings were logged but not auto-merged.
 
-The schema-half of M-RULES-1 was closed. The extraction-half — first extraction from a merged score — remains gated on M-SCORE-1 and is explicitly out of scope.
+**Panel and honest disclosures.** The eight-metric perceptual panel (mel L1, spectral-centroid RMSE, RMS-envelope RMSE, integrated-LUFS RMSE, VGGish cosine distance, and three others) was computed with all values finite. The panel is explicitly **not** an acceptance gate — Fixed Decision 6 reserves that authority for operator ear. The Cycle 4 A/B window was 0–30 s of the source, not the operator-chosen 233.64–263.64 s section; the reason, disclosed in the delivery, is that the RC9 six-stem baseline separation on disk covered only the first 30 s. Extending it to the operator section became Cycle 5's task.
 
-The schema is JSON-Schema-2020-12 authoritative. Five rule types are supported end-to-end: `harmonic`, `rhythmic`, `melodic`, `form`, and `arrangement`. Every rule carries a content-derived identifier, provenance pointers, a continuous confidence in [0, 1], typed parameters keyed by rule type, and a scope block naming the level (`song` / `section` / `measure`) and start/end times.
+Cycle 4 total wall time was approximately 15 minutes, dominated by the ~5.7 minutes of guitar-probe MuScriptor invocations (three passes). The verdict shipped as `V3_SPINE_CHAIN_LANDS_pending_operator`, blocked on operator ear.
 
-Load-bearing design decisions:
+## 4. Cycle 5: pipeline extended onto the operator-chosen section
 
-- **Content-addressed `rule_id`.** The id is `"rule_" + sha256(canonical_json({rule_type, scope, sorted provenance_pointers, parameters}))[:16]`. Identical content produces identical ids; a one-bit change produces a different id. This distinguishes refinement (which changes content) from a repeated rule (same content, ignored on second write) without human judgment.
-- **Append-only with supersede-as-event.** The ledger never edits in place. A `supersede` row references the old and new rule ids and carries a free-text reason. `effective_rules()` reads the supersede table at load time and filters superseded rows out. Transitive chains (A → B, B → C) resolve to only C.
-- **Unknown-type policy: reject.** `rule_type` is a five-value enum. Anything else fails at the JSON Schema layer.
-- **`additionalProperties: false` at every level.** A stray field is rejected, including any non-factor field (`genre`, `artist`, `era`, …). Non-factor isolation is a side-benefit of the schema rigor and is exercised by a dedicated planted-invalid case.
-- **Two-layer validator.** JSON Schema enforces shapes, enums, and bounds mechanically. A hand-written Python layer enforces what JSON Schema cannot express portably: pitch-class-histogram sum-to-1 (within `1e-6`), scope end > start, form section end-measure > start-measure, and cross-row duplicate `rule_id`.
+Cycle 5 executed the same pipeline on the exposed section at 233.64–263.64 s that the D1 auto-picker had identified from the focus set, while also opening the first attribution probe on the Cycle 4 guitar drift.
 
-Twenty-five synthetic instances (five per rule type) were built by `scripts/rules/schema/examples/build_examples.py`. All 25 pass Layer 1 and Layer 2 clean; all 25 round-trip through `json.loads` and canonical-JSON re-serialisation with byte identity; and all 25 rule ids are reproducible from content on both computes.
+**Section separation and transcription.** A fresh ffmpeg slice of the source over the operator window was fed into htdemucs, producing six stems that were byte-identical across two runs (six stems × two runs = twelve matching hashes). MuScriptor with `--format json` ran twice on each of the six stems plus the full-mix slice; all fourteen hashes matched. The seven canonical MIDIs likewise matched across two serializations. All four structural gates on the merged file passed on the operator section; per-track fluidsynth render produced five byte-identical stems; the vocals overlay was a SHA-verified copy of the section's htdemucs vocals. Loudness targets were recomputed fresh from the operator-section baseline (the RC9 baseline had covered only 0–30 s), the mix-match ran twice with byte-identical results, and the operator-section reconstruction was delivered alongside the original slice.
 
-Fifteen planted-invalid cases are caught cleanly. Eleven mutate a single field of a valid instance and are picked up by either JSON Schema (unknown type; empty provenance list; out-of-range confidence; unknown key regex; out-of-range swing ratio; extra top-level field such as `"genre": "rock"`) or by the Python layer (pitch-class-histogram sum drift of 0.001; form section with equal start and end; scope with equal start and end; duplicate rule id across two rows). Four further contract checks target the ledger writer itself: rejecting a duplicate `rule_id` at write time; rejecting a supersede whose target is not in the ledger; grepping the writer source for `open(..., "w")` or `"r+"` (both absent, enforcing append-only); and verifying that a full supersede chain returns only the leaf rule from `effective_rules()`.
+**Env-drift audit — first attempt.** A snapshot of the 87 packages inside `workspace/learned_transcribers_venv` was captured as a `c5_baseline`; there was no prior venv snapshot on disk to diff against. A separate probe attempted to reproduce the Cycle 3 guitar JSON hash by re-invoking MuScriptor under the venv's package versions. It reported `probe_status = deferred_egress_blocked`: without pip history from the Cycle 3 era, without cached wheels covering the transitive closure, and with egress forbidden, no closed-form reproduction was possible from inside the venv. The attribution verdict was recorded as `ENV_DRIFT_PROBE_DEFERRED`. Importantly, this deferral does not invalidate Option A — the canonical serializer is a pure function of its JSON input, so whatever caused the JSON to shift between cycles does not compromise the determinism of the MIDI-and-render chain within a single cycle.
 
-### Ear-model preparation chassis (M-EAR-1/preparation)
+**Anchor preservation.** All 57 anchors held byte-identical; sixteen tests passed; the promise-check post plan-of-record update surfaced zero errors.
 
-Three interlocking deliverables were built without any dependency on the rated corpus.
+**Operator handoff at end of Cycle 5.** Two A/B pairs now sat on disk: the Cycle 4 compat pair over 0–30 s and the Cycle 5 exposed-section pair over 233.64–263.64 s. Two moderate items remained open: the deferred environment attribution and a question about whether the plain RMS-match mix path used in Cycle 5 was numerically equivalent to the c53-era rc7 equalization-plus-loudness path that predated the v3 pivot.
 
-**Feature extractor.** The default feature vector is the PANNs Cnn14 penultimate 2048-dim embedding concatenated with the four-dimensional M-HEUR-1 mess-scale vector — 2052 dimensions in all. An optional VGGish 128-dim embedding lifts the vector to 2180 dimensions but triples per-clip latency and does not materially change the leak-test outcome on spot checks; it is off by default. Features are cached at `data/ear/features/<clip_id>.npz` keyed by `(source_wav_sha256, feature_version, has_vggish)`; re-extraction from a cold cache produces a byte-identical 2048-dim PANNs vector on rerun.
+## 5. Cycle 6: attribution closed, method-equivalence resolved
 
-Song-level aggregation, used for the eventual training path on 80 real songs, is `[weighted_mean || weighted_std]`. The per-clip weight follows the M-INGEST-1 anchored-tail debias rule: `weight = (t_end - t_start - overlap_with_prev) / 30` for the anchored tail clip, `1.0` otherwise. Numerical spot check against the M-HEUR-1 seeds: `7/30 = 0.23333…` for the long seed's anchored clip, `2/3 = 0.66666…` for the mid seed's anchored clip, and 1.0 for the short seed (single clip, no anchored tail). For the 55-clip leak test each clip is a single-clip song, so aggregation collapses to identity and the standard-deviation block is zero by construction.
+Cycle 6 ran as a two-track substantive cycle in the continued absence of an operator ear verdict.
 
-**CORN ordinal head.** A CORN (Cao, Mirjalili, Raschka 2020) 1-to-7 ordinal regression head is used because ear-band ratings are ordinal, not categorical. For K = 7 the target is encoded as six binary sub-targets `t_k = 1[y > k]`; the head is `Linear(2052, 128) → ReLU → Dropout(0.3) → Linear(128, 6)` trained with `BCEWithLogitsLoss`; prediction is `1 + Σ_k 1[σ(logit_k) > 0.5]`. Training is Adam at `lr = 1e-3`, weight decay `1e-3`, full-batch on 55 samples, with all thread counts pinned and all seeds fixed. NaN heuristic values (from cases where the source heuristic returned null-with-reason) are imputed column-wise with the training-set mean.
+### 5.1 Track A: environment-drift attribution
 
-Five-fold stratified cross-validation on synthetic labels (labels generated by projecting the feature matrix onto its first principal component, standardising, and rounding `y = 4 + 1.5·z + 1.0·noise` clipped to [1, 7]):
+A local-only filesystem scan across `/root`, `/home`, `/var/cache/apt`, `/var/lib/apt`, `/var/lib/dpkg`, `/var/lib/docker`, `/opt`, `/usr/lib`, `/usr/local/lib`, and `/tmp` enumerated every torch installation reachable from the machine. Two were found:
 
-| Metric | mean | std |
-|---|---:|---:|
-| CORN mean absolute error | 0.891 | 0.106 |
-| Majority-class MAE | 2.164 | 0.266 |
-| Mean-integer MAE | 1.545 | 0.172 |
-| Off-by-one accuracy | 0.836 | 0.106 |
-| Kendall τ vs true ordinal | 0.741 | 0.103 |
+| Location | Version |
+|---|---|
+| `/usr/local/lib/python3.11/dist-packages/torch-2.13.0+cpu.dist-info` | 2.13.0+cpu |
+| `workspace/learned_transcribers_venv/lib/python3.11/site-packages/torch-2.14.0+cpu.dist-info` | 2.14.0+cpu |
 
-CORN beats both naïve baselines cleanly and is off-by-one 84 % of the time.
+The Cycle 3-era `torch 2.13.0+cpu` is installed at the *system* interpreter path and is directly importable from `/usr/bin/python3` without any venv activation. The Cycle 5 baseline of `torch 2.14.0+cpu` lives inside the venv. The auditor independently reproduced this at the shell:
 
-**Non-factor leak-test harness.** Every one of the 55 valset clips gets three synthetic non-factor labels: `synth_artist` (five values, round-robin over the manifest), `synth_genre` (three values correlated with the true classifier label, so a well-fit head naturally picks it up), and `synth_era` (three values bucketing clips by SHA-256 of the clip id). These labels live at `data/ear/synth_nonfactor_plant.json` — a name, path, and format deliberately unlike the classifier's own `data/classifier/_nonfactor/`, so any accidental cross-read `grep`s visibly.
+```
+$ /usr/bin/python3 -c "import torch; print(torch.__version__, torch.__file__)"
+2.13.0+cpu /usr/local/lib/python3.11/dist-packages/torch/__init__.py
+```
 
-For each plant and contamination strength α ∈ {1.0, 0.5, 0.1}, a synthetic rating is `y = round(4 + α · 2 · z_nf + (1-α) · 2 · noise)` clipped to [1, 7]. The harness trains the CORN head, computes a two-sided η² statistic combining a `S_model` channel that reads off learned prediction structure (fires on correlated plants) and a `S_resid` channel that reads off residual dependence on the non-factor (fires on orthogonal plants), and compares it to the 90th percentile of a control distribution drawn from ≥ 20 no-leak controls.
+This is a coherent mechanism for the Cycle 3-versus-Cycle 4 guitar drift: any Cycle 3-era subprocess invoked through `/usr/bin/python3` was picking up the system-wide torch 2.13 from `dist-packages`, while Cycle 5's venv audit correctly reported 2.14 from `site-packages` — the two audits were looking at different Python environments and were both correct.
 
-Detection rates and false-positive rates on 20 no-leak controls per leak type, at the calibrated `epochs = 60` used inside the leak-test only:
+The AST test guard confirmed zero network syscall attempts in the scan script and its two siblings. The scan output was byte-identical across two runs. Attribution was upgraded from `DEFERRED` to `ENV_DRIFT_PROBE_CANDIDATE_FOUND_C7_REPRODUCE`; the drafted reproduction command was recorded but not executed, pending operator approval, in accordance with the standing constraint against retuning without operator sign-off.
 
-| Leak type | Detection α = 1.0 | Detection α = 0.5 | Detection α = 0.1 | False-positive rate | τ percentile |
-|---|:---:|:---:|:---:|:---:|:---:|
-| artist | **0.914** | 0.257 | 0.057 | 0.100 | 90th |
-| genre  | **1.000** | 0.829 | 0.086 | 0.100 | 90th |
-| era    | **0.914** | 0.400 | 0.086 | 0.100 | 90th |
+One earlier statement was refined in light of this finding: the Cycle 5 conclusion that "no c3-era wheel is cached locally" is technically still true (the venv's wheel cache is empty for torch 2.13), but the c3-era torch is present on the system Python — reached by interpreter path, not by wheel install.
 
-The α = 1.0 column clears the ≥ 0.90 floor for all three leak types; false-positive rates hit the ≤ 0.10 ceiling exactly at the 90th percentile by design. The weak-leak (α = 0.1) numbers are reported honestly: a 10 % signal / 90 % noise plant sits at or below the detector's sensitivity floor, and the success bar is specifically the α = 1.0 case. The two consecutive full runs at these settings reproduce all detection rates and τ values within `1e-5` under the pinned numeric envelope.
+### 5.2 Track B: method-equivalence between the two mix chains
 
-A calibration note travels with the harness. The CORN head's default training regime is 200 epochs and is fine for the model itself; the leak-test uses 60 epochs because, on 55 clips × 2052 features, 200 epochs lets the head memorise training folds and the residual channel loses signal-to-noise on orthogonal plants. At 60 epochs the head sits in the regime the `S_resid` statistic is designed to measure. Both settings are recorded in their respective run configs and the discrepancy is called out in the harness's argparse comment.
+Two mix chains were compared on the same operator-section per-track WAV inputs:
 
-**Non-factor isolation.** No file under `scripts/ear/` imports `scripts.classifier.sidecar_nonfactor`. The integration test parses every `scripts/ear/*.py` to AST and asserts this at merge time; the auditor's protocol includes planting an evil import and verifying the check fails, then removing it and verifying the check passes.
+| Property | Method A (Cycle 5 canonical) | Method B (rc7 v3-paths fork) |
+|---|---|---|
+| Chain | plain per-stem RMS-match (gain clamp ±24 dB) → sum → peak-limit 0.707 → int16 | 12-band log-spaced iirpeak EQ (Q=1.4) → RMS loudness match (max 48 dB) → sum → peak-limit 0.999 → deterministic-canonicalize |
+| Full-mix SHA | `cc919559b4508b6b…` (from Cycle 5) | `f40796be982998b0…` (this cycle) |
 
-### Post-merge integration
+Both chains are internally byte-deterministic across two runs on their own inputs. On the operator-section full-mix, the two chains produce reconstructions that are strongly correlated but not equivalent:
 
-A worker-only cycle folded the three branch outputs back onto the main workspace. There is no overlap between the three branches' file trees (`scripts/transcribe/*`, `scripts/rules/*`, `scripts/ear/*`, and their `data/*` subtrees are disjoint) and no environment conflict (basic-pitch and TensorFlow 2.15 are confined to `workspace/basic_pitch_venv/`; `jsonschema` was added at the top level without touching existing pins). No cross-branch merge conflicts had to be resolved.
+| Metric | Value |
+|---|---:|
+| max absolute sample-difference | 0.5021 |
+| RMS delta | 2.68 dB |
+| short-term LUFS delta | 2.27 LU |
+| Pearson correlation | 0.9649 |
 
-Two integration issues surfaced and were addressed:
+Interpretation: the twelve-band iirpeak EQ in Method B reshapes each stem's spectrum before the loudness match, whereas Method A applies a single broadband gain. The two chains retain the same underlying signal (correlation stays at 0.96) but with meaningfully different tonal shaping. Under the campaign's Fixed Decision 1 — that observed method disagreement is a first-class finding, not a defect to smooth over — the Cycle 5 open item closes as `MODERATE_2_METHODS_DIFFER_EXPECTED`. No code was changed: the Cycle 5 plain-RMS chain remains the canonical A/B path for now, because retuning without operator ear input is disallowed. The choice of which chain to promote as canonical is now an operator-facing decision.
 
-- **Ten sub-milestone identifiers** produced by the three branches lived only in the plan-of-record's three-column reference table, not in the five-column milestones table that the internal consistency check reads. Ten rows were added — three for the transcription sub-milestones, one for the rules-schema sub-milestone, and five for the rules-schema sub-parts — bringing the internal check's error count from 10 to 0.
-- **Twenty-seven orphan-artifact warnings and one missing-artifact warning** cleared by writing three adoption events on the ledger: one for the 25 synthetic rule-example JSONs; one for the two leak-test determinism artefacts (`leak_test_summary.det_run1.json`, `leak_test_summary.pre_fix.json`); and one for a shadow-only merge report referenced from a clone-scope-complete row.
+### 5.3 Discipline
 
-Two further ledger events (a rollup for the integration and a record of the plan-of-record edit) were written for traceability, bringing the ledger from 102 events to 108. The plan-of-record grew from 31 to 40 tracked milestones. One accidental append — four ledger rows written without the `event_id` field, a consequence of the append helper not defaulting the field — was repaired within a minute by stripping and re-appending, before any other reader had consumed the malformed rows. The observation that the append helper accepts an event without an `event_id` is carried forward as a note for a defensive default or a docstring update in a later cycle.
+Cycle 6 delivered 71 preserved anchors (all matching pre-versus-post), 17 tests passing (17/17 on independent re-run under the mandated environment), the three-way rubric hash chain unchanged, and zero promise-check errors. Egress remained blocked; no network calls were attempted. Both spec documents were written before their implementation scripts (verified by a modification-time gate: each spec's mtime precedes each script's by 48–133 seconds). Every SHA claimed in the worker's delivery was reproduced by the auditor's independent spot-check (12/12).
 
-**Tests at cycle-6 exit.**
+## 6. Current state and open decisions
 
-- `tests/test_integration_cross_branch.py` — 130 of 130 checks passing (447 lines). The test now covers the ingestion chassis, classifier validation-set and sidecar, DAW-spike agreement, texture panel (exact-8 keys and matched-pair reproduction), source separation (per-stem RMS on the UMXHQ path), heuristics (isolation and anchored-tail debias), transcription (fifteen new checks covering the venv path, reference manifest, results TSV, the lower-bound disclaimer, and the seven-axis coverage), rules schema, and ear-model preparation isolation.
-- `tests/test_rules_schema.py` — 25 of 25 checks passing (413 lines). Covers the planted-invalid suite, round-trip determinism, supersede transitivity, and duplicate-id rejection.
+At the end of Cycle 6 the M-V3-SPINE pipeline is complete on both the 0–30 s compat window and the 233.64–263.64 s operator-chosen section, byte-deterministic within any given cycle, structurally sound, and preserved across cycles by a 71-anchor byte-integrity chain. The chain's positive-verdict authority is by design operator ear, and no ear verdict has arrived on either A/B pair. Three operator-gated decisions are queued:
 
-Four canonicalisation warnings remain on old ledger lines from before the canonicalisation rule was enforced; they are unfixable in an append-only ledger and are not regressions. Five "no ledger events" warnings on parent milestones (`M-SCORE-1`, `M-EAR-1`, `M-TEX-1`, `M-GEN-1`, `M-RULES-1`) are expected: sub-milestones roll up to parents on completion, and each of these parents has genuinely-remaining work.
+1. **Ear verdict** on either A/B pair. A "lands" verdict on either opens M-V3-FOCUS-1 (the five-song set: *Chicken Grease* mandatory plus four SHA-256-tiebreak picks from `data/recreate_v2/focus_set_v2.json`). A negative verdict pivots to the operator-named failure axis.
+2. **Approval to execute the Torch 2.13 reproduction**. The mechanism is attributed; the reproduction command is drafted; the actual re-run of MuScriptor on the Cycle 4 guitar stem under `/usr/bin/python3` needs only permission. If the run reproduces the Cycle 3 guitar JSON hash, the drift is fully closed. If it does not, the finding that "torch version alone is not the drift factor" is itself first-class.
+3. **Canonical mix-chain choice**. Two byte-deterministic-within-cycle reconstructions now exist on disk: the Cycle 5 plain-RMS `cc919559…` and the Cycle 6 EQ-plus-loudness `f40796be…`. Which chain the operator listens to next, and which is promoted to canonical, is a policy call, not a code change.
 
-## Discussion
+A minor cosmetic finding from Cycle 6 remains a watch item: for the operator-section `other` and `piano` stems whose canonical MIDI is empty, the per-track renderer emits a nominally 2-second silent WAV rather than a 30-second silent one; both methods produce identical output, and the summed full mix is exactly 1 323 000 samples (30 s at 44.1 kHz), so the per-stem file length is a cosmetic artifact rather than a defect.
 
-The three workstreams share a common posture. Each committed to a substantive artefact that stands on its own — a survey with numbers and a verdict; a schema with a validator and a rejection matrix; a training-agnostic chassis with a leak detector — while explicitly deferring the piece of the milestone that genuinely requires either an upstream deliverable (the rules extractor waits for merged scores from M-SCORE-1) or the rated audio (the ear-model's real training run waits for egress). The pattern is worth naming: closing the *chassis half* of a milestone before the *data half* is available is the campaign's principal way of turning egress delay from a blocker into a scheduling constraint.
+## 7. Conclusions
 
-The transcription verdict is the most consequential result of the three. "Build a per-stem router" is not a rejection of the surveyed tools — basic-pitch is a strong polyphonic pitcher and the librosa alternative is a strong monophonic bass tracker — it is a claim that the *shape* of the transcription problem in this pipeline does not admit a single tool. That claim needs the surveyed numbers to be legible, and the honest disclaimers on the drum and weak-leak rows are how that legibility is preserved: an out-of-distribution measurement should not be treated as evidence against the model that produced it.
+Over three cycles the v3 SPINE pipeline moved from a hard STOP on nondeterministic MIDI serialization (Cycle 3) to a determinism-closed, operator-section-covered, structurally-gated end-to-end chain with a mechanistically attributed explanation for the one cross-cycle drift previously outstanding. The canonical-serializer path (Option A) has proved a good fit for the constraint of banning hand-rolled transcription: the JSON event stream from an approved transcriber remains the authority; the MIDI file is a downstream, purely functional projection of those events; and every intermediate artifact is byte-deterministic within each cycle. The Cycle 6 method-equivalence audit demonstrates the value of Fixed Decision 1's treatment of numerical disagreement as evidence rather than error — the two mix chains differ in tonal shaping in a way that is fully explained by their DSP designs, so the disagreement is information for the operator, not a bug to hide.
 
-The leak-test's calibration decision deserves the same honesty. Reporting `epochs = 60` inside the harness while the head trains at `epochs = 200` in production would be a defect if the two settings were not clearly separated in-code and in-report. They are, and the mechanism is understood: the residual channel of the η² statistic requires the head to *not* be in a perfect-memorisation regime, which for 55 clips × 2052 features means a lower epoch budget than the head's own default. The correlated-plant channel is invariant to this budget; only the orthogonal-plant channels move.
-
-The rules schema's content-addressed rule ids are the last decision worth flagging. The choice — hash the content, use the hash as the id — turns the "same rule extracted twice" and "a refined variant of the same rule" cases into a purely mechanical distinction: identical hashes mean identical content mean the second write is a no-op, and different hashes mean different content mean the second write is a new rule. Superseding is then always an explicit event, never an implicit overwrite. This is why the append-only property is enforceable at the writer without any human judgment about what counts as an edit.
-
-## Open Questions
-
-- **Per-stem transcription router.** Wire basic-pitch(piano/other) + pyin(bass) + a per-band spectral-flux drum-onset picker as a single `transcribe(stem_wav, stem_type) → midi` façade. The adopt-or-build verdict is now cashed out; the router is the next concrete step.
-- **Octave-doubling suppression** for basic-pitch on `other` and bass stems, by dropping notes whose fundamental is an octave above a co-onset note. Expected to lift bass F1 from ≈ 0.48 toward ≈ 0.9 and piano F1 from ≈ 0.72 toward ≈ 0.85.
-- **Drum-onset F1 recovery.** The librosa alternative sits at recall ≈ 0.33 because the miss set is dominated by snare-under-hihat confusion. A three-band spectral-flux picker is the natural fix and requires no learning.
-- **Timbre axis upgrade.** Fold a fluidsynth-in-the-loop resynthesis path (estimated MIDI → fluidsynth → WAV → MFCC cosine vs the original stem) so timbre becomes a real number rather than a self-similarity anchor.
-- **M-SCORE-1 bridge**, which unblocks the extraction-half of M-RULES-1.
-- **Real ear-model training.** The eventual `scripts/ear/train.py` will consume the 80 real songs' features and ratings, train the CORN head with a train/val/test split, and rerun the leak test against the classifier's real non-factor sidecar. It runs the moment two consecutive `media_ok=true` rows appear in the egress probe log.
-- **Fetch retries** for Crepe and Magenta once egress relaxes, so the transcription survey can be re-run with a wider algorithmic family than the librosa-derived alternative currently provides.
-- **Append-helper defensive default** for `event_id`, either as a helper default or a docstring update, so a future caller cannot re-hit the four-row mistake corrected in-cycle.
+The remaining work on this milestone is not code; it is three operator decisions. If any of them arrive before the next cycle, the milestone can advance. If none do, the harness has a substantive Track A next cycle already lined up (execute the torch-2.13 reproduction, if approved) and a substantive Track B (draft a one-page loudness and spectral characterization comparing the two mix chains to inform the canonicity choice).
 
 ## Appendix: Implementation Details
 
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
+### A.1 Delivered artifacts by cycle
 
-**New code, this cycle range:**
+Cycle 4, under `data/v3/deliveries/31a164f845f8e27e/`:
+`original_ab.wav`, `reconstruction_ab.wav`, `full_reconstruction.wav`, `panel.json`, `panel.tsv`, `manifest.json`, `verdict.json`, `muscriptor_nondeterministic.json`.
 
-- `scripts/transcribe/` — 6 files, including `_bp_call.py` (venv subprocess wrapper), `reference_events.py` (ground-truth recovery), `basic_pitch_baseline.py`, `alternative.py`, `eval_transcription.py`, `six_axis_coverage.py`.
-- `scripts/rules/` — schema, validator (`validate_row`, `validate_batch`), ledger writer (`write_rule`, append-only, `LedgerError` on duplicate or missing supersede target), `rule_id.derive_rule_id`, `effective_rules`, and 25 synthetic examples plus the deterministic builder.
-- `scripts/ear/` — `_interp.py` (interpreter guard), `features.py` (PANNs + heuristics + optional VGGish, cached npz), `corn.py` (~40 LOC CORN loss and predictor), `model.py` (Linear-ReLU-Dropout-Linear head), `leak_test.py` (η² harness with `S_model` and `S_resid` channels, per-leak-type τ escalation).
+Cycle 5, under `.../operator_section/`:
+`original_ab_operator_section.wav`, `reconstruction_ab_operator_section.wav`, `full_reconstruction_operator_section.wav`, `panel.json`, `panel.tsv`, `manifest.json`, `verdict.json`.
 
-**Quarantined environment:** `workspace/basic_pitch_venv/` with `basic-pitch==0.4.0`, `tensorflow==2.15.0`, `numpy==1.26.4`; full 62-line pin set at `workspace/basic_pitch_venv/requirements.frozen.txt`.
+Cycle 6, under `.../cycle6/`:
+`verdict_c6.json`, `env_drift_deep_dive.json`, `rc7_method_equivalence.json`.
 
-**Tests added or extended:**
+Working artifacts under `data/v3_spine/31a164f845f8e27e/`: `canonical_midi_determinism.json`, `merged.mid`, `merged_midi_sha.txt`, `full_mix_reconciliation.json`, `gm_program_map_v3_extensions.tsv`, `tempo_choice.json`; `operator_section/` subtree with `htdemucs_determinism.json`, `muscriptor_determinism.json`, `canonical_midi_determinism.json`, `render/` renders, `mix_match_operator_section.json`; `anchor_preservation.json` and `anchor_preservation_post_c6.json`.
 
-- `tests/test_integration_cross_branch.py` — extended to 447 lines / 130 checks; new sections cover M-TRANS-1 (15 checks: venv presence, reference manifest, results TSV rows and header, lower-bound disclaimer in TSV and report, six-axis coverage, no `sidecar_nonfactor` import in `scripts/transcribe/`), M-RULES-1/schema, and M-EAR-1/preparation isolation.
-- `tests/test_rules_schema.py` — 413 lines / 25 checks: 11 planted-invalid mutations at the row layer, four ledger-writer contract checks, and round-trip / supersede / duplicate cases.
+Docs authored: `docs/v3_spine_rubric_v2.md`, `docs/v3_spine_canonical_midi_serializer_spec.md`, `docs/v3_spine_venv_delta_audit_spec.md`, `docs/v3_spine_rehtdemucs_operator_section_spec.md`, `docs/v3_spine_env_drift_deep_dive_spec.md`, `docs/v3_spine_method_equivalence_rc7_spec.md`.
 
-**Ledger state at cycle-6 exit:** 108 events, 40 tracked milestones, 0 internal-check errors, 0 orphan-artifact warnings, 0 missing-artifact warnings, 4 pre-existing canonicalisation warnings, 5 expected "no ledger events" warnings on parent milestones with genuinely-remaining work.
+Scripts added: `scripts/v3_spine/midi_from_json_events.py`, `merge_per_stem_midi.py`, `env_drift_deep_dive.py`, `rc7_v2_rerun_v3_paths.py`, `method_equivalence_rc7.py` (and cycle-specific driver scripts co-located).
 
-**Milestone status at cycle-6 exit:**
+### A.2 Test suites
 
-- Done in this range: `M-TRANS-1` and its three sub-milestones (`basic-pitch`, `alternative`, `six-axis-coverage`); `M-RULES-1/schema` and its five sub-parts (`json-schema`, `validator`, `ledger-writer`, `synthetic-instances`, `tests`); `M-EAR-1/preparation`.
-- Blocked on rated audio: parent `M-EAR-1` (v0 training).
-- Blocked on upstream: `M-RULES-1` extraction-half (needs `M-SCORE-1`).
-- Not started: `M-SCORE-1`, `M-GEN-1`.
+12 tests for the canonical serializer (Cycle 4), 16 additional cycle-scoped tests (Cycle 5), 17 cycle-scoped tests (Cycle 6). All test files pass on independent re-run under the mandated environment (`PYTHONHASHSEED=0 SOURCE_DATE_EPOCH=1756463424 TZ=UTC LC_ALL=C.UTF-8 BLAS=1`, `/usr/bin/python3`).
 
-**Post-merge fixup artefacts:**
+### A.3 Environment pins used across all three cycles
 
-- Plan of record: 10 new rows in the milestones table.
-- Ledger: 6 new events (`_infra/adopt-fanout-artifacts-m-rules-1-schema`, `_infra/adopt-fanout-artifacts-m-ear-1-preparation`, `_archive/clone-1-shadow-merge-report`, `_run/post-merge-integration-fork-3168fb0e47a1`, `_plan/register-post-merge-integration-milestones`, `_archive/integration-scratch-fork-3168fb0e47a1`).
-- Repair: `tools/stale/_fix_missing_event_ids.py` stripped and re-appended four ledger rows written without `event_id`; no other reader had consumed them.
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; single-threaded BLAS; `torch.manual_seed(0)`; MuScriptor model SHA `ac80adbd…7fb97ec`; SoundFont SHA `74594e8f…1cb0`; `mido==1.3.3` verified via `importlib.metadata.version`; interpreter `/usr/bin/python3` (guard verified by AST test).
 
-**Session references** (sub-agent transcripts underlying this report):
+### A.4 Integrity chains
 
-- Cycle 4: worker `c0d79af9-9bf4-49fe-8a1b-099a6e62246b`.
-- Cycle 5: researcher `2fca5ef4-443d-4182-9f17-40dcf8f45b51`.
-- Cycle 6: worker `32775f9f-0b78-4930-b57f-6e37f4800d2c`.
-- Fork `3168fb0e47a1`, clone-2 (M-EAR-1/preparation): researcher/worker/auditor triads across cycles 4-6 recorded in `reports/cycles/report_cycles_4-6_clone_2.md`. Clone-2 confirmed at each triad that its scope was fully discharged in cycles 1-3 and produced no new work in this range, correctly holding rather than gold-plating validated criteria.
+Three-way rubric-v2 hash chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a1…451a` equals `data/v3_spine/rubric_hash_v2.txt` content equals `verdict.json.rubric_hash_v2`, on every cycle. Track A spec-hash chain (Cycle 6): document SHA `a2631e99…4152` equals `env_drift_deep_dive_spec_hash.txt`. Track B spec-hash chain (Cycle 6): document SHA `7869696e…c7e1` equals `method_equivalence_rc7_spec_hash.txt`. Modification-time gate for Cycle 6: both specs were saved 48–133 s before their implementation scripts. Anchor snapshot counts pre/post: 36→36 (Cycle 4), 57→57 (Cycle 5), 71→71 (Cycle 6), with independent auditor spot-checks of ≥5 anchors per cycle, all byte-identical.
 
-**Branch-scoped reports on disk:** `docs/transcription_survey_report.md`, `docs/rules_schema_report.md`, `docs/ear_preparation_report.md`.
+### A.5 Source sessions
 
-**Reference:** Cao, W., Mirjalili, V., Raschka, S. "Rank consistent ordinal regression for neural networks with application to age estimation." *Pattern Recognition Letters* 140:325-331, 2020. arXiv:1901.07884.
+| Cycle | Researcher | Worker | Auditor |
+|---|---|---|---|
+| 4 | 734586af-8851-4ea1-9fed-d08f87a0924c | ef5837fc-d75c-4a14-886f-ef682b36e884 | 4b8d78ef-5fc0-4484-845f-000c3e06319b |
+| 5 | c6fdb545-440e-412d-b3af-6631700078ad | 771ddeba-e9a5-4c25-8d2d-4254c89c11c1 | 0348ed0f-8179-4af4-a7e9-e255d5f2b2d3 |
+| 6 | f45de57c-b370-4b9d-9490-6c13934d3af0 | af1da82b-d40e-4d6e-a2bf-14b4860fcf48 | 7f0e4473-0b56-4da0-8195-c4627500da45 |
+
+Cycle-scoped reports are on disk at `docs/v3_spine_report_cycle4.md`, `docs/v3_spine_report_cycle5.md`, `docs/v3_spine_report_cycle6.md`.
+
+### A.6 Wall-time budgets
+
+Cycle 4 total ≈15 min (dominated by ~5.7 min of MuScriptor guitar-stem invocations). Cycle 5 wall time recorded step-by-step in the delivery's `verdict.json.operator_notes`, all subprocess-serial in-turn. Cycle 6 wall time recorded in `verdict_c6.json`.
+
+### A.7 Auditor reconciliation
+
+All three cycles were independently validated. Cycle 4 audit and Cycle 5 audit confirmed the byte-determinism chain, the anchor preservation, and the honest disclosure of the guitar drift and A/B window scope. The Cycle 6 audit (`VALIDATED`) independently reproduced the torch-2.13 attribution at the shell, spot-checked 12 SHAs (all matching), verified the two spec-hash chains and the modification-time gate, ran the 17-test suite green on an independent invocation, and confirmed the AST no-network guard and byte-determinism sidecar on the two new WAV artifacts. No critical findings; two minor observations were noted for future cycles: prefer a single archive ledger row per cycle (Cycle 6 emitted two), and adopt a stable `cycle<N>/` delivery subdirectory convention (three cycles used three different naming patterns).
