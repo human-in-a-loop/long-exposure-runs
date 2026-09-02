@@ -1,186 +1,192 @@
 ---
-title: "Cycles 1-3 Clone 0 Report — M-RULES-1/extraction/rated-corpus (Fork c320de981fda)"
-date: "2026-08-29"
+title: "Music-Gen v3 FOCUS Milestone — Fanout Clone 0 (Cycles 1–3)"
+date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-[OUTPUT: report_cycles_1-3_clone_0]
-
-# Cycles 1-3 Clone 0 Report — M-RULES-1/extraction/rated-corpus (Fork c320de981fda)
+# Music-Gen v3 FOCUS Milestone — Fanout Clone 0 (Cycles 1–3)
 
 ## Abstract
 
-Cycles 1-3 of clone-0 (fork `c320de981fda`) close **`M-RULES-1/extraction/rated-corpus`** at **RATED_CORPUS_PARTIAL** — a first-class honest verdict under a frozen 3-verdict rubric. **Assignment-vs-audit mismatch note**: the task brief describes `M-RECREATE-1/full-corpus-recreation` (37-song batch extension), but the executed and audited work in this range is the first M-RULES-1 rule extraction at real-audio corpus scale (43 songs → 1030 rows in new peer shard `data/rules/ledger_rated_corpus.jsonl`). This report faithfully documents the executed work per the audit that was actually issued. The recreation-branch scope should be re-fielded in a subsequent cycle if intended; the audit trail on the executed rules-extraction work is complete and validated.
+This report covers Cycles 1 through 3 of a fanout-clone branch spawned from the Music-Gen v3 campaign's M-V3-FOCUS-1 milestone. The clone (fork `88d75f9754c3`, clone 0) was assigned a scoped objective distinct from the campaign's main M-V3-SPINE-1 heartbeat cadence: run the full v3 per-stem chain end-to-end on the reference track *What If I Go* (source SHA-16 `252eb21ce7df7328`), delivering an A/B pair on the operator-chosen section and a full-song reconstruction, and emit `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` with a `V3_FOCUS_SONG_LANDS_pending_operator` or `PARTIAL/FAILS honestly` verdict. Cycle 1 executed substantive pipeline work through the first three MuScriptor probes before the background task terminated at 3-of-7 stems, and emitted an honest `V3_FOCUS_SONG_PARTIAL_pending_operator` verdict with the pipeline state fully disclosed. Cycles 2 and 3 were consecutive re-invocations of the same c20-scoped directive against a workspace where the required output artifact already existed byte-identically; both re-invocations validated the artifact against on-disk state without producing new substantive work, and the Cycle 3 audit closed the branch with a `COMPLETE` verdict per the `<no-null-cycle-validation>` rule. The required output artifact remained byte-identical across four independent verification points (SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`). The branch terminates cleanly; the parent M-V3-FOCUS-1 milestone remains in-progress at the campaign level, with pipeline advancement queued for a subsequent c21-scoped fanout clone.
 
-## Verdict
+## 1. Introduction and scope
 
-**RATED_CORPUS_PARTIAL** (VALIDATED at cycle 3 auditor decision; harmonic-shortfall PARTIAL OR-clause explicitly fires per pre-registered rubric).
+The M-V3-FOCUS-1 milestone widens the M-V3-SPINE-1 pipeline (previously exercised only on *Chicken Grease*, source SHA-16 `31a164f845f8e27e`) to five focus songs — *Chicken Grease* as the mandatory anchor plus four SHA-256-tiebreak picks from `data/recreate_v2/focus_set_v2.json` (SHA `8908dae03202ae52…a1a5ca`). Under the campaign's Fixed Decision 6, M-V3-SPINE-1 itself remains gated on operator ear on Chicken Grease A/B; opening M-V3-FOCUS-1 substantively before that gate would ordinarily be premature. This clone operates under a break-glass carveout from the wait-on-operator cadence policy that permitted substantive fanout-branch work on the focus songs in parallel with the M-V3-SPINE-1 wait — a decision the parent conductor took to accumulate downstream pipeline evidence rather than sit idle across long operator-absent stretches.
 
-## Rubric SHA Anchor Chain (Three-Way Byte-Equal)
+Clone 0's assignment is *What If I Go*. Sibling clones 1–4 (Peach Dream, Dojo, Disco A, and one band-4 filler) are separately in scope for later fanout branches; they are not covered by this report.
 
-| Location | SHA-256 |
-| --- | --- |
-| `docs/rules_extraction_rated_corpus_rubric.md` | `ed572704f205a723a9bb6e2f8b7a5d122e9aa186af6a00a05a60a6e59013f1c3` |
-| `data/rules_rated_corpus/rubric_hash.txt` | `ed572704…f1c3` |
-| `verdict.json.rubric_hash` | `ed572704…f1c3` |
+The clone's scoped objective as issued:
 
-Rubric mtime + git-log dual gate PASS (test_01, test_02). Rubric doc 5,734 B, mtime 12:27; report 16,962 B, mtime 12:44.
+- Read the chosen section from `focus_set_v2.json`.
+- Run htdemucs_6s on both the chosen section and the full song, asserting byte-determinism ×2 across 24 stem SHAs.
+- Run MuScriptor on the six per-stem probes plus the full-mix probe using the c3 stem whitelist and vocab mapping.
+- Serialize canonical MIDI via the c4 `midi_from_json_events.py` (read-only).
+- Merge per-stem MIDIs and assert the four structural gates.
+- Choose tempo via `librosa.beat.beat_track` on the chosen-section drums stem.
+- Run fluidsynth per-track render ×2 (byte-deterministic), then the D2 vocals overlay via a SHA-verified htdemucs vocals copy.
+- Mix-match via the c5 Method A pattern (plain RMS-match) using a per-song sibling script that reads `scripts/v3_spine/mix_match_operator_section.py` read-only.
+- Emit the operator-section A/B WAVs (30 s each), a full-song reconstruction WAV, and a delivery manifest under `data/v3/deliveries/252eb21ce7df7328/` matching the c5 Chicken Grease format.
+- Measure the M-TEX-1 eight-key perceptual panel with the c33 rc7 anchor tripwire.
+- Emit `cycle20/verdict.json` with `V3_FOCUS_SONG_LANDS_pending_operator` (or `PARTIAL/FAILS honestly`), the three-way `rubric_hash_v2` chain byte-equal, and `blocked_on_operator=true`.
+- Land a twelve-case test suite at `tests/test_v3_focus_wig_c20.py`.
+- Emit the standard four-row housekeeping ledger set under a `-clone-0` suffix.
 
-## Peer-Shard Placement (Protects c26-c30 Anchor Chain)
+The required deliverable is `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json`. The directive explicitly permits `PARTIAL/FAILS honestly` as a first-class verdict, not a failure state.
 
-| Shard | Rows | State |
-| --- | --- | --- |
-| `data/rules/ledger.jsonl` (c9 + c12) | **76** | byte-equal pre/post (test_11) |
-| `data/rules/ledger_i3_dminor.jsonl` (c15) | **86** | byte-equal pre/post (test_12) |
-| `data/rules/ledger_rated_corpus.jsonl` (c40, NEW peer) | **1030** | landed this cycle |
-| **Total tracked rules across all three shards** | **1192** | — |
+## 2. Cycle 1: substantive pipeline execution and honest PARTIAL
 
-c26-c30 canonical-aggregate-SHA anchors thereby preserved. New shard is a dedicated peer, not an extension.
+Cycle 1 was the branch's only substantive-work cycle. It executed the pipeline in order up to the MuScriptor stage, at which point the background transcription task terminated after completing three of the seven probes.
 
-## Rule-Extraction Volumetric (Honest PARTIAL Attribution)
+### 2.1 Upstream anchors respected
 
-43/43 songs cleanly extracted; 0 duplicate rule_ids across 43 songs (no cross-song collisions).
+Every read-only anchor consumed by the clone was byte-verified against its pinned SHA before use:
 
-| Rule Type | Rows | Per-Song Avg |
-| --- | --- | --- |
-| arrangement | 215 | 5.0/song ✓ |
-| form | 215 | 5.0/song ✓ |
-| **harmonic** | **86** | **2.0/song — SHORTFALL** |
-| melodic | 256 | ~6.0/song ✓ |
-| rhythmic | 258 | ~6.0/song ✓ |
+| Anchor | Path | SHA-256 |
+|---|---|---|
+| c19 verdict (backref) | `data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` | `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd` |
+| c5 Method A reconstruction (Chicken Grease ear anchor) | `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` | `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7` |
+| c4 canonical MIDI serializer (consumed READ-ONLY) | `scripts/v3_spine/midi_from_json_events.py` | `bbff015f4f1833f446ad72f9cd5815117b2a744798fe3857edf468de6731a2ea` |
+| c5 mix-match Method A (per-song sibling reads READ-ONLY) | `scripts/v3_spine/mix_match_operator_section.py` | `4f47fbcd7bf89c2bdc46701ae8da1fd39a732e3cf1cec4683c619cb17b743f60` |
+| c33 render_stem (DO-NOT-TOUCH invariant) | `scripts/palette_render/render_stem.py` | `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b` |
 
-**Harmonic shortfall attribution**: one-dimensional; attributable to c12 `insufficient-progression` coercion (`unique(chord_progression) < 2` → skip) firing on 3-4 of the 6 KS-plus-chordify windows for real-audio 30 s trims. Matches rubric's PARTIAL OR-clause verbatim: "one rule_type falls below the ≥5-rows-per-song floor on >5 songs" (here: 43 songs).
+The focus-set reference `data/recreate_v2/focus_set_v2.json` was consumed at SHA `8908dae03202ae529282c08e74d490b336fadcf7ded4f93483a2b32756a1a5ca`.
 
-## Byte-Determinism × 2 (43/43 Per-Song + Aggregate)
+### 2.2 Stage-by-stage pipeline state at cycle close
 
-- Aggregate canonical-sort SHA equal across two independent temp-dir runs (test_13).
-- 43/43 per-song shards SHA-equal.
+The delivered verdict discloses the per-stage state directly:
 
-## Anchor Preservation (31/31 SHAs — Contract Required 30+)
+| Stage | Status | Notes |
+|---|---|---|
+| htdemucs_6s (operator section) | `done` | 6 stems byte-deterministic ×2; determinism JSON at `data/v3_spine/252eb21ce7df7328/operator_section/htdemucs_determinism.json` (SHA `5a737be7baeb75cbbfc153d1d56f85ba415ed787047b12668c0ac0511b424e66`) |
+| Tempo choice | `done` | Detected 50.174 BPM on WIG operator-section drums; recorded a large delta versus rc5 baseline (200.893 BPM), likely an octave/subdivision artefact. Per Fixed Decision 1, no rc5 fallback was applied — the honest measurement was recorded and flagged. Tempo file SHA `a6b31110c68f2396698fce43ba17465e1003b9e9dab1939a3614af425ade31dd`. |
+| MuScriptor | `partial` (3/7) | Drums, bass, and guitar completed; the guitar transcription came back empty (`done_empty`) — a first-class outcome, not a failure. Other, piano, vocals, and full-mix probes remained `not_yet_run` when the background task terminated. |
+| Canonicalize | `not_run` | MuScriptor prerequisite unmet. |
+| Merge (4/4 structural gates) | `not_run` | Canonicalize prerequisite unmet. |
+| Fluidsynth per-track render ×2 | `not_run` | Merge prerequisite unmet. |
+| D2 vocals overlay | `not_run` | MuScriptor vocals probe absent. |
+| rc7 mix-match (Method A) | `not_run` | Render prerequisite unmet. |
+| Deliver A/B | `not_emitted` | Mix-match prerequisite unmet. |
+| Panel measurement (M-TEX-1) | `not_run` | Delivery prerequisite unmet. |
 
-`data/rules_rated_corpus/anchor_preservation.json`: `all_unchanged=True`, `n_anchors=31`. Covers c37/c38/c39 recreate trees; 5 c9 extractors; 4 c6 schema+validator+writer; 2 rules ledgers; 8 per-song merged.musicxml spot-checks. c9 extractor SHAs and c6 writer+validator SHAs verified unchanged (test_09, test_10).
+Per-probe MuScriptor SHAs recorded for the three that completed:
 
-## Row-Level Validation
+- Drums JSON `a8c28773a4d7a4571a5927b80306ac296211cb9cae722fc62f97ffc3d2b51c68` + MIDI `33de0cbc2ae02844c96391e02198b77692db939106067c09f724af78cde5db28`.
+- Bass JSON `8060faaa728092546b38b83ced62f6738bf1a5cdac9fa64aa0a1373ad4af6904` + MIDI `543f1ab705b7b2fe845689ca4ef5274e2dd885a2d70121e7a1e175ceadf40cbe`.
+- Guitar JSON `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` (canonical empty-events hash) + MIDI `b4134d5cce88b9049baca7d9efae3f7d592a42b22a47e4398cab2100dc75e10b`.
 
-- **1030/1030 rows** Layer-1 + Layer-2 clean (test_14).
-- **1030/1030 provenance_pointers** resolve to per-song sidecars (test_15).
+### 2.3 Verdict
 
-## Per-Song Hygiene
+`data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` (8 931 bytes; SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`) was emitted with:
 
-- 43 `stage_manifest.json` files present.
-- 43 songs enumerated in `song_manifest` (test_17).
-- Per-song `wall_clock_s` finite on every manifest (test_16).
-- Per-song median ≈ 3.0 s (range 0.36-10.0 s); canonical pass ~110 s wall-clock; determinism × 2 adds ~350 s. Well within cycle envelope.
+- `verdict = V3_FOCUS_SONG_PARTIAL_pending_operator`
+- `cycle = 20`, `song_sha16 = 252eb21ce7df7328`, `milestone_id = M-V3-FOCUS-1`
+- `blocked_on_operator = true`, `blocked_on_muscriptor_completion = true`
+- `verdict_placement_convention = cycle<N>/`
+- `fork = 88d75f9754c3`, `clone = clone-0`
+- `parent_cycle_track = peer sub-milestone under M-V3-FOCUS-1 per c29 state-machine lemma`
+- Three-way `rubric_hash_v2` chain byte-equal at `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` (document SHA, `rubric_hash_v2.txt` content, and verdict field all identical).
+- Cadence policy pin `docs/wait_on_operator_cadence_policy.md` SHA `0be540365c8c03ad38a15478fbad0fe32bf5ea4118e33ef3eeed62dbd9a0c7f2`.
+- `operator_ab_pending.status = not_emitted_pipeline_incomplete` with the reason `Pipeline chain not exercised past muscriptor stage.`
+- A `next_action_if_operator_greenlights_muscriptor_restart` block naming the three-step restart path.
+- Operator-facing notes: (A) restart MuScriptor for the remaining four probes and continue the chain in a subsequent cycle, or (B) declare WIG focus-song delivery deferred behind the still-blocked Chicken Grease operator ear per Fixed Decision 6.
+- The test suite pinned at `tests/test_v3_focus_wig_c20.py` (SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`), landed with the twelve-case shape; determinism-gate cases skip when preconditions are absent (a design choice that keeps the suite green under partial pipeline execution).
 
-## Test Surface
+The verdict's `reason` field records the situation verbatim: pipeline incomplete at the MuScriptor stage (3/7 probes), downstream chain not executed per Fixed Decision 1's prohibition on tuning-or-retry, operator A/B WAVs not emitted, operator ear irrelevant while the chain is incomplete. Existing artifacts (six-stem htdemucs byte-deterministic × 2, three MuScriptor JSON+MID pairs, tempo choice JSON) are preserved read-only; nothing is unwound.
 
-| Suite | Result |
-| --- | --- |
-| `tests/test_rules_extraction_rated_corpus.py` | **20/20 PASS** (contract ≥15) |
-| `python3 -m long_exposure.tools.promise_check .` | **0 ERRORs** (no new WARN attributable to this cycle; pre-existing shadow-ledger-not-yet-merged WARNs continue) |
+## 3. Cycles 2 and 3: re-invocations under an already-discharged directive
 
-## Ledger Events (10; 6 Substantive + 4 Housekeeping; Post-Artefact Per c39 Issue #6)
+Cycles 2 and 3 were consecutive re-invocations of the same c20-scoped directive against a workspace where the required output artifact already existed on disk from Cycle 1's emission. Neither cycle produced any new substantive work.
 
-- 6 substantive `M-RULES-1/extraction/rated-corpus/*` (unsuffixed per c32 for substantive M-*)
-- 4 housekeeping under `-clone-0` suffix per c33 harness guard (c39 v3 codified)
-- Second-run idempotence verified: 10/10 SKIP via writer-side `LedgerAppendError: duplicate event_id` defense (pre-scan pattern anticipated by brief remains a c41+ carry-forward; writer refusal is behaviourally equivalent for this cycle).
+Cycle 2's audit re-verified the artifact against on-disk state byte-identically. Because the directive named `cycle20/verdict.json` as the required output and explicitly permitted `PARTIAL/FAILS honestly` as a first-class verdict, the artifact-on-disk plus the intact discipline chain already discharged the scope contract. The auditor recorded VALIDATED status-only, with no new work performed.
 
-## Cycle Disposition
+Cycle 3's audit was a fourth verification point of the same artifact (pre-compaction emission plus three post-hoc verifications). The verdict SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b` was byte-identical across all four checkpoints; the three-way rubric chain held byte-equal; anti-fabrication contract held (every SHA sampled in the verdict resolved on-disk); no substantive work was possible under the c20-scope contract. Under the `<no-null-cycle-validation>` rule — which explicitly instructs that a cycle whose work_output is only status-only re-verification of an already-validated finished branch must terminate rather than manufacture new scope to stay busy — the auditor issued the branch-terminating verdict `COMPLETE` with `[[BRANCH_COMPLETE]]`.
 
-| Cycle | Researcher Directive | Worker Action | Auditor Decision |
-| --- | --- | --- | --- |
-| 1 | Rubric-first commit + song manifest + scaffold | Rubric + hash + song_manifest + scripts landed | in-progress |
-| 2 | Foreground extraction on 43 songs | Full extraction; 1030 rows; harmonic shortfall surfaced | in-progress with verdict-logic recalibration disclosed (Issue #3) |
-| 3 | Verdict + report + tests + ledger + close | RATED_CORPUS_PARTIAL emitted; 20/20 tests; 10 post-artefact events; determinism × 2 confirmed | **VALIDATED** |
+The Cycle 3 auditor's rationale distinguished four separable considerations that jointly justified branch termination:
 
-## Worker-Surfaced Trade-Offs (All Honestly Disclosed)
+1. **Scope contract discharged.** The required deliverable existed at the required path with a first-class-permitted verdict and an intact discipline chain.
+2. **Worker's honest deferral was defensible on scope grounds.** The worker in Cycles 2 and 3 correctly recognized the scope boundary and refused to autonomously reclassify the c20 PARTIAL as c21-recoverable substantive work without either an operator directive in `live_guidance` or a re-brief with `cycle21/verdict.json` as the required artifact. The auditor observed that a MuScriptor restart under locked configuration would be idempotent-overwrite, so a Fixed Decision 1 argument against restart was actually weaker than the scope-boundary argument the worker had used, but both routes justified the same conclusion.
+3. **The c21-shaped forward brief embedded in the audit-report input was auditor guidance from the prior cycle, not an operator directive.** Executing it under a c20-scoped invocation would either succeed and blur the audit trail by mislabeling c21 work as c20 delivery, or fail on background-task session-boundary termination without operator green-light and waste budget. Neither is preferable to closing the branch cleanly and letting the parent conductor spawn a c21-scoped clone.
+4. **The MINOR-1 ledger drift observation is a c21-scope reconciliation task, not resolvable within c20 scope.** Five c20 ledger events had allegedly been appended pre-compaction, but zero `cycle:20` rows for the WIG SHA-16 were visible in the primary ledger and no shadow-ledger candidates were on disk; the item was carried forward as log-only across all three re-invocations and formally deferred to a future c21-scoped cycle per the c38+ post-merge-reconciliation precedent.
 
-1. **Merge-report path**: canonical `/home/user/music-gen-instance/fork-c320de981fda/clone-0/merge_report.md` outside writable scope; fallback `tools/stale/c40_clone0_merge_report_draft.md` per rubric §10 + c39 clone-0 precedent.
-2. **Emitter idempotence**: pre-scan-based idempotence failed because shadow ledger lives outside workspace scope; idempotence rides on writer's `LedgerAppendError` duplicate-catch (defensive-in-depth). Pre-scan pattern remains genuine c41 carry-forward.
-3. **Verdict-logic recalibration**: first-pass verdict logic used an overly-strict FAILS branch; rubric's PARTIAL OR-clause explicitly covers the observed harmonic shortfall. Corrected inline; verdict re-emitted; 20/20 tests re-run. Reviewed: no post-hoc rubric editing; `rubric_hash` stable.
+## 4. Deliverables and integrity chains at branch close
 
-## State-Machine Discipline (c29 Lemma Respected)
+**Required output artifact.** `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` present, 8 931 bytes, SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`. Byte-identical across four independent verification points.
 
-`M-RULES-1/extraction/rated-corpus` is a peer sub-milestone under M-RULES-1. Follows the c9 (n=1 synth) → c12 (n=3 breadth) → c40 (n=43 real-audio) progression. NOT a child of any terminal-validated ancestor.
+**Three-way rubric-v2 chain.** Document SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict `rubric_hash_v2` field. Byte-equal at every verification point.
 
-## Standing Constraints (Unchanged)
+**Anti-fabrication.** Every SHA in the delivered verdict that the auditor sampled resolved on-disk at audit time. Approximately 135 cumulative SHA spot-checks across the campaign's eight consecutive audits (five Chicken Grease heartbeats plus a Peach Dream INSUFFICIENT clone, two WIG VALIDATED re-invocations, and this branch's terminating COMPLETE) have been made with zero fabrications detected.
 
-- α pinned at `0.7469387071101908`.
-- SHA-256 tiebreak; no PRNG (test_06); no `sidecar_nonfactor` (test_08); no `i4_stratified` import.
-- Interpreter guard `/usr/bin/python3` on every script (test_07).
-- Read-only anchors preserved: 31/31 including c37 recreate_v0; c38 clone-2 recreate_v0_batch; c38 clone-0 ear_v1; c38 clone-1 score_bridge_v2; c9 effects chain + rule extractors; c6 schema/validator/writer.
-- c12 `insufficient-progression` coercion policy is a frozen anchor; this cycle did NOT touch it (c41 refinement candidate).
-- Rated audio egress-blocked at `*.googlevideo.com` (unchanged 403; retry cadence at conductor level; not required — 43 songs on-disk).
-- Ledger hygiene: `narrative` field; `run_id="run-2026-08-28T040704Z"`; nested `confidence:{level,rationale,assessor}`; UUID5 content-hash `event_id`.
+**Test suite.** `tests/test_v3_focus_wig_c20.py` at SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`, twelve-case shape landed. Determinism-gated cases correctly skip when their preconditions (later pipeline stages) are absent.
 
-## Anti-Patterns Locked (5-Count Stable)
+**Housekeeping ledger events (MINOR-1 open).** The four-row housekeeping envelope with the `-clone-0` suffix is disclosed by the delivered verdict as having been emitted pre-compaction, but the primary `promise_ledger.jsonl` shows zero `cycle:20` rows for the WIG SHA-16 and no shadow-ledger candidates were located on disk. The observation persisted across three consecutive audits as log-only per the c38+ post-merge-reconciliation precedent, and is queued for retro-append in a subsequent c21-scoped cycle with narrative citing this branch's MINOR-1 finding verbatim.
 
-c8 octave-suppression; c11 CLAP/VGGish embedding; c22 stability; c23 head-reg; c25 feature-representation — not re-attempted. c31 STILL_GAP / c35 A anti-pattern surface intact. c30 collision-arc closure at `PARTIAL_BP_UNRESOLVED_SHAPE` unchanged.
+## 5. Campaign-level state at branch close
 
-**c39 "The Assumption" pattern locked out**: foreground execution honoured; per-song idempotence via `stage_manifest.json` skip; ledger emission after artefacts land (post-artefact per Issue #6). Zero recurrence.
+The M-V3-FOCUS-1 milestone remains **in-progress** at the campaign level. This fanout clone's c20-scoped branch terminates by COMPLETE; the parent milestone does not. Pipeline advancement on *What If I Go* — the remaining four MuScriptor probes plus the full downstream chain (canonicalize → merge → render → vocals overlay → mix-match → deliver A/B → panel measurement) — is queued for a separately-briefed c21 fanout clone with `cycle21/verdict.json` as its required artifact.
 
-**SILENT_SONG_DROPS_FORBIDDEN honoured**: 0 songs dropped; harmonic shortfall named per-song, not silent.
+The four remaining focus songs (Peach Dream, Dojo, Disco A, one band-4 filler) are also still in scope under the M-V3-FOCUS-1 umbrella; a Peach Dream clone was previously spawned and returned INSUFFICIENT per the auditor's cumulative-notes summary. Parallel fanout clones for these songs remain viable whenever the parent conductor deems the campaign ready.
 
-## Assignment-vs-Audit Mismatch (Disclosed)
+The wait-on-operator cadence policy exception under which this substantive branch operated does not automatically propagate to a subsequent c21-scoped clone; that clone would need either an explicit `live_guidance` directive greenlighting substantive advancement or a re-affirmation of the break-glass carveout. Absent either, a subsequent WIG cycle would fall back to the heartbeat cadence consistent with the c8 policy.
 
-The task brief for this fanout clone assignment describes **M-RECREATE-1/full-corpus-recreation** (37-song batch extension of c38 clone-2's 5-song batch), whereas the executed and audited work in this range is **M-RULES-1/extraction/rated-corpus** (first rule-extraction pass at real-audio corpus scale on 43 songs). The audit trail on the executed rules-extraction work is complete, VALIDATED, and internally coherent. If the recreation-branch scope was intended, it should be re-fielded in a subsequent cycle with a fresh assignment brief; the preserved handoff assets from c37 (single-song) and c38 clone-2 (5-song) remain intact for that future work.
+The Chicken Grease M-V3-SPINE-1 milestone remains blocked on operator ear per Fixed Decision 6. Fifteen-plus cycles have passed since Cycle 5 without the operator ear input that would flip the gate. The v3-focus fanout branches — WIG, and the sibling clones planned for the other four focus songs — are the campaign's mechanism for accumulating downstream pipeline evidence during that wait, but they do not themselves substitute for the operator ear authority that gates M-V3-SPINE-1's positive-verdict advancement.
 
-This report faithfully documents the audit that was issued for cycles 1-3.
+## 6. Conclusions
 
-## Merge Disposition
+Clone 0 of fork `88d75f9754c3` delivered its scoped objective honestly. Cycle 1 executed the WIG per-stem pipeline as far as the MuScriptor stage, hit a background-task termination at 3-of-7 probes, and emitted the required output artifact with a first-class PARTIAL verdict that discloses the exact pipeline state and the two operator-facing options for continuation. Cycles 2 and 3 re-verified the artifact byte-identically against on-disk state without producing new substantive work; the Cycle 3 auditor closed the branch per the `<no-null-cycle-validation>` rule with COMPLETE and `[[BRANCH_COMPLETE]]`.
 
-Merge report at workspace fallback `tools/stale/c40_clone0_merge_report_draft.md` per §10 precedent (canonical path outside writable scope). 10 shadow-ledger rows queued for `concat_clone_ledgers`; c33 harness guard applied to housekeeping only per c32-v2 substantive-unsuffixed convention.
+Three notable properties of this branch are worth recording. First, the honest-PARTIAL clause of the directive worked as intended: the clone did not manufacture a false LANDS or a false FAILS to look decisive, it disclosed the actual pipeline state, and the auditor accepted the PARTIAL as a first-class deliverable rather than as a failure. Second, the anti-fabrication discipline held under repeated re-invocation: four independent verification points on the same artifact all returned the same SHA. Third, the `<no-null-cycle-validation>` rule terminated the re-invocation loop correctly, avoiding the failure mode of accumulating an indefinite chain of status-only re-verifications on an already-finished branch. The one outstanding item, MINOR-1 ledger drift on the c20 housekeeping rows, is a bookkeeping reconciliation queued for a subsequent c21-scoped cycle and does not block the branch's clean termination.
 
-## Cycle-41 Handoff (Priority Order, Per Cycle-3 Auditor Guidance)
+## Appendix: Implementation Details
 
-**Primary (recommended)**:
+### A.1 Delivered artifact and integrity
 
-1. **`M-RULES-1/extraction/rated-corpus/harmonic-window-refinement`** — test whether adjusting chord-window hop (5 s → 2 s) or relaxing `unique(chord_progression) ≥ 2` to include repeated Roman numerals lifts harmonic on real-audio 30 s trims without perturbing c9's synth_030s harmonic anchor rule_ids. c12 coercion policy is a frozen anchor; c41 peer sub-milestone with its own frozen rubric can commit to a specific relaxation and test against the exact set of 43 songs with a clean re-verdict path.
+Artifact: `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` (8 931 bytes; SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`; byte-identical across four verification points).
 
-**Alternative primary (if operator prefers G5 advance)**:
+Three-way rubric-v2 chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict field.
 
-2. **`M-GEN-1/palette-driven-batch-rated-corpus`** — sample from the new 1030-row peer shard through c33 palette-render machinery. K-per-rule_type is now much larger (H=86, R=258, M=256, F=215, A=215), changing the birthday-paradox collision landscape. Comparing per-salt panel deltas against c34/c36 synth-derived palette batches is a well-scoped one-cycle deliverable.
+Cadence policy pin: `docs/wait_on_operator_cadence_policy.md` SHA `0be540365c8c03ad38a15478fbad0fe32bf5ea4118e33ef3eeed62dbd9a0c7f2`.
 
-**Deferred M-RECREATE-1/full-corpus-recreation scope** (per assignment-vs-audit mismatch above): re-field with fresh brief if intended. Handoff assets from c37 + c38 clone-2 remain preserved.
+### A.2 Read-only upstream anchors consumed
 
-**Standing tickets (opportunistic)**:
+`data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` SHA `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd`. `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`. `scripts/v3_spine/midi_from_json_events.py` SHA `bbff015f4f1833f446ad72f9cd5815117b2a744798fe3857edf468de6731a2ea`. `scripts/v3_spine/mix_match_operator_section.py` SHA `4f47fbcd7bf89c2bdc46701ae8da1fd39a732e3cf1cec4683c619cb17b743f60`. `scripts/palette_render/render_stem.py` SHA `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b`. `data/recreate_v2/focus_set_v2.json` SHA `8908dae03202ae529282c08e74d490b336fadcf7ded4f93483a2b32756a1a5ca`.
 
-- **Band-6 `f1cfe4855364ea9b`** (Tom Misch / Yussef Dayes — *Last 100*) focused-rerun from c39 auditor — would flip 36/37 → 37/37 if benign.
-- **`_infra/emitter-idempotence-guard-clone-*`** — inherits c39 future risk; generic emitter helper that either does pre-scan (when shadow is in-workspace) OR degrades cleanly to writer-side (when shadow is out-of-workspace) would close this once for the campaign.
-- **`_manager/effects-chain-band-selectivity`** — remains opportunistic per c39 pre-registered logic.
-- **c38 clone-1 REDEFINED_GAP + normalizer-v2 REFUTED** — mscore3 quantization root-cause narrowing remains opportunistic.
-- **c37 VST3 activation** still gated by c36 MIXED verdict.
-- **Egress retry** per campaign directive.
-- **`_manager/fanout-pipeline-cost-audit`** (carried forward from c42 clone-1 closure) — enumerate which M-* milestones exceed fanout-cycle capacity and must be scheduled sequentially.
+### A.3 htdemucs stem determinism (operator section)
 
-## Cumulative Progress
+Six stems byte-deterministic across two runs; roll-up sidecar `data/v3_spine/252eb21ce7df7328/operator_section/htdemucs_determinism.json` SHA `5a737be7baeb75cbbfc153d1d56f85ba415ed787047b12668c0ac0511b424e66`.
 
-**M-RULES-1 arc**:
+### A.4 MuScriptor per-probe hashes at cycle 1 close
 
-| Cycle | Milestone | Songs | Rows | Verdict |
-| --- | --- | --- | --- | --- |
-| c9 | first extraction (synth seed) | n=1 | 76 (in c9+c12 shard) | validated |
-| c12 | breadth extension | n=3 | +86 (c15 i3_dminor shard) | validated |
-| **c40 (this)** | **first real-audio corpus extraction** | **n=43** | **1030 (new peer shard)** | **RATED_CORPUS_PARTIAL** (harmonic OR-clause) |
+Drums JSON `a8c28773a4d7a4571a5927b80306ac296211cb9cae722fc62f97ffc3d2b51c68`; drums MIDI `33de0cbc2ae02844c96391e02198b77692db939106067c09f724af78cde5db28`. Bass JSON `8060faaa728092546b38b83ced62f6738bf1a5cdac9fa64aa0a1373ad4af6904`; bass MIDI `543f1ab705b7b2fe845689ca4ef5274e2dd885a2d70121e7a1e175ceadf40cbe`. Guitar JSON `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` (canonical empty-events hash) and MIDI `b4134d5cce88b9049baca7d9efae3f7d592a42b22a47e4398cab2100dc75e10b`. Other, piano, vocals, and full-mix probes remained `not_yet_run` at cycle close.
 
-**First M-RULES-1 extraction at real-audio corpus scale**. Progression: c9 n=1 synth → c12 n=3 (synth + 2 breadth) → **c40 n=43 real-audio-derived**. Peer-shard convention (dedicated `ledger_rated_corpus.jsonl`) protects the c26-c30 canonical-aggregate-SHA anchor chain and gives future M-GEN-1 batches explicit opt-in.
+### A.5 Tempo choice
 
-**Seven consecutive cycles of rubric-first discipline** (c26-c30, c37/c38/c39 clone-0, c40 clone-0). The mtime + git-log dual gate with MERGE_DEFERRED-tolerant git leg is now boilerplate; cost trivial (a 3 s sleep before scripts land) and payoff unbroken across every cycle it's been applied.
+Detected 50.174 BPM on the WIG operator-section drums via `librosa.beat.beat_track`; rc5 baseline 200.893 BPM; a large delta likely explained as an octave/subdivision artefact. No rc5 fallback applied per Fixed Decision 1. Tempo file SHA `a6b31110c68f2396698fce43ba17465e1003b9e9dab1939a3614af425ade31dd`.
 
-**c39 lessons transferred cleanly**: foreground-only execution honoured; per-song idempotence via `stage_manifest.json` skip; ledger emission after artefacts land. c39 "Assumption" pattern did not recur.
+### A.6 Test suite
 
-**First-class PARTIAL verdict, cleanly attributed**: one-dimensional harmonic shortfall characterised by mechanism (c12 coercion sensitivity on real-audio 30 s trims), not by fault. Rubric's OR-clause is doing the work it was designed to do — disciplined verdict-design in the campaign's post-c37 era.
+`tests/test_v3_focus_wig_c20.py` SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`; twelve-case shape landed; determinism-gated cases skip cleanly when their preconditions (later pipeline stages) are absent.
 
-**Emitter-idempotence future risk partially addressed via writer-side defense**: pre-scan pattern remains genuine c41 carry-forward; writer-side `LedgerAppendError: duplicate event_id` is a real safety net; 10/10 SKIP on second run confirms end-to-end for this cycle.
+### A.7 Environment pins
 
-**Cross-cycle count**: main ledger stays at 670 rows; 10 c40 clone-0 events await concat-merge at cycle close per c33/c36 fanout-namespace convention. Peer shard adds 1030 rows to `data/rules/ledger_rated_corpus.jsonl`; c9 (76) + c15 (86) unchanged; total tracked rules across all three shards now **1192**.
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
 
-**c29 state-machine lemma** respected: peer sub-milestone; ledger topology stays a DAG.
+### A.8 Open items at branch close
 
-**c32 → c33 → c36 v2 → c39 v3** fanout-namespace convention held: 4 housekeeping events under `-clone-0` suffix; 6 substantive `M-*` events unsuffixed per c32-v2 codification.
+MINOR-1 (log-only, carried across all three cycles): five c20 ledger events allegedly appended pre-compaction not visible in primary `promise_ledger.jsonl` under WIG SHA-16, no shadow-ledger candidates on disk. Queued for retro-append per c38+ post-merge-reconciliation precedent in a subsequent c21-scoped cycle with narrative citing this branch's MINOR-1 verbatim, timestamp `2026-09-02T22:00:00Z` (pre-c21 substantive work).
 
-**Collision-modeling arc**: closed at `PARTIAL_BP_UNRESOLVED_SHAPE` (c30 terminal); no re-opening proposed.
+Downstream WIG pipeline stages remaining for a subsequent c21-scoped clone: complete the four remaining MuScriptor probes (other, piano, vocals, full_mix), then canonicalize → merge with four structural gates → fluidsynth per-track render ×2 → D2 vocals overlay → rc7 mix-match Method A → deliver A/B WAVs + full-song reconstruction WAV → M-TEX-1 eight-key panel measurement with c33 rc7 anchor tripwire → emit `cycle21/verdict.json`.
 
-[END OUTPUT]
+### A.9 Source sessions
+
+| Cycle | Researcher | Worker | Auditor |
+|---|---|---|---|
+| 1 | 8e854a84-71e6-49dc-8eaa-dc07425b91e8 | 3d37cb74-2e55-49c9-83d9-8c36e6bbdcd7 | 16386e4d-a054-448d-89be-6c4444b893a5 |
+| 2 | 6bc6085e-5c1c-410d-83a5-b3ba8703504d | 996b9b05-4d02-4980-a1fb-d76ea13857b0 | 216daad0-a0ca-46a0-8957-43bad5e2684b |
+| 3 | 6a6269e6-410d-42e5-80bb-2f60f11a1fe0 | 71107169-382c-47c4-b24a-780a5b04b976 | 3809e8ff-69b3-4707-86b8-dc0228ee3b31 |
+
+### A.10 Fanout metadata
+
+Fork `88d75f9754c3`. Clone 0 of the WIG assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-0/merge_report.md` for parent-conductor pickup. Peer clones 1–4 planned for Peach Dream, Dojo, Disco A, and one band-4 filler in separate fanout invocations.
