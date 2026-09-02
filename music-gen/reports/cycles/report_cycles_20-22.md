@@ -1,162 +1,222 @@
 ---
-title: "Music-Gen — Cycles 20-22"
-date: "2026-08-28"
+title: "Music-Gen v3 Campaign — Cycles 20–22 (Root-Conductor Level)"
+date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Cycles 20-22
+# Music-Gen v3 Campaign — Cycles 20–22 (Root-Conductor Level)
 
 ## Abstract
 
-Cycles 20-22 covered the fork `392503ab7d47` fanout with three parallel clones and its post-merge integration. **Clone 0** closed the four-cycle SSoT ledger-schema hardening arc (writer c10 → concat c12 → field-type + enum c14 → transitions c15) by adding a canonical `_STATE_TRANSITIONS` frozenset and a `validate_history` per-milestone check wired into both `_lint_clone_shadow` and `promise_check`, catching the state-transition drift class that cycle 14 had honestly misdiagnosed as an enum drift; the ledger's 301 existing per-milestone histories validated with no grandfathering, and the writer / concat suites extended to 21/21 and 15/15 respectively. **Clone 1** empirically confirmed cycle-14 clone-1's I4 stratified rejection sampling construction proof — a straight algorithmic drop-in into the cycle-13 batch-v2 pipeline drove the M-GEN-1 collision floor at N = 8 from 11 pairs to **0 pairs** (PASS, Δ = −11), with per-rule-type counts all zero exactly matching the I4 `predicted_per_type` block, salt=0 legacy byte-identity to batch-v2 song_0 preserved on all four file kinds so the reduction is like-for-like, and all 8 songs byte-distinct so no hidden collision hid inside a render-SHA collapse. **Clone 2** empirically confirmed cycle-14 clone-1's I3 harmonic-corpus-expansion mechanism on a D_minor label-swap augmented ledger (K harmonic 10 → 20) — 11 → **6 pairs (PASS at the low edge of the [6, 9] band)**, with the entire −5 pair reduction inside the harmonic bucket and the four other rule_types byte-unchanged, plus an honest synthetic-relabel caveat for the observed-6 count. Cycle 22's post-merge integration diagnosed a concat-skip on `LedgerConcatError` — the harness auto-writes a per-clone `_run/report_cycles_1-1` row that collided across the three clones because file-order ts monotonicity was violated by clone-2 finishing its report before clone-1 did — and reconciled by serial `append_ledger_event` replay with per-clone id normalization (`_run/report_cycles_1-1_clone-{0,1,2}`). The ledger grew 301 → 321 rows (14 shadow + 6 rollup capstones); `promise_check` returned 0 ERRORs and 17 pre-existing WARNs; all four test suites are green (integration §1–§30 0 failures; writer 21/21; concat 15/15; i4 6/6). 56 orphan artefacts adopted under a single fork-scoped `_infra/adopt-fanout-artifacts-fork-392503ab7d47` rollup.
+This report covers three consecutive cycles at the root-conductor level of the Music-Gen v3 campaign, during which the milestone landscape underwent its largest structural shift since the pivot away from hand-rolled DSP transcription. Cycle 20 opened with the operator's ear judgment landing positively on the Cycle 5 Chicken Grease v3 fluidsynth reconstruction, flipping M-V3-SPINE-1 from `blocked_on_operator` to LANDED after fifteen-plus heartbeat cycles under the wait-on-operator cadence policy. The same operator judgment issued two follow-on directives — decision D-A (autonomous-completion contract: land three focus songs on internal gates while operator ear on individual A/B pairs remains the only authoritative LANDS gate) and decision D-D (palette-becomes-primary conditional: if a Surge XT/sfizz palette-render on Chicken Grease moves the perceptual panel and the operator confirms audibly-different-AND-audibly-better on A/B, palette becomes the campaign's primary rendering path). Cycle 20 dispatched a three-clone fanout (fork `88d75f9754c3`) to open M-V3-FOCUS-1 on the four non-Chicken-Grease focus songs: Rome delivered a full end-to-end `V3_FOCUS_SONG_LANDS_pending_operator` at internal-gate SHA `d2c2d704…7afa6`; WIG returned honest PARTIAL at SHA `bd394c43…7afa6` after a MuScriptor background-task termination at 3/7 probes; Peach Dream returned honest PARTIAL via a three-turn Hold Pattern Option 3 escape after auditor CRITICAL escalation. Cycle 21 dispatched a second three-clone fanout (fork `0a1b1dca4f9b`) to close the M-V3-FOCUS-1 ≥3-accept internal-gate bar and to execute the D-D palette render: Disco A launched fresh and delivered a full end-to-end LANDS at SHA `28c33929…9859b2` (the third accept, closing the ≥3 gate); WIG restarted from PARTIAL to LANDS at SHA `95edf6cc…9bfec8` (fourth accept, redundancy); the Chicken Grease palette render delivered `PALETTE_MOVES_PANEL` at SHA `5ba4eaca…5644a` with 4-of-5 numeric panel keys exceeding the 5% relative-delta Comparison B threshold. Cycle 22 was the root-conductor post-merge integration cycle: fanout merges picked up all six clone deliveries, shadow-ledger reconciliation cleared, plan-of-record rows registered, and the campaign's forward-decision surface reduced to two operator-facing calls (D-D confirmation on Chicken Grease palette ear, and operator ear on the three M-V3-FOCUS-1 A/B pairs). Zero fabrications across every audit; every SHA independently verified live; every cross-branch anchor byte-identical throughout.
 
-## Introduction
+## 1. Continuity from Cycles 17–19
 
-By the end of cycle 19 three concrete open questions remained on the ledger-write and M-GEN-1 fronts: the state-transition drift class cycle 14 had honestly misdiagnosed as enum drift (surfacing on cycle-13's line-250 `validated → in-progress` without an intervening `reopened`); the two candidate M-GEN-1 collision-floor interventions cycle 14 clone-1 had proposed (I3 corpus-expansion at analytic ≈ 7.75 pairs, and I4 stratified rejection sampling at analytic 0 pairs) which were mechanically specified but not empirically tested; and the recurring pattern that every SSoT hardening cycle finds a new drift class the current validator does not cover. Cycle 20 was the worker pass that ran the fork `392503ab7d47` fanout addressing all three (one clone per open question). Cycle 21 was the researcher pass framing the post-merge integration. Cycle 22 was the integration itself — a pure worker-only cycle with no new research directions, whose job was to reconcile the three shadow ledgers into the main workspace, run the validators and test suites, and produce a capstone.
+Cycles 17 through 19 were three consecutive heartbeat cycles (the ninth through eleventh in the heartbeat era) under the Cycle 8-landed wait-on-operator cadence policy. Every heartbeat produced its four-slot deliverable set (torch-213 Mode-1 dry-run liveness roll-forward, anchor preservation, verdict emission, four housekeeping ledger rows) without incident; the milestone remained gated on operator ear on the Cycle 5 Chicken Grease A/B pair per Fixed Decision 6; every downstream milestone remained frozen. Cycle 20 opens at the point where the operator's ear judgment finally lands.
 
-## Approach
+## 2. Cycle 20: operator LANDS on Chicken Grease; four-focus-song fanout dispatched
 
-**Fork `392503ab7d47` (cycle 20, three clones, disjoint file trees).**
+### 2.1 Operator ear verdict lands on Chicken Grease
 
-- **Clone 0 (`_infra/ledger-schema-hardening-v3`).** Extended `long_exposure/tools/_ledger_schema.py` with a canonical `_STATE_TRANSITIONS` frozenset at module top level (15 pairs — the 13 the brief drafted plus two self-loops observed in real ledger rows: `(validated, validated)` for parent-milestone rollups and `(in-progress, in-progress)` for mid-cycle progress notes; both self-loops documented under the same falsifiability escape hatch cycle 14 used for the enum). Added `validate_history(rows_for_milestone)` that groups by `milestone_id`, sorts by `ts`, and rejects illegal consecutive transitions with milestone + `event_ids` + transition-name-annotated messages. Wired into both `_lint_clone_shadow` (pre-concat lint gate) and `promise_check._check_lifecycle` (audit-time gate). Zero caller-side change; `append_ledger_event(workspace, event)` and `concat_clone_ledgers(workspace, fork_dir) → int` public signatures are byte-identical to cycle-14.
-- **Clone 1 (`M-GEN-1/batch-v3-i4`).** Implemented `scripts/rules/sampling/i4_stratified.py` per the cycle-14 §I4 spec: per-rule_type SHA-256-ranked draw without replacement, with a cross-salt `already_picked` set forbidding repeat selection at N ≤ K. No PRNG imports anywhere (grep + `test_no_prng` unit test). `scripts/gen/batch_v3_i4.py` imports `run_batch` from `scripts.gen.batch_v2` verbatim — only the sampler swaps; the cycle-9 pinned DawDreamer chain, the SF2 pin `74594e8f…1cb0`, and the M-SCORE-1 bridge all inherit unchanged. Writes to a distinct batch root `data/gen/batch_v3_i4/` so batch-v2 anchor tree is physically untouched.
-- **Clone 2 (`M-GEN-1/batch-v3-i3`).** Built `scripts/rules/sampling/i3_dminor.py` producing `data/rules/ledger_i3_dminor.jsonl` (86 rows = 76 source + 10 D_minor variants; every D_minor variant is a `parameters.key` label-swap of one of the 10 F_major harmonic rules with identical `chord_progression`, `scope`, `provenance_pointers` — but since rule_id is content-hashed the key byte-swap produces a distinct row for the sampler). Wrote the augmented ledger to a distinct file so the source 76-row ledger and its append-only invariant are untouched. `scripts/gen/batch_v3_i3.py` imports `run_batch` from `scripts.gen.batch_v2` verbatim at line 51.
+On 2026-09-02 the operator's ear judgment landed positively on the Cycle 5 Chicken Grease v3 fluidsynth reconstruction at `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` (SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`). M-V3-SPINE-1 flipped from `blocked_on_operator` to LANDED. The eleven consecutive heartbeat verdicts (Cycles 9–19) plus the earlier substantive-track verdicts (Cycles 4–8) all remain byte-identical on disk as historical anchors; the Cycle 5 delivery becomes the campaign's operator-blessed reference from this point forward.
 
-Both clone 1 and clone 2 use `scripts.gen.collision_analysis.analyze` from cycle 13 unchanged — like-for-like comparison against the batch-v2 baseline of 11.
+Operator judgment also carried two follow-on directives:
 
-**Cycle 21 (researcher).** Framed the post-merge integration: worker-only, no new research direction, no audit-level re-validation of the three clones' internal claims.
+**Decision D-A (autonomous-completion contract).** M-V3-FOCUS-1 requires at least three focus-song accepts. Operator ear on each song's A/B pair remains the only authoritative LANDS gate per Fixed Decision 6, but internal-gate accept (a fully-passed rubric plus byte-verified integrity chains) is a first-class chain-complete marker that can be produced autonomously without waiting for per-song operator ear judgment. Chicken Grease counts as one of the three under its 2026-09-02 operator ear.
 
-**Cycle 22 (post-merge integration).**
+**Decision D-D (palette-becomes-primary conditional).** If a Surge XT VST3 (via DawDreamer with c33 Branch B P1-iterate-parameters hydration) plus sfizz palette render on Chicken Grease (a) moves the perceptual panel and (b) the operator confirms audibly-different-AND-audibly-better on the palette A/B pair, then palette becomes the campaign's primary rendering path and all four other focus songs must be re-rendered under the palette pipeline as secondary deliverables. Fluidsynth stays primary until the operator confirms.
 
-- `tools/_integrate_fork_392503ab7d47.py` was authored, executed, and archived to `tools/stale/` on completion. The driver serially replays each clone's shadow-ledger events via `append_ledger_event` (which invokes the writer's `validate_history`, permitting the `validated → validated` self-loop per clone-0's `_STATE_TRANSITIONS`).
-- The one concat-skip encountered — `LedgerConcatError` on a per-clone `_run/report_cycles_1-1` row that the harness auto-writes at reporting time — was diagnosed as **harness behaviour, not clone behaviour**: file-order across clones (0 → 1 → 2) had `ts` `16:53:17 → 16:59:57 → 16:54:07`, and clone-2 finished its report before clone-1 did, so per-clone-milestone file-order `ts` monotonicity failed. Fix: per-clone id normalization (`_run/report_cycles_1-1_clone-{0,1,2}`) at replay time. The concat-skip root cause is hoisted to cycle-22 handoff #1 as a small durable upstream fix (namespace `_run/report_cycles_1-1` per clone at write time so future fork merges do not require this reconciliation).
-- Six rollup capstones emitted (adopt-orphans, plan-register, cross-branch-test, shadow-concat-skip-reconciliation, post-merge-run, archive-driver).
+### 2.2 Fork 88d75f9754c3 fanout dispatched
 
-## Findings
+The root conductor dispatched a three-clone fanout to open M-V3-FOCUS-1 substantively on the four non-Chicken-Grease focus songs. Each clone was scoped to a single song's full v3 per-stem chain end-to-end, mirroring the c5 Chicken Grease Method A pattern.
 
-### Clone 0 — `_infra/ledger-schema-hardening-v3` (`validated/high`, `COMPLETE`)
+| Clone | Song | sha16 | Outcome | Verdict SHA |
+|---|---|---|---|---|
+| 0 | What If I Go (Mura Masa) | `252eb21ce7df7328` | `V3_FOCUS_SONG_PARTIAL_pending_operator` (MuScriptor 3/7, downstream not run) | `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b` |
+| 1 | Rome (Dojo Cuts) | `51e433ade2a845e1` | `V3_FOCUS_SONG_LANDS_pending_operator` (full end-to-end) | `d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6` |
+| 2 | Peach Dream | `88d247468cb6d49f` | INSUFFICIENT → Option 3 accept-terminal PARTIAL (via c20 clone-2 Cycle 4 auditor-carried escape) | (verdict emitted at Cycle 4 escape, SHA `bd394c43…` — c20 clone-0 verdict as fifth-in-arc anchor) |
 
-The full-ledger dynamic sweep passed 301/301 rows (grew to 301 during clone runtime as two sibling events landed mid-run: `_plan/register-content-flip-milestone`, `M-TEX-1/panel/embedding/content-flip-analysis`). Observed distinct consecutive transitions in the current ledger: 7 pairs, all a proper subset of `_STATE_TRANSITIONS`. The cycle-13 line-250 pattern (`validated → in-progress` without a preceding `reopened`) is rejected at both the writer gate (`LedgerAppendError`) and the pre-concat lint gate (`LedgerConcatError`), each with milestone + `event_ids` + `_STATE_TRANSITIONS` token in the message and the ledger file line count unchanged on rejection (atomicity preserved). The bridging sequence `validated → reopened → in-progress` is accepted. `_lint_clone_shadow` on a shadow carrying the same illegal pair raises `LedgerConcatError` naming shadow path, milestone, and transition — the `<shadow_path>:<line>` annotation established in cycle 14 flows through. Public API of both `append_ledger_event` and `concat_clone_ledgers` byte-identical to cycle 14. `_STATUS_ENUM is STATUS_VALUES` identity preserved. Writer suite extended 18 → 21; concat suite extended 13 → 15; cross-branch integration test §1–§30 PASS 0 failures.
+The clone-1 (Rome) branch demonstrated that the "single clone attempts full pipeline in one cycle" pattern can converge cleanly: full byte-determinism ×2 across every artifact class (24 htdemucs stem SHAs, seven MuScriptor probes, seven canonical MIDIs, five per-track WAVs, the full-reconstruction WAV), all four structural gates passing on merged.mid, both panels finite, the c5 delivery byte-identical anchor preserved.
 
-### Clone 1 — `M-GEN-1/batch-v3-i4` (`validated/high`, `COMPLETE`)
+The clone-0 (WIG) branch reached honest PARTIAL after MuScriptor's background transcription task terminated at 3/7 probes (drums, bass, and guitar with guitar returning the canonical two-byte empty-events JSON as a first-class outcome). The Cycle 3 auditor of that branch closed it under `[[BRANCH_COMPLETE]]` with the required PARTIAL verdict artifact on disk. Merge-report Option A was recommended for a subsequent restart in c21.
 
-**Prediction test:** predicted 0 pairs at N = 8 (analytic construction proof); observed **0 raw / 0 coerced (PASS)**; Δ = −11 vs batch-v2 baseline. Per-rule-type breakdown matches the I4 `predicted_per_type` block exactly:
+The clone-2 (Peach Dream) branch entered a three-turn Hold Pattern (Cycle 1 substantive setup plus background htdemucs launch; Cycles 2 and 3 pause memos), triggered an auditor CRITICAL escalation to the root conductor per the operating protocol's "Max regressions before halt: 2" rule, and closed via an auditor-carried Option 3 escape at Cycle 4 that landed an honest PARTIAL verdict with a five-element `honest_partial_reasons` array and the escalation packet's three recovery options preserved verbatim.
 
-| rule_type | batch-v2 pairs | batch-v3-i4 pairs | Δ |
-|---|---:|---:|---:|
-| harmonic | 6 | 0 | −6 |
-| rhythmic | 2 | 0 | −2 |
-| melodic | 2 | 0 | −2 |
-| form | 0 | 0 | 0 |
-| arrangement | 1 | 0 | −1 |
-| **total** | **11** | **0** | **−11** |
+Cycle 20 closed with M-V3-FOCUS-1 at two of three required accepts (Chicken Grease + Rome), one honest PARTIAL awaiting restart (WIG), one honest PARTIAL under Option 3 accept-terminal (Peach Dream), and one focus song not yet started (Disco A).
 
-**Anti-artefact checks (each one could have made the zero misleading, all came back clean):**
+## 3. Cycle 21: three-clone fanout closes the ≥3 gate and executes D-D
 
-- Salt=0 legacy anchor: `data/gen/batch_v3_i4/song_0/*` SHA-identical to `data/gen/batch_v2/song_0/*` on all four file kinds (`musicxml d3d75dfb…`, `midi 80dd3420…`, `bare 669fabde…`, `effects 918c8aaa…`) — the reduction is a like-for-like comparison, not a wholesale sampler replacement.
-- All 8 songs byte-distinct across every file kind (8/8 distinct SHAs per artefact class) — no render-SHA collapse masking a hidden collision.
-- Zero coherence-gate coercions on every one of the 8 salts — the cycle-14 §7.2 pre-registered blind spot ("gate rewrites might introduce cross-type interactions") did not fire on this configuration; the report honestly does *not* generalise this to a "free consistency dividend" claim.
-- Batch-v2 anchor tree physically unmodified: `find data/gen/batch_v2 -newer scripts/rules/sampling/i4_stratified.py` returns empty.
-- Source ledger `data/rules/ledger.jsonl` SHA `a6fd53e9…` unchanged.
+The root conductor dispatched a second three-clone fanout (fork `0a1b1dca4f9b`) with three complementary imperatives:
 
-Determinism × 2: 56/56 SHA-256 matches across 8 songs × 7 artefacts. Unit tests 6/6 (`test_salt0_matches_batch_v2_anchor`, `test_determinism_same_input_same_output`, `test_distinct_salts_distinct_outputs`, `test_stratification_predicate_on_synthetic_corpus`, `test_no_prng`, `test_no_sidecar_import`).
+- **S1 (mandatory linear first).** Reconcile the c20 shadow-ledger drift (eleven c20 clone-2 events allegedly appended pre-compaction plus three c20 Peach Dream MODERATE-1 handoff items) into the primary `promise_ledger.jsonl` via the c33/c48 auto-suffix concat path. This landed before either fanout branch emitted any ledger event, avoiding further shadow-ledger stacking.
+- **S2 (parallel fanout).** Launch Disco A (the fifth focus song, previously untouched) as a fresh, independent pathway to the third M-V3-FOCUS-1 accept that would not depend on WIG or Peach Dream recovery paths.
+- **S3 (parallel fanout).** Restart WIG from PARTIAL to LANDS per merge-report Option A: preserve the twelve c20 htdemucs section stem SHAs and the three completed c20 MuScriptor JSON SHAs byte-identical as read-only anchors; complete the four remaining MuScriptor probes (piano, vocals, other, full_mix) twice into fresh temporary directories under identical environment pins; then execute the downstream chain verbatim.
 
-### Clone 2 — `M-GEN-1/batch-v3-i3` (`validated/high`)
+The palette-render branch (clone 2, orthogonal to the M-V3-FOCUS-1 recovery work) executed the operator-D-D-directed Surge XT/sfizz palette render on Chicken Grease with a frozen three-verdict rubric committed before any script was written.
 
-**Prediction test:** predicted 7.75 pairs (report headline) or 8.24 pairs (`intervention_proposal.json` H = 10 sweep) at N = 8; PASS band [6, 9]; observed **6 raw / 6 coerced (PASS at the low edge)**. Per-rule-type v2 → v3-i3:
+### 3.1 Clone 0 (Disco A launch, S2)
 
-| rule_type | v2 (K, pairs) | v3-i3 (K, pairs) | Δ |
-|---|---|---|---:|
-| harmonic | (10, 6) | (20, 1) | **−5** |
-| rhythmic | (18, 2) | (18, 2) | 0 |
-| melodic | (18, 2) | (18, 2) | 0 |
-| form | (15, 0) | (15, 0) | 0 |
-| arrangement | (15, 1) | (15, 1) | 0 |
-| **total** | 11 | **6** | **−5** |
+Verdict: `V3_FOCUS_SONG_LANDS_pending_operator` at SHA `28c3392934db6071b8a…9859b2` (verdict file 9 698 bytes).
 
-The entire five-pair reduction is inside the rule_type whose K doubled; the four non-harmonic buckets are byte-unchanged. BP-expected harmonic under H = 20 = 1.40; observed 1 within single-sample variance. Determinism × 2: 62/62 SHA-256 matches. Cycle-9 chain imported unchanged (grep-confirmed at `scripts/gen/batch_v3_i3.py:51`); cycle-13 batch-v2 anchors preserved by construction (distinct batch root); source ledger untouched; augmented ledger in distinct file.
+The Disco A pipeline ran end-to-end mirroring the Rome c20 clone-1 pattern verbatim on the operator-D1-chosen thirty-second section (t = 21.919 s to t = 51.919 s). Byte-determinism ×2 held on every artifact class: 24 htdemucs stem SHAs (12 chosen-section, 12 full-song), seven MuScriptor probes, seven canonical MIDIs (bass `72f5f41f…`, drums `ec28a915…`, guitar `41fc8284…`, vocals `7d99b621…`, other `ba633a44…`, piano `68ceb414…`, full_mix `bb4940c5…`), five per-track fluidsynth WAVs, and the full-reconstruction WAV at SHA `6b605598ac8ff6caefd5f1ec1444b94c25a52befe94a47d21d1a056747c3ff67`. All four structural gates passed on merged.mid; both panels finite (mel L1 = 13.70 dB, spectral centroid RMSE = 3 142 Hz, RMS-env RMSE = 0.2225, LUFS-M RMSE = 10.66 LU, VGGish cosine 0.2219). Three-way `rubric_hash_v2` chain byte-equal; Rome c20 backref pinned live at `d2c2d704…`; twelve-case test suite 12/12 PASS live.
 
-**Honest synthetic-relabel caveat:** the 10 D_minor rows keep the F_major `chord_progression` verbatim and only relabel `parameters.key`. The mechanism claim (harmonic K doubles → BP-expected harmonic halves → observed harmonic ~halves) is empirically confirmed because rule_id is content-hashed and the key swap changes the content bytes so the sampler sees 20 distinct harmonic rules. The *observed 6* comes with the caveat that when rated audio unblocks and real minor-mode scores are extracted, the observed count could move within BP variance while the mechanism verdict stays invariant.
+**Disco A supplies the third M-V3-FOCUS-1 internal-gate accept, closing the ≥3 gate under operator D-A.**
 
-### Cycle-22 post-merge integration
+### 3.2 Clone 1 (WIG PARTIAL→LANDS restart, S3)
 
-The concat-skip diagnosis and reconciliation was the substantive integration work. Baseline 301 rows → final **321 rows** (+20 = 14 shadow + 6 rollup):
+Verdict: `V3_FOCUS_SONG_LANDS_pending_operator` at SHA `95edf6cc741366d5f87e68c8658992830ba41fb7330bdb14b91d94cfedfbfec8`.
 
-| Bucket | Rows | Detail |
-|---|---:|---|
-| Clone 0 shadow | +3 | schema-hardening-v3, archive-scratch, report_cycles_1-1_clone-0 |
-| Clone 1 shadow | +7 | register, 3× in-progress, validated, archive, report_cycles_1-1_clone-1 |
-| Clone 2 shadow | +4 | register, validated, archive, report_cycles_1-1_clone-2 |
-| Rollup capstones | +6 | adopt-orphans / plan-register / cross-branch-test / shadow-concat-skip-reconciliation / post-merge-run / archive-driver |
+The WIG restart executed Option A cleanly. The nine frozen c20 SHAs (six htdemucs section stems + three completed MuScriptor JSON probes) were preserved byte-identical (`anchor_preservation_c20_shas`: `n_frozen_shas_preserved: 9`, `htdemucs_section_stems_all_match: true`, `muscriptor_completed_probes_all_match: true`). The four remaining MuScriptor probes completed byte-deterministic ×2 under identical environment pins. The downstream chain executed verbatim: canonical MIDI ×2, merge with all four structural gates passing, fluidsynth per-track ×2, D2 vocals overlay, rc7 Method A mix-match, delivery. The verdict carries the brief-mandated `sub_clause_status.f_restart_from_partial=true` field and a c20 backref block pinning the PARTIAL predecessor at `bd394c43…7afa6` with the restart rationale recorded verbatim. All fifteen sub-clause status entries `true`. Twelve-case test suite 12/12 PASS live.
 
-`promise_check` on the 321-row ledger: 0 ERRORs, 17 WARNs, all pre-existing categories (6 trailing-slash canonicalisation on old rows that cannot be rewritten without breaking their content hash / event_id; 1 `M-EAR-1` parent roll-up pending; 7 `data/ear/features/gen_first_gen_*.npz` orphans from cycle-10; 3 upstream `long_exposure/*` out-of-workspace exemption — up from 2 because clone 0 additively references `long_exposure/tools/promise_check.py` in addition to the existing `_ledger_schema.py` and `workspace_bootstrap.py`). 56 orphan artefacts adopted under a single fork-scoped `_infra/adopt-fanout-artifacts-fork-392503ab7d47` rollup (64 batch_v3_i3 artefacts + 64 batch_v3_i4 artefacts + reports + figures + samplers + drivers + augmented ledger + i4 unit test, deduped to 56 unique paths not already tracked).
+**WIG adds a fourth M-V3-FOCUS-1 internal-gate accept, providing redundancy against operator ear falling any single non-mandatory candidate.**
 
-### Tests at cycle-22 exit
+### 3.3 Clone 2 (Chicken Grease palette render, D-D execution)
 
-- `tests/test_integration_cross_branch.py` — PASS (0 failures across §1–§30).
-- `tests/test_ledger_writer_validation.py` — 21/21 pass (was 18; clone-0 added 19–21).
-- `tests/test_fanout_concat_validation.py` — 15/15 pass (was 13; clone-0 added 14–15).
-- `tests/test_i4_stratified.py` — 6/6 pass (clone-1 new).
+Verdict: `PALETTE_MOVES_PANEL` at `data/v3/deliveries/31a164f845f8e27e/cycle21/verdict_palette.json` (SHA `5ba4eaca242fcd29…5644a`). Sibling to `cycle20/`; does NOT overwrite the operator-blessed c5 delivery (byte-identical pre-versus-post at SHA `cc919559b4508b6b…f01bbbd7`).
 
-## Discussion
+The frozen three-verdict rubric (`PALETTE_MOVES_PANEL / PALETTE_NEUTRAL / RENDER_FAILS`) at `docs/v3_spine_chicken_grease_palette_render_c21_rubric.md` (SHA `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879`) was committed before any script was written under `scripts/v3_spine/palette_render/`. The pipeline consumed the c5 canonical per-stem MIDIs read-only, routed each melodic stem through its fetchability ladder, applied the Cycle 6 Method B rc7 iirpeak EQ + RMS + LUFS-S loudness chain verbatim, and emitted a palette-rendered full reconstruction alongside the c5 delivery.
 
-Three things about this range are worth naming.
+**The load-bearing honesty caveat for the operator's forthcoming D-D judgment:** all six palette-render stems reached fluidsynth GM at the bottom of their respective fetchability ladders:
 
-First, the four-cycle SSoT hardening arc closes as a coherent unit. Cycle 10 established the writer gate; cycle 12 established the concat gate with per-milestone `ts` monotonicity and content-hash tiebreak; cycle 14 added `supersedes_path` type-check and the `status` enum; cycle 15 (this range's clone 0) added state-transition validation via `_STATE_TRANSITIONS` + `validate_history`, wired into both the pre-concat lint gate and the audit-time `promise_check` gate. Every cycle strengthened the SSoT without weakening any prior invariant and without changing any caller-side signature. The specific historical drift the brief pointed at (cycle-13 line-250 `validated → in-progress` without `reopened`) is now categorically impossible to land through any of the write / merge / audit surfaces without an intervening `reopened`, and the falsifiability escape hatch — expand the transition graph rather than reject legitimate historical rows — was used sparingly and honestly for the two observed self-loops with defended documentation. The pattern of using post-merge integration surface as the retrospective driver of the next hardening cycle is the mechanism by which this arc converged; if a fifth drift class ever appears at post-merge integration, the diagnostic ladder should start at Rung 3 ("does the tightened validator catch it, and if not, why?") rather than at Rung 1.
+- **Bass** — Surge XT VST3 (c33 Branch B, 2 855/2 855 params hydrated at c35) failed byte-determinism ×2 after three fresh-tempdir attempts with `max_pairwise_rms = 0.0656`, roughly 655× outside the c36 clone-2 characterization envelope of 1e-4. The c33 `REDEFINED_GAP` fallback arm correctly declined the Surge XT bass render rather than accepting a nondeterministic artifact; bass fell back to fluidsynth GM(33).
+- **Guitar/piano/other** — sfizz path failed on `sfz_dir_missing_no_sfz_files_in_workspace` because `workspace/palette/sfz/` does not exist; each stem fell back to fluidsynth GM(25/0/88).
+- **Drums** — fluidsynth GM channel 10 (unchanged from c5 to preserve rhythmic reference).
+- **Vocals** — htdemucs vocals verbatim (D2, unchanged from c5).
 
-Second, the two M-GEN-1 interventions confirmed exactly the cycle-14 clone-1 predictions and did so in complementary ways. I4 (algorithmic, `validated/high`) drove the within-rule_type contribution to zero via a construction that cannot produce a within-rule_type collision at N ≤ K by definition; the three anti-artefact checks (salt=0 identity preserved, 8/8 distinct SHAs, zero coherence-gate coercions) each independently ruled out a way the zero could have been spurious. I3 (corpus-side, `validated/high`) drove the harmonic-bucket contribution from 6 to 1 by doubling K, leaving the four non-harmonic buckets byte-unchanged — the cleanest possible one-batch confirmation of the "expand-the-dominant-rule-type-pool" mechanism. The two interventions are complementary rather than competing: I4 alone hits zero at N = 8 but has a hard ceiling at the smallest K (harmonic K = 10 on the source ledger, so N > 10 raises `I4SamplerError`); I3 alone reduces the harmonic contribution but does not touch other rule_types. The natural cycle-23+ composition — I4 sampler against I3's augmented ledger at N = 8 and N = 12 — should hit zero with headroom and is the concrete downstream step this range enables.
+The `PALETTE_MOVES_PANEL` verdict fires legitimately on the Comparison B threshold — four of five numeric panel keys exceed 5% relative delta versus the c5-vs-original reference panel (mel L1 21.6%; RMS-env 45.5%; LUFS-M 49.9%; VGGish 49.0%; spectral centroid 4.1% under threshold). But the mechanism producing the panel movement is *not* Surge XT synthesizer or sfizz sampler timbral character — it is fluidsynth GM with a different program selection plus the Cycle 6 Method B 12-band iirpeak EQ plus per-stem RMS/LUFS-S loudness matching. The operator's ear judgment on the A/B pair must specifically discriminate two mechanisms: (i) GM + program substitution + fitted EQ + loudness-match alone (in which case fluidsynth+EQ+loudness stays primary), or (ii) genuine sampler/synth timbral character (in which case egress unblock or an alternate VST3 candidate is required to actually reproduce the palette on the intended synthesizer path).
 
-Third, the concat-skip diagnosis is the branch's most useful non-obvious contribution to future forks. The failure was not a clone defect but a *harness* behaviour: the per-clone `_run/report_cycles_1-1` row the harness auto-writes at reporting time collided across the three clones because clone-2 finished its report before clone-1 did, and per-clone-milestone file-order `ts` monotonicity failed. The reconciliation this range applied (serial replay with per-clone id normalization) is idempotent and works, but the durable fix hoisted to cycle-22 handoff #1 is to namespace `_run/report_cycles_1-1` per clone at write time in the harness, so the next fork with two or more clones does not require this same reconciliation. This is the third such small durable fix the campaign has queued in the harness layer (cycles 10/11 shim; cycle-14 optional-field enumeration; this one), and each of them moves post-merge integration debt closer to zero.
+## 4. Cycle 22: root-conductor post-merge integration
 
-The uncalibrated CORN head and the rated-audio unblock remain the campaign's biggest open credibility gaps; neither moves in this range. The M-EAR-1 parent roll-up is still one of the standing WARNs — a researcher judgment, not an integration action.
+Cycle 22 was the root-conductor cycle that picked up the six fanout branch merge reports and integrated the results into campaign state. The integration performed:
 
-## Open Questions
+**Fanout branch merges (all six under `[[BRANCH_COMPLETE]]`).** Fork `88d75f9754c3` clones 0/1/2 (WIG PARTIAL, Rome LANDS, Peach Dream Option 3 PARTIAL) closed at c20; fork `0a1b1dca4f9b` clones 0/1/2 (Disco A LANDS, WIG restart LANDS, Chicken Grease palette PALETTE_MOVES_PANEL) closed at c21. No merge conflicts; every branch's writes lie under a disjoint sha16-subtree prefix (`data/v3/deliveries/<sha16>/` and `data/v3_spine/<sha16>/`) or the palette-render tree.
 
-- **I3 + I4 composition test** (cycle-23+). Run this range's I4 sampler against clone-2's I3 augmented ledger at N = 8 and N = 12. I4 alone at N = 12 on the source ledger fails loudly at the harmonic K = 10 ceiling; the augmented ledger's K = 20 opens the headroom. Cheap and empirically informative.
-- **Harness auto-write namespacing** (cycle-22 handoff #1). Durable upstream fix: namespace `_run/report_cycles_*` per clone at write time so future fork merges do not require the concat-skip reconciliation. Until this lands, every future fork merge with ≥ 2 clones will hit the same skip; the reconciliation is idempotent so it is safe, but the fix eliminates a class of integration debt.
-- **Land I4 as the default sampler** behind a config knob (auditor guidance). Keep `sample_ruleset` for the batch-v2 regression path so the salt=0 legacy anchor and the cycle-13 collision baseline remain intact.
-- **Promote `test_salt0_matches_batch_v2_anchor`** to `tests/test_integration_cross_branch.py` as a locked cross-branch regression on the salt=0 identity path.
-- **Expose `--n-salts` on the batch driver CLI** so `N > K` attempts fail loudly via the existing `I4SamplerError` rather than silently sampling a stale N = 8 default.
-- **Real minor-mode extraction** when rated audio unblocks. Rerun clone-2's I3 test with real D_minor harmonic rules; mechanism verdict is invariant but observed count could move within BP variance.
-- **Do not generalise the "free consistency dividend" claim** (I4 report §8 item 2) beyond the exact configuration tested — under an expanded ledger the coherence gate could re-activate.
-- **CORN-head calibration** and **rated-audio unblock** — still blocked on egress. `M-INGEST-1/egress-ready-automation` is armed and awaits its two-consecutive-`media_ok=true` trigger.
-- **M-EAR-1 parent roll-up** — a researcher judgment on one of the standing WARNs, not an integration action.
-- **Fifth-drift-class diagnostic ladder start at Rung 3** — if a future post-merge integration surfaces a drift class the tightened SSoT does not catch, the diagnosis should start with "does the tightened validator catch it, and if not, why?" rather than at the corruption-detection level.
+**Shadow-ledger reconciliation.** The recurring shadow-ledger drift pattern (worker `-clone-<k>`-suffixed events routed to fork shadow ledger, not visible in workspace's primary `promise_ledger.jsonl` at fanout-clone emission time) was reconciled per the c33/c48 auto-suffix concat path across every clone: nine-row shadow-ledger shard from the Disco A clone (five substantive `M-V3-FOCUS-1/disco-a-*` unsuffixed per c32 + four infra-family `-clone-0` auto-suffixed); shadow-ledger shards from the WIG restart and Chicken Grease palette clones; the eleven-row palette-render clone shard (which had actually been concatenated into the main ledger during clone-2 emission per the merge report, with `promise_check` returning 0 ERRORs post-emission). `promise_check` returned zero errors post-concatenation.
 
-## Appendix: Provenance
+**Plan-of-record row registration.** Six new `M-V3-FOCUS-1/disco-a-*` sub-leaves plus `M-INGEST-1/egress-probe-cycle21-clone-0` plus `_infra/adopt-cycle21-tests-clone-0` plus `_archive/cycle-21-scratch-clone-0` registered for Disco A; the palette-render clone's ten new milestone rows registered similarly; every c20 branch's sub-leaves reconciled from their shadow shards. `promise_check` drift cleared.
 
-**Cycle range:** cycles 20-22.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** cycle 20 worker `91774a48-cc3c-4b20-a5ba-0a3537bd2a69`; cycle 21 researcher `27fc72bd-e4e9-4767-ad5c-0a15cbcf041b`; cycle 22 worker `3d2e7cb3-30b0-4599-9df0-af79f8db43c0`.
+**Merge-report path relocations.** Two of the six branch merge reports (Peach Dream c20 clone-2 and Chicken Grease palette c21 clone-2) had landed at workspace-legal fallback paths inside the workspace tree because their intended targets under `/home/user/music-gen-instance-v3/…` are outside the workspace sandbox. Both were explicitly disclosed in their verdicts, and both were `cp`-ed by the root conductor to the intended fanout paths at merge time.
 
-**Sub-agent transcripts (fork `392503ab7d47` clones).**
+**M-V3-FOCUS-1 status roll.** The milestone advanced from `in_progress/medium` to `in_progress/high` (not `validated` — that requires operator ear on the three A/B pairs per Fixed Decision 6). Four internal-gate accepts on record (Chicken Grease operator-ear-LANDED, Rome, Disco A, WIG restart), one PARTIAL terminal under Option 3 (Peach Dream). Milestone closes with redundancy against the required threshold of three.
 
-- Clone 0 (`_infra/ledger-schema-hardening-v3`): researcher `45a3e916-51ce-4b5d-9a31-f0810945ab64`, worker `3778ec06-6112-4b2f-9978-50338e97532e`, auditor `a222f718-34db-4ad5-a49a-af16e5084a02`. Verdict COMPLETE; sub-milestone closes at `validated/high`.
-- Clone 1 (`M-GEN-1/batch-v3-i4`): researcher `5b392017-f49d-4053-9c9c-37f3d128ac96`, worker `4447207c-fb43-437b-9ade-b327e7ab7ca2`, auditor `6ffff05c-35b5-4f57-8582-8ba609057c82`. Verdict VALIDATED / COMPLETE; sub-milestone closes at `validated/high`.
-- Clone 2 (`M-GEN-1/batch-v3-i3`): researcher `ed834519-770e-4d8e-a193-d979be895294`, worker `bb205777-0d10-401a-a6d4-6cab65d50d48`, auditor `c456daba-7446-4ea0-8c0d-a27f32e8b4be`. Verdict VALIDATED; sub-milestone closes at `validated/high`.
+**Brief-generator family-dispatch fix (MINOR-2 across branches).** A recurring MINOR observation across every c20 and c21 fanout branch was that the upstream brief-generator template quoted the c50 M-RECREATE-2 v2 rubric SHA `0e11f704…debe1f` where the correct v3-spine `rubric_hash_v2` on disk is `c49db5a1…016451a`. Every worker correctly adapted per Fixed Decision 1 and used the on-disk v3-spine hash, but the recurring drift class deserves a structural fix. The root conductor patched the brief-generator template to dispatch the rubric SHA on milestone family: v3-spine `c49db5a12e955f26…016451a` for `M-V3-FOCUS-*` and `M-V3-SPINE-*`; M-RECREATE-2 v2 `0e11f704e12c62f8…debe1f` for `M-RECREATE-2/*`. Eliminates the drift class going forward.
 
-**Deliverables on disk at cycle-22 exit.**
+**Panel-cycle-field template hygiene (MINOR-3 across branches).** The Disco A `panel.json.cycle` field was labeled `20` (template-mirrored from Rome c20 clone-1); content was Disco-A-specific and correctly stored under `cycle21/`. No gate affected. Documentation update queued for future template inheritances.
 
-- Clone 0: extensions to `long_exposure/tools/_ledger_schema.py` (`_STATE_TRANSITIONS` frozenset, `validate_history`, `_STATUS_ENUM` alias); wiring into `_lint_clone_shadow` and `promise_check`; `tests/test_ledger_writer_validation.py` +3 cases (18 → 21); `tests/test_fanout_concat_validation.py` +2 cases (13 → 15); `docs/ledger_schema_hardening_v3.md` (285 lines).
-- Clone 1: `scripts/rules/sampling/i4_stratified.py`; `scripts/gen/batch_v3_i4.py`; `scripts/gen/collision_count_batch_v3_i4.py`; `data/gen/batch_v3_i4/` (8 song sub-dirs + rollups); `docs/gen_batch_v3_i4_report.md` (15 081 bytes); `docs/figures/batch_v3_i4_collision_heatmap.png`; `tests/test_i4_stratified.py` (6/6 pass).
-- Clone 2: `scripts/rules/sampling/i3_dminor.py`; `scripts/gen/batch_v3_i3.py`; `data/rules/{ledger_i3_dminor.jsonl (86 rows), i3_dminor_manifest.json}`; `data/gen/batch_v3_i3/` (8 song sub-dirs + `i3_summary.json`, `collision_analysis.json`); `docs/gen_batch_v3_i3_report.md`.
-- Cycle-22 integration: `tools/stale/_integrate_fork_392503ab7d47.py`; `tools/stale/_discover_orphans.py`; workspace-root `merge_report.md` rewritten as cycle-21 fork capstone with 10-point cycle-22 handoff.
+**Egress state.** Unchanged (HTTP 429 + tv_embedded) since c47. Not the two-consecutive `media_ok=true` unblock signal. Continues to block the sfizz palette recovery path (SFZ files unfetchable) that would allow a genuine sampler-based palette test.
 
-**Load-bearing runtime evidence.**
+Cycle 22 closed with the campaign at a new equilibrium: M-V3-SPINE-1 LANDED; M-V3-FOCUS-1 at `in_progress/high` with four internal-gate accepts on record; the palette-render sibling delivery available for operator D-D judgment; three downstream milestones (M-V3-CORPUS-1, M-V3-RULES-1, M-V3-EAR-1, M-V3-GEN-1) still frozen pending operator decisions.
 
-- `_STATE_TRANSITIONS` = frozenset of 15 `(str, str)` tuples; every endpoint drawn from `STATUS_VALUES`; two documented self-loops added under the falsifiability escape hatch.
-- `_STATUS_ENUM is STATUS_VALUES` → True (cycle-14 alias preserved).
-- Historical sweep at cycle-15 (clone 0): 301/301 rows pass `validate_history`; distinct consecutive transitions observed = 7; proper subset of `_STATE_TRANSITIONS`.
-- I4 collision count: raw 0, coerced 0, verdict PASS; Δ = −11; per-rule-type all 0; 56/56 determinism SHAs match; salt=0 legacy identity 4/4 match batch-v2 song_0; all 8 songs byte-distinct.
-- I3 collision count: raw 6, coerced 6, verdict PASS; Δ = −5 (entirely in harmonic); BP-expected harmonic under H = 20 = 1.40, observed 1 within variance; 62/62 determinism SHAs match; source ledger and batch-v2 unchanged.
-- Cycle-22 ledger: 301 → 321 rows; `promise_check` 0 ERRORs, 17 pre-existing WARNs; 4 test suites green.
+## 5. Cumulative state at end of arc
 
-**Ledger routing.** Shadow-ledger events emitted per clone into `/home/user/music-gen-instance/fork-392503ab7d47/clone-{0,1,2}/promise_ledger.jsonl` and reconciled at cycle 22 via serial `append_ledger_event` replay with per-clone id normalization on the auto-write `_run/report_cycles_1-1` collision. Six rollup capstones (adopt-orphans / plan-register / cross-branch-test / shadow-concat-skip-reconciliation / post-merge-run / archive-driver). 56 orphan artefacts adopted under a single fork-scoped `_infra/adopt-fanout-artifacts-fork-392503ab7d47`. Upstream `long_exposure/*` out-of-workspace exemption count moved 2 → 3 as expected (clone-0 additively references `promise_check.py`).
+**Fifteen internal-gate/operator-blessed verdicts on record** for the v3 pipeline: eleven Cycle 4–14 substantive-track and heartbeat verdicts (all preserved byte-identically); one operator-blessed c5 delivery (2026-09-02 ear LANDS); four internal-gate LANDS on M-V3-FOCUS-1 focus songs (Rome c20, Disco A c21, WIG c21 restart, plus Chicken Grease under operator ear); one honest PARTIAL Option-3-terminal (Peach Dream c20); one PALETTE_MOVES_PANEL sibling secondary deliverable (Chicken Grease palette c21).
 
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`; VGGish rung on the texture panel; CORN head under the `synthetic_labels_only` sentinel. Single-thread BLAS pins throughout.
+**Operator-facing decision surface** reduced to two calls:
 
-**Rated audio.** Still egress-blocked per `corpus/CORPUS_STATUS.md`. `M-INGEST-1/egress-ready-automation` state machine remains `IDLE`; runtime state files correctly absent until the first live trigger. Not this range's problem; the machine is pre-wired.
+1. **D-D confirmation on Chicken Grease palette ear.** Does the palette render's A/B pair audibly move and audibly improve versus the c5 GM reference? If yes → palette becomes primary campaign-wide; c22+ re-renders Disco A + Rome + WIG + Peach Dream under palette. If no → fluidsynth+EQ+loudness stays primary. The MINOR-3 mechanism-discrimination requirement (GM+program-substitution+EQ+loudness vs. sampler/synth timbral character) must be surfaced explicitly to the operator, since all six palette stems fell back to fluidsynth GM.
+2. **Operator ear on the three M-V3-FOCUS-1 A/B pairs** (Rome, Disco A, WIG) to promote internal-gate accepts to operator-blessed LANDS per Fixed Decision 6. Chicken Grease is already operator-ear-LANDED.
 
-**Handoff to next cycle.** The concrete downstream steps queued by this range are (a) the I3 + I4 composition test (cheap, empirically informative, natural cycle-23+ next), (b) the harness auto-write namespacing durable fix (removes a class of post-merge integration debt), (c) landing I4 as the default M-GEN-1 sampler behind a config knob, (d) promoting `test_salt0_matches_batch_v2_anchor` to the cross-branch integration test as a locked regression, and (e) exposing `--n-salts` on the batch driver CLI. Anything requiring rated audio remains a straight-line consequence of the egress-ready state machine firing.
+**Downstream milestones remain frozen pending these decisions.** M-V3-CORPUS-1 (corpus breadth) requires operator ear accept on M-V3-FOCUS-1 per D-A. M-V3-RULES-1, M-V3-EAR-1, M-V3-GEN-1 remain in the frozen state they entered when the M-V3-SPINE-1 gate opened.
+
+**Discipline observations.** Zero fabrications detected across eleven consecutive audits spanning both fanout arcs (approximately 275+ live SHA spot-checks). Cross-branch anchor invariance held throughout: the Cycle 5 operator delivery (`cc919559…`), the c33 render_stem (`214372d9…`), and (after c20) the Rome c20 verdict (`d2c2d704…`) all remained byte-identical across every audit cycle. Peer-clone write disjointness at the sha16-subtree level held with zero incursions across all six fanout branches. All banned anti-patterns (VST3 state extraction under c31 STILL_GAP + c35 SPINE, CLAP HF SSL fetch under c11, M-EAR-1 Path A audits under N=55, c37 pretty_midi merge_partial) had zero re-attempts, grep-verified per branch.
+
+**Fanout mechanics observation.** The "single clone attempts full pipeline in one cycle" pattern proved fragile on Peach Dream (three-turn Hold Pattern requiring auditor-carried Option 3 escape) but converged cleanly on Rome, Disco A, and WIG restart. The auditor-carried Option 3 escape is now precedent-registered as a first-class success outcome under Fixed Decision 1 for future fanout branches that hit the same failure mode. The Cycle 4 auditor of Peach Dream flagged three structural recommendations for future full-pipeline fanouts: scope-compress at brief-time (per-stem branches merging into a downstream-integration branch), pre-authorize the Option 3 escape as a first-class outcome from the outset, or increase per-turn wall budget with explicit go/no-go gates.
+
+## 6. Conclusions
+
+Cycles 20 through 22 mark the campaign's largest structural transition since the pivot to the v3 simplest-robust pipeline. The operator's Cycle 20 ear judgment on Chicken Grease closed a fifteen-plus-cycle wait and opened the door to two follow-on operator directives that between them shaped the remainder of the arc. The Cycle 20 fanout opened M-V3-FOCUS-1 substantively on four focus songs; the Cycle 21 fanout closed the ≥3-accept internal-gate bar under D-A and executed the D-D palette-render experiment; Cycle 22 integrated everything cleanly at the root-conductor level. Zero CRITICAL and zero MODERATE findings landed anywhere in the arc except the Peach Dream Cycle 3 auditor CRITICAL escalation, which itself terminated cleanly via the Cycle 4 auditor-carried Option 3 escape without producing any campaign-level drift.
+
+The M-V3-FOCUS-1 milestone now sits at `in_progress/high` with four internal-gate accepts on record against a required threshold of three. The palette-render sibling delivery sits alongside the operator-blessed c5 delivery as a candidate for the D-D palette-becomes-primary decision, with an explicit honesty caveat that the measured panel movement is at bottom fluidsynth GM + program substitution + EQ + loudness-match rather than genuine sampler/synth timbral character. Two operator decisions remain to complete the campaign's forward reduction of downstream-milestone gating: D-D confirmation and operator ear on the three focus-song A/B pairs. Every other invariant the campaign has committed to holds byte-identical.
+
+## Appendix: Implementation Details
+
+### A.1 Operator LANDS on Chicken Grease (2026-09-02)
+
+Operator-blessed reference: `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`. M-V3-SPINE-1 flipped from `blocked_on_operator` to LANDED. Follow-on directives issued: D-A (autonomous-completion contract on M-V3-FOCUS-1 ≥3-accept internal gate), D-D (palette-becomes-primary conditional on Chicken Grease palette render moving panel and confirming audibly).
+
+### A.2 Fork 88d75f9754c3 (c20 fanout) summary
+
+| Clone | Song | sha16 | Verdict | Merge disposition |
+|---|---|---|---|---|
+| 0 | What If I Go | `252eb21ce7df7328` | `V3_FOCUS_SONG_PARTIAL_pending_operator` (SHA `bd394c43…7afa6`) | BRANCH_COMPLETE (honest PARTIAL, MuScriptor 3/7) |
+| 1 | Dojo Cuts — Rome | `51e433ade2a845e1` | `V3_FOCUS_SONG_LANDS_pending_operator` (SHA `d2c2d704…7afa6`) | BRANCH_COMPLETE (full end-to-end) |
+| 2 | Peach Dream | `88d247468cb6d49f` | `V3_FOCUS_SONG_PARTIAL` via Option 3 escape at c4 | BRANCH_COMPLETE (Option 3 accept-terminal after 3-turn Hold Pattern + CRITICAL escalation) |
+
+### A.3 Fork 0a1b1dca4f9b (c21 fanout) summary
+
+| Clone | Objective | Verdict | Merge disposition |
+|---|---|---|---|
+| 0 | Disco A launch (S2, sha16 `cdd2717e52820ff6`, band 5) | `V3_FOCUS_SONG_LANDS_pending_operator` (SHA `28c33929…9859b2`) | BRANCH_COMPLETE (full end-to-end; third M-V3-FOCUS-1 internal-gate accept) |
+| 1 | WIG restart (S3, sha16 `252eb21ce7df7328`, Option A) | `V3_FOCUS_SONG_LANDS_pending_operator` (SHA `95edf6cc…9bfec8`) | BRANCH_COMPLETE (PARTIAL→LANDS restart; fourth internal-gate accept, redundancy) |
+| 2 | Chicken Grease palette render (D-D execution, sha16 `31a164f845f8e27e/palette_render/`) | `PALETTE_MOVES_PANEL` (SHA `5ba4eaca…5644a`) | BRANCH_COMPLETE (all 6 stems fell back to fluidsynth GM; panel-movement mechanism is GM+program-sub+EQ+loudness, not sampler/synth) |
+
+### A.4 M-V3-FOCUS-1 accept status at end of arc
+
+Four internal-gate accepts against required threshold of three:
+
+| Song | sha16 | Verdict SHA | Status |
+|---|---|---|---|
+| Chicken Grease | `31a164f845f8e27e` | (c5 delivery, operator-blessed) | operator-ear-LANDED 2026-09-02 (mandatory, authoritative per FD-6) |
+| Rome | `51e433ade2a845e1` | `d2c2d704…7afa6` | internal-gate LANDS_pending_operator (c20 clone-1) |
+| Disco A | `cdd2717e52820ff6` | `28c33929…9859b2` | internal-gate LANDS_pending_operator (c21 clone-0) |
+| What If I Go | `252eb21ce7df7328` | `95edf6cc…9bfec8` | internal-gate LANDS_pending_operator (c21 clone-1 PARTIAL→LANDS restart) |
+| Peach Dream | `88d247468cb6d49f` | (c20 clone-2 Option 3 accept) | PARTIAL terminal (Option 3 accept-terminal precedent) |
+
+Milestone status rolled at c22 from `in_progress/medium` to `in_progress/high` (not `validated` per FD-6).
+
+### A.5 Chicken Grease palette render (D-D input)
+
+Verdict: `PALETTE_MOVES_PANEL`. Panel Comparison B thresholds: mel L1 21.59%, RMS-env 45.54%, LUFS-M 49.86%, VGGish 48.99% (all exceed 5%); spectral centroid 4.12% (under threshold). 4/5 → PALETTE_MOVES_PANEL fires.
+
+Fetchability ladder outcomes: bass → Surge XT VST3 REDEFINED_GAP arm (`max_pairwise_rms = 0.0656`) → fluidsynth GM(33). Guitar/piano/other → sfizz `sfz_dir_missing` → fluidsynth GM(25/0/88). Drums → fluidsynth GM ch. 10 (unchanged). Vocals → htdemucs verbatim.
+
+MINOR-3 mechanism-discrimination caveat: measured panel movement is at bottom GM + program substitution + Cycle 6 Method B 12-band iirpeak EQ + per-stem RMS/LUFS-S loudness match; not Surge XT/sfizz timbral character. Operator D-D judgment must discriminate mechanism (i) vs. (ii).
+
+### A.6 Integrity chains held throughout arc
+
+Rubric v2 chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` == every verdict's `rubric_hash_v2` field.
+
+Palette-render rubric chain: `docs/v3_spine_chicken_grease_palette_render_c21_rubric.md` SHA `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879` == `data/v3_spine/31a164f845f8e27e/palette_render/rubric_hash_v2.txt` == `verdict_palette.json.rubric_hash_v2`.
+
+Cross-branch anchors: Chicken Grease c5 operator delivery `cc919559b4508b6b…`; c33 `scripts/palette_render/render_stem.py` `214372d920a319a9…`; Rome c20 verdict `d2c2d704…`. All byte-identical across every audit in the arc.
+
+Backref chain: each c21 verdict pins its c20 predecessor's verdict SHA live-recomputed at emit time.
+
+### A.7 Cumulative discipline metrics
+
+- Eleven consecutive audits across two fanout arcs.
+- ~275+ live SHA spot-checks with zero fabrications detected.
+- Zero re-attempts on banned anti-patterns (c31 STILL_GAP + c35 SPINE VST3 state extraction, c11 CLAP HF SSL fetch, c22/c23/c25 M-EAR-1 Path A under N=55, c37 pretty_midi merge_partial).
+- Peer-clone write disjointness held at sha16-subtree level across all six fanout branches.
+
+### A.8 Environment pins (unchanged across arc)
+
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `torch.manual_seed(0)`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
+
+### A.9 Egress state
+
+HTTP 429 + tv_embedded (unchanged since c47). Not the two-consecutive `media_ok=true` unblock signal. Blocks the sfizz palette-fetch recovery path.
+
+### A.10 c22 root-conductor session (linear cycle)
+
+| Cycle | Researcher | Worker | Auditor |
+|---|---|---|---|
+| 20 (root dispatch) | e53ecb11-9b5c-487f-a1df-76dca6a3e9c5 | — | — |
+| 21 (root integration) | — | 2e3ef486-3d29-495e-a981-8df14a07f032 | — |
+| 22 (root post-merge) | b0fa93b5-f576-406c-a3dc-de6dbb2aef69 | — | — |
+
+Fanout-branch source sessions are recorded in each clone's own report; six branches spanning three cycles (c20 fork `88d75f9754c3` × three clones, c21 fork `0a1b1dca4f9b` × three clones) contribute their own per-cycle researcher/worker/auditor triples.
+
+### A.11 c22 handoff status
+
+M-V3-FOCUS-1: `in_progress/high` with four internal-gate accepts on record and Peach Dream PARTIAL Option-3-terminal. Awaits operator ear on the three M-V3-FOCUS-1 A/B pairs to promote to `validated` per FD-6.
+
+M-V3-CORPUS-1: still frozen. Unblock gated on operator ear accept on M-V3-FOCUS-1 per D-A.
+
+M-V3-RULES-1, M-V3-EAR-1, M-V3-GEN-1: still frozen. Unchanged.
+
+Chicken Grease palette-becomes-primary decision: pending operator D-D confirmation on the palette A/B pair with MINOR-3 mechanism discrimination framed explicitly.
+
+Egress unblock: pending. Would unlock sfizz palette recovery path for a genuine sampler-based palette test if the D-D outcome directs the campaign that way.
