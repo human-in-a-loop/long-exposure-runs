@@ -1,192 +1,251 @@
 ---
-title: "Music-Gen v3 FOCUS Milestone — Fanout Clone 0 (Cycles 1–3)"
+title: "Music-Gen v3 FOCUS Milestone — Fanout Clone 0: Disco A Launch (Cycles 1–3)"
 date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen v3 FOCUS Milestone — Fanout Clone 0 (Cycles 1–3)
+# Music-Gen v3 FOCUS Milestone — Fanout Clone 0: Disco A Launch (Cycles 1–3)
 
 ## Abstract
 
-This report covers Cycles 1 through 3 of a fanout-clone branch spawned from the Music-Gen v3 campaign's M-V3-FOCUS-1 milestone. The clone (fork `88d75f9754c3`, clone 0) was assigned a scoped objective distinct from the campaign's main M-V3-SPINE-1 heartbeat cadence: run the full v3 per-stem chain end-to-end on the reference track *What If I Go* (source SHA-16 `252eb21ce7df7328`), delivering an A/B pair on the operator-chosen section and a full-song reconstruction, and emit `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` with a `V3_FOCUS_SONG_LANDS_pending_operator` or `PARTIAL/FAILS honestly` verdict. Cycle 1 executed substantive pipeline work through the first three MuScriptor probes before the background task terminated at 3-of-7 stems, and emitted an honest `V3_FOCUS_SONG_PARTIAL_pending_operator` verdict with the pipeline state fully disclosed. Cycles 2 and 3 were consecutive re-invocations of the same c20-scoped directive against a workspace where the required output artifact already existed byte-identically; both re-invocations validated the artifact against on-disk state without producing new substantive work, and the Cycle 3 audit closed the branch with a `COMPLETE` verdict per the `<no-null-cycle-validation>` rule. The required output artifact remained byte-identical across four independent verification points (SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`). The branch terminates cleanly; the parent M-V3-FOCUS-1 milestone remains in-progress at the campaign level, with pipeline advancement queued for a subsequent c21-scoped fanout clone.
+This report covers Cycles 1 through 3 of a fanout-clone branch spawned from the Music-Gen v3 campaign's M-V3-FOCUS-1 milestone under the c22 root conductor's S2 dispatch. The clone (fork `0a1b1dca4f9b`, clone 0) was assigned to launch the fifth focus song — Disco A (source SHA-16 `cdd2717e52820ff6`, band 5, `corpus/ratings/5/011__hcwKJOsUUIk__Disco_A.mp3`) — for the first time, and to deliver the full v3 per-stem chain end-to-end on the operator-D1-chosen thirty-second section (t = 21.91963718820862 s to t = 51.91963718820862 s) using the Rome c20 clone-1 pattern verbatim. The clone's structural role in the campaign was clear: produce the third internal-gate accept under M-V3-FOCUS-1, closing the operator's D-A autonomous-completion contract's requirement of three accepts without depending on the WIG restart or the Peach Dream Options 1/2 recovery paths. Cycle 1 delivered the launch end-to-end: htdemucs six-stem separation on both the chosen section and the full song byte-deterministic ×2 (24 stem SHAs total); MuScriptor seven-probe transcription byte-deterministic ×2; canonical MIDI serialization byte-deterministic ×2 on all seven probes; merged.mid passing all four structural gates; fluidsynth per-track render byte-deterministic ×2 on the five non-vocal stems; D2 vocals overlay via SHA-verified htdemucs vocals copy; rc7 Method A plain broadband RMS-match producing the full-reconstruction WAV byte-deterministic ×2 at SHA `6b605598ac8ff6caefd5f1ec1444b94c25a52befe94a47d21d1a056747c3ff67`; delivery of A/B WAVs (30 s exactly = 1 323 000 samples at 44 100 Hz), full-song reconstruction, delivery manifest, panel JSON/TSV, and rc7 per-stem loudness sidecar under `data/v3/deliveries/cdd2717e52820ff6/`; and verdict emission at `data/v3/deliveries/cdd2717e52820ff6/cycle21/verdict.json` (SHA `28c3392934db6071b8a…9859b2`) with `V3_FOCUS_SONG_LANDS_pending_operator`, `blocked_on_operator=true`, three-way `rubric_hash_v2` chain byte-equal, and a byte-verified Rome c20 backref. Cycles 2 and 3 were re-verification passes that live-checked every anchor, ran the twelve-case test suite green live (12/12 PASS), and closed the branch. Disco A now stands as the third M-V3-FOCUS-1 internal-gate accept, closing the ≥3 gate under operator D-A.
 
 ## 1. Introduction and scope
 
-The M-V3-FOCUS-1 milestone widens the M-V3-SPINE-1 pipeline (previously exercised only on *Chicken Grease*, source SHA-16 `31a164f845f8e27e`) to five focus songs — *Chicken Grease* as the mandatory anchor plus four SHA-256-tiebreak picks from `data/recreate_v2/focus_set_v2.json` (SHA `8908dae03202ae52…a1a5ca`). Under the campaign's Fixed Decision 6, M-V3-SPINE-1 itself remains gated on operator ear on Chicken Grease A/B; opening M-V3-FOCUS-1 substantively before that gate would ordinarily be premature. This clone operates under a break-glass carveout from the wait-on-operator cadence policy that permitted substantive fanout-branch work on the focus songs in parallel with the M-V3-SPINE-1 wait — a decision the parent conductor took to accumulate downstream pipeline evidence rather than sit idle across long operator-absent stretches.
+The M-V3-FOCUS-1 milestone requires at least three focus-song accepts under the operator's D-A autonomous-completion contract. At the close of the c20 fanout arc the tally was two: Chicken Grease (operator-ear-LANDED 2026-09-02, the mandatory anchor per Fixed Decision 6) and Rome (internal-gate LANDS at c20 clone-1). WIG had returned honest PARTIAL after a MuScriptor background-task termination at 3/7 probes; Peach Dream had returned honest PARTIAL after a three-turn Hold Pattern via the Option 3 escape. The c22 root conductor's S2 imperative was to launch the fifth focus song (Disco A, previously untouched) as a fresh, independent pathway to the third accept — one that would not depend on either the WIG restart succeeding or the Peach Dream recovery being chosen.
 
-Clone 0's assignment is *What If I Go*. Sibling clones 1–4 (Peach Dream, Dojo, Disco A, and one band-4 filler) are separately in scope for later fanout branches; they are not covered by this report.
+This report is the merge-disposition summary for clone 0 (Disco A launch). Sibling branches in the same fork:
+
+- **Clone 0 (Disco A launch, S2)** — the subject of this report; internal-gate LANDS at verdict SHA `28c33929…9859b2`.
+- **Clone 1 (WIG restart, S3)** — internal-gate LANDS at verdict SHA `95edf6cc…9bfec8`.
+- **Clone 2 (Chicken Grease palette render)** — orthogonal secondary-deliverable branch reported separately; internal-gate PALETTE_MOVES_PANEL at verdict SHA `5ba4eaca…5644a`.
 
 The clone's scoped objective as issued:
 
-- Read the chosen section from `focus_set_v2.json`.
-- Run htdemucs_6s on both the chosen section and the full song, asserting byte-determinism ×2 across 24 stem SHAs.
-- Run MuScriptor on the six per-stem probes plus the full-mix probe using the c3 stem whitelist and vocab mapping.
-- Serialize canonical MIDI via the c4 `midi_from_json_events.py` (read-only).
-- Merge per-stem MIDIs and assert the four structural gates.
-- Choose tempo via `librosa.beat.beat_track` on the chosen-section drums stem.
-- Run fluidsynth per-track render ×2 (byte-deterministic), then the D2 vocals overlay via a SHA-verified htdemucs vocals copy.
-- Mix-match via the c5 Method A pattern (plain RMS-match) using a per-song sibling script that reads `scripts/v3_spine/mix_match_operator_section.py` read-only.
-- Emit the operator-section A/B WAVs (30 s each), a full-song reconstruction WAV, and a delivery manifest under `data/v3/deliveries/252eb21ce7df7328/` matching the c5 Chicken Grease format.
-- Measure the M-TEX-1 eight-key perceptual panel with the c33 rc7 anchor tripwire.
-- Emit `cycle20/verdict.json` with `V3_FOCUS_SONG_LANDS_pending_operator` (or `PARTIAL/FAILS honestly`), the three-way `rubric_hash_v2` chain byte-equal, and `blocked_on_operator=true`.
-- Land a twelve-case test suite at `tests/test_v3_focus_wig_c20.py`.
-- Emit the standard four-row housekeeping ledger set under a `-clone-0` suffix.
+- **Run htdemucs six-stem separation on both the operator-D1-chosen section and the full song**, byte-deterministic ×2 on each (24 stem SHAs total).
+- **Run MuScriptor on seven probes** (six stems plus full_mix, using the c3 per-stem vocab whitelists) byte-deterministic ×2.
+- **Serialize canonical MIDI ×2** via c4 `midi_from_json_events.py` (read-only).
+- **Merge per-stem MIDIs** and assert all four structural gates: `drums_track_on_ch10_nonempty`, `bass_median_pitch_lt_55`, `vocals_track_present_symbolic`, `zero_notes_on_gm_program_4`.
+- **Fluidsynth per-track render ×2** (byte-deterministic).
+- **D2 vocals overlay** via a SHA-verified htdemucs vocals copy.
+- **rc7 RMS-match plus sum** via a per-song sibling reading `scripts/v3_spine/mix_match_operator_section.py` read-only.
+- **Deliver A/B WAVs, full-song reconstruction, manifest, panel (eight-key finite), and rc7 per-stem loudness** under `data/v3/deliveries/cdd2717e52820ff6/` matching the c5 Chicken Grease format.
+- **Emit** `data/v3/deliveries/cdd2717e52820ff6/cycle21/verdict.json` with `V3_FOCUS_SONG_LANDS_pending_operator`, `blocked_on_operator=true`, three-way `rubric_hash_v2` chain byte-equal, and a Rome c20 backref SHA.
+- **Land a twelve-case test suite** at `tests/test_v3_focus_disco_a_c21.py`.
+- **Six named plus two housekeeping ledger events** under the `-clone-0` suffix; substantive `M-V3-FOCUS-1/disco-a-*` labels unsuffixed per the c32 convention.
 
-The required deliverable is `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json`. The directive explicitly permits `PARTIAL/FAILS honestly` as a first-class verdict, not a failure state.
+The required output artifact is `docs/v3_focus_disco_a_c21_report.md`.
 
-## 2. Cycle 1: substantive pipeline execution and honest PARTIAL
+## 2. Cycle 1: full end-to-end launch
 
-Cycle 1 was the branch's only substantive-work cycle. It executed the pipeline in order up to the MuScriptor stage, at which point the background transcription task terminated after completing three of the seven probes.
+### 2.1 Source and chosen section
 
-### 2.1 Upstream anchors respected
+Song identity: Disco A, source SHA-16 `cdd2717e52820ff6`, band 5, audio at `corpus/ratings/5/011__hcwKJOsUUIk__Disco_A.mp3`. The chosen section came from the D1 auto-picker over `focus_set_v2.json`: t = 21.91963718820862 s to t = 51.91963718820862 s (duration 30.0 s exactly).
 
-Every read-only anchor consumed by the clone was byte-verified against its pinned SHA before use:
+### 2.2 Read-only upstream anchors
 
-| Anchor | Path | SHA-256 |
+Every read-only anchor was byte-verified against its pinned SHA. Chicken Grease c5 operator delivery (`cc919559b4508b6b…`), Rome c20 verdict (`d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`, used as the Rome-pattern backref pin), c33 `scripts/palette_render/render_stem.py` (`214372d920a319a9…`), c4 canonical MIDI serializer, c5 mix-match Method A, and the focus set `data/recreate_v2/focus_set_v2.json` were all consumed at their locked SHAs unchanged.
+
+### 2.3 Pipeline stage-by-stage results
+
+Every stage passed byte-determinism ×2.
+
+**htdemucs six-stem separation (chosen section and full song, ×2 runs, 24 SHAs total):** all twelve chosen-section and twelve full-song stem SHAs identical run1==run2.
+
+**MuScriptor per-stem JSON transcription (seven probes, ×2 runs):** all seven probes byte-deterministic across two runs.
+
+**Canonical MIDI serialization (via c4 read-only, seven probes, ×2 runs):**
+
+| Probe | Canonical MIDI SHA (run 1 == run 2) |
+|---|---|
+| bass | `72f5f41fd7de961ccd78501b394eed17bcdec4a24e62bcdb9c841b2ffc810de2` |
+| drums | `ec28a91556d10e0cc03f0b2b776a692b9db2a11a2e3e7f686d512e474a743d8e` |
+| guitar | `41fc8284780a7b0fd4567d1e777ff596ba2530fa91c07dbea30b6035cd34f8a7` |
+| vocals | `7d99b62176b772fd82426001311adb3e65bc5c5be0b2cf79aea6309425e05ec0` |
+| other | `ba633a44dcc66e1c5ae1dbdc47f20a0120ac91de2cc687ae552da4bae5c24d00` |
+| piano | `68ceb414810972513391ddc0c6ad73887d581a9aa7aa175801093278a4cecec1` |
+| full_mix | `bb4940c52655c2faaeb63c34cd9b01dde11a75950c4aa6524e8fe76f12669671` |
+
+**merged.mid structural gates (all four PASS):** `drums_track_on_ch10_nonempty=true`, `bass_median_pitch_lt_55=true`, `vocals_track_present_symbolic=true`, `zero_notes_on_gm_program_4=true`. Merged MIDI at `data/v3/deliveries/cdd2717e52820ff6/merged.mid`, SHA-16 `7e6f131f07f0d33c`.
+
+**Fluidsynth per-track render (five non-vocal stems, ×2 runs):** all five byte-identical run1==run2.
+
+**D2 vocals overlay:** SHA-verified copy of the htdemucs section vocals stem into the render directory.
+
+**rc7 Method A mix-match (plain broadband RMS-match plus sum, per-song sibling reading `mix_match_operator_section.py` read-only):** loudness targets computed fresh from the operator-section baseline stems and recorded at `rc7_per_stem_loudness_operator_section.json` (SHA-16 `2c075906299dde8a`); per-stem gains applied within ±24 dB clamp; summed and peak-limited. Full reconstruction WAV byte-deterministic across two runs at SHA `6b605598ac8ff6caefd5f1ec1444b94c25a52befe94a47d21d1a056747c3ff67`.
+
+### 2.4 Delivered artifacts
+
+Under `data/v3/deliveries/cdd2717e52820ff6/`, matching the c5 Chicken Grease format:
+
+| Artifact | Path | SHA-16 |
 |---|---|---|
-| c19 verdict (backref) | `data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` | `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd` |
-| c5 Method A reconstruction (Chicken Grease ear anchor) | `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` | `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7` |
-| c4 canonical MIDI serializer (consumed READ-ONLY) | `scripts/v3_spine/midi_from_json_events.py` | `bbff015f4f1833f446ad72f9cd5815117b2a744798fe3857edf468de6731a2ea` |
-| c5 mix-match Method A (per-song sibling reads READ-ONLY) | `scripts/v3_spine/mix_match_operator_section.py` | `4f47fbcd7bf89c2bdc46701ae8da1fd39a732e3cf1cec4683c619cb17b743f60` |
-| c33 render_stem (DO-NOT-TOUCH invariant) | `scripts/palette_render/render_stem.py` | `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b` |
+| Original A/B (chosen section, 30 s) | `original_ab.wav` | `f302ebe8047222d4` |
+| Reconstruction A/B (chosen section, 30 s) | `reconstruction_ab.wav` | `6b605598ac8ff6ca` |
+| Full-song reconstruction | `full_reconstruction.wav` | `6b605598ac8ff6ca` |
+| Delivery manifest | `manifest.json` | `18bc3f48beaa7efe` |
+| Merged MIDI | `merged.mid` | `7e6f131f07f0d33c` |
+| Panel JSON | `panel.json` | `ae3bd61463bc8d47` |
+| Panel TSV | `panel.tsv` | `21745e96b342e317` |
+| Tempo choice | `tempo_choice.json` | `e668e7155a65f014` |
+| rc7 per-stem loudness | `rc7_per_stem_loudness_operator_section.json` | `2c075906299dde8a` |
 
-The focus-set reference `data/recreate_v2/focus_set_v2.json` was consumed at SHA `8908dae03202ae529282c08e74d490b336fadcf7ded4f93483a2b32756a1a5ca`.
+The `reconstruction_ab.wav` and `full_reconstruction.wav` share the same SHA — this is mathematically expected because Disco A's D1-chosen section is itself the operator's thirty-second window, so the A/B slice equals the full reconstruction. The same shape was observed on Rome c20 clone-1 and is informationally correct, not a defect. All four A/B WAVs are non-silent at exactly 1 323 000 samples (30.000 s at 44 100 Hz).
 
-### 2.2 Stage-by-stage pipeline state at cycle close
+Additional working directories on disk: `stems_6s/` (chosen-section stems), `stems_6s_full_song/` (full-song stems), `operator_section/`, `muscriptor_operator_section/`, `per_track/`, `mix_match_operator_section.json`.
 
-The delivered verdict discloses the per-stage state directly:
+### 2.5 Panel (M-TEX-1)
 
-| Stage | Status | Notes |
-|---|---|---|
-| htdemucs_6s (operator section) | `done` | 6 stems byte-deterministic ×2; determinism JSON at `data/v3_spine/252eb21ce7df7328/operator_section/htdemucs_determinism.json` (SHA `5a737be7baeb75cbbfc153d1d56f85ba415ed787047b12668c0ac0511b424e66`) |
-| Tempo choice | `done` | Detected 50.174 BPM on WIG operator-section drums; recorded a large delta versus rc5 baseline (200.893 BPM), likely an octave/subdivision artefact. Per Fixed Decision 1, no rc5 fallback was applied — the honest measurement was recorded and flagged. Tempo file SHA `a6b31110c68f2396698fce43ba17465e1003b9e9dab1939a3614af425ade31dd`. |
-| MuScriptor | `partial` (3/7) | Drums, bass, and guitar completed; the guitar transcription came back empty (`done_empty`) — a first-class outcome, not a failure. Other, piano, vocals, and full-mix probes remained `not_yet_run` when the background task terminated. |
-| Canonicalize | `not_run` | MuScriptor prerequisite unmet. |
-| Merge (4/4 structural gates) | `not_run` | Canonicalize prerequisite unmet. |
-| Fluidsynth per-track render ×2 | `not_run` | Merge prerequisite unmet. |
-| D2 vocals overlay | `not_run` | MuScriptor vocals probe absent. |
-| rc7 mix-match (Method A) | `not_run` | Render prerequisite unmet. |
-| Deliver A/B | `not_emitted` | Mix-match prerequisite unmet. |
-| Panel measurement (M-TEX-1) | `not_run` | Delivery prerequisite unmet. |
+Eight-key perceptual panel measured on both windows (root panel and operator-section panel), all keys finite:
 
-Per-probe MuScriptor SHAs recorded for the three that completed:
+| Key | Value |
+|---|---:|
+| mel L1 | 13.7036 dB |
+| spectral centroid RMSE | 3 142.4014 Hz |
+| RMS-env RMSE | 0.2225 |
+| LUFS-M RMSE | 10.6570 LU |
+| VGGish cosine distance | 0.2219 |
 
-- Drums JSON `a8c28773a4d7a4571a5927b80306ac296211cb9cae722fc62f97ffc3d2b51c68` + MIDI `33de0cbc2ae02844c96391e02198b77692db939106067c09f724af78cde5db28`.
-- Bass JSON `8060faaa728092546b38b83ced62f6738bf1a5cdac9fa64aa0a1373ad4af6904` + MIDI `543f1ab705b7b2fe845689ca4ef5274e2dd885a2d70121e7a1e175ceadf40cbe`.
-- Guitar JSON `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` (canonical empty-events hash) + MIDI `b4134d5cce88b9049baca7d9efae3f7d592a42b22a47e4398cab2100dc75e10b`.
+Both `operator_section_panel_ok` and `root_panel_ok` reported `true`. Panel is explicitly **not** an acceptance gate under Fixed Decision 6.
 
-### 2.3 Verdict
+### 2.6 Verdict
 
-`data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` (8 931 bytes; SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`) was emitted with:
+`data/v3/deliveries/cdd2717e52820ff6/cycle21/verdict.json` (SHA `28c3392934db6071b8a…9859b2`, 9 698 bytes) emitted with:
 
-- `verdict = V3_FOCUS_SONG_PARTIAL_pending_operator`
-- `cycle = 20`, `song_sha16 = 252eb21ce7df7328`, `milestone_id = M-V3-FOCUS-1`
-- `blocked_on_operator = true`, `blocked_on_muscriptor_completion = true`
-- `verdict_placement_convention = cycle<N>/`
-- `fork = 88d75f9754c3`, `clone = clone-0`
-- `parent_cycle_track = peer sub-milestone under M-V3-FOCUS-1 per c29 state-machine lemma`
-- Three-way `rubric_hash_v2` chain byte-equal at `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` (document SHA, `rubric_hash_v2.txt` content, and verdict field all identical).
-- Cadence policy pin `docs/wait_on_operator_cadence_policy.md` SHA `0be540365c8c03ad38a15478fbad0fe32bf5ea4118e33ef3eeed62dbd9a0c7f2`.
-- `operator_ab_pending.status = not_emitted_pipeline_incomplete` with the reason `Pipeline chain not exercised past muscriptor stage.`
-- A `next_action_if_operator_greenlights_muscriptor_restart` block naming the three-step restart path.
-- Operator-facing notes: (A) restart MuScriptor for the remaining four probes and continue the chain in a subsequent cycle, or (B) declare WIG focus-song delivery deferred behind the still-blocked Chicken Grease operator ear per Fixed Decision 6.
-- The test suite pinned at `tests/test_v3_focus_wig_c20.py` (SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`), landed with the twelve-case shape; determinism-gate cases skip when preconditions are absent (a design choice that keeps the suite green under partial pipeline execution).
+- `verdict = V3_FOCUS_SONG_LANDS_pending_operator`
+- `blocked_on_operator = true`
+- Three-way `rubric_hash_v2` chain byte-equal at `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` (document SHA == `data/v3_spine/rubric_hash_v2.txt` content == verdict field; `three_way_equal=True`).
+- Rome c20 backref: `c20_backref.sha256 = d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`, byte-verified against on-disk `data/v3/deliveries/51e433ade2a845e1/cycle20/verdict.json`.
+- Byte-determinism payload pinning every deterministic artifact class (htdemucs section, htdemucs full-song, MuScriptor probes, canonical MIDI, per-track WAV, full-reconstruction WAV) with run 1 and run 2 SHAs identical.
+- All ten sub-clauses `true`, including all four structural gates on `merged.mid`, byte-determinism ×2 on each stage, panel finiteness on both windows, delivery presence and non-silence, and the `blocked_on_operator` flag.
 
-The verdict's `reason` field records the situation verbatim: pipeline incomplete at the MuScriptor stage (3/7 probes), downstream chain not executed per Fixed Decision 1's prohibition on tuning-or-retry, operator A/B WAVs not emitted, operator ear irrelevant while the chain is incomplete. Existing artifacts (six-stem htdemucs byte-deterministic × 2, three MuScriptor JSON+MID pairs, tempo choice JSON) are preserved read-only; nothing is unwound.
+### 2.7 Required output artifact
 
-## 3. Cycles 2 and 3: re-invocations under an already-discharged directive
+`docs/v3_focus_disco_a_c21_report.md` (10 478 bytes) landed under `docs/` per the directive. A merge-report workspace-root fallback at `merge_report_c21_clone_0_disco_a_fork_0a1b1dca4f9b.md` (4 266 bytes) was created for later root-conductor copy to the intended fanout path (the workspace sandbox blocks direct writes to `/home/user/music-gen-instance-v3/…`).
 
-Cycles 2 and 3 were consecutive re-invocations of the same c20-scoped directive against a workspace where the required output artifact already existed on disk from Cycle 1's emission. Neither cycle produced any new substantive work.
+## 3. Cycles 2 and 3: re-verification and branch termination
 
-Cycle 2's audit re-verified the artifact against on-disk state byte-identically. Because the directive named `cycle20/verdict.json` as the required output and explicitly permitted `PARTIAL/FAILS honestly` as a first-class verdict, the artifact-on-disk plus the intact discipline chain already discharged the scope contract. The auditor recorded VALIDATED status-only, with no new work performed.
+Cycles 2 and 3 were re-verification passes. In each cycle the auditor performed live disk-state verification: three-way rubric hash chain live-recomputed and byte-equal; Rome c20 backref live-recomputed and byte-equal; all nine delivery SHA-16 values match the worker's table exactly; every cross-branch READ-ONLY anchor byte-identical (Chicken Grease c5 operator delivery `cc919559b4508b6b…`; Rome c20 verdict `d2c2d704…`; c33 render_stem `214372d920a319a9…`); test suite live re-run returning "Ran 12 tests in 0.101 s — OK" with every test 1–12 green; hygiene grep-verified per Fixed Decision 1 (zero PRNG, zero `sidecar_nonfactor` imports, zero c31/c35 VST3 re-attempts, zero CLAP fetch, zero M-EAR-1 Path A audits, zero corpus-breadth work).
 
-Cycle 3's audit was a fourth verification point of the same artifact (pre-compaction emission plus three post-hoc verifications). The verdict SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b` was byte-identical across all four checkpoints; the three-way rubric chain held byte-equal; anti-fabrication contract held (every SHA sampled in the verdict resolved on-disk); no substantive work was possible under the c20-scope contract. Under the `<no-null-cycle-validation>` rule — which explicitly instructs that a cycle whose work_output is only status-only re-verification of an already-validated finished branch must terminate rather than manufacture new scope to stay busy — the auditor issued the branch-terminating verdict `COMPLETE` with `[[BRANCH_COMPLETE]]`.
+Every check passed at every audit; no CRITICAL or MODERATE findings were introduced. Three MINOR observations were logged as non-blocking recurring precedent classes with clean reconciliation paths at the root-conductor post-merge integration layer (see §5). The Cycle 3 auditor issued `VALIDATED` on the strength of live re-verification, and — because the clone's scoped objective was fully discharged with the third M-V3-FOCUS-1 internal-gate accept landed — the branch closes naturally under `[[BRANCH_COMPLETE]]`.
 
-The Cycle 3 auditor's rationale distinguished four separable considerations that jointly justified branch termination:
+## 4. Merge disposition and campaign-level significance
 
-1. **Scope contract discharged.** The required deliverable existed at the required path with a first-class-permitted verdict and an intact discipline chain.
-2. **Worker's honest deferral was defensible on scope grounds.** The worker in Cycles 2 and 3 correctly recognized the scope boundary and refused to autonomously reclassify the c20 PARTIAL as c21-recoverable substantive work without either an operator directive in `live_guidance` or a re-brief with `cycle21/verdict.json` as the required artifact. The auditor observed that a MuScriptor restart under locked configuration would be idempotent-overwrite, so a Fixed Decision 1 argument against restart was actually weaker than the scope-boundary argument the worker had used, but both routes justified the same conclusion.
-3. **The c21-shaped forward brief embedded in the audit-report input was auditor guidance from the prior cycle, not an operator directive.** Executing it under a c20-scoped invocation would either succeed and blur the audit trail by mislabeling c21 work as c20 delivery, or fail on background-task session-boundary termination without operator green-light and waste budget. Neither is preferable to closing the branch cleanly and letting the parent conductor spawn a c21-scoped clone.
-4. **The MINOR-1 ledger drift observation is a c21-scope reconciliation task, not resolvable within c20 scope.** Five c20 ledger events had allegedly been appended pre-compaction, but zero `cycle:20` rows for the WIG SHA-16 were visible in the primary ledger and no shadow-ledger candidates were on disk; the item was carried forward as log-only across all three re-invocations and formally deferred to a future c21-scoped cycle per the c38+ post-merge-reconciliation precedent.
+**Merge disposition.** This branch merges as `[[BRANCH_COMPLETE]]` on the strength of a clean VALIDATED audit. The required output artifact exists at the required path; every hard anchor is byte-identical pre-versus-post live-verified; the three-way rubric hash chain holds byte-equal; the Rome c20 backref resolves live; the twelve-case test suite runs green live; every rubric sub-clause is satisfied.
 
-## 4. Deliverables and integrity chains at branch close
+**M-V3-FOCUS-1 ≥3-accept bar CLOSED under operator D-A.** Three internal-gate accepts on record:
 
-**Required output artifact.** `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` present, 8 931 bytes, SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`. Byte-identical across four independent verification points.
+1. Chicken Grease — operator-ear-LANDED 2026-09-02 (mandatory, authoritative per FD-6).
+2. Rome c20 clone-1 — internal-gate accept, verdict SHA `d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`.
+3. **Disco A c21 clone-0 (this branch) — internal-gate accept, verdict SHA `28c3392934db6071…9859b2`.**
 
-**Three-way rubric-v2 chain.** Document SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict `rubric_hash_v2` field. Byte-equal at every verification point.
+The other two c21 fanout branches — WIG PARTIAL→LANDS restart and Peach Dream Options 1/2/3 — are now optional per D-A. In practice WIG went on to deliver a fourth internal-gate accept in the same c21 fanout arc, closing M-V3-FOCUS-1 with redundancy. Operator ear on the three A/B pairs remains the only authoritative LANDS gate per Fixed Decision 6; internal-gate accept is a chain-complete marker, not a substitute.
 
-**Anti-fabrication.** Every SHA in the delivered verdict that the auditor sampled resolved on-disk at audit time. Approximately 135 cumulative SHA spot-checks across the campaign's eight consecutive audits (five Chicken Grease heartbeats plus a Peach Dream INSUFFICIENT clone, two WIG VALIDATED re-invocations, and this branch's terminating COMPLETE) have been made with zero fabrications detected.
+**Cross-branch invariants held.** Chicken Grease c5 operator delivery, Rome c20 verdict, and c33 `render_stem.py` remain byte-identical across five consecutive M-V3-FOCUS-1 audit cycles. Peer-clone write disjointness holds at the sha16-subtree level with zero incursions.
 
-**Test suite.** `tests/test_v3_focus_wig_c20.py` at SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`, twelve-case shape landed. Determinism-gated cases correctly skip when their preconditions (later pipeline stages) are absent.
+## 5. Handoffs to the root conductor (log-only, non-blocking)
 
-**Housekeeping ledger events (MINOR-1 open).** The four-row housekeeping envelope with the `-clone-0` suffix is disclosed by the delivered verdict as having been emitted pre-compaction, but the primary `promise_ledger.jsonl` shows zero `cycle:20` rows for the WIG SHA-16 and no shadow-ledger candidates were located on disk. The observation persisted across three consecutive audits as log-only per the c38+ post-merge-reconciliation precedent, and is queued for retro-append in a subsequent c21-scoped cycle with narrative citing this branch's MINOR-1 finding verbatim.
+**MINOR-1 (shadow-ledger drift, recurring, non-blocking).** Six named substantive `M-V3-FOCUS-1/disco-a-*` unsuffixed rows plus four infra-family `-clone-0` auto-suffixed rows (nine-row shadow-ledger shard) land in the fork shadow via `AGENT_FORK_ID=0a1b1dca4f9b` and are concatenated into main `promise_ledger.jsonl` at post-merge integration under the c33/c48 auto-suffix concat path. Substantive on-disk artifacts all landed correctly; reconciliation is bookkeeping-only.
 
-## 5. Campaign-level state at branch close
+**MINOR-2 (brief-vs-on-disk rubric-hash discrepancy, upstream drift).** The parent brief-generator template quoted the c50 M-RECREATE-2 v2 rubric SHA `0e11f704…debe1f`, but the correct v3-spine `rubric_hash_v2` on disk is `c49db5a1…016451a` (used by every c4–c20 v3-spine delivery). The worker correctly adapted per Fixed Decision 1. Recommended fix at the brief-generator layer: dispatch the rubric SHA on milestone family — v3-spine `c49db5a1…016451a` for `M-V3-FOCUS-*`; M-RECREATE-2 v2 `0e11f704…debe1f` for `M-RECREATE-2/*`.
 
-The M-V3-FOCUS-1 milestone remains **in-progress** at the campaign level. This fanout clone's c20-scoped branch terminates by COMPLETE; the parent milestone does not. Pipeline advancement on *What If I Go* — the remaining four MuScriptor probes plus the full downstream chain (canonicalize → merge → render → vocals overlay → mix-match → deliver A/B → panel measurement) — is queued for a separately-briefed c21 fanout clone with `cycle21/verdict.json` as its required artifact.
+**MINOR-3 (cosmetic, panel.json cycle-field template hygiene).** `panel.json.cycle` is labeled `20` (template-mirrored from Rome c20 clone-1); the file's actual content is Disco-A-specific and correctly stored under `cycle21/`. No gate affected. Future clones inheriting the Rome c20 template should refresh `panel.json.cycle` to match the emitting cycle number.
 
-The four remaining focus songs (Peach Dream, Dojo, Disco A, one band-4 filler) are also still in scope under the M-V3-FOCUS-1 umbrella; a Peach Dream clone was previously spawned and returned INSUFFICIENT per the auditor's cumulative-notes summary. Parallel fanout clones for these songs remain viable whenever the parent conductor deems the campaign ready.
+**OBSERVATION (informational, not a defect).** `reconstruction_ab.wav` SHA equals `full_reconstruction.wav` SHA at `6b605598ac8ff6ca`. Mathematically expected because Disco A's D1-auto-picked section IS the operator's 30-second window, so the "A/B slice" equals the full 30-second reconstruction — identical shape to Rome c20 clone-1. Auditor discipline going forward: verify by SHA equality plus duration matching (30.000 s exact), not by SHA distinctness expectation.
 
-The wait-on-operator cadence policy exception under which this substantive branch operated does not automatically propagate to a subsequent c21-scoped clone; that clone would need either an explicit `live_guidance` directive greenlighting substantive advancement or a re-affirmation of the break-glass carveout. Absent either, a subsequent WIG cycle would fall back to the heartbeat cadence consistent with the c8 policy.
+**Additional root-conductor post-merge integration items:**
 
-The Chicken Grease M-V3-SPINE-1 milestone remains blocked on operator ear per Fixed Decision 6. Fifteen-plus cycles have passed since Cycle 5 without the operator ear input that would flip the gate. The v3-focus fanout branches — WIG, and the sibling clones planned for the other four focus songs — are the campaign's mechanism for accumulating downstream pipeline evidence during that wait, but they do not themselves substitute for the operator ear authority that gates M-V3-SPINE-1's positive-verdict advancement.
+- Roll M-V3-FOCUS-1 status from `in_progress/medium` to `in_progress/high` (do NOT roll to `validated` — that requires operator ear on the three A/B pairs per FD-6).
+- Register plan-of-record rows for the six new `M-V3-FOCUS-1/disco-a-*` sub-leaves plus `M-INGEST-1/egress-probe-cycle21-clone-0` plus `_archive/cycle-21-scratch-clone-0` plus `_infra/adopt-cycle21-tests-clone-0` to clear post-merge promise_check drift.
+- If the c21 clone-2 palette-render `PALETTE_MOVES_PANEL` verdict is confirmed by operator ear on Chicken Grease (D-D), c22+ should re-render Disco A, Rome, WIG, and Peach Dream under the palette path as secondary deliverables. Disco A GM chain remains primary reference until operator confirms D-D flip; do NOT rerun this cycle's GM chain.
 
 ## 6. Conclusions
 
-Clone 0 of fork `88d75f9754c3` delivered its scoped objective honestly. Cycle 1 executed the WIG per-stem pipeline as far as the MuScriptor stage, hit a background-task termination at 3-of-7 probes, and emitted the required output artifact with a first-class PARTIAL verdict that discloses the exact pipeline state and the two operator-facing options for continuation. Cycles 2 and 3 re-verified the artifact byte-identically against on-disk state without producing new substantive work; the Cycle 3 auditor closed the branch per the `<no-null-cycle-validation>` rule with COMPLETE and `[[BRANCH_COMPLETE]]`.
+Clone 0 of fork `0a1b1dca4f9b` executed the c22 S2 imperative cleanly and delivered the third M-V3-FOCUS-1 internal-gate accept in a single fanout cycle. The Disco A per-stem chain ran end-to-end mirroring the Rome c20 clone-1 pattern verbatim: byte-determinism ×2 on every deterministic artifact class (24 htdemucs stem SHAs, seven MuScriptor probes, seven canonical MIDIs, five per-track fluidsynth WAVs, the full-reconstruction WAV); all four structural gates passing on merged.mid; both panel comparisons finite; delivery of A/B WAVs at exactly 1 323 000 samples (30.000 s) plus the full-song reconstruction, manifest, panel, and rc7 per-stem loudness sidecar; verdict emission at SHA `28c33929…9859b2` with every integrity chain byte-equal and the Rome c20 backref pinned live; twelve-case test suite green live 12/12; required output artifact landed under `docs/`. Cycles 2 and 3 re-verified byte-identically and terminated the branch under `[[BRANCH_COMPLETE]]` after a clean VALIDATED audit.
 
-Three notable properties of this branch are worth recording. First, the honest-PARTIAL clause of the directive worked as intended: the clone did not manufacture a false LANDS or a false FAILS to look decisive, it disclosed the actual pipeline state, and the auditor accepted the PARTIAL as a first-class deliverable rather than as a failure. Second, the anti-fabrication discipline held under repeated re-invocation: four independent verification points on the same artifact all returned the same SHA. Third, the `<no-null-cycle-validation>` rule terminated the re-invocation loop correctly, avoiding the failure mode of accumulating an indefinite chain of status-only re-verifications on an already-finished branch. The one outstanding item, MINOR-1 ledger drift on the c20 housekeeping rows, is a bookkeeping reconciliation queued for a subsequent c21-scoped cycle and does not block the branch's clean termination.
+Disco A now stands as the third internal-gate accept under M-V3-FOCUS-1, closing the operator's D-A autonomous-completion contract's ≥3 gate without depending on WIG or Peach Dream. The subsequent WIG PARTIAL→LANDS restart in the same c21 fanout arc adds a fourth accept for redundancy. The M-V3-FOCUS-1 milestone advances substantively; operator ear on the three A/B pairs remains the only authoritative LANDS gate per Fixed Decision 6.
 
 ## Appendix: Implementation Details
 
-### A.1 Delivered artifact and integrity
+### A.1 Delivered artifacts
 
-Artifact: `data/v3/deliveries/252eb21ce7df7328/cycle20/verdict.json` (8 931 bytes; SHA `bd394c43c6134811257bb9b27539bf95e8d5b4663135d2646b0035f6b0e8ea2b`; byte-identical across four verification points).
+Required output artifact: `docs/v3_focus_disco_a_c21_report.md` (10 478 bytes).
 
-Three-way rubric-v2 chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict field.
+Verdict: `data/v3/deliveries/cdd2717e52820ff6/cycle21/verdict.json` (SHA `28c3392934db6071b8a…9859b2`, 9 698 bytes).
 
-Cadence policy pin: `docs/wait_on_operator_cadence_policy.md` SHA `0be540365c8c03ad38a15478fbad0fe32bf5ea4118e33ef3eeed62dbd9a0c7f2`.
+Delivery-side artifacts under `data/v3/deliveries/cdd2717e52820ff6/`: `original_ab.wav` (SHA-16 `f302ebe8047222d4`), `reconstruction_ab.wav` (`6b605598ac8ff6ca`), `full_reconstruction.wav` (`6b605598ac8ff6caefd5f1ec1444b94c25a52befe94a47d21d1a056747c3ff67`), `manifest.json` (`18bc3f48beaa7efe`), `merged.mid` (`7e6f131f07f0d33c`), `panel.json` (`ae3bd61463bc8d47`), `panel.tsv` (`21745e96b342e317`), `tempo_choice.json` (`e668e7155a65f014`), `rc7_per_stem_loudness_operator_section.json` (`2c075906299dde8a`).
 
-### A.2 Read-only upstream anchors consumed
+Working directories: `stems_6s/` (chosen-section), `stems_6s_full_song/` (full-song), `operator_section/`, `muscriptor_operator_section/`, `per_track/`, `mix_match_operator_section.json`.
 
-`data/v3/deliveries/31a164f845f8e27e/cycle19/verdict.json` SHA `1485f281acb42e3f13d50ee1001b8f1b0be14e733f1b122ea366e2390ada6bfd`. `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`. `scripts/v3_spine/midi_from_json_events.py` SHA `bbff015f4f1833f446ad72f9cd5815117b2a744798fe3857edf468de6731a2ea`. `scripts/v3_spine/mix_match_operator_section.py` SHA `4f47fbcd7bf89c2bdc46701ae8da1fd39a732e3cf1cec4683c619cb17b743f60`. `scripts/palette_render/render_stem.py` SHA `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b`. `data/recreate_v2/focus_set_v2.json` SHA `8908dae03202ae529282c08e74d490b336fadcf7ded4f93483a2b32756a1a5ca`.
+Merge report workspace-root fallback: `merge_report_c21_clone_0_disco_a_fork_0a1b1dca4f9b.md` (4 266 bytes); root-conductor `cp` to fanout path at merge time.
 
-### A.3 htdemucs stem determinism (operator section)
+### A.2 Chosen section
 
-Six stems byte-deterministic across two runs; roll-up sidecar `data/v3_spine/252eb21ce7df7328/operator_section/htdemucs_determinism.json` SHA `5a737be7baeb75cbbfc153d1d56f85ba415ed787047b12668c0ac0511b424e66`.
+t = 21.91963718820862 s to t = 51.91963718820862 s (30.0 s). Source: operator D1-chosen section from `focus_set_v2.json`.
 
-### A.4 MuScriptor per-probe hashes at cycle 1 close
+### A.3 Integrity chains
 
-Drums JSON `a8c28773a4d7a4571a5927b80306ac296211cb9cae722fc62f97ffc3d2b51c68`; drums MIDI `33de0cbc2ae02844c96391e02198b77692db939106067c09f724af78cde5db28`. Bass JSON `8060faaa728092546b38b83ced62f6738bf1a5cdac9fa64aa0a1373ad4af6904`; bass MIDI `543f1ab705b7b2fe845689ca4ef5274e2dd885a2d70121e7a1e175ceadf40cbe`. Guitar JSON `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` (canonical empty-events hash) and MIDI `b4134d5cce88b9049baca7d9efae3f7d592a42b22a47e4398cab2100dc75e10b`. Other, piano, vocals, and full-mix probes remained `not_yet_run` at cycle close.
+Three-way rubric-v2 chain: `docs/v3_spine_rubric_v2.md` SHA `c49db5a12e955f26c001165ad6e8f9d191bc26bfd96e24c1b163adc37016451a` == `data/v3_spine/rubric_hash_v2.txt` content == verdict `rubric_hash_v2` field; `three_way_equal=True`.
 
-### A.5 Tempo choice
+Rome c20 backref: `verdict.c20_backref.sha256 = d2c2d704ce910fde1b8110d07e978de998757a6d4c5564b32b6e272197a7afa6`, live-recomputed against `data/v3/deliveries/51e433ade2a845e1/cycle20/verdict.json`.
 
-Detected 50.174 BPM on the WIG operator-section drums via `librosa.beat.beat_track`; rc5 baseline 200.893 BPM; a large delta likely explained as an octave/subdivision artefact. No rc5 fallback applied per Fixed Decision 1. Tempo file SHA `a6b31110c68f2396698fce43ba17465e1003b9e9dab1939a3614af425ade31dd`.
+Cross-branch READ-ONLY anchors held byte-identical: Chicken Grease c5 operator delivery `cc919559b4508b6b…`; c33 `scripts/palette_render/render_stem.py` `214372d920a319a9…`.
 
-### A.6 Test suite
+### A.4 Byte-determinism (all deterministic artifact classes ×2)
 
-`tests/test_v3_focus_wig_c20.py` SHA `7fdb2737cbb7607e4cae1dfbae15d034c04beef16fab241ecdf309cdb8808a66`; twelve-case shape landed; determinism-gated cases skip cleanly when their preconditions (later pipeline stages) are absent.
+- htdemucs chosen section: six stems, run 1 == run 2 (12 SHAs).
+- htdemucs full song: six stems, run 1 == run 2 (12 SHAs). 24 stem SHAs total per the directive.
+- MuScriptor probes: seven probes, run 1 == run 2.
+- Canonical MIDI: seven probes, run 1 == run 2 (bass `72f5f41f…`, drums `ec28a915…`, guitar `41fc8284…`, vocals `7d99b621…`, other `ba633a44…`, piano `68ceb414…`, full_mix `bb4940c5…`).
+- Fluidsynth per-track WAV: five non-vocal stems, run 1 == run 2.
+- Full-reconstruction WAV: run 1 == run 2 == final == `6b605598ac8ff6caefd5f1ec1444b94c25a52befe94a47d21d1a056747c3ff67`.
 
-### A.7 Environment pins
+### A.5 Structural gates on merged.mid
 
-`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
+`drums_track_on_ch10_nonempty=true`, `bass_median_pitch_lt_55=true`, `vocals_track_present_symbolic=true`, `zero_notes_on_gm_program_4=true`. All four PASS.
 
-### A.8 Open items at branch close
+### A.6 Panel numbers
 
-MINOR-1 (log-only, carried across all three cycles): five c20 ledger events allegedly appended pre-compaction not visible in primary `promise_ledger.jsonl` under WIG SHA-16, no shadow-ledger candidates on disk. Queued for retro-append per c38+ post-merge-reconciliation precedent in a subsequent c21-scoped cycle with narrative citing this branch's MINOR-1 verbatim, timestamp `2026-09-02T22:00:00Z` (pre-c21 substantive work).
+Mel L1 = 13.7036 dB; spectral centroid RMSE = 3 142.4014 Hz; RMS-env RMSE = 0.2225; LUFS-M RMSE = 10.6570 LU; VGGish cosine distance = 0.2219. Both root and operator-section panels finite. Panel is not a LANDS gate.
 
-Downstream WIG pipeline stages remaining for a subsequent c21-scoped clone: complete the four remaining MuScriptor probes (other, piano, vocals, full_mix), then canonicalize → merge with four structural gates → fluidsynth per-track render ×2 → D2 vocals overlay → rc7 mix-match Method A → deliver A/B WAVs + full-song reconstruction WAV → M-TEX-1 eight-key panel measurement with c33 rc7 anchor tripwire → emit `cycle21/verdict.json`.
+### A.7 Test suite
 
-### A.9 Source sessions
+`tests/test_v3_focus_disco_a_c21.py` (6 382 bytes), twelve-case shape: verdict shape, rubric chain, c20 backref, structural gates, byte-det ×2, mido version, vocals symbolic, A/B 30 s non-silent, panel eight-key finite, and hygiene grep. Live re-run at Cycle 3 audit returned "Ran 12 tests in 0.101 s — OK" with every test 1–12 green.
+
+### A.8 Environment pins
+
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `torch.manual_seed(0)`; `mido==1.3.3`; SoundFont SHA `74594e8f…1cb0`; MuScriptor model SHA `ac80adbd…7fb97ec`.
+
+### A.9 Anti-patterns locked (no re-attempt observed this cycle)
+
+VST3 state extraction (c31 STILL_GAP + c35 SPINE); CLAP HF SSL fetch (c11); M-EAR-1 Path A audits under N=55 (c22/c23/c25); c37 pretty_midi merge_partial. Test 12 grep-verifies zero re-attempts.
+
+### A.10 Handoffs for root conductor (log-only)
+
+MINOR-1 (shadow-ledger drift, non-blocking): nine-row shadow-ledger shard (6 substantive unsuffixed + 4 infra `-clone-0` auto-suffixed) awaits post-merge concat via c33/c48 auto-suffix path.
+
+MINOR-2 (brief-vs-on-disk rubric-hash discrepancy): brief-generator quoted `0e11f704…debe1f` (c50 M-RECREATE-2 v2 rubric); on-disk v3-spine `rubric_hash_v2` is `c49db5a1…016451a`; worker correctly adapted per FD-1; recommended fix at brief-generator layer.
+
+MINOR-3 (cosmetic, panel.json cycle-field): `panel.json.cycle` labeled `20` (template-mirror from Rome c20); content Disco-A-specific and correctly stored under `cycle21/`; no gate affected.
+
+OBSERVATION (informational, not a defect): `reconstruction_ab.wav` SHA == `full_reconstruction.wav` SHA — expected shape for D1-30s-window songs (same shape as Rome c20 clone-1).
+
+Root-conductor c22+ integration items: roll M-V3-FOCUS-1 to `in_progress/high` (not `validated` per FD-6); register 9 plan-of-record rows to clear promise_check drift; if D-D palette-becomes-primary fires, c22+ re-renders Disco A + peers under palette path as secondary deliverables.
+
+### A.11 M-V3-FOCUS-1 accept status at branch close
+
+Three internal-gate accepts on record (closing the ≥3 gate under operator D-A): Chicken Grease (operator-ear-LANDED 2026-09-02, mandatory); Rome c20 clone-1 (`d2c2d704…`); Disco A c21 clone-0 (`28c33929…9859b2`, this branch). WIG c21 clone-1 subsequently added a fourth accept for redundancy at `95edf6cc…9bfec8`. Peach Dream c20 clone-2 remains PARTIAL terminal via Option 3 accept. Operator ear on the three A/B pairs remains the only authoritative LANDS gate per FD-6.
+
+### A.12 Source sessions
 
 | Cycle | Researcher | Worker | Auditor |
 |---|---|---|---|
-| 1 | 8e854a84-71e6-49dc-8eaa-dc07425b91e8 | 3d37cb74-2e55-49c9-83d9-8c36e6bbdcd7 | 16386e4d-a054-448d-89be-6c4444b893a5 |
-| 2 | 6bc6085e-5c1c-410d-83a5-b3ba8703504d | 996b9b05-4d02-4980-a1fb-d76ea13857b0 | 216daad0-a0ca-46a0-8957-43bad5e2684b |
-| 3 | 6a6269e6-410d-42e5-80bb-2f60f11a1fe0 | 71107169-382c-47c4-b24a-780a5b04b976 | 3809e8ff-69b3-4707-86b8-dc0228ee3b31 |
+| 1 | 90d1c4dc-c904-4006-98a0-05b528bff9dc | 395d0057-684c-469a-a2b4-42f404df339e | 292e8e3f-a5f2-484b-b5ee-1d8809339a2f |
+| 2 | c3db5dec-0ce9-4c41-8e46-94c2f6776710 | de73d4c2-d669-42b3-bb9c-3f59031b03f8 | c91d51eb-caec-45ee-9917-ff191738ce28 |
+| 3 | 25c99619-2bd5-4f88-84e5-6710db2e1456 | 342a6663-a25d-41bd-861b-27d2299ce3f8 | 7d5121f4-2ab6-4521-8af0-3bc9f67b0ff0 |
 
-### A.10 Fanout metadata
+### A.13 Fanout metadata
 
-Fork `88d75f9754c3`. Clone 0 of the WIG assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-88d75f9754c3/clone-0/merge_report.md` for parent-conductor pickup. Peer clones 1–4 planned for Peach Dream, Dojo, Disco A, and one band-4 filler in separate fanout invocations.
+Fork `0a1b1dca4f9b`. Clone 0 of the Disco A launch assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-0a1b1dca4f9b/clone-0/merge_report.md` for parent-conductor pickup; workspace-root fallback at `merge_report_c21_clone_0_disco_a_fork_0a1b1dca4f9b.md`. Sibling clones 1 (WIG restart) and 2 (Chicken Grease palette render) reported separately.
