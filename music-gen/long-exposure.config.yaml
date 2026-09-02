@@ -46,7 +46,7 @@ interactive_turn_timeout_seconds: 1800  # max wait for one interactive turn's re
 # === Compact ===
 compact_threshold: 0.90
 reanchor_enabled: true
-compact_db: /home/user/music-gen-instance/data/sessions.db
+compact_db: /home/user/music-gen-instance-v3/data/sessions.db
 max_summary_pct: 0.15
 depth_compression: gentle
 
