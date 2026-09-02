@@ -314,3 +314,148 @@ truth reports separately from its round-trip identity F1: they measure
 different things, and only the former is bounded by these transcription
 gaps.
 
+# 4. The Merged Score, the MuseScore Bridge, and the Rules Ledger
+
+## 4.1 What "score" means in this pipeline
+
+Between the stem-level MIDI emitted in Section 3 and the DAW render in
+Section 5, the pipeline maintains a single *merged score* per song: a
+notated symbolic representation that carries all four stems in one
+document, respects part boundaries and voice constraints, and is
+round-trippable through a real notation engine. The design decision to
+route symbolic material through a notation engine — rather than
+concatenating stem MIDIs and passing them straight to a synthesiser — is
+what lets the downstream rules ledger reason over musically-typed
+constructs (chord changes, section labels, voice leading) instead of
+over raw note events.
+
+## 4.2 The MuseScore headless bridge
+
+The notation engine is MuseScore 3, invoked as `mscore3 3.2.3` in
+headless mode via `QT_QPA_PLATFORM=offscreen`. This choice was forced by
+determinism: MuseScore 4's rendering pipeline exhibits per-invocation
+variation on stem beam grouping and rest positioning that we could not
+tame; MuseScore 3.2.3 does not.
+
+Even in 3.2.3 the export path is not deterministic out of the box. The
+pipeline runs a scrubbing step on every emitted MusicXML that strips:
+
+- the `<source>` and `<encoding-date>` metadata blocks,
+- MuseScore-internal layout ids (`<sound>` element `id` attributes),
+- floating-point layout coordinates below a fixed precision,
+- and the `<software>` tool-version string.
+
+After scrubbing, two independent MusicXML→MIDI→MusicXML→MIDI→MusicXML
+round-trips on the 8-bar seed produce byte-identical final MusicXML.
+This byte-identity across two full round-trips is the acceptance
+criterion for the bridge; without it, no downstream artifact would be
+reproducible from a re-run of the same input.
+
+## 4.3 The per-part MIDI voice cap and the interval-graph workaround
+
+MIDI as consumed by MuseScore imposes a hard cap on the number of
+simultaneous voices per part. On dense `other`-stem transcriptions this
+cap fires routinely — basic-pitch emits polyphony freely, and the notes
+do not partition into a small number of monophonic voices by any
+obvious rule.
+
+The pipeline solves this by treating voice assignment as an interval
+graph colouring problem: each note is a vertex, an edge connects two
+notes whose sustained intervals overlap, and a proper vertex colouring
+assigns each note a voice such that no two overlapping notes share a
+voice. The colouring is computed greedily in earliest-onset order; the
+number of colours used is the number of voices emitted for that part.
+When the number would exceed the cap, the algorithm splits the part
+into additional parts (rather than dropping notes) so no material is
+lost. This is one of the few places in the pipeline where the artefact
+schema is manipulated to keep a downstream tool happy; the manipulation
+is explicit, reversible on inspection, and documented in the merged
+score's `<part-list>`.
+
+## 4.4 Round-trip identity F1 and score-vs-ground-truth F1
+
+Two F1 numbers are reported for the merged score, and they measure
+different things:
+
+- **Round-trip identity F1 (self-vs-self).** The 8-bar seed is
+  round-tripped through xml → mid → xml → mid → xml twice. Note-level
+  F1 comparing the final MIDI to the input MIDI is **1.00** for
+  drums, bass, and other. This measures whether the notation and MIDI
+  round-trips are lossless.
+- **Score-vs-ground-truth F1 (transcription-bounded).** On the M-SEP-1
+  synth reference, note-level F1 comparing the merged score to the
+  tiled ground truth is **upper-bounded by basic-pitch's per-axis F1
+  from Section 3.6**: pitch F1 ≤ 0.92 on drums, ≤ 0.86 on bass,
+  ≤ 0.71 on other. The merged score does not recover notes basic-pitch
+  did not emit; the notation stage is faithful to its input, not
+  clairvoyant about its input.
+
+Reporting these two numbers side by side is the honest form of the
+result: the notation-and-MIDI pipeline itself is exact, and the
+end-to-end score fidelity is bounded by the transcription stage above
+it.
+
+## 4.5 The rules ledger: schema and identity
+
+The rules ledger (M-RULES-1) is the pipeline's symbolic knowledge base.
+Each row is a typed rule spanning one of five categories:
+
+- **harmonic** (chord progression, cadence, modulation),
+- **rhythmic** (metre, hemiola, syncopation pattern),
+- **melodic** (contour, interval, motif),
+- **form** (repeat, section, arrangement layout),
+- **arrangement** (instrumental role, tessitura, register).
+
+Every rule row carries:
+
+- a `rule_id` computed as the SHA-256 of the normalised rule body (so
+  two independently-extracted identical rules deduplicate to one row),
+- a `provenance` pointer to the merged-score fragment the rule was
+  extracted from (song hash + measure range + part id),
+- a `type` field naming one of the five categories,
+- a `parameters` blob whose schema depends on the type,
+- and an `emitted_by` field naming the extractor version.
+
+The schema is validated at write time against a planted-invalid
+rejection matrix: for each of eleven synthetic malformations (wrong
+type, missing field, mistyped parameter, dangling provenance,
+non-canonical order, etc.), the writer must reject the row. This
+matrix is exercised on every schema change.
+
+## 4.6 Extraction ledger growth: 28 → 76 rules
+
+The first-generation extractor, run on the 8-bar seed alone, produced
+**28 rules**: 9 harmonic, 5 rhythmic, 7 melodic, 3 form, 4
+arrangement. The second-generation extractor, run on three additional
+seeds drawn from the focus set, grew the ledger to **76 rules** with
+zero duplicate `rule_id`s and zero rejections against the
+planted-invalid matrix. The growth curve is sub-linear in seeds — as
+expected, since common cadence, metre, and motif rules recur across
+material — but does not plateau: the second-generation extractor's
+long tail includes several arrangement rules (drums-plus-bass unison
+downbeats, vocals-lead-then-doubled) that the 8-bar seed alone did
+not exhibit.
+
+## 4.7 Concat hardening and the tiled generation path
+
+Once the ledger reached 76 rules, a hardening step exercised the
+concatenation-and-projection path used by generation (Section 8): a
+sampled subset of rules is projected onto a tiled sequence of empty
+measures, the resulting merged score is round-tripped, and the
+identity F1 is checked against the pre-round-trip state. This closed a
+family of edge cases around tempo changes at tile boundaries and time
+signature restatement. Hardening is what took the merged-score bridge
+from "works on the seed" to "works on synthetically-generated inputs
+of arbitrary length".
+
+## 4.8 What the reader should carry forward
+
+- The merged-score bridge is byte-exact across two full round-trips
+  and imposes no additional loss beyond transcription.
+- The rules ledger is typed, provenance-tracked, and hash-deduplicated;
+  76 rules across five categories at the point of writing.
+- Every downstream reasoning stage — rule-based part assignment in
+  Section 5, texture-panel input generation in Section 6, palette
+  choice in the DAW render — reads from the ledger, not from the
+  merged score directly.
+
