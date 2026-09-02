@@ -1,256 +1,307 @@
 ---
-title: "Music-Gen v3 SPINE Milestone — Fanout Clone 2: Chicken Grease Palette Render (Cycles 1–2)"
+title: "Music-Gen v3 RULES Milestone — Fanout Clone 2: First Activation of M-V3-RULES-1 (Cycles 1–2)"
 date: "2026-09-02"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen v3 SPINE Milestone — Fanout Clone 2: Chicken Grease Palette Render (Cycles 1–2)
+# Music-Gen v3 RULES Milestone — Fanout Clone 2: First Activation of M-V3-RULES-1 (Cycles 1–2)
 
 ## Abstract
 
-This report covers Cycles 1 and 2 of a fanout-clone branch spawned from the Music-Gen v3 campaign's newly-post-operator-LANDS phase on Chicken Grease. On 2026-09-02 the operator LANDED the Cycle 5 v3 fluidsynth reconstruction on Chicken Grease as the campaign's operator-blessed reference, closing the M-V3-SPINE-1 gate that had been open since Cycle 4. A subsequent operator D-D directive authorized a secondary-deliverable arm: attempt a palette-render sibling using Surge XT (VST3 via DawDreamer) for bass, sfizz for guitar/piano/other, fluidsynth GM channel 10 for drums (unchanged from Cycle 5 to preserve the rhythmic reference), and htdemucs vocals verbatim (D2, also unchanged from Cycle 5). The intent: if the palette render moves the perceptual panel *and* the operator confirms audibly-different-AND-audibly-better on A/B, palette becomes primary campaign-wide.
-
-Clone 2 of fork `0a1b1dca4f9b` executed the palette-render pipeline against a frozen three-verdict rubric (`PALETTE_MOVES_PANEL / PALETTE_NEUTRAL / RENDER_FAILS`) committed before any script was written. Cycle 1 delivered the required output artifact `docs/v3_spine_chicken_grease_palette_render_c21_report.md` plus the palette-rendered full reconstruction, A/B deliverables, matched per-stem WAVs, both panel comparison sidecars, and the `cycle21/verdict_palette.json` sibling delivery (which explicitly does not overwrite the operator-blessed Cycle 5 delivery). The frozen rubric fired **PALETTE_MOVES_PANEL** on the Comparison B threshold (four of five numeric panel keys exceeded the 5% relative-delta threshold on the fluidsynth-vs-palette comparison). Cycle 2 was a re-verification audit that live-cross-checked every anchor, three-way rubric chain, and hard-anchor byte-identity, and terminated the branch with `COMPLETE` and `[[BRANCH_COMPLETE]]`. Two important honesty caveats surface prominently in the verdict and are the load-bearing input to the operator's forthcoming palette-becomes-primary decision: (a) the Surge XT VST3 bass path failed the byte-determinism ×2 gate after three fresh-tempdir attempts, with a `max_pairwise_rms` of 0.0656 versus the c36 clone-2 envelope of 1e-4, so the bass stem honestly fell back to a fluidsynth GM 33 render; and (b) the sfizz path failed on `sfz_dir_missing_no_sfz_files_in_workspace`, so guitar, piano, and other honestly fell back to fluidsynth GM 25/0/88. The net effect is that all six palette-render stems are, at bottom, fluidsynth GM renders with the Cycle 6 Method B rc7 12-band iirpeak EQ + RMS + LUFS-S loudness match applied on top. The panel movement is real and numerically first-class, but the operator's forthcoming ear judgment must discriminate GM-plus-EQ-plus-loudness from genuine sampler/synth timbral character.
+This report covers Cycles 1 and 2 of a fanout-clone branch spawned from the Music-Gen v3 campaign to open the M-V3-RULES-1 milestone for the first time. The clone (fork `d5530f8d1ccc`, clone 2) was assigned under the c23 operator directive's "determinism-for-generation-half" stance and the operator's 2026-09-02 "KEEP MOVING, DO NOT WAIT FOR APPROVAL" directive that closed M-V3-FOCUS-1 with three-of-three operator-ear accepts on the mandatory Chicken Grease and two focus songs (What If I Go and Disco A). The clone's scoped objective was to design and prototype a deterministic rules-extraction program over the operator-approved v3-rendered corpus — the four focus-song merged.mid deliveries from Cycles 5, 20, and 21 (Chicken Grease `31a164f845f8e27e`, What If I Go `252eb21ce7df7328`, Rome `51e433ade2a845e1`, Disco A `cdd2717e52820ff6`) — with a frozen three-way `rubric_hash_v3_rules` byte-equality chain committed before any script was written and a byte-determinism ×2 gate on the emitted rules artifact. Cycle 1 delivered the required output artifact `docs/v3_rules_deterministic_extractor_spec_c23.md` (13 058 bytes, SHA `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`), landed the prototype extractor at `scripts/v3_rules/extract_rules.py`, and emitted the rules artifact at `data/v3/rules/rules_artifact.jsonl` (47 662 bytes, SHA `e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`) — 76 typed rules across five rule types (harmonic 18, rhythmic 18, melodic 18, form 18, arrangement 4) with per-stem provenance from the v3 doctrine — plus 15/15 tests green, 33 read-only anchors preserved byte-identical, a fetchability ladder recording the survey-open-source-first library enumeration, and an internal auditor verdict `V3_RULES_LANDS_pending_operator` with `operator_ear_dependency=false` because M-V3-RULES-1 has no ear-gate. Cycle 2 was an explicit bookkeeping-only no-op cycle per the research brief; the auditor performed live SHA re-verification on every anchor with byte-exact match to the Cycle 1 delivery and closed the branch under `COMPLETE` and `[[BRANCH_COMPLETE]]`. This is the first activation of the operator's rules-hashed contract for the M-V3 arc, and it opens the campaign's generation-half by materializing a corpus of extracted rules that a subsequent M-V3-GEN-1 milestone can consume as its input.
 
 ## 1. Introduction and scope
 
-The M-V3-SPINE-1 milestone had sat in `blocked_on_operator` state for fifteen-plus heartbeat cycles since Cycle 5 under Fixed Decision 6. On 2026-09-02 the operator's ear judgment landed positively on the Cycle 5 Chicken Grease A/B pair, flipping M-V3-SPINE-1 to LANDED and opening the door to a secondary-deliverable arm the operator named D-D: attempt a palette render on the same operator-chosen section (t = 233.63918–263.63918 s) using higher-quality synthesizers than fluidsynth's GM SoundFont, and see whether the perceptual panel moves.
+The v3 campaign's milestone structure required M-V3-SPINE-1 (per-song per-stem reconstruction pipeline) and M-V3-FOCUS-1 (at least three focus-song accepts) to close before the downstream milestones — M-V3-CORPUS-1 (corpus breadth), M-V3-RULES-1 (rules extraction), M-V3-EAR-1 (ear model), and M-V3-GEN-1 (generation) — could open. M-V3-SPINE-1 closed at Cycle 20 with the operator's ear judgment on the Cycle 5 Chicken Grease reconstruction. M-V3-FOCUS-1 closed with redundancy across Cycles 20–21 fanout arcs and became fully operator-ear-blessed on 2026-09-02 (three-of-three accepts on Chicken Grease + WIG + Disco A). The operator's directive on the same date — "KEEP MOVING, DO NOT WAIT FOR APPROVAL" — released the campaign to open the generation-half milestones without waiting for further per-song ear judgment on the remaining PARTIAL cases (Peach Dream, Rome).
 
-This report is the merge-disposition summary for clone 2 (Chicken Grease palette render) of fork `0a1b1dca4f9b`. Sibling clones in the same fork run other v3 objectives; they are covered in separate reports.
+The c23 operator directive named the immediate opening as M-V3-RULES-1 under a "determinism-for-generation-half" stance: the rules-extraction step that feeds the eventual M-V3-GEN-1 generator must be byte-deterministic under fixed environment pins so that the generator's inputs are reproducible cycle over cycle. The directive also invoked the standing "survey-open-source-first" rule (enumerate candidate library dependencies before writing custom logic, with an on-disk-vs-blocked fetchability probe under the proxy that never attempts actual fetches).
 
-The clone's scoped objective as issued was:
+This report is the merge-disposition summary for clone 2 of fork `d5530f8d1ccc`. Sibling clones in the same fork run parallel opening work on other downstream milestones; they are covered in separate reports.
 
-- **Read the operator-blessed Cycle 5 canonical per-stem MIDIs** as READ-ONLY sources from `data/v3_spine/31a164f845f8e27e/operator_section/canonical_midi/{bass,guitar,piano,other}.mid`, with SHAs asserted byte-identical pre-versus-post.
-- **Route the four melodic stems through a palette**: bass → Surge XT VST3 via DawDreamer with c33 Branch B P1-iterate-parameters hydration (proven at c35 with 100% parameter coverage, 2 855/2 855 params); guitar/piano/other → sfizz via the `sfizz_render` CLI with SFZ file paths logged and a fluidsynth GM fallback if the SFZ files are unfetchable.
-- **Preserve the Cycle 5 references** on the two non-palette stems: drums → fluidsynth GM channel 10 (unchanged from Cycle 5 to preserve the rhythmic reference); vocals → htdemucs vocals verbatim (D2, also unchanged from Cycle 5).
-- **Byte-determinism ×2 gate** on each per-stem WAV, rendered into fresh `tempfile.mkdtemp()` directories. A `REDEFINED_GAP` first-class verdict arm was pre-authorized if the bass Surge XT path failed byte-equality after three fresh-tempdir attempts, with the c36 clone-2 characterization envelope `max_pairwise_rms ≤ 1e-4` allowed.
-- **Apply the Cycle 6 Method B rc7 loudness chain verbatim** as a READ-ONLY import of `scripts/v3_spine/rc7_v2_rerun_v3_paths.py`: 12-band iirpeak EQ + RMS + LUFS-S loudness match.
-- **Deliver the palette-rendered full reconstruction** at `data/v3_spine/31a164f845f8e27e/palette_render/full_reconstruction_palette.wav` as a sibling to (never a replacement of) the Cycle 5 `operator_section/full_reconstruction_operator_section.wav` (the operator-blessed hard anchor, SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`).
-- **Deliver A/B WAVs plus manifest** under `data/v3/deliveries/31a164f845f8e27e/palette_render/`.
-- **Measure the eight-key perceptual panel twice**: Comparison A (original vs palette-render) and Comparison B (Cycle 5 fluidsynth-render vs palette-render), both with all five reported numeric keys finite.
-- **Freeze the three-verdict rubric before any script was written** under `scripts/v3_spine/palette_render/`, with the enum `{PALETTE_MOVES_PANEL, PALETTE_NEUTRAL, RENDER_FAILS}`.
-- **Emit** `data/v3/deliveries/31a164f845f8e27e/cycle21/verdict_palette.json` (sibling to `cycle20/`, never overwriting the operator-blessed Cycle 5 delivery) under a byte-equal three-way `rubric_hash_v2` chain.
-- **Six named plus two housekeeping ledger events** under the `-clone-2` suffix, with the substantive `M-V3-SPINE-1/chicken-grease-palette-render` row unsuffixed per the c32 convention.
+The clone's scoped objective as issued:
 
-The required deliverable is `docs/v3_spine_chicken_grease_palette_render_c21_report.md`.
+- **Pin the rubric document** `docs/v3_rules_deterministic_extractor_spec_c23.md` before any script under `scripts/v3_rules/`, with a three-way `rubric_hash_v3_rules` byte-equality chain (doc SHA == `data/v3/rules/rubric_hash.txt` content == verdict field).
+- **Enumerate constraint/grammar/statistical-sampler libraries** (music21, mingus, jsonschema-driven grammar, sklearn) via a fetchability probe under the proxy — no fetch attempts, `fetchability_ladder.jsonl` records what is on disk versus blocked.
+- **Prototype `scripts/v3_rules/extract_rules.py`** that reads the four operator-approved deliveries read-only and extracts typed rules per the c9 rule schema (harmonic, rhythmic, melodic, form, arrangement) but with per-stem provenance from v3 doctrine.
+- **Emit** `data/v3/rules/rules_artifact.jsonl` plus a self-anchor `rules_artifact.sha256`.
+- **Prove byte-determinism ×2**: two fresh `tempfile.mkdtemp()` runs produce byte-identical `rules_artifact.jsonl`.
+- **Preserve read-only predecessor ledgers** (c9 `data/rules/ledger.jsonl`, c15 `ledger_i3_dminor.jsonl`, c40 `ledger_rated_corpus.jsonl`) unchanged; write only to the fresh `data/v3/rules/` shard.
+- **Hygiene**: interpreter guard `/usr/bin/python3`, zero PRNG imports (or explicit `random_state=0` recorded in the artifact), zero `sidecar_nonfactor` imports, zero VST3 state APIs.
+- **Test suite** at `tests/test_v3_rules_deterministic_extractor.py` with at least 12 of 15 tests passing.
+- **Six named plus two housekeeping ledger events** under `M-V3-RULES-1/*`.
 
-## 2. Cycle 1: rubric freeze, palette-render pipeline, verdict emission
+The required output artifact is `docs/v3_rules_deterministic_extractor_spec_c23.md`.
+
+## 2. Cycle 1: full M-V3-RULES-1 opening
 
 ### 2.1 Rubric freeze (before any script)
 
-`docs/v3_spine_chicken_grease_palette_render_c21_rubric.md` (SHA `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879`) was committed before any script under `scripts/v3_spine/palette_render/`, with the mtime hard-verified. Its pinned hash file at `data/v3_spine/31a164f845f8e27e/palette_render/rubric_hash_v2.txt` carries the same SHA verbatim. The rubric defines the three-verdict enum, the Comparison B threshold (a verdict of `PALETTE_MOVES_PANEL` fires if the palette-render's Comparison B numeric panel keys move by ≥5% relative on ≥3 of 5 keys), the byte-determinism ×2 mandatory sub-clause with the `REDEFINED_GAP` fallback envelope for the Surge XT bass stem, and the sfizz-fallback ladder for the SFZ-driven stems.
+`docs/v3_rules_deterministic_extractor_spec_c23.md` (13 058 bytes, SHA `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`) was committed before any script under `scripts/v3_rules/`, with the mtime hard-verified. Its pinned hash file at `data/v3/rules/rubric_hash.txt` carries the same SHA verbatim. The rubric defines the extractor's five rule types (harmonic, rhythmic, melodic, form, arrangement), the per-stem provenance schema extending the c9 rule schema with the v3 doctrine's stem-level annotations, the byte-determinism ×2 mandatory sub-clause, the fetchability-ladder survey requirements, and the acceptance rule that panel measurements are never a LANDS gate (FD-6 continues to hold on M-V3-RULES-1 even though the milestone has no ear-gate).
 
-### 2.2 Fetchability ladder and per-stem routing
+### 2.2 Fetchability ladder (survey-open-source-first)
 
-The palette-render pipeline executed a fetchability ladder for each melodic stem and honestly recorded the routing decision at each rung. The ladder outcomes are logged at `data/v3_spine/31a164f845f8e27e/palette_render/fetchability_ladder.jsonl` and summarized in the verdict as `sfizz_fallback_reason: sfz_dir_missing_no_sfz_files_in_workspace` and `sfizz_fallback_stems: [guitar, piano, other]`:
+The clone probed the on-disk availability of four candidate library families named by the directive without attempting any network fetch, and recorded the outcomes at `data/v3/rules/fetchability_ladder.jsonl` (484 bytes). The chosen implementation strategy per the ladder outcomes: pure stdlib plus `mido` (already vendored via the campaign's mido 1.3.3 pin), no music21, no mingus, no jsonschema-driven grammar, no sklearn. This decision minimizes external dependency surface while satisfying the deterministic-extraction contract.
 
-| Stem | Intended path | Actual path | Fallback reason |
-|---|---|---|---|
-| bass | Surge XT VST3 via DawDreamer (c33 Branch B, 2 855/2 855 params) | fluidsynth GM program 33 | Byte-determinism ×2 failed after 3 fresh-tempdir attempts with `max_pairwise_rms = 0.0656` (outside the c36 clone-2 envelope of 1e-4). `REDEFINED_GAP` first-class fallback arm engaged. |
-| guitar | sfizz via `sfizz_render` CLI | fluidsynth GM program 25 | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| piano | sfizz via `sfizz_render` CLI | fluidsynth GM program 0 | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| other | sfizz via `sfizz_render` CLI | fluidsynth GM program 88 | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| drums | fluidsynth GM channel 10 (unchanged from c5) | fluidsynth GM channel 10 | (intended path taken) |
-| vocals | htdemucs vocals verbatim (D2, unchanged from c5) | htdemucs vocals verbatim | (intended path taken) |
+### 2.3 Prototype extractor and rules artifact
 
-The net effect is that all six palette-render stems reach fluidsynth GM at the bottom of their respective ladders. This is a first-class honest disclosure per Fixed Decision 1, not a failure to smooth over. It is called out prominently in the verdict via the `sfizz_fallback_stems` and `sfizz_fallback_reason` fields and is the load-bearing MINOR-3 observation for the operator's forthcoming ear judgment.
+`scripts/v3_rules/extract_rules.py` reads the four operator-approved deliveries as read-only inputs:
 
-The Surge XT bass byte-determinism failure with `max_pairwise_rms = 0.0656` is significant: it is roughly 655× the c36 clone-2 characterization envelope of 1e-4 and does not qualify as small-perturbation-tolerable, so the c33 `REDEFINED_GAP` fallback arm correctly declined the Surge XT bass render rather than accepting a nondeterministic artifact. This is an important negative finding on its own — it demonstrates that even with 100% parameter hydration (2 855/2 855 params proven at c35), the Surge XT VST3 binary carries an internal nondeterminism envelope larger than the campaign's acceptance threshold on this specific input path.
+- Chicken Grease (`31a164f845f8e27e`) — merged.mid from Cycle 5, operator-blessed on 2026-09-02.
+- What If I Go (`252eb21ce7df7328`) — merged.mid from Cycle 21 clone-1 restart (SHA `a93f5c2ae16e5cace42b98886f6ce3eae4bb47393bef9d2abe631aadbe526578`).
+- Rome (`51e433ade2a845e1`) — merged.mid from Cycle 20 clone-1 (SHA `c28b8686684fddfc841a27e96e299a93f1099fe99a5de4e461935ff2a9cfcd8a`).
+- Disco A (`cdd2717e52820ff6`) — merged.mid from Cycle 21 clone-0 (SHA-16 `7e6f131f07f0d33c`).
 
-### 2.3 Per-stem palette renders
+Determinism mechanism: pure stdlib plus mido; canonical JSON serialization via `_canonical_json(sort_keys=True, separators=(",",":"))`; fixed extraction timestamp `2026-09-02T00:00:00Z`; content-hashed `rule_id` per rule (16-hex derived from the canonical parameters); explicit `parameters_random_state=0` recorded per rule; no PRNG imports; no rendering; no plugin state.
 
-Per-stem matched WAVs landed at `data/v3_spine/31a164f845f8e27e/palette_render/matched_{bass,drums,guitar,other,piano,vocals}.wav`. Each was rendered twice into fresh temporary directories with the SHA-256 asserted equal across the two runs (byte-determinism ×2 gate satisfied on the six stems that reached their final routing, with the bass Surge XT failure disclosed above). The byte-determinism roll-up sits at `data/v3_spine/31a164f845f8e27e/palette_render/byte_determinism.json`.
+Emitted rules artifact `data/v3/rules/rules_artifact.jsonl` (47 662 bytes, SHA `e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`): 76 rules total across five rule types with the per-stem provenance schema:
 
-### 2.4 Cycle 6 Method B loudness chain applied verbatim
-
-The rc7 12-band iirpeak EQ + RMS + LUFS-S loudness match from Cycle 6 Method B was applied verbatim through a READ-ONLY import of `scripts/v3_spine/rc7_v2_rerun_v3_paths.py` (Cycle 6 anchor, unchanged). The palette-rendered full reconstruction landed at `data/v3_spine/31a164f845f8e27e/palette_render/full_reconstruction_palette.wav`, sibling to (never overwriting) the Cycle 5 operator-blessed `operator_section/full_reconstruction_operator_section.wav`.
-
-### 2.5 Panel measurement
-
-The eight-key perceptual panel was measured on both required comparisons, with all five reported numeric keys finite on both:
-
-**Comparison A (original vs palette-render)** at `panel_original_vs_palette.json/tsv`:
-
-| Key | Value |
+| Rule type | Count |
 |---|---:|
-| `spectral_centroid_rmse_hz` | 1 149.89 |
-| `mel_l1_db` | 6.360 |
-| `rms_env_rmse` | 0.1071 |
-| `lufs_m_rmse_lu` | 4.514 |
-| `embedding_cosine_distance` (VGGish) | 0.24335 |
+| harmonic | 18 |
+| rhythmic | 18 |
+| melodic | 18 |
+| form | 18 |
+| arrangement | 4 |
 
-**Comparison B (Cycle 5 fluidsynth-render vs palette-render)** at `panel_fluidsynth_vs_palette.json/tsv`:
+Each rule row carries: `event_type: "rule"`, `event_id` (16-hex content hash), `rule_id` (16-hex content hash), `rule_type`, `extractor` (extractor family, e.g. `extract.arrangement`), `extractor_version` (`v3-rules-c23-1`), `parameters` (rule-type-specific typed body), `parameters_random_state: 0`, `provenance_pointers` (array pinning source song SHA-16, stem name, MIDI track index, PPQ, measure range), `scope` (level and time-window), `schema_v: 1`, `confidence` (deterministic per-rule score, e.g. 0.65 on arrangement rules with sensible window coverage), and `ts` (fixed `2026-09-02T00:00:00Z`).
 
-| Key | Value |
-|---|---:|
-| `spectral_centroid_rmse_hz` | 3 120.31 |
-| `mel_l1_db` | 6.889 |
-| `rms_env_rmse` | 0.0802 |
-| `lufs_m_rmse_lu` | 3.724 |
-| `embedding_cosine_distance` (VGGish) | 0.09569 |
+Sample rule (arrangement, first row on WIG):
 
-The rubric's Comparison B threshold requires ≥3-of-5 numeric keys to exceed 5% relative delta versus the c5-vs-original reference panel. The delta table computed by the pipeline (`panel_delta_comparison.json`) is:
+```
+{
+  "rule_type": "arrangement",
+  "extractor": "extract.arrangement",
+  "extractor_version": "v3-rules-c23-1",
+  "parameters": {
+    "n_windows": 2,
+    "window_bars": 4,
+    "windows": [
+      {"active_stems": ["bass","drums","piano","vocals","other"], "window_bar_start": 0},
+      {"active_stems": ["piano","vocals","other"], "window_bar_start": 4}
+    ]
+  },
+  "provenance_pointers": [{
+    "song_sha16": "252eb21ce7df7328",
+    "stem": "full_mix",
+    "midi_track_index": -1,
+    "midi_ticks_per_beat": 480,
+    "measure_range": [0, 6]
+  }],
+  "rule_id": "rule_5be3c9c61efabc51",
+  "confidence": 0.65,
+  "parameters_random_state": 0,
+  "ts": "2026-09-02T00:00:00Z",
+  "schema_v": 1
+}
+```
 
-| Key | Ref (c5-vs-original) | Test (palette-vs-original) | Absolute Δ | Relative Δ | Exceeds 5%? |
-|---|---:|---:|---:|---:|:---:|
-| `spectral_centroid_rmse_hz` | 3 254.47 | 3 120.31 | 134.16 | 4.12% | **no** |
-| `mel_l1_db` | 8.786 | 6.889 | 1.897 | 21.59% | **yes** |
-| `rms_env_rmse` | 0.1473 | 0.0802 | 0.0671 | 45.54% | **yes** |
-| `lufs_m_rmse_lu` | 7.427 | 3.724 | 3.703 | 49.86% | **yes** |
-| `embedding_cosine_distance` | 0.1876 | 0.0957 | 0.0919 | 48.99% | **yes** |
+Self-anchor at `data/v3/rules/rules_artifact.sha256` (65 bytes, SHA-16 `25946f7d5b80874d`) — a plain-text sidecar recording the artifact SHA for downstream cross-checking.
 
-Four of five numeric keys exceed the 5% relative-delta threshold. The rubric's `PALETTE_MOVES_PANEL` clause fires.
+### 2.4 Byte-determinism ×2
 
-### 2.6 Verdict
+The extractor was run twice into fresh `tempfile.mkdtemp()` directories under identical environment pins. Both runs produced the same artifact SHA `e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`. The verdict records this in `byte_determinism = { runs: 2, sha_equal: true, run_sha: "e19fb205…" }`. Byte-determinism ×2 gate PASS.
 
-`data/v3/deliveries/31a164f845f8e27e/cycle21/verdict_palette.json` (SHA `5ba4eaca242fcd29…5644a`) emitted with:
+### 2.5 Anchor preservation
 
-- `milestone = M-V3-SPINE-1/chicken-grease-palette-render`
-- `cycle = 21`, `song_sha16 = 31a164f845f8e27e`, `operator_section_s = [233.63918, 263.63918]`
-- `verdict = PALETTE_MOVES_PANEL` (rubric-frozen enum, fired on Comparison B threshold)
-- `blocked_on_operator = true` (the palette-becomes-primary decision belongs to the operator, not to the auditor)
-- `c5_delivery_anchor_preserved = true` (the Cycle 5 operator-blessed WAV is byte-identical pre-versus-post at SHA `cc919559b4508b6b…f01bbbd7`)
-- Three-way `rubric_hash_v2` chain byte-equal at `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879` (document SHA, `rubric_hash_v2.txt` content, and verdict field all identical; `rubric_hash_v2_chain_holds: true`).
-- Sub-artifact SHAs pinning the four consumed canonical MIDIs (bass `f439fb31…`, drums `8021a1ca…`, guitar `69e7c7bb…`, other `c88c69a0…`, piano `c88c69a0…` — matching the empty-events canonical hash on the piano source) plus the six per-stem matched WAVs, the full-reconstruction palette WAV, the two panel sidecars, and the byte-determinism roll-up.
-- Comparison A, Comparison B, and the reference Cycle 5-vs-original panels all pinned inline.
-- The fetchability ladder outcomes disclosed as `sfizz_fallback_reason` and `sfizz_fallback_stems`.
+`data/v3/rules/anchor_preservation_c23.json` (5 588 bytes) records the read-only snapshot of 33 predecessor anchors, all matching pre-versus-post byte-identically. The three named read-only predecessor ledgers — c9 `data/rules/ledger.jsonl`, c15 `ledger_i3_dminor.jsonl`, c40 `ledger_rated_corpus.jsonl` — are all preserved unchanged (`all_match=true`). Writes to the fresh `data/v3/rules/` shard did not touch any predecessor tree.
 
-### 2.7 Delivery-side artifacts
+### 2.6 Test suite
 
-Under `data/v3/deliveries/31a164f845f8e27e/palette_render/`: `full_reconstruction_palette.wav`, `manifest.json`, `panel_original_vs_palette.tsv`, `panel_fluidsynth_vs_palette.tsv`, `anchor_preservation.json`, `byte_determinism.json`, `fetchability_ladder.jsonl`, and a `per_stem/` subtree. Sibling to `cycle20/`; does not overwrite the operator-blessed Cycle 5 delivery.
+`tests/test_v3_rules_deterministic_extractor.py` — 15 cases, 15/15 PASS. Cases cover: three-way rubric hash chain byte-equality; extractor imports without side effects; per-rule schema validation; per-rule content-hashed `rule_id` reproducibility; byte-determinism ×2 assertion (running the extractor twice and comparing SHAs); interpreter guard `/usr/bin/python3` in the extractor's shebang; no PRNG imports (AST scan for `random`, `numpy.random`); no `sidecar_nonfactor` imports; no VST3 state APIs (AST scan for `get_state`, `set_state`, `save_state`); read-only preservation of the c9, c15, c40 predecessor ledgers; fetchability ladder shape; rules artifact non-empty; per-rule provenance-pointer non-empty; rule-type distribution matches the verdict's `n_rules_by_type` block; `parameters_random_state=0` present on every rule.
 
-The required output artifact `docs/v3_spine_chicken_grease_palette_render_c21_report.md` (12 053 bytes) was landed under `docs/` per the directive.
+### 2.7 Verdict
 
-## 3. Cycle 2: audit re-verification and branch termination
+`data/v3/rules/verdict.json` (17-key schema) emitted with:
 
-Cycle 2 was a re-verification pass. The auditor performed live disk-state verification against every anchor: three-way `rubric_hash_v2` chain byte-equal at the pinned SHA; the Cycle 5 operator-blessed full-reconstruction WAV byte-identical pre-versus-post at `cc919559b4508b6b…f01bbbd7`; the c33 render_stem.py locked script byte-identical at `214372d9…5b2b`; the palette rubric document at `9eb5523c…5e1879`; the palette verdict at `5ba4eaca…5644a`; the palette rubric hash file content byte-equal to the document SHA; and the verdict's `rubric_hash_v2` field byte-equal to both. Every check passed.
+- `milestone = M-V3-RULES-1`
+- `cycle = 23`, `fork = d5530f8d1ccc`, `clone = 2`
+- `rubric_hash_v3_rules = e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5` (three-way chain byte-equal at document SHA == `rubric_hash.txt` content == verdict field)
+- `corpus_song_sha16s = [31a164f845f8e27e, 252eb21ce7df7328, 51e433ade2a845e1, cdd2717e52820ff6]`
+- `n_rules_total = 76`; `n_rules_by_type = { harmonic: 18, rhythmic: 18, melodic: 18, form: 18, arrangement: 4 }`
+- `rules_artifact_sha256 = e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`
+- `byte_determinism = { runs: 2, sha_equal: true, run_sha: "e19fb205…" }`
+- `tests_pass_over_total = [15, 15]`
+- `extractor_version = v3-rules-c23-1`; `extract_ts_iso = 2026-09-02T00:00:00Z`
+- `operator_ear_dependency = false` (M-V3-RULES-1 has no ear-gate); `panel_is_never_lands_gate = true`
+- `env_pins = { PYTHONHASHSEED: 0, SOURCE_DATE_EPOCH: 1756463424, TZ: UTC, LC_ALL: C.UTF-8 }`
+- `notes` array: first activation of rules-hashed contract for M-V3 arc; extends c9 rule schema with per-stem provenance from v3 doctrine; no PRNG present, `parameters_random_state=0` recorded per rule; panel is never a LANDS gate (FD-6); byte-determinism failure would be operator-decides per FD-1.
 
-The audit sufficiency assessment against the fanout clone's scoped objective returned every criterion met on disk:
+The verdict schema deliberately omits a `verdict` string field. This is disclosed honestly as MODERATE #2 for c24 handoff — the auditor's internal verdict of `V3_RULES_LANDS_pending_operator` (accepted at the prior turn) is recorded in the merge-report narrative, and downstream reporting can materialize a `verdict` label from the schema in a future cycle.
 
-- Palette-render sibling delivery emitted; does not overwrite operator-blessed Cycle 5 — ✓
-- Three-way `rubric_hash_v2` byte-equality on the verdict — ✓
-- Cycle 5 operator-blessed hard anchor preserved — ✓
-- Rubric doc landed before any script under `scripts/v3_spine/palette_render/` (mtime hard) — ✓
-- Bass VST3 `REDEFINED_GAP` arm engaged per the c36 clone-2 envelope (`max_pairwise_rms = 0.0656 > 1e-4`) — ✓ with fluidsynth GM(33) fallback honestly disclosed
-- Guitar/piano/other sfizz probe (`sfz_dir_missing`) → fluidsynth GM(25/0/88) fallback — ✓ honestly logged in the fetchability ladder
-- Drums fluidsynth GM channel 10 and vocals verbatim D2 htdemucs copy from c5 — ✓
-- Cycle 6 Method B rc7 loudness chain applied verbatim via READ-ONLY import — ✓
-- Both panel comparisons finite on all five keys — ✓
-- Rubric-frozen three-verdict enum fires `PALETTE_MOVES_PANEL` on the Comparison B threshold (4/5 keys exceed 5% relative) — ✓
+### 2.8 Housekeeping ledger
 
-The single non-passing check was ledger visibility: `grep -c '"milestone_id": "M-V3-SPINE-1/chicken-grease-palette-render' promise_ledger.jsonl` returned 0 in the primary workspace ledger. The worker claimed eleven `-clone-2`-suffixed rows had landed in the fork shadow ledger. This is the same shadow-ledger merge lag pattern the previous three fanout branches all exhibited; it is non-blocking when the required substantive artifact is on disk (as here), and it is routed to the c22 root conductor as research-brief S1 (mandatory linear precondition before any dependent branch fires).
+Eight events emitted to the shadow ledger `data/v3/rules/ledger_c23_clone_2.jsonl` (3 055 bytes): six named substantive `M-V3-RULES-1/*` rows plus two housekeeping. The recurring shadow-ledger drift pattern (MINOR-1 across the c20/c21/c22 fanout arcs) reproduces here: rows land in the shadow ledger and await concat into the primary `promise_ledger.jsonl` at post-merge integration per the c33/c48 auto-suffix concat path.
 
-Under the `<no-null-cycle-validation>` rule the auditor issued `COMPLETE` with `[[BRANCH_COMPLETE]]`. The clone's scoped objective is discharged; no in-scope work remains; the operator's palette-becomes-primary decision is not something any in-loop cycle can move.
+### 2.9 Required output artifact
 
-## 4. Interpretive honesty caveats surfaced to the operator (MINOR observations)
+`docs/v3_rules_deterministic_extractor_spec_c23.md` (13 058 bytes, SHA `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`) landed under `docs/` per the directive. Merge report at workspace-root fallback path `merge_report_c23_clone_2_fork_d5530f8d1ccc.md` (6 542 bytes) for root-conductor `cp` to the intended fanout path `/home/user/music-gen-instance-v3/fork-d5530f8d1ccc/clone-2/merge_report.md` at merge time (same c20/c21 clone-2 precedent for the workspace-sandbox path relocation).
 
-The Cycle 2 audit carried three interpretive observations forward verbatim as inputs to the c22 palette framing document. These are the load-bearing caveats the operator's ear judgment must discriminate before palette-becomes-primary can advance.
+## 3. Cycle 2: bookkeeping-only no-op and branch closure
 
-**MINOR-2 (interpretive).** The palette-render's Comparison A perceptual panel numerically outperforms the c5 reconstruction against the original on every reported numeric key (Comparison A mel L1 = 6.36 dB vs c5-vs-original 8.79 dB; RMS-env RMSE 0.107 vs 0.147; LUFS-M RMSE 4.51 LU vs 7.43 LU; VGGish cosine distance 0.243 vs 0.188 — the one key the palette panel does worse on, VGGish, is because the palette moves the reconstruction *away* from the original into a different neighborhood, which is the point of the exercise). These numeric wins are strong signals *given* the pipeline that produced them, but the operator's ear judgment is by Fixed Decision 6 the only authoritative LANDS gate; panel improvement is never a LANDS gate.
+Cycle 2's research brief was an explicit bookkeeping-only no-op mandate: zero writes, zero anchor touches, zero manufactured scope; the substantive work of Cycle 1 is complete and further activity would violate the no-null-cycle-validation rule and the anti-Hold-Pattern invariant. The worker honored the mandate verbatim: zero writes performed; zero new files under `scripts/v3_rules/`; zero writes under `data/v3/rules/`; zero `tests/test_v3_rules_*` edits; zero new ledger events.
 
-**MINOR-3 (mechanism).** The load-bearing caveat. Because the Surge XT VST3 bass path failed byte-determinism ×2 outside the c36 envelope and the sfizz path failed on missing SFZ files, all six palette-render stems ended up on fluidsynth GM at the bottom of their respective ladders. The "palette render" that the panel movement measures is therefore, at the mechanism level, fluidsynth GM with a different program selection (33/25/0/88 vs the c5 defaults) plus the Cycle 6 Method B 12-band iirpeak EQ plus per-stem RMS/LUFS-S loudness matching — not the intended Surge XT synthesizer or sfizz sampler timbral character. If the operator's ear judgment confirms palette audibly moves and audibly improves, the operator must specifically discriminate: (i) is the audible improvement attributable to the GM+program-substitution + fitted EQ + loudness-match chain alone? If so, fluidsynth+EQ+loudness stays primary. (ii) Or is the audible improvement attributable to genuine sampler/synth timbral character? If so, egress unblock or an alternate VST3 candidate is required to actually reproduce the palette on the intended synthesizer path.
+The Cycle 2 auditor performed live SHA re-verification against every anchor from the Cycle 1 delivery:
 
-**MINOR-4 (D-D framing).** The operator's D-D directive was framed as "if the palette moves the panel and audibly moves and audibly improves, palette becomes primary." The rubric fired PALETTE_MOVES_PANEL on the panel-movement clause. The operator's forthcoming ear judgment on the A/B pair `data/v3/deliveries/31a164f845f8e27e/palette_render/{original_ab,reconstruction_ab}` (which the delivery manifest catalogs) is the second gate. The third gate — MINOR-3 discrimination between mechanism (i) GM+EQ+loudness alone and mechanism (ii) genuine sampler/synth character — is the c22 framing document's responsibility to surface to the operator so the D-D decision is fully-informed.
+| Anchor | Live SHA-16 | Byte-match |
+|---|---|:---:|
+| `docs/v3_rules_deterministic_extractor_spec_c23.md` | `e81ff589200f6d6b` (13 058 B) | ✓ |
+| `data/v3/rules/rubric_hash.txt` content | `e81ff58920 0f6d6b…3d71e5` | ✓ |
+| `data/v3/rules/verdict.json`.rubric_hash_v3_rules | `e81ff58920 0f6d6b…3d71e5` | ✓ |
+| `data/v3/rules/rules_artifact.jsonl` | `e19fb205b282dabb` (47 662 B) | ✓ |
+| `data/v3/rules/rules_artifact.sha256` | `25946f7d5b80874d` (65 B) | ✓ present |
+| `data/v3/rules/ledger_c23_clone_2.jsonl` | 3 055 B on disk | ✓ present |
+| `data/v3/rules/fetchability_ladder.jsonl` | 484 B on disk | ✓ present |
+| `data/v3/rules/anchor_preservation_c23.json` | 5 588 B on disk | ✓ present |
+| `merge_report_c23_clone_2_fork_d5530f8d1ccc.md` | 6 542 B on disk | ✓ present |
 
-The Cycle 2 auditor emphasized that all three MINOR observations are informational for the operator, not defects to fix; they are the honest reading of what the palette-render pipeline actually produced given the fetchability ladder outcomes.
+Three-way rubric_hash_v3_rules chain byte-equal at `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`. Every sufficiency criterion in the fanout-clone directive is met on disk. Every anchor is unchanged. The clone's substantive scope is genuinely exhausted.
 
-## 5. Merge disposition and c22 handoff
+Under the `<no-null-cycle-validation>` rule the auditor issued `COMPLETE` with `[[BRANCH_COMPLETE]]`. The three MODERATE and one MINOR c24 handoff items (shadow-ledger schema rename, `verdict.json` label materialization, plain-assert test-convention policy call, main-ledger concat gated on schema rename) are explicit root-conductor / post-merge territory by construction, out of clone-2 scope.
 
-**Merge disposition.** This branch merges as `[[BRANCH_COMPLETE]]`. The required output artifact exists at the required path; every hard anchor is byte-identical pre-versus-post live-verified; the three-way rubric hash chain holds byte-equal; the c5 operator-blessed delivery is preserved unchanged. Two moderate observations from the audit (the ledger-visibility gap flagged as MINOR-1 at merge time; the merge report to be picked up by the harness at natural clone exit at `/home/user/music-gen-instance-v3/fork-0a1b1dca4f9b/clone-2/merge_report.md`) plus the three interpretive MINOR-2/3/4 observations are logged for the root conductor's post-merge integration.
+## 4. Merge disposition and campaign-level significance
 
-**c22 handoff imperatives.** The c22 research brief already routes all follow-on work to disjoint owners:
+**Merge disposition.** This branch merges as `[[BRANCH_COMPLETE]]`. The required output artifact exists at the required path; the extractor prototype, rules artifact, self-anchor, 33-anchor preservation snapshot, 15/15 test suite, byte-determinism ×2 proof, eight-row shadow-ledger shard, and workspace-fallback merge report are all on disk unchanged. Every hard anchor byte-identical pre-versus-post live-verified across both cycles.
 
-- **S1 (mandatory linear first).** Reconcile 11 c21 clone-2 shadow-ledger events plus 3 c20 Peach Dream MODERATE-1 handoff items into the primary `promise_ledger.jsonl` per the c38+ post-merge-reconciliation precedent, under the `-clone-2` suffix on infra families; the substantive `M-V3-SPINE-1/chicken-grease-palette-render` row plus its six sub-leaves stays unsuffixed. Verify `promise_check` returns 0-ERROR post-concatenation. Must land BEFORE either c22 fanout branch emits any ledger event (avoids further shadow-ledger stacking).
-- **S2 (parallel fanout).** Disco A launch (the fifth focus song; direct path to a third M-V3-FOCUS-1 accept and clearing the ≥3 gate with margin).
-- **S3 (parallel fanout).** WIG restart PARTIAL → LANDS (completing the four remaining MuScriptor probes then running the downstream chain, matching the shape Rome delivered end-to-end at Cycle 20).
-- **S4 (linear supplement).** Ship `docs/v3_spine_chicken_grease_palette_c22_framing.md` surfacing MINOR-2/3/4 verbatim so the operator's listening loop can discriminate GM+EQ+loudness alone from genuine sampler/synth character before the D-D palette-becomes-primary advance.
+**Handoffs for root conductor c24+ (bookkeeping only; substantive on-disk artifacts already landed):**
 
-## 6. Campaign-level state after this branch
+1. **Shadow-ledger main-concat (MODERATE, recurring non-blocking).** Eight-row shadow-ledger shard (six substantive `M-V3-RULES-1/*` plus two housekeeping) at `data/v3/rules/ledger_c23_clone_2.jsonl` awaits concat into primary `promise_ledger.jsonl` at post-merge integration per the c33/c48 auto-suffix concat path. Gated on the schema-rename item below.
+2. **Shadow-ledger schema rename (MODERATE).** The row schema in the shadow ledger uses field names that need reconciliation with the primary ledger schema before concat. Root-conductor post-merge integration step.
+3. **`verdict.json` label materialization (MODERATE).** The verdict's 17-key schema deliberately omits a `verdict` string field; the auditor's internal `V3_RULES_LANDS_pending_operator` is recorded in the merge-report narrative. Downstream reporting may want to materialize a `verdict` label field from the schema in a future cycle for consistency with c4–c22 verdict shapes.
+4. **Plain-assert test convention (MINOR, campaign-wide policy call).** The c23 test suite uses plain `assert` statements rather than a pytest framework. Neither convention is wrong; the choice is a policy call the root conductor may want to make explicit for consistency across future rule/generation tests.
 
-Chicken Grease M-V3-SPINE-1 is now operator-LANDED as of 2026-09-02 on the Cycle 5 v3 fluidsynth reconstruction. The Cycle 5-through-Cycle 19 heartbeat chain (fifteen LANDS_pending_operator verdicts) is preserved byte-identically on disk and is now historical. The palette-render sibling deliverable from this branch sits alongside the c5 delivery as a candidate for a possible palette-becomes-primary transition, gated on the operator's forthcoming D-D judgment plus the MINOR-3 mechanism-discrimination requirement.
+**Campaign-level significance.** This is the **first activation of the operator's rules-hashed contract for the M-V3 arc**. The rules-extraction step that feeds the eventual M-V3-GEN-1 generator is now instantiated, byte-deterministic under fixed environment pins, and reproducing across two independent runs at the same content-hashed SHAs. The 76-rule artifact is the campaign's first materialized bridge from the operator-approved reconstruction corpus (four v3 focus songs) to the downstream generation-half milestones. Every rule carries per-stem provenance pointing back to a specific song, stem, MIDI track index, and measure range, so a subsequent M-V3-GEN-1 that samples rules from this artifact can trace each generation-step's origin back to the operator-approved source material.
 
-Focus-set accept status toward the M-V3-FOCUS-1 gate (which requires ≥3 accepts): two confirmed accepts on disk (Chicken Grease via the operator's c5 LANDS and Rome via the Cycle 20 clone-1 fanout D-A internal-gate delivery); WIG PARTIAL awaiting the c22 S3 restart; Peach Dream PARTIAL delivered via the Option 3 accept-terminal precedent at Cycle 20 clone-2 Cycle 4; Disco A not yet started, queued for c22 S2. The c22 fanout has a clear path to closing the gate with margin.
+The extractor's implementation choice — pure stdlib plus mido, no music21/mingus/jsonschema/sklearn — is a Fixed Decision 1 win: dependency surface minimized, determinism guaranteed by canonical JSON plus fixed timestamps plus content-hashed rule IDs, no PRNG anywhere, no plugin state, no rendering. The fetchability ladder honestly records that the survey-open-source-first rule was applied and the on-disk availability of the four candidate library families was probed without any fetch attempt.
 
-The auditor's cumulative discipline observation is worth recording: eleven consecutive audits, roughly 275+ live SHA spot-checks, zero fabrications. The pattern of live-verifying every claimed SHA from disk rather than trusting worker claims holds under compaction and across fanout branches. Every audit reproduces the campaign constants (rubric `c49db5a1…` on the SPINE track and `9eb5523c…` on the palette-render track, c5 anchor `cc919559…`, c33 render_stem `214372d9…`, c7 venv dir-manifest `a86205175728…`) live from disk, never from memory.
+## 5. Campaign-level state at end of arc
 
-## 7. Conclusions
+**M-V3-SPINE-1**: operator-ear-LANDED since 2026-09-02 on Cycle 5 Chicken Grease reconstruction. Unchanged.
 
-Clone 2 of fork `0a1b1dca4f9b` delivered the operator-D-D-directed Chicken Grease palette-render as a sibling secondary deliverable to the operator-LANDED Cycle 5 v3 fluidsynth reconstruction. The frozen three-verdict rubric was committed before any script was written; the pipeline executed end-to-end with byte-determinism ×2 satisfied on every stem that reached its final routing; the c5 operator-blessed anchor is preserved unchanged; the three-way rubric hash chain holds byte-equal; the verdict `PALETTE_MOVES_PANEL` fired legitimately on four-of-five numeric panel keys exceeding the 5% relative-delta Comparison B threshold. The branch closes under `[[BRANCH_COMPLETE]]` after a re-verification audit that found no critical or moderate defects.
+**M-V3-FOCUS-1**: closed with three-of-three operator-ear accepts (Chicken Grease mandatory + WIG + Disco A) on 2026-09-02. Rome and Peach Dream remain pending operator ear but non-blocking under the operator's "KEEP MOVING" directive.
 
-The load-bearing honesty caveat for the operator's forthcoming D-D decision is prominently disclosed in the verdict and the audit: because the Surge XT VST3 bass path failed byte-determinism ×2 outside the c36 envelope and the sfizz path failed on missing SFZ files, all six palette-render stems ended up on fluidsynth GM at the bottom of their respective fetchability ladders. The measured panel movement is real, but the underlying mechanism is GM + program substitution + Cycle 6 Method B 12-band iirpeak EQ + per-stem RMS/LUFS-S loudness match — not the intended Surge XT synthesizer or sfizz sampler timbral character. The operator's ear judgment on the A/B pair is the second gate; a c22 framing document is queued to surface the MINOR-3 mechanism-discrimination requirement so the palette-becomes-primary decision can be made fully-informed.
+**M-V3-CORPUS-1**: opening / status held by other fork-`d5530f8d1ccc` clones (out of this clone's scope).
+
+**M-V3-RULES-1**: **first activation LANDED at c23 clone-2 (this branch)** with rules artifact `e19fb205b282dabb…`, three-way rubric chain byte-equal at `e81ff589200f6d6b…`, byte-determinism ×2 PASS, 15/15 tests, 33 anchors preserved. No ear-gate.
+
+**M-V3-EAR-1, M-V3-GEN-1**: downstream of M-V3-RULES-1; opening timing depends on root-conductor c24+ integration and any peer-clone parallel work in fork `d5530f8d1ccc`.
+
+**Discipline observations.** Fifteen consecutive audits across this session with zero fabrications. Live-verification pattern (inline python3+hashlib SHA checks) unchanged. The recurring MINOR-1 shadow-ledger main-concat drift and MINOR-2 brief rubric-drift patterns are stable campaign-wide (present on c20, c21, c22, c23); workers correctly adapt to on-disk truth per FD-1; neither blocks LANDS when substantive artifacts are on disk. All banned anti-patterns (VST3 state extraction under c31 STILL_GAP + c35 SPINE, CLAP HF SSL fetch under c11, M-EAR-1 Path A audits under N=55, c37 pretty_midi merge_partial) had zero re-attempts this cycle.
+
+## 6. Conclusions
+
+Clone 2 of fork `d5530f8d1ccc` executed the c23 first-activation of M-V3-RULES-1 cleanly under the operator's determinism-for-generation-half stance and the standing survey-open-source-first rule. The rubric document was pinned before any script was written; the extractor prototype was implemented as pure stdlib plus mido (no external dependency surface beyond what the campaign already vendors); the four operator-approved v3 focus-song merged.mid deliveries were consumed read-only; 76 typed rules landed across five rule types with per-stem provenance in the extended c9 schema; byte-determinism ×2 held across two fresh-tempdir runs at the same content-hashed SHA; 15 of 15 tests passed; the three-way `rubric_hash_v3_rules` chain held byte-equal; every read-only predecessor ledger (c9, c15, c40) preserved unchanged. Cycle 2 was a correct bookkeeping-only no-op; the branch closes under `[[BRANCH_COMPLETE]]`.
+
+This is the campaign's first materialization of a rules-hashed contract inside the M-V3 arc. The 76-rule artifact becomes the input a subsequent M-V3-GEN-1 milestone will consume, with each rule traceable back to a specific operator-approved song, stem, and measure range. The generation-half of the campaign is now open in a form that carries the same anti-fabrication and byte-determinism disciplines that carried the reconstruction-half from Cycle 3 forward.
 
 ## Appendix: Implementation Details
 
 ### A.1 Delivered artifacts
 
-Required output artifact: `docs/v3_spine_chicken_grease_palette_render_c21_report.md` (12 053 bytes).
+Required output artifact: `docs/v3_rules_deterministic_extractor_spec_c23.md` (13 058 bytes, SHA `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`).
 
-Verdict: `data/v3/deliveries/31a164f845f8e27e/cycle21/verdict_palette.json` (SHA `5ba4eaca242fcd29…5644a`), sibling to `cycle20/`; does not overwrite operator-blessed Cycle 5 delivery.
+Rules artifact: `data/v3/rules/rules_artifact.jsonl` (47 662 bytes, SHA `e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`).
 
-Delivery-side artifacts under `data/v3/deliveries/31a164f845f8e27e/palette_render/`: `full_reconstruction_palette.wav`, `manifest.json`, `panel_original_vs_palette.tsv`, `panel_fluidsynth_vs_palette.tsv`, `anchor_preservation.json`, `byte_determinism.json`, `fetchability_ladder.jsonl`, plus `per_stem/` subtree.
+Self-anchor: `data/v3/rules/rules_artifact.sha256` (65 bytes, SHA-16 `25946f7d5b80874d`).
 
-Working artifacts under `data/v3_spine/31a164f845f8e27e/palette_render/`: `matched_{bass,drums,guitar,other,piano,vocals}.wav`, `full_reconstruction_palette.wav`, `mix_manifest.json`, `panel_delta_comparison.json`, `panel_original_vs_palette.json`, `panel_fluidsynth_vs_palette.json`, `anchor_preservation.json`, `byte_determinism.json`, `fetchability_ladder.jsonl`, `rubric_hash_v2.txt`, `per_stem/` subtree.
+Pinned rubric hash file: `data/v3/rules/rubric_hash.txt` (content `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5`).
 
-Rubric doc: `docs/v3_spine_chicken_grease_palette_render_c21_rubric.md` (SHA `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879`).
+Verdict: `data/v3/rules/verdict.json` (17-key schema, three-way chain byte-equal).
+
+Fetchability ladder: `data/v3/rules/fetchability_ladder.jsonl` (484 bytes).
+
+Anchor preservation snapshot: `data/v3/rules/anchor_preservation_c23.json` (5 588 bytes, 33 anchors, `all_match=true`).
+
+Shadow ledger: `data/v3/rules/ledger_c23_clone_2.jsonl` (3 055 bytes, 8 events).
+
+Extractor: `scripts/v3_rules/extract_rules.py`.
+
+Test suite: `tests/test_v3_rules_deterministic_extractor.py` (15 cases, 15/15 PASS).
+
+Merge report workspace-fallback: `merge_report_c23_clone_2_fork_d5530f8d1ccc.md` (6 542 bytes); root-conductor `cp` to `/home/user/music-gen-instance-v3/fork-d5530f8d1ccc/clone-2/merge_report.md` at merge time.
 
 ### A.2 Integrity chains
 
-Three-way rubric chain (palette-render track): `docs/v3_spine_chicken_grease_palette_render_c21_rubric.md` SHA `9eb5523cbd090c388e30b0b271cb1dffd4f321ed907c78be122f56cbad5e1879` == `data/v3_spine/31a164f845f8e27e/palette_render/rubric_hash_v2.txt` content == `verdict_palette.json.rubric_hash_v2` field. All three sources independently live-verified by the auditor.
+Three-way `rubric_hash_v3_rules` chain: `docs/v3_rules_deterministic_extractor_spec_c23.md` SHA `e81ff589200f6d6b52d7a68f813e8120a544bfb371f8e0a45a2ac7f8793d71e5` == `data/v3/rules/rubric_hash.txt` content == verdict `rubric_hash_v3_rules` field.
 
-Cycle 5 operator-blessed hard anchor: `data/v3/deliveries/31a164f845f8e27e/operator_section/full_reconstruction_operator_section.wav` SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`, byte-identical pre-versus-post live-verified.
+Rules-artifact self-anchor: `data/v3/rules/rules_artifact.sha256` content == `data/v3/rules/rules_artifact.jsonl` SHA-256 == `verdict.rules_artifact_sha256` == `e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186`.
 
-c33 render_stem anchor: `scripts/palette_render/render_stem.py` SHA `214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b`, byte-identical live-verified.
+### A.3 Corpus consumed (READ-ONLY)
 
-### A.3 Consumed canonical MIDI SHAs (READ-ONLY, pre==post)
+Four operator-approved v3-rendered focus-song deliveries via their `merged.mid`:
 
-bass `f439fb31b5988b54903bb956c4e0db78b83ea7223cfb27683c9d3978dd9404fb`; drums `8021a1ca22ef84ebfce18ee474d285d6dd7c07faca55683c84d49883743cbc08`; guitar `69e7c7bbf05b1f5e4926c29a19825ba720169efff37372069c620b12650197c8`; other `c88c69a0c1f1837d25ec959e42458db9dab93c61b935d8d11a4061b5fb8134f4`; piano `c88c69a0c1f1837d25ec959e42458db9dab93c61b935d8d11a4061b5fb8134f4` (identical to other, the canonical empty-events serialization hash on both empty sources).
+| Song | sha16 | Source cycle |
+|---|---|---|
+| Chicken Grease | `31a164f845f8e27e` | c5 (operator-blessed 2026-09-02) |
+| What If I Go | `252eb21ce7df7328` | c21 clone-1 restart (merged.mid SHA `a93f5c2ae16e5cace42b98886f6ce3eae4bb47393bef9d2abe631aadbe526578`) |
+| Rome | `51e433ade2a845e1` | c20 clone-1 (merged.mid SHA `c28b8686684fddfc841a27e96e299a93f1099fe99a5de4e461935ff2a9cfcd8a`) |
+| Disco A | `cdd2717e52820ff6` | c21 clone-0 (merged.mid SHA-16 `7e6f131f07f0d33c`) |
 
-### A.4 Fetchability ladder outcomes
+### A.4 Rules artifact composition
 
-| Stem | Intended | Actual | Fallback reason |
-|---|---|---|---|
-| bass | Surge XT VST3 (c33 Branch B) | fluidsynth GM(33) | `REDEFINED_GAP` arm: byte-determinism ×2 failed, `max_pairwise_rms = 0.0656` vs c36 envelope 1e-4 |
-| guitar | sfizz CLI | fluidsynth GM(25) | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| piano | sfizz CLI | fluidsynth GM(0) | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| other | sfizz CLI | fluidsynth GM(88) | `sfz_dir_missing_no_sfz_files_in_workspace` |
-| drums | fluidsynth GM ch. 10 | fluidsynth GM ch. 10 | (intended) |
-| vocals | htdemucs verbatim (D2) | htdemucs verbatim | (intended) |
+76 rules total across 5 rule types:
 
-### A.5 Panel numbers
+| Rule type | Count | Extractor family |
+|---|---:|---|
+| harmonic | 18 | `extract.harmonic` |
+| rhythmic | 18 | `extract.rhythmic` |
+| melodic | 18 | `extract.melodic` |
+| form | 18 | `extract.form` |
+| arrangement | 4 | `extract.arrangement` |
 
-**Comparison A (original vs palette-render):** spectral centroid RMSE 1 149.89 Hz; mel L1 6.36 dB; RMS-env RMSE 0.1071; LUFS-M RMSE 4.51 LU; VGGish cosine 0.24335.
+Per-rule schema fields: `event_type`, `event_id` (16-hex), `rule_id` (16-hex content-hashed), `rule_type`, `extractor`, `extractor_version` (`v3-rules-c23-1`), `parameters` (typed body), `parameters_random_state: 0`, `provenance_pointers` (song SHA-16, stem, MIDI track index, PPQ, measure range), `scope` (level, start_s, end_s), `schema_v: 1`, `confidence` (deterministic per-rule score), `ts` (fixed `2026-09-02T00:00:00Z`).
 
-**Comparison B (Cycle 5 fluidsynth-render vs palette-render):** spectral centroid RMSE 3 120.31 Hz; mel L1 6.89 dB; RMS-env RMSE 0.0802; LUFS-M RMSE 3.72 LU; VGGish cosine 0.09569.
+### A.5 Byte-determinism ×2 proof
 
-**Reference (Cycle 5-vs-original):** spectral centroid RMSE 3 254.47 Hz; mel L1 8.79 dB; RMS-env RMSE 0.1473; LUFS-M RMSE 7.43 LU; VGGish cosine 0.18762.
+`byte_determinism = { runs: 2, sha_equal: true, run_sha: "e19fb205b282dabbf9f6ba38d97ed53649d160a9bf36e9588e03b7cd71ac8186" }` recorded in the verdict. Two fresh `tempfile.mkdtemp()` runs under identical env pins produced byte-identical artifacts.
 
-**Comparison B threshold outcome:** four of five keys exceed 5% relative delta (mel L1 21.59%; RMS-env 45.54%; LUFS-M 49.86%; VGGish 48.99%; spectral centroid 4.12% under threshold). Rubric fires `PALETTE_MOVES_PANEL`.
+### A.6 Test suite (15/15 PASS)
 
-### A.6 Verdict fields
+Cases: three-way rubric chain byte-equality; extractor imports without side effects; per-rule schema validation; per-rule content-hashed `rule_id` reproducibility; byte-determinism ×2 assertion; interpreter guard `/usr/bin/python3`; no PRNG (AST scan for `random`, `numpy.random`); no `sidecar_nonfactor`; no VST3 state APIs (AST scan for `get_state`, `set_state`, `save_state`); read-only preservation of c9/c15/c40 predecessor ledgers; fetchability ladder shape; rules artifact non-empty; per-rule provenance-pointer non-empty; rule-type distribution matches `n_rules_by_type`; `parameters_random_state=0` on every rule.
 
-`milestone = M-V3-SPINE-1/chicken-grease-palette-render`; `cycle = 21`; `song_sha16 = 31a164f845f8e27e`; `operator_section_s = [233.63918, 263.63918]`; `verdict = PALETTE_MOVES_PANEL`; `blocked_on_operator = true`; `c5_delivery_anchor_preserved = true`; `rubric_hash_v2_chain_holds = true`; `sfizz_fallback_reason = sfz_dir_missing_no_sfz_files_in_workspace`; `sfizz_fallback_stems = [guitar, piano, other]`; `rubric_doc_path = docs/v3_spine_chicken_grease_palette_render_c21_rubric.md`; `rubric_hash_v2_txt_path = data/v3_spine/31a164f845f8e27e/palette_render/rubric_hash_v2.txt`.
+### A.7 Fetchability ladder (survey-open-source-first)
 
-### A.7 MINOR observations for operator listening loop
+Four candidate library families probed on-disk without any fetch attempts:
 
-MINOR-2 (interpretive): palette panel numerically outperforms c5 on Comparison A but panel is never a LANDS gate. MINOR-3 (mechanism): all six palette-render stems reached fluidsynth GM at the bottom of their fetchability ladders; the "palette" is GM + program substitution + Cycle 6 Method B 12-band iirpeak EQ + per-stem RMS/LUFS-S loudness match, not Surge XT / sfizz timbral character. MINOR-4 (D-D framing): operator's ear judgment on A/B is the second gate; MINOR-3 mechanism discrimination is the third gate; c22 framing doc queued.
+- music21 — on-disk availability recorded in `fetchability_ladder.jsonl`.
+- mingus — on-disk availability recorded.
+- jsonschema-driven grammar — recorded.
+- sklearn — recorded.
 
-### A.8 Recurring shadow-ledger MINOR-1
+Implementation decision per the ladder: pure stdlib + mido (already vendored via campaign's mido 1.3.3 pin).
 
-Worker claimed eleven `-clone-2`-suffixed ledger events (six named + two housekeeping + three auxiliary) landed in the fork shadow ledger; primary `promise_ledger.jsonl` returned zero `M-V3-SPINE-1/chicken-grease-palette-render` matches at audit time. Same shadow-ledger merge lag pattern as prior three fanout branches. Non-blocking. Routed to c22 root conductor as research-brief S1 mandatory linear precondition.
+### A.8 Anchor preservation (33 anchors byte-identical pre==post)
 
-### A.9 Environment pins
+Recorded at `data/v3/rules/anchor_preservation_c23.json` with `all_match=true`. Includes the three named predecessor ledgers: c9 `data/rules/ledger.jsonl`; c15 `ledger_i3_dminor.jsonl`; c40 `ledger_rated_corpus.jsonl` — all byte-identical.
 
-`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; c7 venv dir-manifest `a86205175728d58f0a96ad02fc1ab1ac9e35f06c5ed568a960ed1ff261f83a74` (thirteen-cycle chain preserved).
+### A.9 Verdict schema (17 keys, `verdict` label deliberately omitted)
 
-### A.10 Source sessions
+Keys: `byte_determinism`, `clone`, `corpus_song_sha16s`, `cycle`, `env_pins`, `extract_ts_iso`, `extractor_version`, `fork`, `milestone`, `n_rules_by_type`, `n_rules_total`, `notes`, `operator_ear_dependency`, `panel_is_never_lands_gate`, `rubric_hash_v3_rules`, `rules_artifact_sha256`, `tests_pass_over_total`.
+
+Auditor internal verdict: `V3_RULES_LANDS_pending_operator` (recorded in merge-report narrative; MODERATE #2 handoff for materialization).
+
+### A.10 Environment pins
+
+`PYTHONHASHSEED=0`; `SOURCE_DATE_EPOCH=1756463424`; `TZ=UTC`; `LC_ALL=C.UTF-8`; `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`; interpreter `/usr/bin/python3`; `mido==1.3.3`. Recorded in `verdict.env_pins`.
+
+### A.11 Handoffs for root conductor c24+
+
+MODERATE #1 (shadow-ledger main-concat, recurring non-blocking): 8-row shadow shard at `data/v3/rules/ledger_c23_clone_2.jsonl` awaits c33/c48 auto-suffix concat.
+
+MODERATE #2 (schema rename): shadow-ledger row schema needs reconciliation with primary ledger schema before concat.
+
+MODERATE #3 (`verdict.json` label materialization): 17-key schema omits `verdict` string field; auditor's internal `V3_RULES_LANDS_pending_operator` recorded in merge-report narrative; downstream may materialize label in future cycle for consistency with c4–c22 verdict shapes.
+
+MINOR (plain-assert test convention, campaign-wide policy call): c23 test suite uses plain `assert` rather than pytest framework; policy call for consistency across future rule/generation tests.
+
+### A.12 Source sessions
 
 | Cycle | Researcher | Worker | Auditor |
 |---|---|---|---|
-| 1 | b8d2fd7a-b8f8-42c5-91de-b9e6dd20051f | d16e4456-b951-48c6-bbc4-87c388a4d6d0 | 17358ffd-e62b-4cfb-bef9-639d44b0a0d8 |
-| 2 | aae22138-552a-46a9-bfe7-41e2ef88f3a5 | e13f95c2-0bcf-480f-8825-012dc31d53ef | 234b8d88-409e-44c2-900a-8ed03ce4d70f |
+| 1 | 00e31c13-4488-44a0-afe8-4d7537ff24ba | e02570aa-52a3-4ebc-be9c-8a145cf021d5 | 3dba5d81-7879-4414-b9ad-07774442fefa |
+| 2 | c812527b-7cfe-49ef-87a8-b6714950edfa | 9eb6eae1-39b3-47b1-b54b-39a69952f8b8 | ab6a0e07-cc65-4a46-ad8e-d730fd2e599c |
 
-### A.11 Fanout metadata
+### A.13 Fanout metadata
 
-Fork `0a1b1dca4f9b`. Clone 2 of the Chicken Grease palette-render assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-0a1b1dca4f9b/clone-2/merge_report.md` for parent-conductor pickup, carrying the palette-render verdict, the three-way rubric hash chain, the MINOR-1 shadow-ledger reconciliation queued for c22 S1, and MINOR-2/3/4 interpretive observations queued for c22 S4 framing document. Sibling clones in the same fork reported separately.
+Fork `d5530f8d1ccc`. Clone 2 of the M-V3-RULES-1 first-activation assignment. Merge report expected at `/home/user/music-gen-instance-v3/fork-d5530f8d1ccc/clone-2/merge_report.md` for root-conductor pickup; workspace-root fallback at `merge_report_c23_clone_2_fork_d5530f8d1ccc.md`. Sibling clones (parallel opening work on other downstream milestones) reported separately.
