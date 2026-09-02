@@ -43,12 +43,15 @@ def _base(mid, narrative, artifacts, status="validated", conf="high"):
     return {
         "milestone_id": mid,
         "status": status,
-        "confidence": {"level": conf, "rationale": "measured", "assessor": "worker-clone-1"},
+        "confidence": {"level": conf, "rationale": "measured", "assessor": AGENT,
+                       "assessor_original": AGENT_ORIGINAL},
         "narrative": narrative,
         "artifacts": artifacts,
         "cycle": CYCLE,
         "run_id": RUN_ID,
         "agent": AGENT,
+        "agent_original": AGENT_ORIGINAL,
+        "clone": "1",
         "ts": _now_iso(),
     }
 
