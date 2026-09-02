@@ -4,9 +4,28 @@
 **Operator section:** t=233.63918367346938..263.63918367346935 s (D1 auto-picker choice from focus_set_v2)
 **Rubric:** rubric-v2 (SHA `c49db5a12e955f26…`, unchanged from c4)
 
-> This report is populated at the end of the cycle by the finalizer.
-> See `data/v3/deliveries/31a164f845f8e27e/operator_section/verdict.json`
-> for the machine-readable verdict.
+## Executive summary
+
+**Verdict: `V3_SPINE_OPERATOR_SECTION_LANDS_pending_operator`** with three-way
+`rubric_hash_v2` byte-equality chain holding, `blocked_on_operator=true`, and
+**0 failures across every rubric sub-clause**.
+
+- **Track A (env-drift audit):** venv baseline established (87 packages);
+  c3 guitar reproduce probe = `deferred_egress_blocked` (honest bookkeeping,
+  no c3-era pip history/snapshots + no local wheel closure + egress
+  forbidden). Attribution: **`ENV_DRIFT_PROBE_DEFERRED`**. Does NOT invalidate
+  OPTION A — the canonical serializer is a pure function of its JSON input.
+- **Track B (operator-section pipeline):** end-to-end from ffmpeg slice
+  → htdemucs_6s ×2 (6/6 byte-deterministic stems, 12 SHAs) → MuScriptor
+  JSON ×2 (7/7 byte-deterministic probes, 14 SHAs) → canonical MIDI ×2
+  (7/7 byte-deterministic, 14 SHAs) → merged.mid (4/4 structural gates)
+  → fluidsynth per-track render ×2 (5/5 byte-deterministic) → mix-match
+  → operator A/B delivery. All artifacts non-silent.
+- **Discipline:** 57/57 anchors byte-identical pre==post; 16/16 tests
+  green; 0-ERROR promise_check post plan-of-record update.
+- **Operator handoff:** two A/B pairs now available — c4's t=0..30s
+  (compat window) and c5's operator D1-chosen t=233.64..263.64s
+  (peak+exposed section). Operator ear is the only LANDS authority.
 
 ## §1 Anti-fabrication: c4 delivery byte-identity pre==post
 
