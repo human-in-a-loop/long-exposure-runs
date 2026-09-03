@@ -1,10 +1,13 @@
 # Music-Gen v4 closure campaign — MANIFEST
 
-Snapshot at cycle-6 close. Scope: files produced or extended during
-cycles 1–6 of the v4 closure campaign (Chicken Grease bass
-sound-matching sub-milestone, plus the determinism-certificate check).
-Prior v3-arc anchors are read-only and are not re-inventoried here;
-the cycles reports §A.1 and §A.4 list them explicitly.
+Snapshot at cycle-9 close. Scope: files produced or extended during
+cycles 1–9 of the v4 closure campaign (Chicken Grease bass
+sound-matching sub-milestone closed under operator OPT1+OPT3
+acceptance; Chicken Grease drums arc scaffolded to launch-ready;
+`M-V4-SHOWCASE-1` A/B render scaffold in place with `n_missing = 4`;
+plus the determinism-certificate check). Prior v3-arc anchors are
+read-only and are not re-inventoried here; the cycles reports §A.1
+and §A.4 list them explicitly.
 
 ## Scripts (cycles 1–3 delta)
 
@@ -33,9 +36,18 @@ Cycles 4–6 delta in `scripts/sound_match/`:
 | `replay_family2.py` | 6 | family-2 replay dispatch (sibling to `replay.py`) |
 | `replay.py` | 6 patched in place | L79–93 replay-program-invariance fix; SHA moves `e03dad60…` → `419d9558747eec61e58b3450b9f57b9bd057a7f8d7a31dfd1ab02f4d63c9f545` |
 
+Cycles 7–9 delta in `scripts/sound_match/`:
+
+| file | cycle | purpose |
+|---|---|---|
+| `coarse_sweep_sf2_drums.py` | 9 | drums coarse-sweep sibling (15 471 B); dry-run PASS, detached launch halted by disk-check false positive — cycle-10 fix scope |
+| `deliver_cg_ab_v4.py` | 9 | Chicken Grease A/B render scaffold (5402 B); smoke test only, no render (`n_missing = 4`) |
+
+Cycle-1 anchor `coarse_sweep_sf2.py` (SHA `c74c35bc…`) verified byte-identical through cycle 9.
+
 Other files in `scripts/sound_match/` (`objective.py`,
 `replay_proof.py`, `deliver_ab.py`) are prior-arc anchors used
-unchanged during cycles 1–6.
+unchanged through cycle 9.
 
 ## Tests (cycles 1–3 delta)
 
@@ -73,6 +85,25 @@ Cycles 4–6 data-artefact delta under `data/v4/profiles/31a164f845f8e27e/`:
 | `pre_c6_fix/` | 6 | archived pre-fix replay proofs (932 B + 892 B) |
 | `replay_c6_post_fix_sha.txt`, `replay_fix_c6_rubric_hash.txt`, `family2_builder_c6_rubric_hash.txt` | 6 | fingerprint + three-way rubric-hash chain anchors |
 
+Cycles 7–9 data-artefact delta:
+
+| file | cycle | notes |
+|---|---|---|
+| `data/v4/profiles/31a164f845f8e27e/bass_arc_closeout.json` | 7 | verdict `CG_BASS_ARC_EXHAUSTED_NO_CONFIRMED`; both frozen families exhausted; rubric hash `544a399569b8d2e9…` |
+| `data/v4/profiles/31a164f845f8e27e/operator_directive_c7.json` | 7 | `operator_directive_present = false` |
+| `data/v4/profiles/31a164f845f8e27e/closeout_c7_rubric_hash.txt` | 7 | three-way chain anchor |
+| `data/v4/profiles/31a164f845f8e27e/anchor_preservation_pre_c7.json` + `_post_c7.json` | 7 | anchor coverage |
+| `data/v4/profiles/31a164f845f8e27e/operator_directive_c8.json` | 8 | `heartbeat_streak = 1`; single-shot wait-on-operator cycle |
+| `data/v4/profiles/31a164f845f8e27e/c7_readonly_reverify_c8.json` | 8 | 6/6 cycle-7 deliverables byte-identical |
+| `data/v4/profiles/31a164f845f8e27e/anchor_liveness_c8.json` + `_rubric_hash.txt` | 8 | 9/9 anchors match |
+| `data/v4/deliveries/31a164f845f8e27e/cg_bass_pinned_profile.json` | 9 | operator OPT1+OPT3 hybrid pin of `bass_v2.json` as Chicken Grease bass profile of record; SHA `aa9b36be3f2e6748…`; carries acceptance-fork + honest-embedding-cos disclosure |
+| `data/v4/deliveries/31a164f845f8e27e/scaffold_smoke_test.json` | 9 | A/B driver smoke test; `renderable_now = false`, `n_missing = 4` (drums, piano, guitar, other) |
+| `data/v4/profiles/31a164f845f8e27e/anchor_preservation_pre_c9.json` + `_post_c9.json` | 9 | 11/11 anchors match |
+| `data/v4/profiles/31a164f845f8e27e/c9_rubric_hash.txt` | 9 | `96e09627056412ad5af4c9f892b2f918d52e8c22bbf090bb6623861ae56fd58d` |
+| `data/v4/profiles/31a164f845f8e27e/drums_sweep_stage1/` | 9 | placeholder tree awaiting cycle-10 sweep |
+| `docs/sound_match/c9_operator_directive_operationalization_rubric.md` | 9 | 5769 B, SHA `96e09627…` |
+| `plan_of_record.md` tail-append blocks (3) | 9 | operator directive verbatim, cycle-7 escalation supersede, heartbeat retirement |
+
 ## Environment pins in force across cycles 1–3
 
 | pin | scope |
@@ -107,8 +138,10 @@ Cycles 4–6 data-artefact delta under `data/v4/profiles/31a164f845f8e27e/`:
 - Family verdicts: 2 — sf2 `STILL_INDETERMINATE` (cycle 4, READ-ONLY thereafter), family-2 `FAMILY2_RULED_OUT` (cycle 6).
 - Foundational unblock: the cycle-6 `replay.py` L79–93 fix converts the SoundFont render family from "cannot ship replay proofs" to "can ship replay proofs on every song and instrument" for the remaining 24 profile cells.
 
-## Downstream state at cycle-6 close
+## Downstream state at cycle-9 close
 
-- Both frozen render families exhausted for Chicken Grease bass without any CONFIRMED verdict.
-- `M-V4-SHOWCASE-1` blocked on cg-bass pending operator policy call on acceptance of the sf2 `STILL_INDETERMINATE` top-1.
-- Cycle 7 opens as close-out plus manager escalation cycle; contingent advance to `M-V4-PROFILES-1/cg-drums-sweep-launched` on operator directive.
+- cg-bass arc closed under operator OPT1+OPT3 hybrid acceptance; `bass_v2.json` (program 33, embedding-cosine 0.4946) is the pinned Chicken Grease bass profile. The 0.60 CONFIRMED threshold is retired for this one acceptance; the 0.40 RULED_OUT floor is retained for future family verdicts.
+- cg-drums arc scaffolded to launch-ready; detached sweep deferred one cycle by a `_disk_ok()` false positive (statvfs vs df: 97.39% vs 82.24% used on a volume with 6.6 GB free against a 500 MB budget) — cycle-10 patch scope.
+- `M-V4-SHOWCASE-1` unblocked in principle; A/B render scaffold (`deliver_cg_ab_v4.py`) reports `n_missing = 4` (drums, piano, guitar, other). Full render fires when the four remaining Chicken Grease instrument profiles land.
+- v4 wait-on-operator heartbeat cadence formally retired at cycle 9 after a single cycle of operational use (cycle 8).
+- Cycle-10 scope: fix `_disk_ok()`, launch drums sweep detached under canonical 7-key env-pin, then rotate through cg-piano/keys, cg-guitar, cg-other at one instrument per cycle.
