@@ -50,8 +50,9 @@ channel and outrank everything when they do.
 - Sound matching (two-phase): the per-instrument SEARCH may be
   stochastic/agentic; the winning profile
   (`data/v4/profiles/<song_sha16>/<instrument>.json`, all params + dep
-  hashes) is pinned and its replay `MIDI + profile → audio` must be
-  byte-reproducible ×2. VST escape hatch: sha-pinned bounce with
+  hashes) is pinned and its replay `MIDI + profile → audio` is
+  deterministic (proof ×2 once per render family per song; every profile
+  records its render sha). VST escape hatch: sha-pinned bounce with
   `render_replayable: false` when the ear-preferred patch (e.g. Surge XT)
   cannot replay byte-identically; deterministic renderers preferred at
   equal quality.

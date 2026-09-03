@@ -58,6 +58,7 @@ once at milestone start and recorded in every profile.
 
 ## Replay (deterministic)
 `MIDI + profile → stem audio` via fluidsynth/sfizz + Pedalboard offline
-chain; byte-reproducible ×2 required per stem before recombination; then
+chain; deterministic replay proven ×2 once per render family per song
+(relaxation 2026-09-03 — each profile records its render sha); then
 per-stem loudness match to the original stem (rc7) and sum. Generated
 songs inherit their donor's profiles wholesale.
