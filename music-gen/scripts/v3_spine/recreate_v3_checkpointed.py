@@ -150,11 +150,14 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     ms_dir = work_dir / "muscriptor"
     _, hit = _run_with_cache(
         "muscriptor",
-        {f"stem_{n}": stem_dir / f"{n}.wav" for n in
-         ("drums", "bass", "other", "vocals", "guitar", "piano")
-         if (stem_dir / f"{n}.wav").is_file()},
+        {**{f"stem_{n}": stem_dir / f"{n}.wav" for n in
+            ("drums", "bass", "other", "vocals", "guitar", "piano")
+            if (stem_dir / f"{n}.wav").is_file()},
+         "section_wav": section_wav},
         lambda: _c22.stage_muscriptor(section_wav, stem_dir, ms_dir, verify_det=verify_det),
-        {},  # muscriptor produces many files; do not eagerly cache (large & noisy)
+        # JSON outputs are small and content-addressed: cache them (2026-09-03 fix)
+        {f"muscriptor/{n}.json": ms_dir / f"{n}.json"
+         for n in ("drums", "bass", "other", "vocals", "guitar", "piano", "full_mix")},
     )
     report["stages"]["muscriptor"] = {"cache_hit": hit}
 

@@ -226,46 +226,55 @@ def _muscriptor_once(wav: Path, out_path: Path, instruments: str | None, fmt: st
 
 def stage_muscriptor(section_wav: Path, stem_dir: Path, out_dir: Path,
                      verify_det: bool = True) -> dict[str, Any]:
-    """Per-stem + full_mix MuScriptor JSON+MID, byte-det x2 when verify_det=True."""
+    """Per-stem + full_mix MuScriptor JSON, byte-det x2 when verify_det=True.
+
+    2026-09-03 operator fix: probes run in a PARALLEL pool of single-threaded
+    subprocesses (each invocation is deterministic in isolation; scheduling
+    order cannot affect content). The third per-probe invocation that produced
+    a debug MIDI was removed — Option A demoted that artifact to
+    non_factor_debug and nothing consumes it.
+    """
+    import concurrent.futures as _cf
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    def _one(task):
+        name, run_id = task
+        wav = section_wav if name == "full_mix" else stem_dir / f"{name}.wav"
+        with tempfile.TemporaryDirectory(prefix=f"rv3_ms_{name}_{run_id}_") as d:
+            pj = Path(d) / "e.json"
+            _muscriptor_once(wav, pj, WHITELIST[name], "json")
+            return name, run_id, sha(pj), pj.read_bytes()
+
+    tasks = [(n, "r1") for n in PROBE_ORDER]
+    if verify_det:
+        tasks += [(n, "r2") for n in PROBE_ORDER]
+    workers = max(1, min(4, (os.cpu_count() or 2)))
+    results: dict[tuple[str, str], tuple[str, bytes]] = {}
+    with _cf.ThreadPoolExecutor(max_workers=workers) as ex:
+        for name, run_id, h, data in ex.map(_one, tasks):
+            results[(name, run_id)] = (h, data)
+
     probes: dict[str, Any] = {}
     for name in PROBE_ORDER:
         wav = section_wav if name == "full_mix" else stem_dir / f"{name}.wav"
-        white = WHITELIST[name]
-        with tempfile.TemporaryDirectory(prefix=f"rv3_ms_{name}_r1_") as d1:
-            p1 = Path(d1) / "e.json"
-            _muscriptor_once(wav, p1, white, "json")
-            r1 = sha(p1)
-            data1 = p1.read_bytes()
-        r2 = r1
-        if verify_det:
-            with tempfile.TemporaryDirectory(prefix=f"rv3_ms_{name}_r2_") as d2:
-                p2 = Path(d2) / "e.json"
-                _muscriptor_once(wav, p2, white, "json")
-                r2 = sha(p2)
-            if r1 != r2:
-                raise RuntimeError(
-                    f"FD-1 halt: muscriptor JSON nondeterministic on {name} (r1={r1[:16]} r2={r2[:16]})"
-                )
+        r1, data1 = results[(name, "r1")]
+        r2 = results[(name, "r2")][0] if verify_det else r1
+        if verify_det and r1 != r2:
+            raise RuntimeError(
+                f"FD-1 halt: muscriptor JSON nondeterministic on {name} (r1={r1[:16]} r2={r2[:16]})"
+            )
         (out_dir / f"{name}.json").write_bytes(data1)
-        try:
-            with tempfile.TemporaryDirectory(prefix=f"rv3_ms_{name}_mid_") as dm:
-                pm = Path(dm) / "e.mid"
-                _muscriptor_once(wav, pm, white, "midi")
-                shutil.copy2(pm, out_dir / f"{name}.mid")
-                mid_sha = sha(pm)
-        except Exception as e:
-            mid_sha = f"ERROR:{type(e).__name__}"
         probes[name] = {
             "input_wav": str(wav),
-            "instruments_whitelist": white,
+            "instruments_whitelist": WHITELIST[name],
             "json_run1_sha256": r1,
             "json_run2_sha256": r2 if verify_det else "SKIPPED",
             "byte_deterministic": r1 == r2 if verify_det else None,
-            "midi_debug_sha256": mid_sha,
+            "midi_debug_sha256": "SKIPPED_non_factor_debug (removed 2026-09-03; canonical MIDI comes from the serializer)",
         }
         print(f"  muscriptor {name:10s} json={r1[:12]} det={r1==r2}")
-    return {"probes": probes, "n_probes": len(probes)}
+    return {"probes": probes, "n_probes": len(probes),
+            "parallel_workers": workers, "debug_midi": "removed"}
 
 
 # --- STAGE 4: tempo_map ---------------------------------------------------
