@@ -1,485 +1,465 @@
 ---
-title: "Music-Gen v3 — Cycles 1–3: Chicken Grease Spine (MuScriptor per-stem determinism)"
-date: "2026-09-02"
+title: "Music-Gen v4 closure campaign — cycles 1–3"
+date: "2026-09-03"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen v3 — Cycles 1–3
+# Music-Gen v4 closure campaign — cycles 1–3
 
 ## Abstract
 
-The v3 pivot of the Music-Gen campaign replaces hand-rolled DSP transcription
-with **MuScriptor**, a prebuilt learned transcriber, and preserves every other
-proven stage of the previous pipeline (separation, section selection, GM
-render, hybrid vocals, mix-match, sanity panel). The first milestone,
-**M-V3-SPINE**, exercises the full chain end-to-end on a single song —
-Chicken Grease (sha16 `31a164f845f8e27e`) — and requires byte-determinism
-across two fresh runs before any deliverable reaches the operator's ear.
-
-Cycles 1–3 built that spine incrementally: cycle 1 froze the rubric and the
-operator whitelist mapping, cycle 2 landed the anchor-preservation
-pre-snapshot for the read-only inventory, and cycle 3 executed the
-per-stem MuScriptor pass on the Chicken Grease peak section and probed
-determinism per stem. The chain reached its pre-registered first STOP
-condition: **MuScriptor's bass MIDI file was not byte-deterministic across
-two fresh-tempdir runs**, while the underlying JSON event stream for the
-same bass stem *was* byte-deterministic, and the drums and vocals MIDI
-files were byte-deterministic. The frozen rubric's rung-1 verdict is
-therefore `V3_SPINE_CHAIN_FAILS`, which is a first-class negative finding
-rather than a project setback: it isolates a content-dependent
-serialization nondeterminism inside MuScriptor's `--format midi` writer
-and opens a clean canonicalization path (OPTION A) that leaves the v3
-pivot intact.
-
-Every SHA claimed in the worker report was independently re-verified from
-disk; the three-way rubric-hash chain holds byte-equal; the anchor
-preservation snapshot matched (`all_match=true`) across 21 read-only
-inputs. The chain is now blocked on an operator OPTION A/B/C decision
-before cycle 4 opens.
-
-## 1. Introduction
-
-### 1.1 Why v3 exists
-
-Versions 1 and 2 of this campaign built the recreation pipeline around
-hand-rolled DSP transcription (basic-pitch for pitched content;
-onset+GMM for drums; onset-segmented pyin for bass). Both generations
-passed their own numerical gates and were rejected by the operator's ear:
-"ALL OF THESE SAMPLES are still far off from the correct transcription."
-The postmortem (`docs/OPERATOR_recreation_root_cause_audit.md`) traced
-this to ten cumulative root causes, of which the most binding was
-**RC10**: the transcribers were validated on synthetic clips —
-fluidsynth renders of known MIDI, the easiest possible input — and were
-never re-benchmarked on real, separated stems. Every downstream stage
-faithfully synthesized a wrong transcription.
-
-A fourth-pass audit added seven conceptual blind spots — circular gates,
-no musical time, model-class ceiling, timbre-confounded verification,
-unreconciled stem bleed, too-coarse drum vocabulary, and hardest-input
-bias — and the operator concluded that no amount of threshold tuning
-could recover a transcription that classical, per-frame models simply
-cannot produce. The v3 pivot
-(`docs/PIVOT_v3_simplest_robust_pipeline.md`) replaces transcription
-wholesale with a learned model and keeps everything else that is already
-byte-verified.
-
-### 1.2 The v3 spine
-
-The v3 pipeline, in order, is:
-
-1. **Ingest** the source `.mp3` and confirm sha256 provenance.
-2. **Slice** the audio to the chosen peak section (Chicken Grease:
-   `t=233.64..263.64 s`, chosen by the byte-verified section selector
-   `rc8_section_selection.py`).
-3. **Separate** the slice with `htdemucs_6s` into six stems: drums,
-   bass, guitar, piano, other, vocals.
-4. **Transcribe** each stem individually with **MuScriptor** using an
-   `--instruments` whitelist matched to that stem (drums stem gets
-   `drums`; bass stem gets electric/acoustic bass; and so on). Greedy
-   decoding on CPU. A full-mix MuScriptor pass is allowed only as a
-   cross-check for content lost to separation artifacts.
-5. **Merge** the per-stem MIDIs into one multi-track MIDI on a shared
-   tempo map.
-6. **Render** each non-vocal track through a General MIDI program map
-   (`scripts/v3_spine/gm_program_map_v3.py`) into fluidsynth
-   (FluidR3_GM soundfont), drums on MIDI channel 10.
-7. **Overlay** the raw htdemucs vocals stem on the summed
-   instrumental render (D2 hybrid: the transcribed vocal MIDI stays in
-   the score but is never synthesized).
-8. **Mix-match**: per-stem loudness match (RMS + LUFS-S) to the
-   corresponding original stem; sum.
-9. **Excerpt** to a 30 s A/B pair (original vs reconstruction),
-   loudness-normalized to −23 LUFS-I.
-10. **Sanity panel** (mel-L1, centroid, RMS, LUFS, VGGish, onset/pitch
-    agreement, tempo agreement, per-instrument note-density ratios) as
-    a regression tripwire only — no metric may declare success.
-11. **Emit verdict.**
-
-MuScriptor is the only substantive change. Everything else in the chain
-was already byte-verified in the v2 run and is being reused as
-read-only code.
-
-### 1.3 The operator gate
-
-The operator's ear is the sole authority on audible quality. Every
-milestone that emits audio is blocked on an operator listening verdict
-delivered through the live guidance channel. Byte-determinism ×2 is a
-prerequisite (not a substitute) for that gate.
-
-## 2. Methodology
-
-### 2.1 The frozen rubric
-
-Before any script under `scripts/v3_spine/` landed, a rubric
-(`docs/v3_spine_rubric.md`) was frozen with three verdicts and a
-pre-registered STOP list. The rubric's SHA-256 is stored in
-`data/v3_spine/rubric_hash.txt` and embedded in every verdict JSON's
-`rubric_hash` field. All three copies must be byte-equal for a verdict
-to be considered valid; this "three-way chain" prevents post-hoc
-rubric editing.
-
-The three verdicts are:
-
-- **`V3_SPINE_CHAIN_LANDS`** — all of (a) end-to-end with no
-  exceptions, (b) byte-determinism ×2 on every deterministic anchor,
-  (c) A/B WAVs present and non-silent at 30 s ±5 ms, (d) sanity panel
-  returns 8 finite keys, (e) zero MIDI parts on GM program 4 (Electric
-  Piano 1), (f) ≥12/12 tests green, (g) ≥20-SHA anchor preservation,
-  (h) zero-error promise check, and (i) operator listening explicitly
-  marked pending.
-- **`V3_SPINE_CHAIN_PARTIAL`** — chain runs and A/B is emitted, but
-  exactly one of (b)–(g) fails and is documented.
-- **`V3_SPINE_CHAIN_FAILS`** — the chain errors before A/B emission,
-  or MuScriptor is non-deterministic under greedy+CPU+seed=0 across
-  two fresh runs, or any stage silently drops content. The
-  nondeterminism failure is called out explicitly as a first-class
-  negative finding.
-
-The rubric additionally pins the environment: `PYTHONHASHSEED=0`,
-`SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`, `LC_ALL=C.UTF-8`,
-`OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=1`,
-`torch.manual_seed(0)`. It also bans any import of the deprecated
-transcription lineage (basic-pitch, pyin, GMM drums) from any script
-under `scripts/v3_spine/`.
-
-### 2.2 The whitelist mapping
-
-The operator directive names six semantic categories per stem
-(`drums`; `electric_bass`, `acoustic_bass`; and so on). MuScriptor has
-its own instrument vocabulary. To avoid ambiguity, the actual
-vocabulary was probed with `muscriptor list-instruments` and pinned in
-`data/v3_spine/muscriptor_instrument_vocab.json`. The mapping
-(`docs/v3_spine_instrument_whitelist_mapping.md`) is 1-to-1 for drums,
-bass, piano, and vocals; the guitar row required word-order flips
-(operator's `electric_guitar_clean` and `_distorted` are MuScriptor's
-`clean_electric_guitar` and `distorted_electric_guitar`); the "other"
-row is the only under-specified case. This cycle interprets "remaining
-pitched groups" as `synth_lead`, `synth_pad`, `synth_strings`,
-`orchestra_hit`, and `chromatic_percussion`, and deliberately excludes
-the 15 orchestral categories on the prior that Chicken Grease (a
-funk/soul track) contains none of them.
-
-### 2.3 Determinism protocol
-
-Byte-determinism was checked by running each MuScriptor call twice
-from scratch, each into a fresh `tempfile.mkdtemp()` directory, with
-the environment above pinned. For each stem the SHA-256 of both the
-`.mid` container and the `.json` event dump was recorded, and the pair
-was compared. Wall-clock time per probe was recorded and matches the
-brief's cost estimate (63–120 s per stem on CPU).
-
-The rubric's STOP-at-rung-1 clause requires that if any deterministic
-anchor fails ×2, the chain halts before rendering. No tuning, no
-retries, no fallback — the failure is emitted as the verdict and the
-operator is presented with the options.
-
-## 3. Results
-
-### 3.1 Cycle-by-cycle progression
-
-**Cycle 1 — rubric freeze and whitelist derivation.** The frozen
-rubric was written, hashed, and its SHA committed to
-`rubric_hash.txt`. The MuScriptor vocabulary was probed live and
-pinned. The operator whitelist was mapped to that vocabulary with
-every deviation named. The cycle emitted no audio; its sole
-deliverables were the pre-registered rubric and mapping, which are
-prerequisites for any later claim.
-
-**Cycle 2 — anchor preservation pre-snapshot.** The 21 read-only
-anchors named in the rubric (proven v2 scripts `rc4`, `rc1_v2`,
-`rc7*`, `rc6_v2_panel`, `rc8`, `rc9`; the six htdemucs baseline stems
-for Chicken Grease; the `rc5` tempo estimate; the MuScriptor model
-safetensors; the FluidR3_GM soundfont; the `palette_render/render_stem.py`
-c53 anchor; and the source `.mp3`) were SHA-256'd into
-`anchor_preservation_pre.json`. This freezes the read-only surface
-before any spine script executes.
-
-**Cycle 3 — the spine dry-run.** The section was sliced, htdemucs_6s
-was run into `data/v3_spine/31a164f845f8e27e/stems_6s/`, and
-MuScriptor was called seven times: once per stem, plus one full-mix
-cross-check pass. Each was then re-run into a fresh temp directory
-where wall-time budget allowed. The anchor-preservation post-snapshot
-was recomputed and compared against the pre-snapshot.
-
-### 3.2 The determinism table
-
-The seven MuScriptor calls produced the following SHAs:
-
-| Stem      | MIDI Run-1 (prefix) | MIDI Run-2 (prefix) | MIDI equal? | JSON Run-1 (prefix) | JSON Run-2 (prefix) | JSON equal? |
-|-----------|---------------------|---------------------|-------------|---------------------|---------------------|-------------|
-| drums     | `fa252589…2abe91`   | `fa252589…2abe91`   | **yes**     | `b4cafa16…f1d7704`  | `b4cafa16…f1d7704`  | **yes**     |
-| bass      | `b51f5d7c…3a7ef5`   | `8d88b1f5…95a4c803` | **NO**      | `e80ab193…3ae853`   | `e80ab193…3ae853`   | **yes**     |
-| vocals    | `5f50b174…792b08c`  | `5f50b174…792b08c`  | **yes**     | `00ab8959…2721500`  | `00ab8959…2721500`  | **yes**     |
-| guitar    | `f209c940…9ca9233`  | deferred            | —           | `97b5a598…6f4ddabc` | deferred            | —           |
-| other     | `b4134d5c…dc75e10b` | (empty stem)        | —           | `4f53cda1…202b945`  | (empty stem)        | —           |
-| piano     | `b4134d5c…dc75e10b` | (empty stem)        | —           | `4f53cda1…202b945`  | (empty stem)        | —           |
-| full_mix  | `c3186d82…2c98e1a`  | deferred            | —           | `7d011b61…4420fb`   | deferred            | —           |
-
-Three stems received the full two-run probe (drums, bass, vocals);
-guitar and full_mix Run-2 were deferred to cycle 4 because the rung-1
-STOP on bass preempts further wall-time spend on downstream-void
-probes; and `other` and `piano` produced empty transcriptions under
-the operator whitelist (their MIDI is a minimal empty-track container,
-their JSON is the two-byte string `[]`), so their equality check is
-trivially satisfied. Every probe SHA above was independently
-re-verified from disk by the auditor.
-
-### 3.3 What the failing probe means
-
-The bass row is the pre-registered STOP condition. It is worth
-reading precisely: the underlying MuScriptor **event stream is
-byte-deterministic** (`bass.json` matches across runs, SHA
-`e80ab193…3ae853`), but the **MIDI container serialization is not**
-(`bass.mid` differs: Run-1 is 663 bytes, Run-2 is 639 bytes; the
-first differing byte is at offset 40; 365 total bytes differ). The
-drums and vocals MIDI files are byte-deterministic under the same
-environment and the same MuScriptor call, so this is not a global
-BLAS-thread artifact — it is content-dependent nondeterminism in
-whatever code path bass content takes through MuScriptor's
-`--format midi` writer.
-
-This distinction matters because it constrains the fix cleanly. The
-symbolic content is already deterministic; only the file format that
-records it is not.
-
-### 3.4 Empty stems on "other" and "piano"
-
-Under the whitelist above, the `other` and `piano` stems on this 30 s
-section produced zero events. Two interpretations are open: either
-the htdemucs stems contain content outside the whitelisted MuScriptor
-categories, or the content is below MuScriptor's detection threshold
-in this section. This is a content finding, not a determinism
-finding, and it is downstream of the bass-MIDI blocker; it is
-recorded for the operator's attention (the "other" whitelist may
-need widening, or Chicken Grease's piano work may be organized
-differently from what a `piano`/`electric_piano`/`organ` filter
-captures).
-
-### 3.5 Anchor preservation
-
-The 21-anchor pre-snapshot from cycle 2 was recomputed at the end of
-cycle 3 as `anchor_preservation.json`. `all_match=true`, zero
-mismatches. No read-only surface was disturbed during the run.
-
-### 3.6 The three-way rubric-hash chain
-
-- SHA-256 of `docs/v3_spine_rubric.md` = `b0031164…4b555`
-- content of `data/v3_spine/rubric_hash.txt` = `b0031164…4b555`
-- `verdict.json.rubric_hash` field = `b0031164…4b555`
-
-All three byte-equal. The rubric was not edited after any spine
-script began emitting SHAs.
-
-### 3.7 Verdict
-
-Per the frozen rubric's rung-1 STOP clause, the emitted verdict is
-**`V3_SPINE_CHAIN_FAILS`**, with the falsifying tuple recorded in
-`data/v3_spine/31a164f845f8e27e/muscriptor_determinism_per_stem.json`
-(probe = `bass.midi`, Run-1 SHA, Run-2 SHA, both byte lengths,
-first-diff offset). The rest of the chain — merge, GM render, vocal
-overlay, mix-match, A/B excerpt — was correctly *not* executed.
-
-## 4. Discussion
-
-### 4.1 What kind of failure this is
-
-The rubric anticipated MuScriptor nondeterminism as a first-class
-negative outcome, not as a project failure. The point of the spine
-milestone is to discover exactly this class of problem before it
-propagates through six more milestones and the full corpus. The
-finding is well-characterized (which probe, which artifact, both
-SHAs, both byte lengths, the first differing byte's offset, and the
-crucial observation that the underlying JSON events are still
-byte-equal), which is what the operator needs to choose a resolution
-without further diagnostic cycles.
-
-### 4.2 The three resolutions
-
-**OPTION A — canonicalize MIDI from the byte-deterministic JSON
-events.** Write a small deterministic MIDI writer that consumes
-MuScriptor's canonical JSON event stream (already byte-equal on bass
-across runs) and emits a MIDI file with a fixed PPQ and a fixed event
-sort order. This preserves the entire v3 pivot: MuScriptor is still
-the transcriber; only the file that carries its output is regenerated
-from the deterministic intermediate. The fix is one script and the
-same rung-1 determinism test re-run. It should be applied uniformly
-to all six stems plus the full-mix cross-check to avoid discovering
-the same class of failure on a different stem later.
-
-**OPTION B — upstream fix inside MuScriptor.** Egress is blocked in
-this workspace; contributing a patch upstream is likely infeasible
-within the campaign's constraints. If pursued, the milestone is
-blocked pending an upstream release.
-
-**OPTION C — pin bass MIDI to Run-1 by explicit exception.** Record a
-locked-exception ledger event pinning the SHA `b51f5d7c…3a7ef5`
-as the authoritative bass MIDI. Every future run must reject
-anything else. This is honest but constraining: any change to
-Chicken Grease's htdemucs bass stem or to MuScriptor's model weights
-breaks the anchor and requires reissuing the exception.
-
-The operator's choice among these determines cycle 4's brief. The
-research plan cannot auto-select.
-
-### 4.3 What v3 has and has not shown
-
-**Has shown:** the v3 chain end-to-end (through the transcription
-stage) executes cleanly on real separated stems; the operator
-whitelist maps completely to MuScriptor's vocabulary; MuScriptor is
-byte-deterministic on drums and vocals under a pinned environment;
-the fixed reproducibility protocol (pinned env, fresh tempdirs, SHA
-recording) works and catches nondeterminism the way it was designed
-to.
-
-**Has not shown:** whether MuScriptor's transcription accuracy on
-real stems satisfies the operator's ear — the mechanism claim of the
-v3 pivot ("per-stem transcription of separated stems outperforms
-full-mix transcription") cannot be tested until the A/B audio
-actually reaches the operator, which is gated on OPTION A/B/C
-resolution.
-
-### 4.4 What this cycle deliberately avoided
-
-The cycle did not tune MuScriptor. It did not retry with different
-seeds. It did not fall back to a hand-rolled writer for bass while
-keeping MuScriptor's writer for the rest. It did not spin partial
-success as a "known limitation." These self-restraints are Fixed
-Decision 1 (no hand-rolled DSP), Fixed Decision 7 (report failures
-plainly), and the anti-fabrication rules of the campaign; honoring
-them is what makes the finding actionable rather than just another
-plausibility bar.
-
-## 5. Conclusions and Recommendations
-
-The first three cycles of the v3 campaign delivered a clean
-first-class negative result: MuScriptor's MIDI writer is
-content-dependently nondeterministic on Chicken Grease's bass stem,
-while the underlying event stream is fully deterministic. The chain
-halted correctly at the pre-registered rung-1 STOP. Everything
-upstream (section selection, separation, whitelist derivation,
-per-stem transcription for the deterministic stems, the entire
-read-only anchor surface) is intact and reusable.
-
-The chain is now blocked on an operator choice among three named
-options. Cycle 4's brief should be shaped by whichever option the
-operator selects. If no operator response has arrived when cycle 4
-opens, the correct behavior is a bookkeeping cycle: emit a fresh
-egress probe, surface the OPTION A/B/C question through the live
-guidance channel, and refuse to auto-pick.
-
-Regardless of the choice, cycle 4 should also:
-
-- Complete the guitar and full-mix Run-2 SHAs that cycle 3 deferred
-  (real wall time; `other` and `piano` will trivially pass because
-  their output is empty).
-- Revisit the whitelist for `other` and `piano` if the operator's
-  ear expects Chicken Grease's piano work to be captured under any
-  of `piano`, `electric_piano`, or `organ`.
-- Apply any canonicalization uniformly to all stems, not just bass,
-  to prevent rediscovering the same class of failure on a different
-  stem later.
-- Stay linear: this is a single-branch decision, not a fan-out
-  opportunity.
-
-## Appendix: Implementation Details
-
-### A.1 File and script inventory
-
-Scripts under `scripts/v3_spine/` (all with `/usr/bin/python3` guard,
-zero PRNG imports, zero banned-lineage imports):
-
-- `pipeline.py` — orchestrates the eleven-step chain end-to-end.
-- `anchor_preservation.py` — computes SHA-256 for the 21 read-only
-  anchors, writes pre/post snapshots, compares.
-- `determinism_check.py` — runs each MuScriptor call twice into
-  fresh temp directories and records SHAs.
-- `emit_ledger_events.py` — writes the ledger events for this
-  milestone under the fan-out-safe namespace.
-- `gm_program_map_v3.py` — maps MuScriptor instrument-group labels
-  to General MIDI programs (drums on channel 10; no assignments to
-  program 4).
-- `verdict.py` — assembles `verdict.json` with the three-way
-  rubric-hash reference.
-
-Data written under `data/v3_spine/`:
-
-- `rubric_hash.txt` — canonical SHA of the frozen rubric.
-- `muscriptor_instrument_vocab.json` — MuScriptor's live-probed
-  vocabulary.
-- `31a164f845f8e27e/section.wav` — the 30 s peak section
-  (`t=233.64..263.64 s` per `data/recreate_v2/focus_set_v2.json`).
-- `31a164f845f8e27e/stems_6s/{drums,bass,guitar,piano,other,vocals}.wav`
-  — htdemucs_6s output.
-- `31a164f845f8e27e/muscriptor/{drums,bass,guitar,piano,other,vocals,full_mix}.{mid,json}`
-  — MuScriptor per-stem outputs plus full-mix cross-check.
-- `31a164f845f8e27e/muscriptor_determinism_per_stem.json` — the
-  determinism table (probe SHAs, byte lengths, wall times, rung-1
-  verdict).
-- `31a164f845f8e27e/anchor_preservation_pre.json` and
-  `anchor_preservation.json` — 21-anchor SHA snapshots with
-  `all_match=true`, `n_mismatch=0`.
-
-Docs:
-
-- `docs/v3_spine_rubric.md` — the frozen rubric (SHA
-  `b0031164…4b555`, cycle-1 mtime).
-- `docs/v3_spine_instrument_whitelist_mapping.md` — operator→MuScriptor
-  vocabulary mapping with named deviations.
-- `docs/v3_spine_report_cycle3.md` — cycle-3 worker's own report.
-
-### A.2 Test results
-
-12/12 tests green in `tests/test_v3_spine.py` (rubric-hash chain
-integrity, whitelist-completeness assertions, env-pin coverage,
-determinism-JSON schema, verdict-JSON schema, banned-lineage import
-guard, PRNG-free AST-grep guard). This satisfies rubric bar (f); the
-remaining bars are blocked by the rung-1 STOP.
-
-### A.3 Environment pins
-
-`PYTHONHASHSEED=0`, `SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`,
-`LC_ALL=C.UTF-8`, `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`,
-`OPENBLAS_NUM_THREADS=1`, `torch.manual_seed(0)`. Model:
-`workspace/models/muscriptor-medium/model.safetensors`, SHA-256
-`ac80adbdf85d87231735fd948af7013441c0afced316c4e9067fd5d8a7fb97ec`.
-
-### A.4 Wall times (Run-2, seconds)
-
-drums MIDI 68.5 / JSON 63.4; bass MIDI 69.9 / JSON 63.7; vocals MIDI
-120.3 / JSON 114.0. All within the pre-registered per-probe budget.
+Cycles 1–3 open the v4 closure campaign with the Chicken Grease bass
+sound-matching sub-milestone (`M-V4-PROFILES-1/cg-bass`), the first
+per-instrument search of the five-song profile-pinning milestone. The
+determinism certificate that gates palette-primary claims
+(`M-V4-CERT`) was already complete on disk when the run began: two
+`--no-cache` runs of the checkpointed driver produced byte-identical
+delivery WAVs and the certificate carries verdict
+`E2E_DETERMINISM_HOLDS` under
+`env_pin_sha256 = 623df01f…6571d38d`; that milestone landed trivially
+at cycle-1 opening.
+
+The cg-bass arc then proceeded in three stages. Cycle 1 ran a coarse
+General-MIDI SoundFont sweep of 15 presets × 1 default configuration
+against the reference bass stem; program 17 (Drawbar Organ) topped the
+composite objective — a surprising centroid-dominated result on bass
+content. Cycle 2 ran a 180-cell fine fit around the top-5 coarse
+presets and returned an INDETERMINATE verdict leaning RULED_OUT for the
+SoundFont family: 90 of 180 renders (50%) collapsed to duplicate
+render SHAs, exposing an *EQ-inertness* defect in which post-processing
+choices had no audible effect. Cycle 3 rebuilt the fine-fit search into
+a v2 script that (a) drops zero-mean centring and LUFS-normalises every
+render before objective scoring so the EQ curve actually reaches the
+mel and VGGish features, (b) unconditionally promotes program 33
+(Electric Bass Finger) alongside the stage-1 top-k so bass presets
+receive a fair hearing regardless of what stage-1 elevated, and
+(c) records the additional determinism dependencies
+(`pyloudnorm_available`, `lufs_target_db`) into a new
+`env_pin_sha256`. The v2 search was launched detached as a 216-cell
+sweep and completed at cycle-3 tail.
+
+The stage-2b leaderboard resolves the two MODERATE-scoped questions
+carried out of cycle 2. The EQ v2 hypothesis is empirically confirmed:
+215 of 216 rows now carry distinct render SHAs (up from 90 of 180 =
+50% at cycle 2), so post-processing is no longer inert. Program 33
+occupies the top seven slots of the composite ranking under fixed
+Electric-Bass-Finger tone (all EQ variants of the same preset). But
+under the embedding-cosine metric the top-5 is entirely program 19
+(Church Organ) with `embedding_cos_vggish ≈ 0.49`, well above program
+33's best of `0.20`. Under the pre-registered decision protocol this
+lands as `STILL_INDETERMINATE` — the composite and embedding metrics
+disagree on the winning preset. The formal family-verdict emission and
+the deterministic replay proof under the new env-pin fall to the next
+cycle by design; a launch cycle is bounded to setting up the
+falsification test, not running its conclusion.
+
+## 1. Scope and framing
+
+The v4 closure campaign covers six milestones in strict order:
+determinism certificate (`M-V4-CERT`), per-instrument sound profiles
+for five focus songs (`M-V4-PROFILES`), one full-song sound-matched
+showcase (`M-V4-SHOWCASE`), rules + lightweight-ear extractors
+(`M-V4-RULES` / `M-V4-EAR`), a seeded generator over five novel
+songs (`M-V4-GEN`), and a completion sweep (`M-V4-CLOSE`). Cycles 1–3
+belong entirely to the first two milestones and, within
+`M-V4-PROFILES`, to the first song × instrument pair:
+Chicken Grease (`song_sha16 = 31a164f845f8e27e`) × bass.
+
+Sound-matching is defined by the v4 spec as a two-phase policy: the
+per-instrument search may be stochastic and agentic, but the
+*winning profile* (parameter set + dependency hashes stored as
+`data/v4/profiles/<song_sha16>/<instrument>.json`) is pinned, and the
+replay of `MIDI + profile → audio` must be deterministic. Under
+operator relaxation dated 2026-09-03, byte-determinism is proved twice
+once per **render family** per song (SoundFont, stem-sampled, and
+bounce), not per profile — every profile still records its own render
+SHA for downstream re-verification when environment pins move.
+
+The three fixed anchors preserved unchanged through cycles 1–3 are:
+
+- General-MIDI SoundFont: `FluidR3_GM.sf2`,
+  SHA `74594e8f4250680adf590507a306655a299935343583256f3b722c48a1bc1cb0`.
+- Reference bass stem (htdemucs_6s separation of Chicken Grease):
+  SHA `1bad871901294395c1b1ad1c97689e07d879f48aa8b9fc953ea6981d76e09ffd`.
+- Bass MIDI excerpt (from the canonical per-stem MuScriptor →
+  canonical JSON → MIDI serializer):
+  SHA `4863ca285c7db513c8bfc22da5e35e65036b0ecad2538a6d9794c80eb15f8ac9`.
+
+## 2. `M-V4-CERT`: the determinism certificate
+
+The certificate at `docs/v3_determinism_certificate.md` was already
+complete on disk at the start of cycle 1. Its §1 pipeline audit
+classifies all eleven stages of the v3 spine as either
+deterministic-proven (each running an internal byte-identity ×2 gate
+on every invocation) or deterministic-by-construction (pure functions
+of pinned inputs with no PRNG). Zero at-risk stages remain.
+
+Its §2 records the end-to-end evidence: two runs of
+`scripts/v3_spine/recreate_v3_checkpointed.py --no-cache --verify-det`
+against Chicken Grease under the pinned session environment
+(`PYTHONHASHSEED=0`, `SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`,
+`LC_ALL=C.UTF-8`, single-thread OMP/MKL/OpenBLAS) produced byte-identical
+delivery WAVs across `original_ab`, `reconstruction_ab`,
+`full_reconstruction`, and every per-track file. The verdict recorded
+is `E2E_DETERMINISM_HOLDS` under
+`env_pin_sha256 = 623df01f262ffd180c8497ce9bb06a2d4438b9239d60dd997304830b6571d38d`
+(identical to the Peach Dream cycle-25 environment pin, confirming a
+stable session environment across songs). The certificate is
+re-issued only when the environment pin changes.
+
+M-V4-CERT is therefore CONFIRMED. No cycle-1 work was required on it
+beyond the on-disk check that the campaign prompt asked for.
+
+## 3. `M-V4-PROFILES-1/cg-bass`: cycle 1 — coarse SoundFont sweep
+
+Cycle 1 ran the first-pass search over the General-MIDI SoundFont
+family via `scripts/sound_match/coarse_sweep_sf2.py`, launched detached
+through `_launch_cg_bass_sweep_c1.sh`. The grid was 15 GM presets
+against the reference bass stem, at the default gain / reverb / post
+configuration (gain 1.0, reverb send 0.3, no post-processing), scored
+by a fixed-weight composite:
+
+$$\text{composite} = 0.5 \cdot \text{mel\_L1\_dB}
+                    + 0.25 \cdot \text{spectral\_centroid\_RMSE\_Hz}
+                    + 0.25 \cdot (1 - \text{embedding\_cos\_vggish}) \cdot k$$
+
+with objective weights frozen at the values shown in the profile
+`objective_scores.weights_frozen` block. Lower is better on all three
+components. Coarse-sweep leaderboard: program 17 (Drawbar Organ)
+topped the composite, ahead of the bass programs in the 32–39 range.
+
+This is an unexpected result on bass content and was flagged as
+centroid-dominated: the organ's smooth low-mid harmonic stack sits
+closer to the reference stem in mel-band L1 than the plucked
+electric-bass presets do, and the VGGish embedding component was not
+strong enough at the coarse grid to override it. The cycle-1 verdict
+was CONFIRMED for the coarse sweep as a stage-1 filter — its role is
+to hand a top-5 shortlist to fine-fit, not to name a winner — and the
+run advanced to cycle 2 for the fine fit.
+
+## 4. `M-V4-PROFILES-1/cg-bass`: cycle 2 — fine fit v1 and the three MODERATE findings
+
+Cycle 2 ran `scripts/sound_match/fine_fit_sf2.py` as an 180-cell sweep
+around the coarse top-5 presets, crossed with a 6-way gain grid
+(0.25–2.0), a 3-way reverb grid (0.0/0.3/0.7), and three
+post-processing modes (`none`, `compressor_only`, `EQ_only`,
+`EQ_and_compressor`). Two replay proofs were produced: the pinned c2
+top-1 profile — program 17 organ at gain 0.5, reverb 0.3, no
+post-processing — reproduced byte-identically under a first
+`env_pin_sha256 = 2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`,
+and this was recorded as sub-milestone `cg-bass-sf2-replay-proof` at
+proof SHA `832868d0…` with verdict `REPLAY_PROOF_HOLDS`. The profile
+UUID is `56cdc50a-dbbc-5a49-afc9-f3cf93a25c7d`.
+
+The cycle-2 auditor returned an overall verdict of INDETERMINATE
+leaning RULED_OUT for the SoundFont family on cg-bass and surfaced
+three MODERATE findings. Each names a specific defect and — because
+the auditor is adversarial — the exact evidence that would close it:
+
+- **EQ inertness.** Of the 180 fine-fit renders, only 90 carried
+  distinct `render_sha256` values: the post-processing chain was
+  silently no-op, and the mel-band and VGGish objectives could not
+  discriminate between EQ variants because the pipeline was normalising
+  them away. The mechanism was zero-mean centring applied inside the
+  scoring path *after* EQ but *before* mel/VGGish feature extraction —
+  it cancelled the DC and low-frequency component that the EQ moved.
+  Closure evidence would be: a re-run in which post-processing produces
+  distinct SHAs for at least ~200 of ~216 cells.
+
+- **Program 33 (Electric Bass Finger) absence.** The bass-family
+  reference preset was not in the coarse top-5 and therefore never
+  reached fine fit. The composite objective's centroid-dominance was
+  filtering it out at the coarse layer before the fine grid could
+  give its post-processing a fair hearing. Closure evidence would be:
+  program 33 unconditionally promoted into the stage-2b grid, and
+  either ranking in the top-3 by embedding or providing empirical
+  ground for elimination.
+
+- **Profile-writer additive-extension audit.** The extended
+  render-path parameters that stage-2b intended to write into the
+  profile schema (`loudness_method`, `measured_db`, `applied_gain_lin`,
+  `pyloudnorm_available`, `lufs_target_db`) had to be added
+  additively — that is, without changing the byte-for-byte identity
+  of any already-pinned profile that omitted them. Closure evidence
+  would be: a regression test proving that the cycle-2 top-1
+  profile's SHA `11747a42cb1a8f7f…` reproduces byte-identically when
+  the writer runs under the extended signature.
+
+Cycle 2 closed as CONFIRMED-with-findings: the fine fit itself ran
+cleanly and the replay proof held, but the composite objective was
+diagnosed as blind to the parameters it was ostensibly optimising
+over, and the search grid had failed to include the reference bass
+preset.
+
+## 5. `M-V4-PROFILES-1/cg-bass`: cycle 3 — v2 rebuild, launch, and outcome
+
+### 5.1 The v2 fine-fit script
+
+Cycle 3 authored `scripts/sound_match/fine_fit_sf2_v2.py` as a
+sibling to the now-read-only `fine_fit_sf2.py`. Three changes
+address the cycle-2 findings by construction:
+
+1. **Zero-mean centring is removed from the scoring path.** Each
+   candidate render is instead loudness-normalised end-to-end using
+   `pyloudnorm` at a fixed integrated-loudness target
+   (`lufs_target_db`) before mel-band L1, spectral-centroid RMSE, and
+   VGGish embedding cosine are computed. A recorded RMS-dBFS fallback
+   path exists for environments without `pyloudnorm`; when the library
+   is present it is used and its availability is stamped into the
+   run's environment pin.
+
+2. **Program 33 (`control_cell_electric_bass_finger`) is
+   unconditionally promoted** into the stage-2b grid alongside the
+   stage-1 top-k, and the regression test
+   `test_sound_match_fine_fit_sf2_v2.py` asserts that the grid always
+   contains all 36 program-33 cells (9 gain × 3 reverb × 4 post
+   variants — see §5.3) regardless of what stage-1 elevated.
+
+3. **The environment pin absorbs the two new determinism
+   dependencies.** The v1 pin
+   `2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`
+   omitted `pyloudnorm_available` and `lufs_target_db`; the v2 pin
+   incorporates both. This is an honesty choice under the campaign's
+   determinism doctrine: the loudness-normalisation library and its
+   target are real dependencies of the render objective, and trimming
+   them out of the pin to preserve equality with the v1 hash would
+   pretend the search was reproducible when in fact swapping them
+   would move every score.
+
+`profile_writer.py` was extended in place — additively — to record
+the new fields; the cycle-2 top-1 profile SHA `11747a42cb1a8f7f…`
+reproduces byte-identically under the extended signature (closure
+evidence for the third MODERATE finding, re-verified by the auditor
+in cycle 3 with a fresh 5/5 test run of
+`test_sound_match_profile_writer_v2.py`).
+
+A diagnostic script `stage2b_zscore_diagnostic.py` was added to
+report per-cell z-scores across the leaderboard for downstream
+adjudication.
+
+### 5.2 Launch and completion
+
+The v2 sweep was launched detached via
+`_launch_cg_bass_stage2b_c3.sh`, recorded to
+`data/v4/logs/cg_bass_stage2b_c3.log` with PID 17998. At cycle-3 audit
+time 160 of 216 cell directories had materialised; at cycle-3 tail the
+full 216-cell leaderboard was written to
+`data/v4/profiles/31a164f845f8e27e/bass_stage2b/leaderboard.tsv`.
+
+The cycle-3 auditor accepted the run under the launch-minimum contract
+because a cycle that launches detached and cleanly ends is a good
+cycle: bonus scope (the leaderboard and the family verdict) was
+permitted to defer into the next cycle. In fact the leaderboard did
+land in cycle-3 tail, and this report reads from it directly below.
+The formal family-verdict emission and any fresh replay proof under
+the new environment pin still belong to the next cycle by design.
+
+### 5.3 The stage-2b leaderboard
+
+The completed sweep is 216 cells: 6 candidate presets (5 stage-1
+top-k plus program 33 unconditionally promoted) × 9 gain steps × 3
+reverb sends × 4 post-processing modes. Independent scan of the TSV:
+
+- **Distinct render SHAs: 215 of 216** (99.5%). The EQ-inertness
+  defect is closed empirically — post-processing is now audible in
+  every cell but one (the single collision is a pair of cells whose
+  compressor path was already inactive under the render's dynamic
+  range and reduces to `none`, mechanically explaining the tie).
+- **Program 33 rows: 36 of 216** (unconditional-promotion invariant
+  satisfied).
+
+Top-5 by composite objective (lower is better):
+
+| rank | program | preset name | gain | reverb | post | mel L1 (dB) | centroid RMSE (Hz) | emb. cos VGGish | composite |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 33 | Electric Bass Finger | 0.5 | 0.3 | EQ_only | 7.87 | 1787 | 0.204 | 455.8 |
+| 2 | 33 | Electric Bass Finger | 1.0 | 0.3 | EQ_only | 7.87 | 1794 | 0.201 | 457.4 |
+| 3 | 33 | Electric Bass Finger | 1.5 | 0.3 | EQ_only | 7.87 | 1816 | 0.199 | 463.0 |
+| 4 | 33 | Electric Bass Finger | 0.5 | 0.3 | compressor_only | 7.46 | 1863 | 0.196 | 474.3 |
+| 5 | 33 | Electric Bass Finger | 0.5 | 0.3 | none | 7.46 | 1863 | 0.196 | 474.3 |
+
+Program 33 in fact holds the top seven composite slots and 10 of the
+top 13 — every configuration of the Electric-Bass-Finger preset in
+which reverb is 0.3 and gain is moderate outperforms every other
+preset on composite.
+
+Top-5 by VGGish embedding cosine (higher is better):
+
+| rank | program | preset name | gain | reverb | post | emb. cos VGGish | composite |
+|---|---|---|---|---|---|---|---|
+| 1 | 19 | (Church Organ) | 1.5 | 0.7 | EQ_and_compressor | 0.495 | 712.4 |
+| 2 | 19 | (Church Organ) | 0.5 | 0.0 | EQ_and_compressor | 0.493 | 668.7 |
+| 3 | 19 | (Church Organ) | 1.0 | 0.7 | EQ_and_compressor | 0.493 | 706.6 |
+| 4 | 19 | (Church Organ) | 0.5 | 0.7 | EQ_and_compressor | 0.491 | 693.7 |
+| 5 | 19 | (Church Organ) | 1.0 | 0.0 | EQ_and_compressor | 0.487 | 683.4 |
+
+Program 33's best embedding cosine (0.204) ranks 64th of 216.
+
+### 5.4 Reading the verdict
+
+The pre-registered adjudication protocol frames three outcomes for the
+SoundFont family on cg-bass:
+
+- `SF2_CONFIRMED` iff top-1 embedding cosine ≥ 0.60 AND
+  (program 33 in top-3 OR top-1 preset in {32..39}) AND spread ≥ 10%
+  relative to the cycle-1 coarse sweep.
+- `SF2_RULED_OUT` iff top-1 embedding cosine < 0.40 AND
+  program 33 not in top-5.
+- `STILL_INDETERMINATE` otherwise.
+
+The current leaderboard reads as `STILL_INDETERMINATE`. Top-1
+embedding cosine is 0.495 — above the RULED_OUT threshold and below
+the CONFIRMED threshold. Program 33 sweeps the composite top-3 but
+does not appear in the embedding top-5 at all, and the top-1 by
+embedding is a non-bass organ preset. The two objective components
+disagree on the winner: the composite ranks by a mel-L1-dominated
+sum in which the plucked bass envelope wins, and the VGGish embedding
+ranks by mid-band spectral character in which the sustained organ
+wins.
+
+This disagreement is itself the finding. The SoundFont family cannot
+be ruled out — Electric Bass Finger is now demonstrably the strongest
+plucked candidate under fair EQ and covers the full composite podium
+— but neither can it be declared confirmed at the operator's
+listener-quality threshold on a VGGish score of 0.20. The
+disagreement was invisible in cycles 1–2: EQ inertness masked
+program-33's post-processing sensitivity, and program-33's absence
+from the stage-1 top-5 kept the plucked bass out of the fine fit
+entirely. Cycle-3's v2 rebuild is what made both metrics legible
+at once.
+
+## 6. Environment-pin scoping and the replay-proof carry-over
+
+The env-pin change from cycle 2 to cycle 3 is not a defect but a
+correctness move under the campaign's honesty rules. The consequence
+under the campaign's replay-proof scoping is straightforward: the
+cycle-2 replay proof at `832868d0…` continues to cover the cycle-2
+pinned profile (`56cdc50a-dbbc-…`, program 17 organ) under its own
+environment pin `2ac444c36298d6ada…`, unchanged. If the next cycle's
+adjudication elects to pin a new cg-bass profile whose render was
+produced by the stage-2b sweep — for instance, one of the program-33
+composite winners — that new profile requires its own replay proof
+under the new pin before it may carry the claim "SoundFont family
+LANDS for Chicken Grease bass." The replay-proof module
+(`replay_proof.py`) completes in about 1.4 seconds of wall time; the
+cost is not the finding, the scope is.
+
+If the next cycle elects to keep the cycle-2 profile pinned as-is
+(for instance, because the STILL_INDETERMINATE verdict argues for
+opening the stem-sampled family before over-committing on
+SoundFont), no re-emission is needed.
+
+## 7. Open questions carried into cycle 4
+
+Cycle 4 opens as an adjudication cycle, not a build cycle. Three
+items are queued:
+
+1. **Emit the cg-bass family verdict.** Read the completed stage-2b
+   leaderboard, run the pre-registered decision protocol, and write
+   `data/v4/profiles/31a164f845f8e27e/bass_family_verdict.json`. On
+   the current numbers this is `STILL_INDETERMINATE`; the protocol
+   permits one more probe cycle before committing to the alternate
+   render family by cost.
+2. **Publish a full cg-bass sub-milestone report** covering cycles
+   1–3 in the sound-matching documentation directory.
+3. **If a new cg-bass profile is pinned under the new environment
+   pin, run a fresh SoundFont-family replay proof** and record the
+   sub-milestone under `M-V4-PROFILES-1/cg-bass-sf2-replay-proof-v2`.
+
+Beyond cycle 4, watch for the repeated-indeterminate signal: if a
+further probe cycle also returns `STILL_INDETERMINATE`, that is the
+campaign-level cue to open the stem-sampled builder over
+`data/v3/deliveries/31a164f845f8e27e/cert_run1/stems_6s/bass.wav`
+(SHA `1bad871901294395…`) as the alternate render family and let the
+cheaper family land the profile, rather than seeking further
+SoundFont refinements.
+
+## 8. Two minor items noted but not acted on
+
+- The `pyloudnorm` fallback path (RMS-dBFS scaling when the library
+  is unavailable) is present in the v2 fine-fit script but was not
+  exercised by the cycle-3 sweep, which ran with the library
+  installed. Coverage for the fallback needs a future test cell if
+  the environment ever regresses.
+- The environment-pin expansion (adding `pyloudnorm_available` and
+  `lufs_target_db` to the pin payload) is architecturally correct
+  but has not yet propagated to the pipeline-wide env-pin manifest
+  schema at `scripts/v3_spine/v3_pipeline/env_pin.py`. If v4
+  sound-matching adopts LUFS-integrated normalisation as a general
+  render-path invariant, this schema alignment belongs in the
+  campaign's final cleanup milestone.
+
+## 9. Conclusions
+
+Cycles 1–3 land the determinism certificate trivially and take the
+first per-instrument sound-matching sub-milestone from a naive
+15-preset coarse sweep through an inert-EQ diagnosis into a
+programmatically rebuilt search whose objective components are now
+legible and disagree in a specific, adjudicable way. The Chicken
+Grease bass profile is not yet finalised, but the search apparatus
+that will finalise it — a loudness-normalised v2 fine-fit with the
+reference bass preset unconditionally promoted, an additively
+extended profile writer whose byte-identity is regression-tested,
+and a stage-2b leaderboard whose 215 of 216 distinct render SHAs
+confirm post-processing is now audible — is complete. Cycle 4
+adjudicates.
+
+## Appendix: Implementation details
+
+### A.1 Files created or extended (cycles 1–3)
+
+- `scripts/sound_match/coarse_sweep_sf2.py` — cycle-1 coarse SoundFont sweep.
+- `scripts/sound_match/fine_fit_sf2.py` — cycle-2 fine-fit v1 (now read-only).
+- `scripts/sound_match/fine_fit_sf2_v2.py` — cycle-3 fine-fit v2 (LUFS normalisation, unconditional program-33 promotion).
+- `scripts/sound_match/stage2_zscore_diagnostic.py` — cycle-2 diagnostic.
+- `scripts/sound_match/stage2b_zscore_diagnostic.py` — cycle-3 diagnostic (v2).
+- `scripts/sound_match/profile_writer.py` — extended additively cycle 3 with `loudness_method`, `measured_db`, `applied_gain_lin`, `pyloudnorm_available`, `lufs_target_db`.
+- `scripts/sound_match/_launch_cg_bass_sweep_c1.sh`,
+  `_launch_cg_bass_stage2_c2.sh`,
+  `_launch_cg_bass_stage2b_c3.sh` — detached launchers per cycle.
+- `tests/test_sound_match_fine_fit_sf2.py` (cycle 2) — 8 tests.
+- `tests/test_sound_match_fine_fit_sf2_v2.py` (cycle 3) — 14 tests.
+- `tests/test_sound_match_profile_writer_v2.py` (cycle 3) — 5 tests, including byte-identity of cycle-2 profile SHA under extended signature.
+
+Test totals at cycle-3 close: 19 of 19 passing across the two v2 suites (re-verified independently by the auditor).
+
+### A.2 Sweep artifacts
+
+- Cycle-1 coarse leaderboard: `data/v4/profiles/31a164f845f8e27e/bass_sweep_stage1/leaderboard.tsv`, SHA `0623210a19de0c9602f0821827f5a6d1bba48097f3b99029500e22bf8f359b4f`.
+- Cycle-2 fine-fit leaderboard: `data/v4/profiles/31a164f845f8e27e/bass_stage2/leaderboard.tsv`, SHA `47aa8b0aca52ac85b1f1a1ff1b965f6602f30197774aa3acbfa2b11362bea278`.
+- Cycle-3 stage-2b leaderboard: `data/v4/profiles/31a164f845f8e27e/bass_stage2b/leaderboard.tsv`, 216 rows, 215 distinct `render_sha256` values, 36 program-33 rows.
+- Cycle-2 pinned profile: `data/v4/profiles/31a164f845f8e27e/bass.json`, profile UUID `56cdc50a-dbbc-5a49-afc9-f3cf93a25c7d`, SHA `11747a42cb1a8f7f…`.
+- Cycle-2 replay proof: `data/v4/profiles/31a164f845f8e27e/bass.replay_proof.json`, verdict `REPLAY_PROOF_HOLDS`, proof SHA `832868d0…`.
+
+### A.3 Environment pins in play across the arc
+
+- `env_pin_sha256 = 623df01f262ffd180c8497ce9bb06a2d4438b9239d60dd997304830b6571d38d` — v3 spine driver session environment; the determinism certificate holds under this pin.
+- `env_pin_sha256 = 2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca` — cycle-2 fine-fit v1; cycle-2 cg-bass profile and replay proof anchor to this.
+- `env_pin_sha256 = <v2 hash, absorbing pyloudnorm_available + lufs_target_db>` — cycle-3 fine-fit v2 environment; any new pinned profile from stage-2b anchors here and requires its own replay proof.
+
+### A.4 Fixed anchors preserved read-only across cycles 1–3
+
+- `scripts/palette_render/render_stem.py` (SHA `214372d920a319a9…5b2b`) — grep-verified untouched.
+- Canonical JSON→MIDI serializer (cycle-4 anchor from the v3 arc) — untouched.
+- Operator-blessed Chicken Grease Method A WAV (cycle-5 anchor from the v3 arc, SHA `cc919559b4508b6bfe86…`) — untouched.
 
 ### A.5 Session references
 
-- Cycle 1: researcher `f44ca9cd-f905-425c-beeb-116f065fde69`,
-  worker `1aa1af16-4cea-46be-b714-9ca76335f13e`,
-  auditor `b87615e1-029b-477b-a3de-c2ea9eaa75b1`.
-- Cycle 2: researcher `af77fb8e-20b1-47f6-aa7e-e3b56cb48925`,
-  worker `66362378-6893-48ff-9ef8-a22865e3c988`,
-  auditor `2101d54c-f23c-4b05-8118-1bdc5fd8f174`.
-- Cycle 3: researcher `b0dc38f3-fc1c-4567-8d76-15d2d27541f8`,
-  worker `a5e713a6-86aa-4c0e-99f0-226f92c0b089`,
-  auditor `afa8aa66-5180-4e89-b504-73be4e5440f3`.
+Cycle 1: researcher `6da54f2f-faee-4c70-8de8-56ec8395705f`,
+worker `27d5641d-a68c-4183-a222-f2fc7600da65`,
+auditor `4f41efad-ea38-4f50-9989-42c6c33d9378`.
+Cycle 2: researcher `543f0795-bf09-4116-a498-baf883014cac`,
+worker `b1e2dd48-9ce3-4d01-af02-d35474370bed`,
+auditor `be49cbaf-8e63-422a-877a-8d092138707c`.
+Cycle 3: researcher `65c1fca9-5731-4ea6-bba7-bd47805d66f2`,
+worker `86b63152-6182-458d-a216-821918be02b1`,
+auditor `f37ccaa6-aae4-47b4-a630-f4e0c142e3f6`.
 
-### A.6 Audit reconciliation
+### A.6 Cross-reference map
 
-The cycle-3 auditor independently re-verified five of the probe SHAs
-against on-disk artifacts (the rubric three-way chain plus
-`bass.mid`, `bass.json`, `drums.mid`, `vocals.mid`); all matched
-byte-for-byte. Ledger event count ≥14 per the report. No critical
-or moderate audit findings; two minor honesty disclosures — the four
-deferred Run-2 probes (guitar, other, piano, full_mix), each labeled
-with its reason rather than silently omitted; and the two anchor
-preservation JSON files kept side-by-side rather than the post
-overwriting the pre — the report claims `all_match=true` with
-`n_mismatch=0`.
-
-The cycle-level outcome is **validated** (the diagnostic pass
-executed correctly and surfaced a substantive finding). The
-milestone-level status is **not validated** (its verdict is
-`V3_SPINE_CHAIN_FAILS`); this is the intended distinction between
-"this cycle produced honest science" and "this milestone landed."
-The v3 pivot's mechanism claim (per-stem outperforms full-mix) is
-neither confirmed nor falsified by this cycle — it is provisionally
-suspended pending the operator's OPTION A/B/C selection.
+Cycle-1 coarse top-5 → cycle-2 fine-fit grid.
+Cycle-2 top-1 (program 17 organ, gain 0.5, reverb 0.3, none) → cycle-2 pinned profile `56cdc50a-…` → cycle-2 replay proof `832868d0…`.
+Cycle-2 MODERATE findings (EQ inertness, program-33 absence, profile-writer additive extension) → cycle-3 architectural fixes in `fine_fit_sf2_v2.py` + additive fields in `profile_writer.py` → cycle-3 regression test byte-identity re-verification of cycle-2 profile SHA under extended signature.
+Cycle-3 v2 sweep → 216-row stage-2b leaderboard → cycle-4 family-verdict emission (open).
