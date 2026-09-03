@@ -182,10 +182,29 @@ def _dir_size_bytes(p: Path) -> int:
 
 
 def _disk_usage_pct(path: Path) -> float:
+    """DIAGNOSTIC ONLY — advisory percentage. Includes root-reserved blocks in
+    the denominator (statvfs f_blocks), so on ext4 with 5% reserved this reads
+    ~14 percentage points higher than `df -h` shows. Not used as an abort gate
+    since c10; kept for logging + backward-compat with the --disk-abort-pct flag.
+    """
     st = os.statvfs(str(path))
     total = st.f_blocks * st.f_frsize
     free = st.f_bavail * st.f_frsize
     return 100.0 * (1.0 - free / max(total, 1))
+
+
+def _disk_ok(path: Path, budget_bytes: int, safety_factor: float = 2.0) -> bool:
+    """Absolute-budget disk check (c10 replacement for the statvfs-percentage gate).
+
+    Contract: "do we have room for the sweep's working audio budget × safety",
+    NOT "is the disk absolutely empty". `budget_bytes == 0` short-circuits True.
+    Reads user-available free space via f_bavail (correct — excludes reserved).
+    """
+    if budget_bytes <= 0:
+        return True
+    st = os.statvfs(str(path))
+    avail_bytes = st.f_bavail * st.f_frsize
+    return avail_bytes >= budget_bytes * safety_factor
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -224,10 +243,19 @@ def main(argv: list[str] | None = None) -> int:
         if got != v:
             raise RuntimeError(f"env pin drift {k}={got!r} expected {v!r}")
 
-    # Disk sanity BEFORE launch (skipped in dry-run so glue can be smoke-tested).
-    pct = _disk_usage_pct(out_dir)
-    if not args.dry_run and pct >= args.disk_abort_pct:
-        raise RuntimeError(f"disk pre-sweep {pct:.1f}% ≥ {args.disk_abort_pct:.1f}% — abort per hygiene budget")
+    # Disk sanity BEFORE launch (c10 fix: absolute-budget check keyed on --max-audio-mb
+    # with safety_factor=2.0; the old --disk-abort-pct path is diagnostic-only now,
+    # left in the manifest for backward-compat with existing invocations).
+    budget_bytes = int(args.max_audio_mb) * 1024 * 1024
+    pct = _disk_usage_pct(out_dir)  # advisory logging only
+    if not args.dry_run and not _disk_ok(out_dir, budget_bytes, safety_factor=2.0):
+        st = os.statvfs(str(out_dir))
+        avail_gb = st.f_bavail * st.f_frsize / (1024 ** 3)
+        raise RuntimeError(
+            f"insufficient disk for sweep: need {2 * args.max_audio_mb} MB "
+            f"(={args.max_audio_mb} MB budget × 2.0 safety), have {avail_gb:.2f} GB available — "
+            f"halting per FD-1 (no fallback)"
+        )
 
     # Resolve drums MIDI.
     if args.midi_excerpt is not None:
@@ -335,13 +363,18 @@ def main(argv: list[str] | None = None) -> int:
             # Defer pruning until after all cells scored so top-K can be retained.
             pass
         cur_mb = _dir_size_bytes(renders_dir) / (1024 * 1024)
-        pct = _disk_usage_pct(out_dir)
         if cur_mb > args.max_audio_mb:
             raise RuntimeError(
                 f"working audio {cur_mb:.1f} MB > budget {args.max_audio_mb} MB — abort per hygiene"
             )
-        if pct >= args.disk_abort_pct:
-            raise RuntimeError(f"disk mid-sweep {pct:.1f}% ≥ {args.disk_abort_pct:.1f}% — abort")
+        # Mid-sweep absolute-budget check: keep a full budget-worth free at all times.
+        if not _disk_ok(out_dir, args.max_audio_mb * 1024 * 1024, safety_factor=1.0):
+            st = os.statvfs(str(out_dir))
+            avail_gb = st.f_bavail * st.f_frsize / (1024 ** 3)
+            raise RuntimeError(
+                f"disk mid-sweep: free {avail_gb:.2f} GB below one-budget floor "
+                f"({args.max_audio_mb} MB) — halting per FD-1"
+            )
 
     def _key(r):
         c = r["composite"]
