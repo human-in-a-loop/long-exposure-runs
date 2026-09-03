@@ -75,15 +75,27 @@ def _replay_sf2(profile: Mapping, midi_path: Path, out_wav_path: Path) -> None:
         # program pre-select via MIDI file itself; command-line preload:
         "-o", f"synth.default-soundfont={sf2}",
     ]
-    # Feed a bank/program via a short setup script.
-    setup = (
-        f"select 0 1 {bank} {program}\n"
-    )
-    # NOTE: fluidsynth CLI expects program change in the MIDI file.
-    # We rely on the sweep runner writing a bass-only MIDI with an
-    # embedded program_change event, so the setup is a safety net only.
-    _ = setup  # documentation
-    cmd.append(str(midi_path))
+    # c6 CRITICAL fix: rewrite the source MIDI in-memory to force fluidsynth
+    # to honor profile.identity.program, regardless of what program_change
+    # the source MIDI embeds. Strip existing program_change events on all
+    # tracks/channels; inject a fresh program_change(channel=0, program=N)
+    # at tick 0 of the first note-carrying track. Deterministic pure function
+    # of (midi_path, program). Pre-fix behavior was `_ = setup  # documentation`
+    # which discarded the program-select payload.
+    import mido  # local import: only needed on sf2 dispatch
+    _mid = mido.MidiFile(str(midi_path))
+    for _tr in _mid.tracks:
+        _to_del = [i for i, m in enumerate(_tr) if m.type == "program_change"]
+        for i in reversed(_to_del):
+            del _tr[i]
+    for _tr in _mid.tracks:
+        if any(m.type == "note_on" for m in _tr):
+            _tr.insert(0, mido.Message("program_change", channel=0, program=program, time=0))
+            break
+    _rewritten = out_wav_path.with_suffix(".prog_forced.mid")
+    _mid.save(str(_rewritten))
+    cmd.append(str(_rewritten))
+    _ = bank  # bank currently unused; program-select forces default bank 0
     r = subprocess.run(cmd, capture_output=True)
     if r.returncode != 0:
         raise RuntimeError(
