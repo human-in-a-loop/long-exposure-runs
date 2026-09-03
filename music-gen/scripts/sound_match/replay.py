@@ -88,10 +88,29 @@ def _replay_sf2(profile: Mapping, midi_path: Path, out_wav_path: Path) -> None:
         _to_del = [i for i, m in enumerate(_tr) if m.type == "program_change"]
         for i in reversed(_to_del):
             del _tr[i]
+    # c11 EXTENSION: channel-aware program_change routing. c6 fix inserted
+    # program_change on channel 0, which is correct for pitched-instrument
+    # MIDIs (all bass anchors -- notes exclusively on ch 0). For GM
+    # percussion (ch 10 == idx 9) the ch 0 insertion silently defaults the
+    # drum kit to Standard, ignoring the profile's declared program.
+    # New behavior: insert one program_change per unique channel carrying
+    # note_on events, on the FIRST track that carries note_on for that
+    # channel, at tick 0. For pure-ch0 MIDIs this is byte-identical to c6.
+    _channels_seen: list[int] = []
     for _tr in _mid.tracks:
-        if any(m.type == "note_on" for m in _tr):
-            _tr.insert(0, mido.Message("program_change", channel=0, program=program, time=0))
-            break
+        for _m in _tr:
+            if _m.type == "note_on":
+                _ch = int(_m.channel)
+                if _ch not in _channels_seen:
+                    _channels_seen.append(_ch)
+    _channels_seen.sort()  # deterministic ordering
+    for _ch in _channels_seen:
+        for _tr in _mid.tracks:
+            if any(m.type == "note_on" and int(m.channel) == _ch for m in _tr):
+                _tr.insert(0, mido.Message(
+                    "program_change", channel=_ch, program=program, time=0,
+                ))
+                break
     _rewritten = out_wav_path.with_suffix(".prog_forced.mid")
     _mid.save(str(_rewritten))
     cmd.append(str(_rewritten))
