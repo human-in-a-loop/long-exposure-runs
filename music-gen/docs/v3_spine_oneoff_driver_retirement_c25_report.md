@@ -20,10 +20,10 @@ driver.
 c23 clone-0 emitted both reproduce reports:
 
 - Chicken Grease `data/v3/reproduce/c23/31a164f845f8e27e/reproduce_report.json`
-  SHA `8b23c448afbc8596a72e4c25e56d729b64b31d4a1ea72e3f34f45e9fdba9a648`,
+  SHA `8b23c448afbc8596b0194549fb3402b0200badce197c84cf30de0873817d628c`,
   verdict `REPRODUCE_PANEL_ONLY`.
 - Rome `data/v3/reproduce/c23/51e433ade2a845e1/reproduce_report.json`
-  SHA `5cb0b78837d37cac6ce6b8ed4728d7f2f14b3f42d5dcc4d5f26e2f8dbf37b6a2`,
+  SHA `5cb0b78837d37cac1c3142ac715b2e99f2f3200445d986c59ae6307ca7a66a3b`,
   verdict `REPRODUCE_PANEL_ONLY`.
 
 Both land at ≥ `REPRODUCE_PANEL_ONLY`; env-pin drift is documented and
