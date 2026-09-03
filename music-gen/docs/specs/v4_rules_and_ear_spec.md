@@ -26,10 +26,14 @@ instrument's bar as a binary/velocity vector on the 16th grid; fit local
 CA update rules (neighborhood → next-step state, per instrument) from
 bar-to-bar transitions in the corpus, with a small parameter count that
 suits tiny datasets; generation = seed row + T update steps (seeded ⇒
-deterministic). Benchmark against a variable-order Markov model on the
-same token stream; keep whichever (or both) produces groove continuations
-that score better under Model-A conformance + the ear on rendered
-excerpts. Artifact: `data/v4/rules/sequence_model.json` + fitting report.
+deterministic). A variable-order Markov model on the same token stream is
+fitted as a COMPARISON POINT, but the benchmark is a light sanity check,
+NOT a strict selection gate (operator direction 2026-09-03): retain the
+CA model unless it clearly fails — degenerate output (static/all-off
+patterns), gross Model-A non-conformance — even if Markov edges it on a
+metric. Both models remain available to the generator; the generator may
+blend them. Artifact: `data/v4/rules/sequence_model.json` + fitting
+report.
 
 **How the generator uses them:** Model A supplies global scaffolding
 (tempo, key, form, chord path, energy arc targets); Model B supplies
@@ -54,10 +58,17 @@ of the candidate song; each window's similarity = max cosine over the
 exemplar windows; song statistic = mean of the best 50% of windows
 (rewards strong stretches, tolerates intros/outros).
 
-**Calibration:** fit a monotonic (isotonic) map from the song statistic
-to the 1–7 scale on the full rated corpus (43 songs); sanity gates: band
-means must order 4 < 5 < 6 ≤ 7, exemplars must score ≥ 6. Whole build +
-calibration target: under ~1 hour of compute (soft).
+**Calibration (operator simplification 2026-09-03 — NO corpus fit):**
+the full-corpus isotonic calibration is dropped as unnecessary. Anchor on
+the exemplars themselves: compute each exemplar's leave-one-out similarity
+(scored against the other four); let `E` = mean of those five values and
+`F` = a fixed floor (the similarity statistic of silence/noise, computed
+once). Map linearly: score = 1 + 6·(s − F)/(E − F), clipped to [1, 7] —
+so the exemplar region defines "7" and the ≥6 pass bar is simply
+s ≥ F + (5/6)·(E − F). Sanity check: the five exemplars must self-score
+≥ 6 leave-one-out, and two or three band-4 songs (spot check, not a
+corpus sweep) must score clearly lower. Whole build target: well under
+~1 hour (soft).
 
 **Determinism:** embeddings, windowing, statistic, and calibration are
 all deterministic given pinned weights; ship the double-run proof and a

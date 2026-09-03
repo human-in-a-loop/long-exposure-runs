@@ -86,8 +86,18 @@ one, the earlier entry says so.
     `docs/specs/` (current binding) or `docs/run_archive/` (historical) —
     content and hashes unchanged (rubric_v2 hash re-verified 2026-09-03).
 
+15. **Ear + sequence-model simplifications** (2026-09-03): the ear's
+    full-corpus isotonic calibration is DROPPED — the 1–7 map anchors
+    linearly on the exemplar set's leave-one-out mean and a fixed noise
+    floor (exemplars must self-score ≥ 6; small band-4 spot check only).
+    The CA-vs-Markov comparison in M-V4-RULES is a light sanity benchmark,
+    not a strict selection gate: the CA model is retained unless it clearly
+    fails (degenerate output, gross conformance failure), and both models
+    stay available to the generator. IN FORCE.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.
 - The operator's ear is the final authority on audible quality; a verdict
   arriving via guidance outranks any internal gate.
+

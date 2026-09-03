@@ -84,8 +84,10 @@ background) — TWO models in parallel over canonical MIDI + tempo maps +
 audio descriptors (energy arc, spectral-balance trajectory): (A) the
 statistical style model; (B) a lightweight learned sequence model — first
 candidate a cellular-automaton bar-transition model fitted per instrument,
-benchmarked against variable-order Markov; keep what scores best under
-Model-A conformance + ear on rendered excerpts.
+with a variable-order Markov comparison point — a light sanity check, NOT
+a strict selection gate: retain the CA unless it clearly fails
+(degenerate output, gross Model-A non-conformance); both models stay
+available to the generator.
 Transcribe additional band-6/7 corpus songs as needed (driver only).
 Rules artifact hashed; same-input→same-output proof. No recreation A/Bs
 for non-focus songs (out of scope).
@@ -95,12 +97,14 @@ shape) — the LIGHTWEIGHT exemplar ear: NOT a trained regressor. Exemplar
 set (groove-weighted 6/7 mix): Chicken Grease, Molasses, Essence, Desire,
 Peach Dream. Backbone: CLAP + VGGish ensemble (CLAP via HF with receipts;
 VGGish-only fallback recorded if install fails). Scoring: top-k window
-similarity (10 s windows, best 50%, max-over-exemplar-windows), calibrated
-to the 1–7 scale with an isotonic map over the full rated corpus. Build + validation must stay
-lightweight — target under ~1 hour of compute (approximate, not a hard
-gate). Deterministic given pinned embeddings; ship its double-run proof
-and a scorecard of the whole corpus for sanity (band means must order
-4 < 5 < 6 ≤ 7).
+similarity (10 s windows, best 50%, max-over-exemplar-windows). NO corpus
+calibration (operator simplification 2026-09-03): the 1–7 map is anchored
+linearly on the exemplars' leave-one-out mean (= "7" region) and a fixed
+noise floor, per the spec. Build + validation must stay lightweight —
+target under ~1 hour of compute (approximate, not a hard gate).
+Deterministic given pinned embeddings; ship its double-run proof, the
+exemplar leave-one-out scores (each must be ≥ 6), and a 2–3 song band-4
+spot check scoring clearly lower.
 
 **M-V4-GEN** — the completion milestone. Build a SEEDED GENERATOR PROGRAM
 from the rules (survey open-source symbolic generators first; agent
