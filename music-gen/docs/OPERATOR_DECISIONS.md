@@ -95,6 +95,22 @@ one, the earlier entry says so.
     fails (degenerate output, gross conformance failure), and both models
     stay available to the generator. IN FORCE.
 
+16. **Stringency relaxations for the v4 run** (2026-09-03, operator-
+    directed; quality-preserving): (a) double-run determinism proofs are
+    ONCE PER NEW CODE PATH, not per artifact — cache-key identity +
+    recorded shas carry the evidence thereafter; certificate re-issued
+    only on env_pin change. (b) FAST verification is the DEFAULT for all
+    routine driver runs (no `--verify-det`): the delivered bytes are
+    identical with or without the ×2 self-check, which runs only for
+    certificates and after env_pin changes. (c) Sound-profile replay
+    proofs are per render family per song, not per profile. (d)
+    Pre-registration/rubric-hash ceremony exists at milestone level only;
+    anchor-preservation checks run only when inputs or env_pin changed;
+    audits never re-derive verdicts on byte-identical inputs. (e) Merge
+    structural gates WARN (not halt) on generated/interpolated songs.
+    (f) Ear exemplar sanity is ≥4 of 5 exemplars ≥6 with none below 5.5.
+    IN FORCE.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.

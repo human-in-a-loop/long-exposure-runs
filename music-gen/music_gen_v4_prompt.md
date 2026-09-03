@@ -30,8 +30,23 @@ channel and outrank everything when they do.
   (`data/recreate_v2/focus_set_v2.json` is git-tracked), never in code.
   No per-song scripts, no new version-suffixed dirs.
 - Determinism doctrine: deterministic wherever possible, agentic only
-  where necessary. Every milestone ships a double-run byte-determinism
-  proof before LANDS. Environment pins stamped in every delivery.
+  where necessary. Environment pins stamped in every delivery.
+  **Proof scoping (relaxed 2026-09-03): a double-run byte-determinism
+  proof is required ONCE per NEW code path (its first use), not per
+  artifact** — after that, cache-key identity and recorded shas are the
+  evidence, and the E2E certificate is re-issued only when env_pin
+  changes. Do not re-prove unchanged paths.
+- **Verification default is FAST (operator decision 2026-09-03): routine
+  driver runs omit `--verify-det` — the delivered artifact is identical
+  either way; ×2 self-checks run only for certificates and after an
+  env_pin change.** Never add `--verify-det` to routine runs "to be
+  safe" — that doubles cost for zero output difference.
+- **Ceremony budget (relaxed 2026-09-03): pre-registration and rubric-hash
+  chains exist at MILESTONE level only — no per-cycle rubrics, no per-cycle
+  anchor-preservation sweeps.** Anchor checks run only when a stage's
+  inputs or env_pin actually changed (the freshness cache is the
+  arbiter). An audit that would re-derive a VALIDATED verdict on
+  byte-identical inputs is skipped, not performed.
 - Sound matching (two-phase): the per-instrument SEARCH may be
   stochastic/agentic; the winning profile
   (`data/v4/profiles/<song_sha16>/<instrument>.json`, all params + dep
@@ -69,9 +84,12 @@ focus songs (Chicken Grease 31a164f845f8e27e, What If I Go
 252eb21ce7df7328, Rome 51e433ade2a845e1, Peach Dream 88d247468cb6d49f,
 Disco A cdd2717e52820ff6). For each song × instrument: search patch/
 effect/EQ space against the original stem (panel-scored; stochastic
-search allowed), pin the winning profile, prove deterministic replay,
-re-render the song's A/B with matched sounds, deliver. LANDS on: 5 songs
-× all instruments profiled + replay proofs + A/Bs delivered.
+search allowed), pin the winning profile, re-render the song's A/B with
+matched sounds, deliver. **Replay-proof scoping (relaxed): prove
+deterministic replay ×2 once per RENDER FAMILY per song (sf2/sfz,
+stem-sampled, bounce), not per individual profile** — every profile still
+records its render sha for later re-verification. LANDS on: 5 songs ×
+all instruments profiled + per-family replay proofs + A/Bs delivered.
 
 **M-V4-SHOWCASE** — ONE full-length sound-matched recreation:
 Chicken Grease end-to-end (full song through the driver with profiles,
@@ -103,8 +121,16 @@ linearly on the exemplars' leave-one-out mean (= "7" region) and a fixed
 noise floor, per the spec. Build + validation must stay lightweight —
 target under ~1 hour of compute (approximate, not a hard gate).
 Deterministic given pinned embeddings; ship its double-run proof, the
-exemplar leave-one-out scores (each must be ≥ 6), and a 2–3 song band-4
-spot check scoring clearly lower.
+exemplar leave-one-out scores (**relaxed sanity: ≥4 of 5 exemplars ≥ 6
+and none below 5.5** — one idiosyncratic exemplar must not fail the
+build), and a 2–3 song band-4 spot check scoring clearly lower.
+
+**Structural-gate posture for generated music (relaxed): the merge
+stage's recreation-tuned structural assertions (bass register bounds,
+part-presence checks, etc.) WARN and record for generated/interpolated
+songs instead of FD-1 halting** — novel music may legitimately break
+recreation-shaped priors; the ear and the operator judge it, not
+recreation sanity gates. They keep halting for recreations.
 
 **M-V4-GEN** — the completion milestone. Build a SEEDED GENERATOR PROGRAM
 from the rules (survey open-source symbolic generators first; agent
