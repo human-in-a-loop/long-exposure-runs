@@ -12,7 +12,12 @@ generations of hand-rolled DSP transcription (basic-pitch, onset+GMM drums,
 onset-segmented pyin bass) passed their own metrics and were rejected by the
 operator's ear. The postmortems live in
 `docs/OPERATOR_recreation_root_cause_audit.md` and
-`docs/PIVOT_v3_simplest_robust_pipeline.md` — read both before your first
+`docs/PIVOT_v3_simplest_robust_pipeline.md`, and — after the 2026-09-03
+cleanup/refactor — `docs/ARCHITECTURE_v4_simplified.md` and
+`docs/CODEBASE_GUIDE.md` (both BINDING: the simplified layout, the
+determinism doctrine, the sound-matching two-phase policy, and the
+codebase conventions: no new version-suffixed dirs, no per-song scripts,
+all audio execution through the checkpointed driver) — read these before your first
 cycle. Their central lesson is binding: **statistical plausibility gates are
 not accuracy; the ear is the gate.**
 
@@ -21,15 +26,17 @@ every proven pipeline stage is kept and reused.** The keep-strong inventory
 (all verified in the previous run, all on disk):
 
 - corpus ingest + sha256 provenance (`corpus/`, manifests, receipts)
-- htdemucs_6s separation driver (`scripts/recreate_v2/rc9_first_class_parts.py`)
-  and the focus-song 6-stem baselines (`data/recreate_v2/baseline/`)
+- htdemucs_6s separation driver (`scripts/recreate_v2/rc9_first_class_parts.py`);
+  focus-song operator-section 6-stem references live under
+  `data/v3_spine/<sha16>/` (post-refactor; the old `data/recreate_v2/baseline/`
+  was pruned as regenerable — `focus_set_v2.json` was reconstructed and kept)
 - peak-section selection (`rc8_section_selection.py`, byte-verified)
 - GM program mapping (`rc4_v2_gm_program_map.py`)
 - hybrid vocal overlay (`rc1_v2_hybrid.py`)
 - per-stem loudness + EQ mix matching (`rc7_mix_balance.py`, `rc7_v2_rerun.py`)
 - sanity panel (`rc6_v2_panel_gate.py`: mel-L1, centroid, RMS, LUFS, VGGish —
   panel rule: no single metric confers success)
-- palette render stack (`scripts/palette_render*`, DawDreamer/Surge/sfizz)
+- palette render stack (`scripts/palette_render_v4` + `scripts/v3_spine/palette_render`, DawDreamer/Surge/sfizz)
 - gold-set tooling (`rc10_gold_set/`), byte-determinism harness, fan-out
   namespacing v2, ear/rules/gen scripts for the later milestones
 
@@ -68,7 +75,7 @@ decision in the plan of record.
    (`rc4_v2_gm_program_map.py`, extended to MuScriptor's group names) →
    fluidsynth (FluidR3_GM), drums on MIDI channel 10, per-track stems.**
    Deterministic. GM validates content first; the palette stack
-   (Surge XT via DawDreamer, sfizz — proven in `scripts/palette_render*`)
+   (Surge XT via DawDreamer, sfizz — proven in `scripts/palette_render_v4` + `scripts/v3_spine/palette_render`)
    is the established timbre-upgrade path. Operator decision 2026-09-02:
    once ONE palette render is proven on Chicken Grease (chain works,
    byte-determinism holds), the palette becomes the PRIMARY render for all
@@ -76,8 +83,8 @@ decision in the plan of record.
 4. **Vocals are hybrid** (operator decision D2, proven in
    `rc1_v2_hybrid.py`): htdemucs vocals stem overlaid on the instrumental
    render; the transcribed voice track stays in the MIDI, unsynthesized.
-   htdemucs_6s (driver `rc9_first_class_parts.py`, baselines under
-   `data/recreate_v2/baseline/`) is the isolation layer feeding per-stem
+   htdemucs_6s (driver `rc9_first_class_parts.py`; per-song stem references
+   under `data/v3_spine/<sha16>/`) is the isolation layer feeding per-stem
    transcription (decision 1) and also serves the vocal overlay, per-stem
    mix reference, and verification.
 5. **Mix match = the proven D4 stage** (`rc7_mix_balance.py` /

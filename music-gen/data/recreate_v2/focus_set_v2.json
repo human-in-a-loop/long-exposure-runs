@@ -1,0 +1,78 @@
+{
+ "note": "reconstructed 2026-09-03 during refactor from delivery manifests + session-recorded CG block (original gitignored file lost in Stage A prune)",
+ "schema": "focus_set_v2",
+ "songs": [
+  {
+   "audio_path": "corpus/ratings/6/017__It2s36sL4aM__Chicken_Grease.mp3",
+   "audio_sha16": "31a164f845f8e27e",
+   "audio_sha256": "31a164f845f8e27e7ee49d7871bb0d3643262b6df69826ed74855507e84b3049",
+   "chosen_section": {
+    "combined_score": 1.6043799288175111,
+    "onset_density_score": 0.7138660683436406,
+    "rms_score": 2.494893789291382,
+    "t_end_s": 263.63918367346935,
+    "t_start_s": 233.63918367346938,
+    "weights": {
+     "w_onset": 0.5,
+     "w_rms": 0.5
+    }
+   },
+   "rating_band": 6,
+   "reconstructed_from": "rc8_chosen_section_verified.json (session-recorded, cycle-50 byte-verified)"
+  },
+  {
+   "audio_path": "corpus/ratings/5/021__pLuQ0MGLBXU__Mura_Masa_-_What_If_I_Go.mp3",
+   "audio_sha16": "252eb21ce7df7328",
+   "audio_sha256": "252eb21ce7df7328e498b14f94afc8f38fec5c5fa85a9f815c7ee6ca94c4e59a",
+   "chosen_section": {
+    "duration_s": 30.0,
+    "t_end_s": 102.77133786848073,
+    "t_start_s": 72.77133786848073
+   },
+   "rating_band": 5,
+   "reconstructed_from": "data/v3/deliveries/252eb21ce7df7328/cycle21/verdict.json"
+  },
+  {
+   "audio_path": "corpus/ratings/5/012__gPp2KBV9zXk__Dojo_Cuts_-_Rome.mp3",
+   "audio_sha16": "51e433ade2a845e1",
+   "audio_sha256": "51e433ade2a845e10a56e0bc61be034bae0d19f9a98f930ef3669612f2cce4e6",
+   "chosen_section": {
+    "duration_s": 30.0,
+    "t_end_s": 92.74031746031747,
+    "t_start_s": 62.74031746031746
+   },
+   "rating_band": 5,
+   "reconstructed_from": "data/v3/deliveries/51e433ade2a845e1/mix_match_operator_section.json"
+  },
+  {
+   "audio_path": "corpus/ratings/6/015__wXvX1vOe0rQ__Peach_Dream.mp3",
+   "audio_sha16": "88d247468cb6d49f",
+   "audio_sha256": "88d247468cb6d49f3c209ff91a968c9a19e05b9a0d5db4fdcdb12a8dcc697862",
+   "chosen_section": {
+    "combined_score": 2.387023633991549,
+    "onset_density_score": 2.4530066376425217,
+    "rms_score": 2.321040630340576,
+    "t_end_s": 202.87256235827664,
+    "t_start_s": 172.87256235827664,
+    "weights": {
+     "w_onset": 0.5,
+     "w_rms": 0.5
+    }
+   },
+   "rating_band": 6,
+   "reconstructed_from": "data/v3/deliveries/88d247468cb6d49f/cycle25/checkpointed_run_report.json"
+  },
+  {
+   "audio_path": "corpus/ratings/5/011__hcwKJOsUUIk__Disco_A.mp3",
+   "audio_sha16": "cdd2717e52820ff6",
+   "audio_sha256": "cdd2717e52820ff69895e5f8e5901b59e581dcced81e031b9e0ca1db5709f157",
+   "chosen_section": {
+    "duration_s": 30.0,
+    "t_end_s": 51.91963718820862,
+    "t_start_s": 21.91963718820862
+   },
+   "rating_band": 5,
+   "reconstructed_from": "data/v3/deliveries/cdd2717e52820ff6/mix_match_operator_section.json"
+  }
+ ]
+}
