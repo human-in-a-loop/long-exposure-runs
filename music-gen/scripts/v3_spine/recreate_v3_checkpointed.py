@@ -251,6 +251,10 @@ def main() -> int:
                     help="delivery dir (default: data/v3/deliveries/<sha16>/cycle<N>/)")
     ap.add_argument("--verify-det", action="store_true",
                     help="enforce byte-determinism ×2 on stages that support it")
+    ap.add_argument("--fast", action="store_true",
+                    help="routine-iteration mode: skip ×2 determinism re-runs "
+                         "(halves transcription cost; NEVER valid for "
+                         "certificate or LANDS evidence)")
     ap.add_argument("--no-cache", action="store_true",
                     help="force-invalidate every cache probe (fresh full re-run)")
     ap.add_argument("--dry-run", action="store_true")
@@ -272,7 +276,7 @@ def main() -> int:
     report = run_pipeline_checkpointed(
         song_sha16=args.song, section=args.section,
         out_dir=out_dir, cycle=args.cycle,
-        verify_det=args.verify_det, use_cache=not args.no_cache,
+        verify_det=(args.verify_det and not args.fast), use_cache=not args.no_cache,
     )
     rjson = args.report_json or (out_dir / "checkpointed_run_report.json")
     rjson.write_text(json.dumps(report, sort_keys=True, indent=2, default=str))

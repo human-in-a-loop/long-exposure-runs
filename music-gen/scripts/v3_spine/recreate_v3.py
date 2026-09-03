@@ -224,6 +224,90 @@ def _muscriptor_once(wav: Path, out_path: Path, instruments: str | None, fmt: st
                            f"{r.stderr.decode('utf-8','replace')[-2000:]}")
 
 
+CHUNK_THRESHOLD_S = 45.0   # inputs longer than this transcribe chunked
+CHUNK_LEN_S = 30.0         # campaign chunking doctrine: 30 s windows
+CHUNK_OVERLAP_S = 5.0      # ... with 5 s overlap
+DEDUP_ONSET_TOL_S = 0.05
+
+
+def _wav_duration_s(wav: Path) -> float:
+    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+                        "format=duration", "-of", "csv=p=0", str(wav)],
+                       capture_output=True, text=True)
+    return float(r.stdout.strip())
+
+
+def _slice_wav(src: Path, t0: float, dur: float, dst: Path) -> None:
+    r = subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                        "-ss", f"{t0}", "-t", f"{dur}", "-i", str(src),
+                        "-c:a", "pcm_s16le", str(dst)],
+                       env=sub_env(), capture_output=True)
+    if r.returncode != 0:
+        raise RuntimeError(f"ffmpeg slice rc={r.returncode}")
+
+
+def _merge_chunk_events(chunk_events: list[tuple[float, list]], overlap_s: float) -> list:
+    """Deterministic merge of per-chunk MuScriptor JSON events.
+
+    Events from a later chunk that fall inside its leading overlap window are
+    dropped when an earlier-chunk event matches (same type/instrument/pitch,
+    onset within DEDUP_ONSET_TOL_S); everything is re-offset to absolute time
+    and sorted by (time, instrument, pitch, type) for stable output.
+    """
+    merged: list = []
+    for idx, (t0, events) in enumerate(chunk_events):
+        lead_end = t0 + overlap_s if idx > 0 else t0
+        for e in events:
+            e = dict(e)
+            for k in ("start_time", "time", "end_time"):
+                if isinstance(e.get(k), (int, float)):
+                    e[k] = round(e[k] + t0, 6)
+            et = e.get("start_time", e.get("time", 0.0))
+            if idx > 0 and et < lead_end:
+                dup = any(
+                    m.get("type") == e.get("type")
+                    and m.get("instrument") == e.get("instrument")
+                    and m.get("pitch") == e.get("pitch")
+                    and abs(m.get("start_time", m.get("time", -1e9)) - et) <= DEDUP_ONSET_TOL_S
+                    for m in merged)
+                if dup:
+                    continue
+            merged.append(e)
+    merged.sort(key=lambda e: (e.get("start_time", e.get("time", 0.0)),
+                               str(e.get("instrument")), e.get("pitch") or -1,
+                               str(e.get("type"))))
+    return merged
+
+
+def _muscriptor_chunked(wav: Path, out_path: Path, instruments: str | None,
+                        pool) -> None:
+    """Chunk long audio (30 s windows, 5 s overlap), transcribe chunks in the
+    shared pool, merge deterministically. Used only above CHUNK_THRESHOLD_S;
+    validated against whole-clip transcription by transcription_speed_bench."""
+    dur = _wav_duration_s(wav)
+    starts: list[float] = []
+    t0 = 0.0
+    while t0 < dur:
+        starts.append(round(t0, 6))
+        if t0 + CHUNK_LEN_S >= dur:
+            break
+        t0 += CHUNK_LEN_S - CHUNK_OVERLAP_S
+    with tempfile.TemporaryDirectory(prefix="rv3_ms_chunks_") as d:
+        d = Path(d)
+        def _do(i_t0):
+            i, c0 = i_t0
+            cw = d / f"c{i:03d}.wav"
+            _slice_wav(wav, c0, min(CHUNK_LEN_S, dur - c0), cw)
+            cj = d / f"c{i:03d}.json"
+            _muscriptor_once(cw, cj, instruments, "json")
+            return c0, json.loads(cj.read_text())
+        results = list(pool.map(_do, list(enumerate(starts))))
+    merged = _merge_chunk_events(sorted(results, key=lambda r: r[0]),
+                                 CHUNK_OVERLAP_S)
+    out_path.write_text(json.dumps(merged, sort_keys=True,
+                                   separators=(",", ":")))
+
+
 def stage_muscriptor(section_wav: Path, stem_dir: Path, out_dir: Path,
                      verify_det: bool = True) -> dict[str, Any]:
     """Per-stem + full_mix MuScriptor JSON, byte-det x2 when verify_det=True.
@@ -245,14 +329,30 @@ def stage_muscriptor(section_wav: Path, stem_dir: Path, out_dir: Path,
             _muscriptor_once(wav, pj, WHITELIST[name], "json")
             return name, run_id, sha(pj), pj.read_bytes()
 
+    def _one_chunked(task, pool):
+        name, run_id = task
+        wav = section_wav if name == "full_mix" else stem_dir / f"{name}.wav"
+        with tempfile.TemporaryDirectory(prefix=f"rv3_msc_{name}_{run_id}_") as d:
+            pj = Path(d) / "e.json"
+            _muscriptor_chunked(wav, pj, WHITELIST[name], pool)
+            return name, run_id, sha(pj), pj.read_bytes()
+
     tasks = [(n, "r1") for n in PROBE_ORDER]
     if verify_det:
         tasks += [(n, "r2") for n in PROBE_ORDER]
     workers = max(1, min(4, (os.cpu_count() or 2)))
     results: dict[tuple[str, str], tuple[str, bytes]] = {}
+    long_input = _wav_duration_s(section_wav) > CHUNK_THRESHOLD_S
     with _cf.ThreadPoolExecutor(max_workers=workers) as ex:
-        for name, run_id, h, data in ex.map(_one, tasks):
-            results[(name, run_id)] = (h, data)
+        if long_input:
+            # Long audio (full songs): chunk each probe across the same pool so
+            # cores stay saturated; probes proceed sequentially over chunks.
+            for task in tasks:
+                name, run_id, h, data = _one_chunked(task, ex)
+                results[(name, run_id)] = (h, data)
+        else:
+            for name, run_id, h, data in ex.map(_one, tasks):
+                results[(name, run_id)] = (h, data)
 
     probes: dict[str, Any] = {}
     for name in PROBE_ORDER:
