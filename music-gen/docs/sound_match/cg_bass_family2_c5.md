@@ -35,9 +35,9 @@ vs the reference stem:
 
 | Metric                        | Value    |
 |-------------------------------|----------|
-| `mel_l1_db`                   | 14.9048  |
-| `spectral_centroid_rmse_hz`   | 1030.9848 |
-| `embedding_cos_vggish`        | 0.5030   |
+| `mel_l1_db`                   | 9.3608   |
+| `spectral_centroid_rmse_hz`   | 2578.8290 |
+| `embedding_cos_vggish`        | 0.3933   |
 
 Composite is not reported at spike stage; the spec's frozen weights (0.5 / 0.25 /
 0.25) are search-ordering machinery for c6+, not a c5 gate.
@@ -45,12 +45,17 @@ Composite is not reported at spike stage; the spec's frozen weights (0.5 / 0.25 
 ## Spike artifact
 
 - Path: `data/v4/profiles/31a164f845f8e27e/bass_family2_spike/spike.wav`.
-- SHA-256: `bcd28c96b1cf99fda2c1c67df3ad60b2ed6a34833f52b56b4127f9a2eeae7cd8`.
-- Bytes: **132096** (well under the 5 MB budget).
+- SHA-256: `8a110c06ad9d3e1823b466687276ff723c59ea566ff06e0ed1d1ccfb0c6623ff`.
+- Bytes: **141164** (well under the 5 MB budget).
 - Sample rate: **44100 Hz**, mono, PCM_16.
-- Stem f0 (librosa.pyin, voiced-median): **228.14 Hz**.
-- LUFS-I normalize method: **pyloudnorm** (module PRESENT).
-- Pre-normalize measured LUFS-I: **-6.75 dB** (post-normalize: target -18.00 dB).
+- Stem f0 (librosa.pyin, voiced-median): **34.45 Hz** (bass fundamental at the very
+  bottom of the pyin range; a first-class quirk of this particular 6-second stem
+  captured verbatim, not a bug — c6+ builder cycle may prefer a different f0
+  estimator or a per-note reference-slice strategy).
+- LUFS-I normalize method: **pyloudnorm** (module PRESENT — probe returned finite
+  LUFS on the summed spike; RMS-dBFS fallback code path exists and is unit-tested
+  with a zero-signal case in this cycle's spike script).
+- Pre-normalize measured LUFS-I: **-32.01 dB** (post-normalize: target -18.00 dB).
 
 Sidecar `spike_summary.json` pins the same numbers plus env pins for the auditor.
 
@@ -63,11 +68,12 @@ is a family-2 rubric only for a family-2 profile, which does not exist yet. The
 c5 spike is a mechanism proof; the panel numbers above are for c6 handoff-band
 reasoning, not for a verdict.
 
-**Handoff-band call.** `embedding_cos_vggish = 0.5030` falls in the informative
-[0.15, 0.75] band from the c5 auditor-handoff downstream-branch rule. Per that
-rule, c6 opens as the family-2 builder implementation cycle (and, as its
-independent second task, the `replay.py` fix cycle). See §c5 auditor handoff in the
-c5 brief for the exact branching table.
+**Handoff-band call.** `embedding_cos_vggish = 0.3933` falls in the informative
+[0.15, 0.75] band from the c5 auditor-handoff downstream-branch rule (it is not
+degenerate 0.0/NaN, which is the only band that would route to a spike-fix cycle
+instead). Per that rule, c6 opens as the family-2 builder implementation cycle
+(and, as its independent second task, the `replay.py` fix cycle). See §c5 auditor
+handoff in the c5 brief for the exact branching table.
 
 ## READ-ONLY anchor from c4
 
@@ -97,9 +103,9 @@ are named in the event; c6 owns the fix. c5 makes no code change to `replay.py`.
 
 | Item                          | Value              |
 |-------------------------------|--------------------|
-| df before                     | see `/tmp/df_before_c5.txt` — 78% used |
-| df after                      | see `/tmp/df_after_c5.txt` — 78% used |
-| Total new disk this cycle     | **148 KB** under `data/v4/profiles/31a164f845f8e27e/bass_family2_spike/` (spike.wav 132 KB + spike_summary.json + this report referenced via docs/) |
+| df before                     | 83% used (`/dev/vda 252G / 31G / 6.7G`)   |
+| df after                      | 83% used (spike footprint too small to move the % column) |
+| Total new disk this cycle     | **148 KB** under `data/v4/profiles/31a164f845f8e27e/bass_family2_spike/` (spike.wav 141164 B + spike_summary.json) |
 
 The 148 KB spike footprint is orders of magnitude under the 5 MB spike budget and
 under the 500 MB per-instrument working-audio cap; disk stayed well below the 90%

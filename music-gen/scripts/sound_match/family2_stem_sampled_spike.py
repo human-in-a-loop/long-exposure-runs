@@ -138,10 +138,10 @@ def _build_spike(stem: np.ndarray, sr: int, stem_f0: float) -> np.ndarray:
 
 def _compute_panel(ref_path: Path, cand_path: Path) -> dict:
     # Import here so env pins are set before any heavy backend init
-    from scripts.sound_match.objective import compute_panel
+    from scripts.sound_match.objective import score_pair
 
-    panel = compute_panel(str(ref_path), str(cand_path))
-    return panel
+    # score_pair(candidate, reference) — c5 spike compares spike-vs-reference.
+    return score_pair(Path(cand_path), Path(ref_path))
 
 
 def main() -> int:
