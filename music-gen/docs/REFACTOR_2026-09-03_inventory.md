@@ -35,7 +35,9 @@ named deterministic command. KEEP = untouched. ARCHIVE = moved, not deleted.
 | recreate_v0 | DELETE | dead v0 pipeline (re-created by a clone after the pivot deletion) |
 | transcribe | DELETE | dead basic-pitch survey era (re-created by a clone) |
 | rc2_rc3_run | DELETE | dead v0-era runner (re-created by a clone) |
-| tex, texture | DELETE | RC7-condemned global effects wash era |
+| tex | DELETE | RC7-condemned global effects wash era |
+| texture | KEEP (restored 2026-09-03) | initially deleted as wash-era; `texture/panel.py` is the panel-metric module the spine lazily imports (`stage_panel` → `texture_distance`) — caught by the Stage E proof run |
+| palette_render | KEEP (restored 2026-09-03) | initially deleted as superseded; still lazily imported by spine/recreate_v2 code paths |
 | classifier | DELETE | dead drum-classifier era (pre-MuScriptor) |
 | breadth | DELETE | pre-pivot breadth planning one-offs |
 | corpus_expansion_plan | DELETE | plan captured in docs; scripts stale |
