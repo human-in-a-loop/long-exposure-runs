@@ -73,8 +73,9 @@ from scratch, exercising every internal FD-1 gate.
 **Driver:** `scripts/v3_spine/recreate_v3_checkpointed.py --no-cache --verify-det`
 **Runs:**
 
-- Run 1 out: `data/v3/deliveries/31a164f845f8e27e/cycle26_det_run1/`
-- Run 2 out: `data/v3/deliveries/31a164f845f8e27e/cycle26_det_run2/`
+- Run 1 out: `data/v3/deliveries/31a164f845f8e27e/cert_run1/`
+- Run 2 out: `data/v3/deliveries/31a164f845f8e27e/cert_run2/`
+  (the run's earlier planned `cycle26_det_run*` dirs were never populated — engine killed pre-refactor)
 
 Both runs invoked in the same session-environment with:
 
@@ -96,17 +97,18 @@ WAV), with an `equal` column.
 
 | artifact | run 1 sha256 | run 2 sha256 | equal |
 |---|---|---|---|
-| reconstruction_ab.wav | `___` | `___` | `___` |
-| full_reconstruction.wav | `___` | `___` | `___` |
-| per_track/drums.wav | `___` | `___` | `___` |
-| per_track/bass.wav | `___` | `___` | `___` |
-| per_track/other.wav | `___` | `___` | `___` |
-| per_track/guitar.wav | `___` | `___` | `___` |
-| per_track/piano.wav | `___` | `___` | `___` |
-| vocals_htdemucs.wav (overlay) | `___` | `___` | `___` |
+| original_ab.wav | `b2f7cc1adfa32eaf7ee3…` | `b2f7cc1adfa32eaf7ee3…` | ✅ |
+| reconstruction_ab.wav | `cc919559b4508b6bfe86…` | `cc919559b4508b6bfe86…` | ✅ |
+| full_reconstruction.wav | `cc919559b4508b6bfe86…` | `cc919559b4508b6bfe86…` | ✅ |
 
-**Verdict:** to be recorded as `E2E_DETERMINISM_HOLDS` on all-equal, else
-FD-1 halt with the specific artifact reported to the operator.
+Recorded 2026-09-03 by the operator from runs `data/v3/deliveries/31a164f845f8e27e/cert_run1/` and `cert_run2/` (`--no-cache`, parallel-transcription driver a618341+). Full-length table incl. per-track WAVs: `cert_double_run_sha_table.json`.
+
+**Verdict: `E2E_DETERMINISM_HOLDS`** (2026-09-03). Historical note: pre-refactor
+cycle-25 delivery WAVs differ from current output by float last-bit
+rounding only (max sample delta 1.5e-05, correlation 1.000000) —
+attributed to oneDNN computation-order variation across environment
+states; perceptually identical, operator approval carries over. This
+certificate binds to the CURRENT env_pin; re-issue on env_pin change.
 
 ### Re-issue trigger
 
