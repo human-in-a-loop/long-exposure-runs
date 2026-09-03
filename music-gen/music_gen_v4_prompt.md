@@ -63,7 +63,8 @@ byte-identical delivery WAVs, table + verdict recorded. (The operator may
 have completed this before launch — check first; a completed certificate
 LANDS this milestone immediately.)
 
-**M-V4-PROFILES** — per-instrument sound profiles for ALL FIVE approved
+**M-V4-PROFILES** (spec: `docs/specs/v4_sound_matching_layer_spec.md`,
+BINDING shape) — per-instrument sound profiles for ALL FIVE approved
 focus songs (Chicken Grease 31a164f845f8e27e, What If I Go
 252eb21ce7df7328, Rome 51e433ade2a845e1, Peach Dream 88d247468cb6d49f,
 Disco A cdd2717e52820ff6). For each song × instrument: search patch/
@@ -77,18 +78,25 @@ Chicken Grease end-to-end (full song through the driver with profiles,
 hybrid vocals, mix match). Deliver full song + A/B. LANDS on delivery +
 determinism proof.
 
-**M-V4-RULES** — deterministic rules/feature extraction over the
-transcribed corpus (spec: `docs/specs/v3_rules_deterministic_extractor_spec_c23.md`).
+**M-V4-RULES** (spec: `docs/specs/v4_rules_and_ear_spec.md`, BINDING
+shape; the older `v3_rules_deterministic_extractor_spec_c23.md` remains
+background) — TWO models in parallel over canonical MIDI + tempo maps +
+audio descriptors (energy arc, spectral-balance trajectory): (A) the
+statistical style model; (B) a lightweight learned sequence model — first
+candidate a cellular-automaton bar-transition model fitted per instrument,
+benchmarked against variable-order Markov; keep what scores best under
+Model-A conformance + ear on rendered excerpts.
 Transcribe additional band-6/7 corpus songs as needed (driver only).
 Rules artifact hashed; same-input→same-output proof. No recreation A/Bs
 for non-focus songs (out of scope).
 
-**M-V4-EAR** — the LIGHTWEIGHT exemplar ear (operator decision
-2026-09-03): NOT a trained regressor. Exemplar set (groove-weighted 6/7
-mix): Chicken Grease, Molasses, Essence, Desire, Peach Dream. Score =
-audio-embedding similarity (VGGish-class) to the exemplar set, calibrated
-to the 1–7 scale against the full rated corpus (monotonic map fitted on
-corpus ratings; held-out sanity check). Build + validation must stay
+**M-V4-EAR** (spec: `docs/specs/v4_rules_and_ear_spec.md`, BINDING
+shape) — the LIGHTWEIGHT exemplar ear: NOT a trained regressor. Exemplar
+set (groove-weighted 6/7 mix): Chicken Grease, Molasses, Essence, Desire,
+Peach Dream. Backbone: CLAP + VGGish ensemble (CLAP via HF with receipts;
+VGGish-only fallback recorded if install fails). Scoring: top-k window
+similarity (10 s windows, best 50%, max-over-exemplar-windows), calibrated
+to the 1–7 scale with an isotonic map over the full rated corpus. Build + validation must stay
 lightweight — target under ~1 hour of compute (approximate, not a hard
 gate). Deterministic given pinned embeddings; ship its double-run proof
 and a scorecard of the whole corpus for sanity (band means must order
