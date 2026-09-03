@@ -76,13 +76,16 @@ def main():
         rows.append(("whole_clip_baseline", ta, 1.0, 1.0, "REFERENCE"))
 
         # B. chunked parallel
-        t0 = time.time()
-        with futures.ThreadPoolExecutor(max_workers=4) as pool:
-            rv3._muscriptor_chunked(wav, d / "b.json", args.instruments, pool)
-        tb = time.time() - t0
-        f1, ratio = f1_vs(base, notes(json.loads((d / "b.json").read_text())))
-        rows.append(("chunked_30s_5s_parallel", tb, f1, ratio,
-                     "ADOPTABLE" if f1 >= 0.98 and 0.98 <= ratio <= 1.02 else "REJECT"))
+        for cs, ov, label in [(30.0, 5.0, "chunked_30s_5s"), (10.0, 2.5, "chunked_10s_2p5s")]:
+            bj = d / f"b_{label}.json"
+            t0 = time.time()
+            with futures.ThreadPoolExecutor(max_workers=4) as pool:
+                rv3._muscriptor_chunked(wav, bj, args.instruments, pool,
+                                        chunk_s=cs, overlap_s=ov)
+            tb = time.time() - t0
+            f1, ratio = f1_vs(base, notes(json.loads(bj.read_text())))
+            rows.append((label, tb, f1, ratio,
+                         "ADOPTABLE" if f1 >= 0.98 and 0.98 <= ratio <= 1.02 else "REJECT"))
 
         # C. batch sizes
         for bs in [int(x) for x in args.batch_sizes.split(",") if x]:

@@ -280,7 +280,8 @@ def _merge_chunk_events(chunk_events: list[tuple[float, list]], overlap_s: float
 
 
 def _muscriptor_chunked(wav: Path, out_path: Path, instruments: str | None,
-                        pool) -> None:
+                        pool, chunk_s: float = CHUNK_LEN_S,
+                        overlap_s: float = CHUNK_OVERLAP_S) -> None:
     """Chunk long audio (30 s windows, 5 s overlap), transcribe chunks in the
     shared pool, merge deterministically. Used only above CHUNK_THRESHOLD_S;
     validated against whole-clip transcription by transcription_speed_bench."""
@@ -289,21 +290,21 @@ def _muscriptor_chunked(wav: Path, out_path: Path, instruments: str | None,
     t0 = 0.0
     while t0 < dur:
         starts.append(round(t0, 6))
-        if t0 + CHUNK_LEN_S >= dur:
+        if t0 + chunk_s >= dur:
             break
-        t0 += CHUNK_LEN_S - CHUNK_OVERLAP_S
+        t0 += chunk_s - overlap_s
     with tempfile.TemporaryDirectory(prefix="rv3_ms_chunks_") as d:
         d = Path(d)
         def _do(i_t0):
             i, c0 = i_t0
             cw = d / f"c{i:03d}.wav"
-            _slice_wav(wav, c0, min(CHUNK_LEN_S, dur - c0), cw)
+            _slice_wav(wav, c0, min(chunk_s, dur - c0), cw)
             cj = d / f"c{i:03d}.json"
             _muscriptor_once(cw, cj, instruments, "json")
             return c0, json.loads(cj.read_text())
         results = list(pool.map(_do, list(enumerate(starts))))
     merged = _merge_chunk_events(sorted(results, key=lambda r: r[0]),
-                                 CHUNK_OVERLAP_S)
+                                 overlap_s)
     out_path.write_text(json.dumps(merged, sort_keys=True,
                                    separators=(",", ":")))
 
