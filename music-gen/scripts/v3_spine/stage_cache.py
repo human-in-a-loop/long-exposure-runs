@@ -98,7 +98,7 @@ def check(stage_name: str, inputs: dict[str, Any], env_pin_sha: str,
 
 def record(stage_name: str, inputs: dict[str, Any], env_pin_sha: str,
            work_dir: Path, produced_files: dict[str, Path],
-           wall_seconds: float) -> dict[str, Any]:
+           wall_seconds: float, result: dict | None = None) -> dict[str, Any]:
     """Freeze a completed stage's outputs under the cache directory.
 
     produced_files maps `relpath` (as it will live inside outputs/) to absolute
@@ -127,6 +127,12 @@ def record(stage_name: str, inputs: dict[str, Any], env_pin_sha: str,
         "env_pin_sha256": env_pin_sha,
         "cache_spec_version": CACHE_SPEC_VERSION,
     }
+    if isinstance(result, dict):
+        try:
+            json.dumps(result)
+            manifest["result"] = result
+        except (TypeError, ValueError):
+            pass  # non-serializable stage result: omit (hit falls back to manifest)
     manifest_path = d / "stage_manifest.json"
     manifest_path.write_text(json.dumps(manifest, sort_keys=True, indent=2))
     return manifest

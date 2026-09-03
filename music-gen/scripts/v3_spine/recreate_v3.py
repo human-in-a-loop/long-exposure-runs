@@ -642,7 +642,7 @@ def assemble_delivery(facts: dict, work_dir: Path, delivery_dir: Path,
     env_pin_path = delivery_dir / "env_pin.json"
     env_pin = write_env_pin(env_pin_path)
 
-    per_stem_canon = {s: r.get("run1_sha256") for s, r in canon_report["results"].items()
+    per_stem_canon = {s: r.get("run1_sha256") for s, r in canon_report.get("results", {}).items()
                       if r.get("run1_sha256")}
 
     manifest: dict[str, Any] = {

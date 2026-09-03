@@ -102,14 +102,16 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
             _rehydrate_stage_outputs(m, work_dir)
             report["cache_summary"]["stages_hit"] += 1
             report["cache_summary"]["wall_saved_seconds"] += m.get("wall_seconds", 0.0)
-            return m, True
+            res = m.get("result")
+            return (res if isinstance(res, dict) else m), True
         t0 = time.time()
         stage_out = run_fn()
         wall = time.time() - t0
         # Only cache when every produced file exists (defensive; do not cache partial)
         real = {k: v for k, v in produced_layout.items() if Path(v).is_file()}
         if real:
-            stage_cache.record(stage_name, inputs, env_sha, work_dir, real, wall)
+            stage_cache.record(stage_name, inputs, env_sha, work_dir, real, wall,
+                               result=stage_out if isinstance(stage_out, dict) else None)
         report["cache_summary"]["stages_miss"] += 1
         return stage_out, False
 
@@ -190,7 +192,11 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     report["stages"]["merge"] = {"cache_hit": hit,
                                   "merged_mid_sha256": _c22.sha(merged_mid)
                                   if merged_mid.is_file() else None}
-    merge = merge_result if isinstance(merge_result, dict) else {}
+    # A cache hit from a pre-result-persistence record lacks the stage report;
+    # stage_merge is cheap (<1s) and deterministic, so re-derive it in that case.
+    if not (isinstance(merge_result, dict) and "merged_mid_sha256" in merge_result):
+        merge_result = _c22.stage_merge(canon_dir, tempo, merged_mid)
+    merge = merge_result
 
     # 7. render_per_track
     render_dir = work_dir / "render" / "per_track"
