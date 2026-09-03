@@ -177,7 +177,8 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     canon_dir = work_dir / "canonical_midi"
     _, hit = _run_with_cache(
         "canonicalize",
-        {"muscriptor_dir_present": ms_dir.is_dir(), "tempo_bpm": tempo.get("bpm")},
+        {**{f"ms_{f.name}": f for f in sorted(ms_dir.glob("*.json"))},
+         "tempo": {k: tempo.get(k) for k in ("bpm", "detected_bpm", "meter", "source")}},
         lambda: _c22.stage_canonicalize(ms_dir, tempo, canon_dir, verify_det=verify_det),
         {},  # produces many files; leave to freshness re-run if invalidated
     )
@@ -188,7 +189,8 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     merged_mid = work_dir / "merged.mid"
     merge_result, hit = _run_with_cache(
         "merge",
-        {"canon_dir_present": canon_dir.is_dir(), "tempo_bpm": tempo.get("bpm")},
+        {**{f"canon_{f.name}": f for f in sorted(canon_dir.glob("*.mid"))},
+         "tempo": {k: tempo.get(k) for k in ("bpm", "detected_bpm", "meter", "source")}},
         lambda: _c22.stage_merge(canon_dir, tempo, merged_mid),
         {"merged.mid": merged_mid},
     )
@@ -205,9 +207,9 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     render_dir = work_dir / "render" / "per_track"
     _, hit = _run_with_cache(
         "render",
-        {"merged_mid": merged_mid,
-         "stems_present": sorted(p.name for p in stem_dir.glob("*.wav"))
-         if stem_dir.is_dir() else []},
+        {"merged_mid": merged_mid, "sf2": Path(_c22.SF2),
+         **({f"stem_{p.name}": p for p in sorted(stem_dir.glob("*.wav"))}
+            if stem_dir.is_dir() else {})},
         lambda: _c22.stage_render(merged_mid, stem_dir, render_dir, verify_det=verify_det),
         {},  # per-track WAV set is variable
     )
@@ -217,9 +219,10 @@ def run_pipeline_checkpointed(song_sha16: str, section: str, out_dir: Path,
     mix_wav = work_dir / "render" / "full_reconstruction.wav"
     _, hit = _run_with_cache(
         "mix_match",
-        {"render_dir_present": render_dir.is_dir(),
-         "stems_present": sorted(p.name for p in stem_dir.glob("*.wav"))
-         if stem_dir.is_dir() else []},
+        {**({f"pt_{p.name}": p for p in sorted(render_dir.glob("*.wav"))}
+            if render_dir.is_dir() else {}),
+         **({f"stem_{p.name}": p for p in sorted(stem_dir.glob("*.wav"))}
+            if stem_dir.is_dir() else {})},
         lambda: _c22.stage_mix_match(stem_dir, render_dir, mix_wav, verify_det=verify_det),
         {"render/full_reconstruction.wav": mix_wav},
     )
