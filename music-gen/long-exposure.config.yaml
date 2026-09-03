@@ -43,10 +43,15 @@ interactive_recycle_turns: 40        # relaunch the stateless driver every N tur
 interactive_fetch_window_seconds: 30 # bridge long-poll window before the driver re-polls
 interactive_turn_timeout_seconds: 1800  # max wait for one interactive turn's response
 
+# === Daily sync ===
+# Lean v4 closure run (operator decision 2026-09-03): the 48-stage daily
+# mega-audit is disabled — reporter-every-3-cycles remains the audit cadence.
+daily_sync_interval_hours: 100000
+
 # === Compact ===
 compact_threshold: 0.90
 reanchor_enabled: true
-compact_db: /home/user/music-gen-instance-v3/data/sessions.db
+compact_db: /home/user/music-gen-instance-v4/data/sessions.db
 max_summary_pct: 0.15
 depth_compression: gentle
 
