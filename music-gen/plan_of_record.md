@@ -699,3 +699,7 @@ The directive section above is **immutable** after creation. Goals and
 milestones tables are mutable, but every edit must emit a ledger event with
 `milestone_id: "_plan/<descriptive-change-name>"` so the audit trail is
 complete.
+
+PROC 2026-09-03 SWEEP-STORAGE HYGIENE: score-and-delete per candidate; ≤500 MB working audio per instrument; df check before each stage; disk ≤90%.
+
+c5 opens M-V4-PROFILES-1/cg-bass-family2-stem-sampled (spec + spike); sf2 arc STILL_INDETERMINATE, blocked on replay-program-invariance CRITICAL.
