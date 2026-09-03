@@ -67,7 +67,7 @@ from scratch, exercising every internal FD-1 gate.
 
 ## 2. End-to-end byte-identity certificate — Chicken Grease
 
-**Song:** `31a164f845f8e27e` — corpus/ratings/7/…Chicken_Grease.mp3
+**Song:** `31a164f845f8e27e` — corpus/ratings/6/017__It2s36sL4aM__Chicken_Grease.mp3 (band 6; the original text said band 7 — corrected in operator fact-check 2026-09-03)
 **Section:** operator D1-chosen (from focus_set_v2.json)
 **Env pin:** `env_pin_sha256 = 623df01f262ffd180c8497ce9bb06a2d4438b9239d60dd997304830b6571d38d` (per `data/v3_spine/31a164f845f8e27e/operator_section_c26_checkpointed/env_pin.json`; identical to Peach Dream cycle25 env_pin, confirming stable session-environment).
 **Driver:** `scripts/v3_spine/recreate_v3_checkpointed.py --no-cache --verify-det`
@@ -118,9 +118,13 @@ between certificate re-issues.
 
 ## 3. Palette-primary determinism gate (D-D pre-condition)
 
-Palette-render (`scripts/palette_render/render_stem.py` — c33 SHA
-`214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b`,
-DO-NOT-TOUCH) is not on the v3 spine today. Two palette-render deliveries
+Palette-render is not on the v3 spine today. (Historical anchor: the c33
+`scripts/palette_render/render_stem.py`, SHA
+`214372d920a319a97d6e3fc7b9ee4134c08c0cb4aecb776f4a50c75f965b5b2b`, was
+removed in the 2026-09-03 refactor — recover from git history if the SHA
+needs re-verification; its successors are
+`scripts/v3_spine/palette_render/render_palette.py` and
+`scripts/palette_render_v4/`.) Two palette-render deliveries
 have been operator-approved on top of the v3 spine's per-track WAVs:
 
 - Chicken Grease palette-render c21 (`data/v3/deliveries/31a164f845f8e27e/palette_render/`) — `PALETTE_MOVES_PANEL`
