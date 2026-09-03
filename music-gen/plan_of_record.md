@@ -703,3 +703,5 @@ complete.
 PROC 2026-09-03 SWEEP-STORAGE HYGIENE: score-and-delete per candidate; ≤500 MB working audio per instrument; df check before each stage; disk ≤90%.
 
 c5 opens M-V4-PROFILES-1/cg-bass-family2-stem-sampled (spec + spike); sf2 arc STILL_INDETERMINATE, blocked on replay-program-invariance CRITICAL.
+
+c6 replay-program-invariance CRITICAL closed via scripts/sound_match/replay.py fix + regression test; family-2 builder lands on CG-bass with verdict FAMILY2_RULED_OUT (embedding_cos_vggish=0.0896 ≤ 0.40; first-class negative). env_pin schema retained (replay-time 7-key subset canonical; sweep-time 9-key superset documented as diagnostic superset of same variables).
