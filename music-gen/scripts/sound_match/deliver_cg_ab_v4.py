@@ -117,9 +117,28 @@ def main(argv: list[str] | None = None) -> int:
     else:
         missing.append("drums (no cg_drums_pinned_profile.json)")
 
+    # Guitar OPT3 (c15): consume cg_guitar_pinned_profile.json if present
+    # — htdemucs stem substitution parallel to c14 CG-drums OPT3.
+    guitar_pinned = delivery_dir / "cg_guitar_pinned_profile.json"
+    guitar_opt3_handled = False
+    if guitar_pinned.exists():
+        gm = json.loads(guitar_pinned.read_text())
+        if gm.get("acceptance_option") == "OPT3":
+            present["guitar"] = {
+                "pinned_manifest": str(guitar_pinned),
+                "manifest_sha256": _sha(guitar_pinned),
+                "render_family": "htdemucs_stem_substitution",
+                "source_stem_relpath": gm.get("guitar_source_for_showcase"),
+                "source_stem_sha256": gm.get("guitar_source_sha256"),
+                "acceptance_option": "OPT3",
+            }
+            guitar_opt3_handled = True
+
     # Piano/guitar/other: expected under data/v4/profiles/<song>/<instrument>.json.
     profiles_root = root / "data/v4/profiles" / args.song
     for inst in ["piano", "guitar", "other"]:
+        if inst == "guitar" and guitar_opt3_handled:
+            continue
         p = profiles_root / f"{inst}.json"
         null_finding = profiles_root / f"{inst}_null_finding.json"
         if p.exists():
