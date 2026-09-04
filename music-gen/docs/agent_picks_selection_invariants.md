@@ -40,8 +40,43 @@ If actual on-disk truth (anchor SHAs, leaderboard ranks, script contents, grid c
 
 FD-1 makes on-disk truth authoritative; invariant (d) makes silent-honoring an anti-pattern.
 
+## Invariant (e) — cross-cycle pinned-profile shape stability
+
+Delivery-manifest artifacts (e.g., `cg_<instrument>_pinned_profile.json`)
+commit to their key structure on first campaign use. Subsequent same-family
+pinnings replicate the shape verbatim, or the drift is disclosed under
+invariant (d).
+
+Campaign-canonical `acceptance_fork` shape (from c14 drums anchor):
+
+```
+acceptance_fork:
+  chosen: {id, verbatim, rationale_points}
+  rejected: [{id, verbatim, reason}, ...]
+  authority: str
+  invariants_doc: str (path to docs/agent_picks_selection_invariants.md)
+```
+
+`supersedes_path` remains top-level (per c14 lemma; `str`, not `list`; not
+nested under `acceptance_fork`).
+
+Precedents:
+
+- c9 bass_v2 acceptance (pre-formalization; predates invariant framework —
+  grandfathered).
+- c14 drums acceptance (4 nested + top-level `supersedes_path` — CANONICAL).
+- c15 guitar acceptance (3 nested + top-level `supersedes_path`;
+  `invariants_doc` folded into `authority` string — DRIFT, disclosed
+  retroactively at c16 per invariant (d)).
+
+Enforcement: new pinned-profile emissions test-assert this shape via
+`tests/test_pinned_profile_shape.py` (c16 addition). The c15 guitar
+drift is grandfathered as a documented DRIFT precedent — the test
+records it as such rather than failing on it.
+
 ## Version
 
 - c14 (2026-09-04): initial codification (invariants a/b/c).
 - c15 (2026-09-04): extended with invariant (d) — on-disk-vs-brief disclosure norm.
+- c16 (2026-09-04): extended with invariant (e) — cross-cycle pinned-profile shape stability.
 
