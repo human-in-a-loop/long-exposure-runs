@@ -1,149 +1,570 @@
 ---
-title: "Music-Gen — Cycles 10-12"
-date: "2026-08-28"
+title: "Music-Gen v4 closure campaign — cycles 10–12"
+date: "2026-09-04"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Cycles 10-12
+# Music-Gen v4 closure campaign — cycles 10–12
 
 ## Abstract
 
-Cycles 10-12 turned the campaign's rules-and-generation spine from validated components into a live end-to-end deterministic generation pass and hardened the ledger surface that everything sits on. Cycle 10 was the fork `00b3ae64444c` fanout with three clones: **M-GEN-1/first-generation** sampled one rule per rule_type from the 28-row M-RULES-1 ledger by SHA-256 tiebreak (no PRNG), assembled a 30 s three-Part MusicXML score, exported to MIDI through the M-SCORE-1 bridge, rendered bare via fluidsynth and effects-layered via the pinned DawDreamer chain, measured the M-TEX-1/panel across the bare↔effects pair, and scored with M-HEUR-1 + the M-EAR-1/preparation CORN head under an explicit uncalibrated-labels sentinel; **M-INGEST-1/breadth-second-seeds** ran the eight-stage pipeline end-to-end on two additional on-disk seeds (`seed_mid_50s`, `synth_060s`) with 24/24 SHA-256 byte-determinism per seed, honest per-stage failure reporting, and a candid corpus-limitation `/medium` verdict for the absence of any non-synth audio; and a third clone tightened the ledger-writer schema so every future append validates against a single-source-of-truth module with `status` / `narrative` / nested `confidence` / explicit `event_id` required. Cycle 11 was a researcher pass framing the integration. Cycle 12 was the post-merge integration for fork `00b3ae64444c` — the substantive adoption had already been done by the clones themselves through shadow-ledger emit into fanout concat, so the integration reduced to plan-row hygiene, two schema repairs on pre-hardening ledger rows, and a five-event capstone rollup emitted through the hardened writer, which caught real deficiencies in a first-draft event on its first live traffic and forced a corrected retry. At cycle-12 exit the workspace holds 191 ledger rows, zero `promise_check` ERRORs, and 413+ cross-branch integration test PASS lines across §1–§22 — including the load-bearing new sections §20 (schema hardening), §21 (M-GEN-1 SHA-256 anchors and PRNG-import grep guard), and §22 (breadth per-seed SHA-256 anchors × 2 seeds). Rated audio remains egress-blocked; the state machine that will unblock M-EAR-1 is `IDLE` and awaits its two-consecutive-`media_ok=true` trigger.
+Cycles 10–12 close the Chicken Grease drums sub-milestone of the v4
+closure campaign. Cycle 10 fixed the cycle-9 disk-check false positive
+that had blocked the detached SoundFont drums sweep and launched the
+sweep under the canonical replay-time environment pin. Cycle 11 ran
+the 216-cell fine-fit stage, emitted the drums profile of record
+(program 16 Power Kit, embedding-cosine 0.2374 against the reference
+stem), and patched the replay dispatcher to be MIDI-channel aware so
+that channel-10 drum programs replay correctly; the SoundFont family
+verdict came out **`SF2_RULED_OUT`** because the top-1 embedding
+cosine sits below the 0.40 retained honesty floor. Cycle 12 shipped
+the family-2 stem-sampled drums arc — spike, builder, render, replay
+proof, verdict — and ruled it out as well at embedding cosine 0.0372,
+closing the drums arc as **`CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`**
+with the same shape as the cycle-7 bass closeout. It also ran an
+independent from-fresh-subprocess replay-regression check covering
+both the bass-v2 anchor and the new drums anchor (both byte-identical
+across two runs), closing the moderate finding the cycle-11 auditor
+had left open. A three-option drums acceptance policy has been
+escalated to operator authority; unlike the cycle-9 bass case, the
+agent did not unilaterally extend the composite-relative acceptance
+precedent, because the operator's cycle-9 threshold retirement was
+explicitly scoped to Chicken Grease bass. Two of the five Chicken
+Grease instrument tracks now have terminal verdicts; the full A/B
+render remains gated on the remaining three sub-milestones plus the
+drums acceptance decision.
 
-## Introduction
+## 1. Where things stood at cycle-10 open
 
-By the end of cycle 9 the campaign had a rules-and-score axis that was validated in pieces: an M-RULES-1 ledger with 28 typed rules, an M-SCORE-1 bridge with round-trip byte identity, a fluidsynth + DawDreamer render path, an M-TEX-1 panel with a refuse-to-aggregate contract, and an M-EAR-1 preparation chassis behind an uncalibrated-labels sentinel. What the campaign did not have was a live example that turned all of those pieces into a single deterministic generation. It also did not have a pipeline that had been demonstrated on more than one seed, and its ledger-writer helper had a recurring lesson — missing `event_id`, missing `status`, missing `narrative`, and non-canonical `confidence` — that had already been repaired twice in earlier cycles and would keep coming back until the validator was enforced at write time rather than at audit time. Cycles 10-12 addressed all three: first live generation, first pipeline breadth beyond one seed, and first hardened ledger writer that catches the recurring defects on the way in rather than on the way out.
+By the close of cycle 9, three loose ends remained under
+`M-V4-PROFILES-1`:
 
-## Approach
+1. The detached SoundFont drums coarse sweep had been prepared
+   (script `coarse_sweep_sf2_drums.py`, dry-run PASS) but its launch
+   had been halted by a false positive in the pre-flight disk-space
+   check. The check used a `statvfs`-derived percentage that reported
+   the working volume at 97.39 % full, while `df -h` on the same
+   volume showed 82.24 % full and 6.6 GB free — comfortably above
+   the 500 MB working-audio budget of a single sweep cycle. This was
+   the sole gate on running the drums sweep.
+2. The reference render family (SoundFont) had been proved replayable
+   for bass-only material (MIDI channel 0), but the replay engine
+   had not yet been exercised on a channel-10 drum-kit program.
+3. The Chicken Grease A/B render scaffold (`deliver_cg_ab_v4.py`)
+   had smoke-tested with `n_missing = 4` — drums, piano, guitar, and
+   the residual "other" bucket — and was waiting for each of those
+   profiles to land.
 
-**Cycle 10 (fork `00b3ae64444c`, three clones).** Three parallel branches with disjoint file trees:
+The cycle-10 auditor also carried forward a broader observation from
+prior cycles: percentage-based resource-limit checks were prone to
+mismatching the reference tool's numeric intuition (df vs statvfs,
+LUFS-I vs RMS-dBFS fallback, sha16 slicing), and a small shared
+`long_exposure.tools.resource_check` helper module would prevent the
+class of defect recurring. That refactor was noted and deferred; the
+concrete cycle-10 work was the point fix.
 
-- **Clone 0 (M-GEN-1/first-generation).** `scripts/gen/sample_rules.py` groups the 28-row ledger by `rule_type`, computes SHA-256 over the canonical-JSON content of each candidate, and returns the lexicographically smallest hash per rule_type as the winner. Algorithm recorded on the manifest as `sha256_over_canonical_json_ascending` with `prng_used: false`; §21 of the cross-branch integration test greps every `scripts/gen/*.py` for `^(from|import) (random|numpy\.random|torch|secrets)` and fails on any hit. `scripts/gen/assemble_score.py` builds a three-Part music21 score satisfying the sampled rules' typed parameters. Render goes through the M-SCORE-1 bridge (`xml_to_midi`), fluidsynth with the pinned SF2 SHA `74594e8f…1cb0`, and the cycle-9 DawDreamer chain (Surge XT Chorus + Reverb + gain envelope) with determinism pins applied before any DawDreamer import. Scoring writes `scoring_v1.json` with three blocks (M-HEUR-1 mess-scales; M-TEX-1/panel bare-vs-effects; CORN head prediction with `ear.calibration = "synthetic_labels_only"` sentinel). Provenance writes `provenance_v1.jsonl` — six canonical-order rows carrying `input_shas` + `output_shas` + `script` + `script_version` so the chain reconstructs from any intermediate step forward.
-- **Clone 1 (M-INGEST-1/breadth-second-seeds).** `scripts/breadth/enumerate_seeds.py` swept `corpus/seed/`, `corpus/ratings/`, `data/ingestion/seed/`, and `data/separation/synth_mix/` and confirmed on-disk that all 18 candidates are synth-derived (0 natural-recording seeds). Priority-order selection (non-synth first, then ≥ 30 s, then not the baseline) admitted the two seeds that maximise informational contrast within the available corpus: `seed_mid_50s` (50 s / 22 050 Hz mono / pure-sine content, exercising the sample-rate and upmix paths) and `synth_060s` (60 s / 44 100 Hz stereo / fluidsynth ground-truth, exercising the scaling axis on the baseline's content class). `scripts/breadth/run_seed.py` walks all eight stages, writes per-seed `stage_manifest.jsonl` with SHA / elapsed / diagnostic per stage, and drops all outputs into `data/breadth/<seed_id>/`. Basic-pitch is invoked in its quarantined venv via subprocess with the cycle-6 environment pins passed through the child env.
-- **Clone 2 (ledger-writer schema hardening).** Extracted the ledger-event schema into a single-source-of-truth module `long_exposure/tools/_ledger_schema.py`, required `status`, `narrative`, nested `confidence: {level, rationale, assessor}`, and explicit `event_id` at write time, and added `tests/test_ledger_writer_validation.py` plus §20 of the cross-branch integration test. §20 pins the SSoT schema module identity so future edits cannot silently forget the contract.
+## 2. Cycle 10 — disk-check repair and drums sweep launch
 
-**Cycle 11 (researcher).** Framed the integration cycle: no new research direction, no audit-level re-validation of the three clones' internal claims, one post-merge integration cycle whose job is to reconcile the workspace, run the validators, and close.
+The `_disk_ok()` predicate in `coarse_sweep_sf2_drums.py` was
+rewritten from a percentage-remaining formula to an absolute-budget
+formula:
 
-**Cycle 12 (post-merge integration, worker).** Two artefacts: `tools/stale/_repair_and_emit_fork_00b3ae64444c.py` (an atomic-`os.replace` ledger repair + five-event rollup emitter that also drives `promise_check` and both test suites and writes a JSON status report), and a rewritten workspace-root `merge_report.md` superseding the earlier fork-`f1bae241bde9` rollup. Two rows were added to `plan_of_record.md` for `M-INGEST-1/breadth-second-seeds/seed_mid_50s` and `M-INGEST-1/breadth-second-seeds/synth_060s` so `promise_check` accepts the pre-existing per-seed events on ledger lines 174 and 177. Two schema repairs on pre-hardening drift: line 160's `event_id` (a raw SHA-256 hex `3c9f2758…958d` produced by an ad-hoc emitter before clone 2's writer landed) was canonicalised via `uuid5(NAMESPACE_NIL, hex)` with the original hex preserved in `event_id_original`, and lines 179–184's `milestone_id: "M-TEST-1/writer"` (six round-trip test fixtures from clone 2's writer tests) were moved to the reserved namespace `_infra/ledger-writer-test-fixtures` with the originals preserved in `milestone_id_original`.
+$$\text{ok} \;\Leftrightarrow\; \text{avail\_bytes} \;\geq\; \text{budget\_bytes} \cdot \text{safety\_factor}$$
 
-## Findings
+with `budget_bytes = 500 · 2^20` and `safety_factor = 1.5`. This
+matches the operator's stated budget discipline directly (a working
+sweep may consume up to 500 MB of audio) rather than backing it out
+from a percentage of a volume whose size varies with mount point.
+A regression test, `tests/test_coarse_sweep_disk_check.py`, was added
+that pins the new formula and asserts the cycle-9 false-positive
+scenario (large volume, small percentage-free, ample absolute-free)
+now passes the check.
 
-### M-GEN-1/first-generation (cycle 10, clone 0) — `validated/medium`; parent M-GEN-1 rollup `validated/medium`
+With the gate repaired, the detached drums sweep launched under the
+canonical seven-key replay-time environment pin (`LC_ALL`,
+`MKL_NUM_THREADS`, `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`,
+`PYTHONHASHSEED`, `SOURCE_DATE_EPOCH`, `TZ`; SHA
+`2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`).
+The coarse sweep enumerated the 15 GM drum-kit programs on MIDI
+channel 10 against the reference stem (`stems_6s/drums.wav`, SHA
+`34492c03f301b6eac3a75343b61244193889d039ae4ccce4c35cc44d568ac835`)
+and the drums MIDI excerpt (channel 10, 186 note-on events, SHA
+`0fd71ce70a26365c2acf08b9f87531178f9f9c18cc419d042a3869989c990ef2`).
+The stage-1 leaderboard landed at
+`drums_sweep_stage1/leaderboard.tsv` with SHA
+`dd5544d3bd3a549cab95…`. Two supplementary regression tests
+covering the drums-plus-bass cross-check and the drums-family
+stage-2 leaderboard structure — `test_rc10_drums_bass.py` and
+`test_rc10_drums_v2.py` — were added.
 
-Five sampled rules:
+The cycle-10 auditor raised one moderate finding: the replay
+engine's `_replay_sf2` had never been exercised on a program on a
+MIDI channel other than 0, and the bass-only regression that had
+validated the cycle-6 replay fix therefore did not cover the drums
+case. That finding was scheduled for cycle-11 closure.
 
-| rule_type | winner_rule_id | content_hash (first 16) | n_candidates |
-|---|---|---|:---:|
-| arrangement | `rule_67d34b1c927ef33d` | `37dcaaf18bbf68ac` | 5 |
-| form | `rule_84816f91e31e50c4` | `789c5c27825167fa` | 5 |
-| harmonic | `rule_0271c7a9f3b5f606` | (F major, `[V, vii, iii, I, i, I, II, ii]`, cadence=none) | 6 |
-| melodic | `rule_09f340921fa2d258` | — | 6 |
-| rhythmic | `rule_88b63bd5e771c045` | — | 6 |
+## 3. Cycle 11 — drums fine-fit, channel-aware replay, family verdict
 
-Assembler summary: `active_parts=[drums]`, `key=F_major`, `meter=4/4`, `pattern_tokens=32`, `progression_len=8`, `seconds_per_measure=2.0`, `sections_dropped=29`, `sections_placed=4`, `tempo_bpm=120.0`, `total_measures=15`.
+### 3.1 Stage-2 fine-fit and profile emission
 
-All six declared SHA-256 prefixes on disk match the worker's report exactly and were independently auditor-verified: `sampling_manifest.json` `faafc86ba79dccd2`, `generated.musicxml` `95d8671af26e7cf9`, `generated.mid` `f237dcfc75f5de94`, `bare_midi.wav` `5b6f608249ea72ac`, `effects_layered.wav` `d81089d39f31b5ca`, `scoring_v1.json` `011e7c90e1ab3c72`. A fresh re-run of `scripts.gen.assemble_score` under `PYTHONHASHSEED=0 OMP=MKL=OPENBLAS=1 /usr/bin/python3` into a scratch directory reproduced the sampling-manifest and MusicXML SHAs byte-identically.
+A drums-specific fine-fit driver, `fine_fit_sf2_drums.py` (679 lines,
+channel-10 aware, LUFS-normalised) was authored as a direct sibling
+of the cycle-3 bass driver. It re-scored the top-3 coarse programs
+across a 216-cell grid over gain, reverb-send, and post-processing.
+The stage-2 leaderboard (`drums_sweep_stage2/leaderboard.tsv`, SHA
+`81a441732f7f7d1da615…`) shows a composite spread of 176.7 % across
+the 216 cells, indicating that the fine-fit is not degenerate.
 
-Scoring: M-HEUR-1 mess-scales all finite in [0, 1] (melody 0.4358 / timbre 0.2938 / form 0.3029 / dynamics 0.9266); M-TEX-1/panel bare-vs-effects 8 keys with no aggregate (mel_l1_db 16.76, spectral_centroid_rmse_hz 1798.62, rms_env_rmse 0.01057, lufs_m_rmse_lu 13.28, embedding_cosine_distance 0.0968); CORN head `ear.prediction = 6` under the `ear.calibration = "synthetic_labels_only"` sentinel, surfaced in both §1 and §8.2 of the report so it cannot be mistaken for a musical judgment. `provenance_v1.jsonl` — six canonical-order rows, chain reconstructs from any intermediate step forward. The falsifiability hatch fired once and honestly: the first-pass scoring JSON leaked full paths and therefore drifted between runs; the fix stored basenames + SHA-256s.
+The stage-2 top-1 by frozen composite (weights 0.5 mel-L1, 0.25
+spectral-centroid RMSE, 0.25 embedding-cosine) came in at:
 
-### M-INGEST-1/breadth-second-seeds (cycle 10, clone 1) — `validated/medium`
+| field | value |
+|---|---|
+| GM program | 16 (Power Kit) |
+| gain | 1.0 |
+| reverb send | 0.7 |
+| post-processing | `EQ_only` |
+| composite | 475.74 |
+| mel-L1 | 10.44 dB |
+| spectral-centroid RMSE | 1858.33 Hz |
+| embedding-cosine (VGGish) | 0.2374 |
 
-Both selected seeds passed 8/8 stages end-to-end (chunker → prepare-audio → M-CLASS-1 → M-SEP-1 htdemucs → M-TRANS-1 basic-pitch → M-SCORE-1 → render_bare_midi → M-TEX-1 panel). Byte-determinism across two independent runs: **24 / 24 SHA-256 anchors matched** (12 frozen contract artefacts × 2 seeds).
+The drums profile was pinned as `drums.json`, UUID
+`83728154-6f48-5c5d-a558-b4d82523ac1b`, canonical replay SHA
+`dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c`.
 
-Panel numbers (original vs bare-MIDI) compared against the cycle-9 baseline:
+### 3.2 Channel-aware replay fix
 
-| seed_id | mel_l1_db | sc_rmse_hz | rms_env_rmse | lufs_m_rmse_lu | embed_cos | provenance |
-|---|---:|---:|---:|---:|---:|---|
-| **synth_030s** (baseline, cycle 9) | **9.906** | **2804.9** | **0.02759** | **2.682** | **0.1234** | synth_ground_truth |
-| synth_060s (this cycle) | 10.755 | 2764.9 | 0.02887 | 2.843 | 0.1619 | synth_ground_truth |
-| seed_mid_50s (this cycle) | 15.808 | 601.0 | 0.30918 | 20.837 | 0.1593 | synth_seed_gen |
+To close the cycle-10 moderate finding, `replay.py` was patched
+in place at lines 79–93. The pre-patch dispatcher wrote the
+program-change event onto channel 0 regardless of the program's
+actual GM channel; for a channel-10 drum kit this either silently
+mis-routes to a melodic channel or drops the event depending on
+the SoundFont's channel mapping. The patched dispatcher reads the
+target channel from the profile identity, rewrites the MIDI to
+strip any inbound program-changes, and injects a
+`program_change(channel=<channel>, program=<program>, time=0)` at
+tick 0.
 
-Content discrimination is real (classifier: `Sine wave` p = 0.9431 vs `Music` p = 0.8770; panel RMS-env RMSE 11× different and LUFS-M RMSE 7.8× different between the sine seed and the ground-truth-family seed). The `/medium` cap is a corpus fact, not a stage-level defect: no non-synth audio exists on disk. Two "quiet passes worth calling out" are named honestly on the report — htdemucs's energy skew on pure sines (correct-model-on-atypical-content, not a regression) and basic-pitch's 5× over-count on the sine seed's ~30 ground-truth notes (same octave-doubling artefact identified in cycle 8; the anti-pattern lock on re-attempting octave-suppression remains binding).
+The regression discipline for a replay-engine change requires that
+every prior anchor whose MIDI is exercised by the new code path
+reproduces byte-identical. Because the bass MIDI is
+channel-0-only, the `_replay_sf2` extension collapses to the
+pre-patch behaviour on that input; the bass-v2 anchor
+`832868d0ea8a81cab2569e60445f80d516d1b5bb958b1b8b0c2e996bdb3aeac5`
+is reproduced exactly. The drums anchor is a new render on a new
+code path; it is captured in the drums replay proof
+(`drums.replay_proof.json`) with `run1 = run2 =
+dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c`
+under the canonical seven-key environment pin. The proof file
+carries a `bass_regression_check` block that pins the bass-v2
+byte-identity outcome explicitly.
 
-**Family-disagreement recurrence.** On `synth_060s` (same content family as baseline, longer duration), three of four numeric metrics track within 10 % while VGGish embedding cosine drifts 31 %. This is a second live datapoint validating the M-TEX-1/panel aggregation-refusal design commitment (the first was cycle 9 on M-TEX-1/stage-by-stage), and the mechanism is the same: VGGish's `mean_over_frames` global summarisation is not scale-invariant when the underlying content distribution shifts even slightly.
+Post-patch `replay.py` SHA is `1f43027039c45f5e066c…`. This file
+becomes a read-only anchor from cycle 11 forward; any subsequent
+change to the replay engine must pass a regression check against
+both the bass-v2 and drums anchors (and, from cycle 12, the
+family-2 drums anchor as well).
 
-### Ledger-writer schema hardening (cycle 10, clone 2) — `validated/high`
+### 3.3 Family verdict
 
-Extracted the schema into `long_exposure/tools/_ledger_schema.py`; required `status`, `narrative`, nested `confidence: {level, rationale, assessor}`, and explicit `event_id` at write time; added `tests/test_ledger_writer_validation.py` and §20 of the cross-branch integration test pinning the SSoT module identity. The recurring cycle-7 lesson (append helper accepts events without `event_id`) is now enforced at write time rather than caught at audit time.
+The stage-2 leaderboard was scored against the pre-registered
+decision protocol. The CONFIRMED gate (embedding-cosine
+$\geq 0.60$ and stage-2 spread $\geq 10\%$ of the cycle-10 coarse
+spread) is met on the spread clause (176.7 % ≥ 8.97 %) but not on
+the embedding clause (0.2374 < 0.60). The retained absolute
+RULED_OUT floor (embedding-cosine $\leq 0.40$) is satisfied
+(0.2374 ≤ 0.40). Verdict: **`SF2_RULED_OUT`**.
 
-### Post-merge integration (cycle 12, worker)
+`drums_family_verdict.json` records the outcome as a first-class
+negative finding rather than a failure. In particular it discloses
+the honesty context that would otherwise be hidden by a
+composite-only summary:
 
-The substantive adoption had already been done by the clones themselves through shadow-ledger emit into fanout concat. Integration reduced to plan-row hygiene, two schema repairs, and a five-event rollup capstone:
+| honesty disclosure | value |
+|---|---|
+| top-1 embedding-cosine (Power Kit, prog 16) | 0.2374 |
+| max embedding-cosine across all 216 stage-2 cells | 0.4645 (program 48 Orchestra Kit, composite rank 76) |
+| program 0 Standard Kit best/worst rank | 13 / 216 |
+| distinct render SHAs across 216 cells | 216 / 216 |
+| EQ v2 zero-mean removal effective | yes |
 
-| # | milestone_id | status/conf |
+The verdict pins the decision-protocol scope: the composite-relative
+WINNER extension that the operator authorised for Chicken Grease
+bass at cycle 9 is explicitly scoped to `STILL_INDETERMINATE`
+outcomes and does **not** rescue a `RULED_OUT` — the retained
+0.40 floor is a hard honesty gate. Any attempt to accept the
+Power Kit as-is would require an explicit operator scope
+extension.
+
+The verdict also names a parallel to the cycle-1 bass surprise
+(where the frozen composite preferred a Drawbar Organ over any
+bass program): the same objective on Chicken Grease drums prefers
+the Power Kit over the Orchestra Kit and both over the Standard
+Kit, none of which reach the CONFIRMED gate. The pattern is
+recorded as a systematic characterisation of the objective on
+Chicken Grease content, not a defect.
+
+The cycle-11 auditor raised one moderate finding: the
+channel-aware replay fix had been reproduced by the worker but
+had not yet been re-run from an independent Python subprocess
+under the same environment pins — the strongest form of the
+regression check. That finding was scheduled for cycle-12
+closure.
+
+## 4. Cycle 12 — family-2 arc, arc closeout, and independent replay regression
+
+Cycle 12 ran three concurrent tracks that closed the drums arc
+cleanly.
+
+### 4.1 Independent replay-regression verification
+
+A stand-alone harness `_replay_regression_c12.py` was written to
+close the cycle-11 moderate. It forks a fresh Python subprocess for
+each anchor (so it inherits none of the parent's imported state),
+sets the seven-key canonical environment pin, replays the target
+profile into a fresh temporary directory, computes the SHA of the
+resulting WAV, and repeats the entire flow a second time into a
+second temporary directory. The harness targets both the bass-v2
+anchor and the new drums anchor.
+
+The verdict (`_replay_regression_c12.json`) is
+**`REPLAY_REGRESSION_HOLDS`**. Both anchors reproduce byte-identical
+across two fresh-subprocess runs and match the anchor SHAs on file:
+
+| label | run 1 SHA | run 2 SHA | anchor match |
+|---|---|---|---|
+| bass_v2 | `832868d0…aeac5` | `832868d0…aeac5` | ✓ |
+| drums | `dadafcfc…64b8d7c` | `dadafcfc…64b8d7c` | ✓ |
+
+The harness also caught a transcription error in its own inbound
+research brief: the brief had pinned the drums anchor with a wrong
+tail (first 16 hex characters `dadafcfc0153f002` correct, remainder
+divergent). The harness cited the on-disk canonical value from
+`drums.replay_proof.json`, disclosed both variants in a
+`brief_anchor_discrepancy_note` block, and reproduced the on-disk
+value byte-identical rather than retro-fitting to the incorrect
+value. The cycle-12 auditor re-ran the same harness independently
+from its own fresh subprocess and reproduced both anchor SHAs,
+validating the closure.
+
+### 4.2 Family-2 stem-sampled drums arc
+
+The family-2 shape probe (`family2_stem_sampled_drums_spike.py`,
+144 lines) detected 147 onsets in the reference drums stem over a
+6.9 s window and classified them by a band-energy argmax into
+kick / snare / hihat buckets. The spike verdict was `VIABLE`, but
+the classifier produced an asymmetric class distribution
+(kick 93, snare 0, hihat 53) versus the MIDI-side pitch histogram
+(kick 30, snare 33, hihat 123). This asymmetry was surfaced in the
+spike JSON rather than smoothed over.
+
+The builder (`family2_stem_sampled_drums_builder.py`, 271 lines)
+rendered the drums MIDI concatenatively by MIDI-pitch → sample-class
+dispatch (pitch 36 → kick sample, pitches 37–38 → snare, pitches
+42/44/46 → hihat) using the sample bank that the spike had
+extracted from the reference stem. The render is
+`drums_family2_render/render.wav`, 2 678 664 bytes, SHA
+`69a76c5b4498972d1cb878da94e645c8c341675b113cc4ca315435f6bb16ca00`.
+
+Because family-2 is a distinct render family from SoundFont under
+the file-determinism policy FD-16(c), it requires its own replay
+proof. `drums_family2.replay_proof.json` records `run1 = run2 =
+69a76c5b…16ca00` under the canonical seven-key pin. This single
+proof covers the family-2 code path for all future stem-sampled
+CG drums profiles.
+
+The family-2 profile of record is `drums_family2_v1.json`, UUID
+`13aeeea0-934e-5b4c-9a7a-e69e1c0e5fc4`. Scored against the frozen
+composite:
+
+| field | value |
+|---|---|
+| composite | 618.16 |
+| mel-L1 | 13.41 dB |
+| spectral-centroid RMSE | 2442.08 Hz |
+| embedding-cosine (VGGish) | 0.0372 |
+
+The verdict is **`FAMILY2_RULED_OUT`**: embedding-cosine 0.0372 is
+well below the 0.40 retained honesty floor. This is the second
+family-2 verdict on Chicken Grease content and is even lower than
+the cycle-6 family-2 bass score of 0.0896.
+
+A minor observation was recorded for future revisit: the
+family-2 profile's `params.classifier` field names the band-energy
+spike-side classifier used to *extract* the sample bank, but the
+builder's *render-time dispatch* is by MIDI pitch class rather
+than by band energy. Both routings are internally consistent, but
+the field name is imprecise; a companion `params.render_dispatch`
+field would disambiguate. Non-blocking because the arc closes on
+`RULED_OUT`.
+
+### 4.3 Arc closeout and manager escalation
+
+With both frozen render families ruled out, the drums arc is
+formally closed in `drums_arc_closeout.json` under the verdict
+**`CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`**. The closeout parallels
+the cycle-7 bass arc closeout in shape:
+
+| dimension | cg-bass (c7) | cg-drums (c12) |
 |---|---|---|
-| 1 | `_infra/ledger-writer-test-fixtures` | validated/high |
-| 2 | `_infra/repair-ledger-cycle10` | validated/high |
-| 3 | `_plan/register-post-merge-integration-fork-00b3ae64444c` | validated/high |
-| 4 | `_run/post-merge-integration-fork-00b3ae64444c` | validated/high |
-| 5 | `_archive/integration-scratch-fork-00b3ae64444c` | validated/high |
+| SoundFont top-1 embedding-cosine | 0.4946 (prog 33 Electric Bass Finger) | 0.2374 (prog 16 Power Kit) |
+| SoundFont max embedding-cosine across 216 | 0.4946 (prog 19 Church Organ) | 0.4645 (prog 48 Orchestra Kit, composite rank 76) |
+| SoundFont verdict | `STILL_INDETERMINATE` | `SF2_RULED_OUT` |
+| family-2 embedding-cosine | 0.0896 | 0.0372 |
+| family-2 verdict | `FAMILY2_RULED_OUT` | `FAMILY2_RULED_OUT` |
+| resolution | operator OPT1+OPT3 hybrid at c9 | manager escalation to operator; no unilateral acceptance |
 
-**Live proof-of-life of the hardened writer.** The first-draft rollup events failed with `LedgerAppendError: ledger event schema validation failed on 3 field(s): missing required field 'status'; missing required field 'narrative'; confidence.rationale missing`. The tightening from cycle 10 caught real deficiencies in its own process on its first live traffic — exactly as designed — and after the fields were fixed the retry succeeded. The earlier draft also mis-called `append_ledger_event(event)` with the wrong arity (correct: `append_ledger_event(workspace, event)`), which failed loudly at the Python layer. Both are the kind of failure the hardened writer was built to make impossible to reach the ledger.
+The closeout carries a `cross_song_parallel_findings` block naming
+the bass precedent and a `systematic_finding` block characterising
+the pattern: the concatenative stem-sampled render approach as
+currently implemented (fixed windows, per-class sample bank
+without pitch modelling) is architecturally insufficient to reach
+the 0.40 floor on Chicken Grease content across two independent
+instrument families. If the pattern holds, piano, guitar, and
+other-residual arcs are likely to exhaust similarly and require
+comparable operator adjudication.
 
-### Verification at cycle-12 exit
+The drums acceptance policy is escalated to operator authority in
+`_manager_M-V4-SHOWCASE-1-cg-drums-acceptance-policy.json` with
+three named options:
 
-- **Ledger:** 186 rows before integration → 191 rows after (5 rollup events; the shadow-ledger clone events had already merged in during fanout collapse).
-- **`promise_check`:** rc = 0, **0 ERRORs**, 7 pre-existing WARNs unchanged (5 trailing-slash canonicalisation on old rows, `M-EAR-1` parent with no events, and one orphan CORN-head feature-cache byproduct `data/ear/features/gen_first_gen_d81089d39f31b5ca.npz` from clone 0's ear scoring; trivial to adopt in a follow-up if desired).
-- **`tests/test_ledger_writer_validation.py`:** rc = 0 (PASS).
-- **`tests/test_integration_cross_branch.py`:** rc = 0, `result: PASS (0 failures)` across §1–§22 with 413 total PASS lines; §20 pins the SSoT schema module identity, §21 pins the M-GEN-1 byte-determinism SHAs and the PRNG-import grep guard (61 checks), §22 pins the breadth per-seed SHAs across two seeds.
+| option | label | consequence |
+|---|---|---|
+| OPT1 | Accept SoundFont top-1 as drums WINNER via composite-relative extension | requires operator threshold-retirement scope extension; the cycle-9 retirement is scoped to bass only |
+| OPT2 | Accept SoundFont max-embedding-cosine candidate (embedding-first tiebreak) | small cost: single fine-fit lookup + one render + one replay proof for program 48 Orchestra Kit (embedding-cosine 0.4645); does not require composite-relative extension |
+| OPT3 | Refuse drums showcase; deliver Chicken Grease A/B without drums recreation | delivers with four instruments (bass_v2 + piano + guitar + other-residual, once profiled) using original htdemucs drums stem |
 
-### Divergence, conflict, and overlap
+Unlike cycle 9 — where the agent had unilaterally chosen to accept
+the composite-relative WINNER for bass after receiving the operator
+directive — the cycle-12 escalation explicitly declines to
+pre-empt. The escalation JSON pins
+`unilateral_action_taken_this_cycle = "NONE"` and instructs the
+next cycle to wait on operator input in `live_guidance`. The reason
+is that the cycle-9 operator directive scoped the threshold
+retirement to Chicken Grease bass by name; extending it to drums is
+a scope decision, not a mechanical follow-through.
 
-None. All three cycle-10 clones self-verdicted validated; zero cross-branch content conflict; file trees disjoint (`scripts/gen/*`, `scripts/breadth/*`, and `tests/test_ledger_writer_validation.py` + `long_exposure/tools/_ledger_schema.py`). The `M-TRANS-1/basic-pitch/octave-suppression` anti-pattern lock (`invalidated/high` since cycle 8) held: clone 1 named it explicitly and did not re-attempt; clones 0 and 2 did not touch M-TRANS-1.
+### 4.4 Ledger discipline
 
-## Discussion
+Nine ledger events were emitted at cycle 12 in strict timestamp
+order (00:20 UTC through 00:51 UTC): the family-2 profile, replay
+proof, verdict, arc closeout, manager escalation, replay
+regression, the plan-of-record registration
+(`_plan/register-c12-cg-drums-family2-sub-leaves`), and two
+housekeeping entries (`_archive/cycle-12-scratch`,
+`_infra/adopt-cycle12-tests`). Every event carries a UUID5
+identifier and the manager escalation is emitted with
+`status: action_required` as required by the state machine.
 
-Three things about this range are worth naming.
+## 5. Findings closed across the batch
 
-First, cycles 10-12 close the gap between "the pipeline is proven" and "the pipeline has run end-to-end on live inputs and produced a byte-deterministic artefact with a full provenance chain." SHA-256 as the campaign's universal tiebreak — content-derived `rule_id`s (cycle 6), content-derived `event_id`s (cycle 9), and now content-derived rule *selection* (cycle 10) — is what makes the generation legible under audit: every candidate's hash is written to the manifest alongside the winner, and any future change to the ledger ordering, a new candidate rule, or an edit to any candidate's content will change the sampler's output in a fully-explainable way. A future switch to a PRNG-driven sampler is caught by the §21 grep guard. The pipeline is proven; the taste is not, and the report says so.
+| finding | opened | closed | resolution |
+|---|---|---|---|
+| disk-check false positive halts drums sweep | c9 | c10 | `_disk_ok()` rewritten to absolute-budget formula; regression test pins the c9 scenario |
+| replay engine not exercised on non-channel-0 program | c10 | c11 | `replay.py` L79–93 channel-aware fix; drums renders replayable; bass-v2 byte-identity preserved |
+| channel-aware fix not independently re-verified from fresh subprocess | c11 | c12 | `_replay_regression_c12.py` reproduces bass-v2 and drums anchors byte-identical from fresh subprocesses; auditor independently re-runs and reproduces both |
 
-Second, the rule-composition incoherence surfaced by M-GEN-1/first-generation is not a bug in the pipeline — it is a real signal from a pipeline built on rules that were *selected* for content-hash determinism, not for musical coherence. The sampled arrangement rule silences pitched Parts; the sampled harmonic and melodic rules assume pitched Parts exist. Publishing this tension rather than patching it away is the falsifiability contract paying off again (cycle 8's octave-suppression closure was the first live datapoint; this is the second). The right fix is a post-sampling `M-GEN-1/rule-composition-constraint` coherence gate that flags when the arrangement silences all pitched Parts or when form section granularity exceeds the target duration by more than 4×; the wrong fix is to put it inside the sampler, because that would break the SHA-256 tiebreak's determinism.
+The cycle-12 auditor's own severity tally was **CRITICAL 0,
+MODERATE 0, MINOR 2**. The two minor observations — the
+spike-vs-builder classifier-nomenclature drift and the
+zero-snare asymmetry in the band-energy classifier — are recorded
+in the cycle-12 verdict artefacts and do not gate the arc close.
 
-Third, the cycle-10 ledger-writer hardening is the campaign's answer to the recurring "append helper accepts an event without X" lesson that has already been repaired twice. Moving the schema into a single-source-of-truth module and enforcing it at write time turns a recurring audit-time defect into a caught-at-boundary error, and the fact that the *cycle-12 integration's own first-draft events* were the first live traffic to trip the validator is the strongest possible evidence that the enforcement was necessary. `_infra/repair-ledger-cycle10` cleaned up the pre-hardening drift (one raw-hex `event_id`, six `M-TEST-1/writer` test-fixture rows moved to the reserved namespace) with the originals preserved as `event_id_original` / `milestone_id_original` — an append-only ledger cannot lose the historical record, so the repair adds fields rather than editing them.
+## 6. Systematic finding across cycles 1–12
 
-The uncalibrated CORN head remains the campaign's biggest open credibility gap. The `ear.calibration = "synthetic_labels_only"` sentinel prevents the 6/7 rating on a drum-solo from being read as a musical judgment, and the `M-INGEST-1/egress-ready-automation` state machine will fire the retraining pipeline unattended the moment two consecutive fresh `media_ok=true` rows land. Everything downstream — CORN-head retraining, weight persistence at `data/ear/corn_head_v1.pt` with a feature-version guard, re-score of this cycle's `effects_layered.wav` for calibrated comparison — is a straight-line consequence of that unblock.
+Two consecutive Chicken Grease instrument arcs have exhausted the
+two frozen render families without reaching the 0.60 CONFIRMED
+gate:
 
-## Open Questions
+| instrument | SoundFont top-1 emb-cos | family-2 emb-cos | resolution |
+|---|---|---|---|
+| bass | 0.4946 | 0.0896 | operator OPT1+OPT3 hybrid (c9) |
+| drums | 0.2374 | 0.0372 | escalation to operator, three named options (c12) |
 
-- **`M-GEN-1/rule-composition-constraint`** — post-sampling coherence gate that flags arrangement-silences-pitched-Parts or form-granularity-too-fine-for-duration. Runs on the sampler's output, not inside the sampler; preserves the SHA-256 determinism.
-- **CORN-head calibration.** When rated audio arrives, retrain the head on real labels, persist weights at `data/ear/corn_head_v1.pt` with a feature-version guard, and re-score the cycle-10 `effects_layered.wav` so 6/7 can be compared against a calibrated baseline.
-- **Longer-duration M-GEN-1 targets.** `duration_s=60` or `90` so more of the sampled form rule's 128-measure structure lands. The current 30 s target was inherited from M-TEX-1/stage-by-stage; longer targets are cheap here.
-- **Rules extraction per breadth seed.** Cheapest way to widen the M-RULES-1 corpus without new audio: run `scripts/rules/extract/from_score.py` over `data/breadth/{seed_mid_50s, synth_060s}/merged.musicxml`, emitting `M-RULES-1/extraction/breadth-<seed_id>` per seed.
-- **SI-SDR-vs-mixture baseline on M-SEP-1.** Would catch pathologically-thin htdemucs splits on atypical content classes without re-training.
-- **Split `tests/test_integration_cross_branch.py` by milestone** at ~890 lines. Cheap in scope; correctly deferred to a dedicated future cycle by cycle-10 workers so it does not entangle a substantive branch.
-- **Adopt the CORN-head feature-cache byproduct.** `data/ear/features/gen_first_gen_d81089d39f31b5ca.npz` is a legitimate cycle-10 clone-0 side effect but is not in the declared artefact list; the next auditor pass should decide whether to adopt under `M-GEN-1/first-generation` or delete.
-- **Documentation refinements** (auditor MINOR on M-GEN-1): update the report's total-check count from 343 → 413 and §21 count from 39 → 61; tighten the arrangement-silences-pitched-Parts claim to note that `ChordSymbol` MIDI realisations still fire even when the arrangement rule leaves pitched Parts otherwise empty. Not blocking.
-- **CLAP-rung swap on the texture panel's embedding.** Orthogonal path to a more scale-invariant perceptual measure than VGGish's `mean_over_frames`; would revise the family-disagreement pattern now observed twice.
-- **`M-INGEST-1/egress-ready-automation` firing.** Rated audio remains blocked; the state machine is `IDLE` and awaits its two-consecutive-`media_ok=true` trigger. Once it fires, `scripts/breadth/run_seed.py` is drop-in ready for the newly-arrived audio path (no code change required), and M-EAR-1 v0 training becomes eligible.
+Family-2 stem-sampled underperforms family-1 SoundFont on
+Chicken Grease content by roughly an order of magnitude in
+embedding cosine on both instruments. The cycle-12 arc closeout
+records this as a characterisation of the objective and the
+render families on this piece of source content, not as a defect
+of any single component. The convergent expectation is that
+piano, guitar, and other-residual will follow the same pattern
+and each require operator adjudication of an acceptance policy;
+each such adjudication is honest and non-idle, and the campaign
+converges even under the pattern.
 
-## Appendix: Provenance
+## 7. Audit-cycle trajectory
 
-**Cycle range:** cycles 10-12.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** cycle 10 worker `32b9a84b-e739-4c2a-8bbd-3b80bee60cec`; cycle 11 researcher `cac1cf88-e8ab-45c7-9e09-cdde39869b1d`; cycle 12 worker `97cbc233-d4b1-426d-90a4-80947635eb6d`.
+The three audits landed cleanly in a convergent trajectory:
 
-**Sub-agent transcripts (fork `00b3ae64444c` clones).**
+| audit | severity summary | closure |
+|---|---|---|
+| cycle-10 | 1 MODERATE (channel-aware replay coverage gap) | closed cycle 11 |
+| cycle-11 | 1 MODERATE (independent from-fresh-subprocess re-verify) | closed cycle 12 |
+| cycle-12 | 0 MODERATE, 2 MINOR | non-blocking; carried as observations |
 
-- Clone 0 (M-GEN-1/first-generation): researcher `c96fe124-a573-407b-9793-4dce6be05ae8`, worker `a9c6730b-5fc1-450f-8e2c-26bdb58cc27d`, auditor `179df4e2-bde2-4aa4-8bc5-6e58b7c16aaa`. Verdict `VALIDATED`, sub-milestone closes at `validated/medium`, parent M-GEN-1 rolls up at `validated/medium`.
-- Clone 1 (M-INGEST-1/breadth-second-seeds): researcher `ed73c585-23ab-449c-9562-8a3ac46e5887`, worker `4d1aea55-0e21-43e0-ac6d-78fe877a7bb6`, auditor `44175d82-39e4-43ff-96a8-4084644a6b86`. Verdict `VALIDATED` at grade `/medium` under the brief's explicit downgrade rule for the on-disk corpus state.
-- Clone 2 (ledger-writer schema hardening): verdict `validated/high`. Deliverables `long_exposure/tools/_ledger_schema.py`, `tests/test_ledger_writer_validation.py`, §20 of the cross-branch integration test.
+The cycle-12 auditor explicitly re-ran the cycle-12
+replay-regression harness from an independent Python subprocess
+under the canonical seven-key pin and reproduced both anchor SHAs
+byte-identical, which is the strongest form of the Track-1
+verification: the worker's report is validated by execution, not
+by re-reading their claim.
 
-**Deliverables on disk at cycle-12 exit:**
+## 8. Cycle-13 scope
 
-- Code: `scripts/gen/*` (7 modules, interpreter-guarded, zero PRNG imports); `scripts/breadth/*` (interpreter-guarded, zero `sidecar_nonfactor` imports); `long_exposure/tools/_ledger_schema.py` (SSoT schema module).
-- Data: `data/gen/{sampling_manifest.json, generated.musicxml, generated.mid, renders/{bare_midi.wav, effects_layered.wav}, scoring_v1.json, provenance_v1.jsonl, render_manifest.json}`; `data/breadth/{seed_mid_50s, synth_060s}/*` (full per-seed artefact sets) + `{summary.tsv, seed_enumeration.tsv, determinism_baselines.txt}`.
-- Figures: `docs/figures/{gen_first_generation_provenance.png, pipeline_breadth_panel.png}`.
-- Reports: `docs/gen_first_generation_report.md` (397 lines); `docs/pipeline_breadth_report.md` (281 lines).
-- Tests: `tests/test_ledger_writer_validation.py`; `tests/test_integration_cross_branch.py` — 413 PASS / 0 FAIL, with §20 (schema hardening), §21 (M-GEN-1, 61 checks including PRNG-import grep guard + SHA-256 anchors + provenance-chain shape), §22 (breadth per-seed SHA-256 anchors × 2 seeds).
-- Repair + rollup tooling: `tools/stale/_repair_and_emit_fork_00b3ae64444c.py`; workspace-root `merge_report.md` rewritten with the actual integration outcome.
-- Plan of record: 2 sub-milestone rows added at cycle 12 for `M-INGEST-1/breadth-second-seeds/{seed_mid_50s, synth_060s}`.
+1. Register the drums acceptance-policy outcome. If an operator
+   directive arrives, apply it verbatim and pin the resulting
+   drums delivery profile. If none arrives, the cycle-9 banned-
+   heartbeat rule instructs the agent to pick the option most
+   consistent with the binding specifications and best objective
+   evidence, disclose the acceptance-fork in the plan of record
+   verbatim, and proceed; the cycle-12 auditor guidance names
+   OPT1 as consistent with the cycle-9 pattern and OPT2 as the
+   embedding-first alternative that does not require scope
+   extension.
+2. Open the Chicken Grease piano SoundFont coarse sweep as a
+   direct sibling of `coarse_sweep_sf2.py` and
+   `coarse_sweep_sf2_drums.py`. GM programs 0–7 and 16–19,
+   MIDI channel 1, standard 500 MB working-audio budget and
+   `--score-and-delete --keep-top 3` hygiene.
+3. Back-fill accumulated test debt for the family-2 drums
+   concatenative render path — a dedicated
+   `tests/test_sound_match_family2_drums.py` pinning the
+   family-2 render SHA `69a76c5b…` would close three cycles of
+   honestly-deferred test coverage cheaply.
 
-**Ledger state at cycle-12 exit:** 191 events. Repair events: `_infra/ledger-writer-test-fixtures`, `_infra/repair-ledger-cycle10`. Line 160's `event_id` canonicalised via `uuid5(NAMESPACE_NIL, "3c9f2758…958d")` with `event_id_original` preserved. Lines 179–184 (six `M-TEST-1/writer` test fixtures) moved to the reserved namespace `_infra/ledger-writer-test-fixtures` with `milestone_id_original` preserved.
+Read-only anchors that must be preserved: `M-V4-CERT-1`,
+`bass.json`, `bass_v2.json`, both bass family verdicts, the bass
+arc closeout, `drums.json`, `drums.replay_proof.json`,
+`drums_family_verdict.json`, `drums_family2_v1.json`,
+`drums_family2.replay_proof.json`, `drums_family2_verdict.json`,
+`drums_arc_closeout.json`, and the frozen script set in
+`scripts/sound_match/` (`coarse_sweep_sf2*.py`,
+`fine_fit_sf2*.py`, `family2_stem_sampled_*.py`, `replay.py`).
+The 0.60 CONFIRMED and 0.40 RULED_OUT thresholds remain in
+force globally; the cycle-9 threshold retirement is scoped to
+Chicken Grease bass only.
 
-**Environment stack unchanged since cycle 9:** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`; VGGish rung on the texture panel; M-EAR-1/preparation CORN head under the `synthetic_labels_only` sentinel. Single-thread BLAS pins throughout; DawDreamer determinism pins applied before import.
+## Appendix: Implementation Details
 
-**Rated audio.** Still egress-blocked per `corpus/CORPUS_STATUS.md`. `M-INGEST-1/egress-ready-automation` will fire the retraining pipeline unattended when two consecutive fresh `media_ok=true` rows land in `data/ingestion/egress_status.jsonl`. Not this cycle's problem; the state machine has been on disk since cycle 8, `IDLE`, and its runtime state files remain correctly absent until the first live trigger.
+### A.1 Files created or extended, cycles 10–12
 
-**Handoff to next cycle.** The natural next research step is `M-GEN-1/rule-composition-constraint` as a post-sampling coherence gate — the smallest legible unit that raises M-GEN-1 above `/medium` without touching the SHA-256 tiebreak's determinism. The cheap follow-up is rules extraction over the two new breadth-seed merged MusicXMLs to widen the M-RULES-1 corpus. The pre-wired large unblock remains M-EAR-1 v0 training on rated audio; when it arrives the entire chain from egress-ready-automation through CORN-head retraining, weight persistence, and re-scoring is a straight-line consequence of the trigger.
+*Scripts (`scripts/sound_match/`)*:
+
+| file | cycle | lines | role |
+|---|---|---|---|
+| `coarse_sweep_sf2_drums.py` | patched 10 | 446 | `_disk_ok()` rewritten to absolute-budget check |
+| `_launch_cg_drums_sweep_c10.sh` | 10 | — | detached launcher for the drums coarse sweep |
+| `fine_fit_sf2_drums.py` | 11 | 679 | 216-cell drums stage-2 fine-fit, channel-10 aware |
+| `_launch_cg_drums_stage2_c11.sh` | 11 | — | detached launcher for the drums stage-2 fine-fit |
+| `replay.py` | patched 11 | 166 | channel-aware `_replay_sf2` extension; post-patch SHA `1f43027039c45f5e066c…` |
+| `family2_stem_sampled_drums_spike.py` | 12 | 144 | family-2 shape probe, band-energy classifier |
+| `family2_stem_sampled_drums_builder.py` | 12 | 271 | family-2 concatenative render, MIDI-pitch dispatch |
+| `_family2_drums_score_and_emit_c12.py` | 12 | — | scoring + profile + replay-proof + verdict emitter |
+| `_family2_drums_closeout_and_escalation_c12.py` | 12 | — | arc closeout + manager escalation emitter |
+| `_replay_regression_c12.py` | 12 | — | independent from-fresh-subprocess Track-1 harness |
+| `_emit_c12_ledger_events.py` | 12 | — | cycle-12 ledger-event emitter |
+
+*Tests (`tests/`)*:
+
+| file | cycle | role |
+|---|---|---|
+| `test_coarse_sweep_disk_check.py` | 10 | pins the absolute-budget formula and asserts the c9 false-positive scenario |
+| `test_rc10_drums_bass.py` | 10 | drums-plus-bass cross-check under channel-aware replay |
+| `test_rc10_drums_v2.py` | 10 | drums-family stage-2 leaderboard structural test |
+| `test_verdict_sha_fields_resolve_on_disk.py` | 12 | asserts every SHA field in a verdict/manifest resolves byte-identical on disk |
+
+### A.2 Data artefacts, cycles 10–12
+
+All under `data/v4/profiles/31a164f845f8e27e/` unless noted.
+
+| file | cycle | notes |
+|---|---|---|
+| `drums_sweep_stage1/leaderboard.tsv` | 10 | 15-preset SoundFont drums coarse-sweep leaderboard, SHA `dd5544d3bd3a549cab95…` |
+| `drums_sweep_stage1/drums_excerpt.mid` | 10 | channel-10 drums MIDI, 186 note-on events, SHA `0fd71ce70a26365c2acf…` |
+| `drums_sweep_stage2/leaderboard.tsv` | 11 | 216-cell drums stage-2 leaderboard, SHA `81a441732f7f7d1da615…`, composite spread 176.7 % |
+| `drums.json` | 11 | drums profile, UUID `83728154-6f48-5c5d-a558-b4d82523ac1b`, program 16 Power Kit, embedding-cosine 0.2374 |
+| `drums.replay_proof.json` | 11 | `run1 = run2 = dadafcfc…64b8d7c`; embeds bass-v2 regression PASS |
+| `drums_family_verdict.json` | 11 | **`SF2_RULED_OUT`**; disclosure block names max-emb-cos 0.4645 at prog 48 rank 76 |
+| `drums_family2_spike_c12.json` | 12 | shape-probe verdict `VIABLE`; 147 onsets, kick 93 / snare 0 / hihat 53 |
+| `drums_family2_v1.json` | 12 | family-2 profile, UUID `13aeeea0-934e-5b4c-9a7a-e69e1c0e5fc4`, canonical replay SHA `69a76c5b…16ca00` |
+| `drums_family2.replay_proof.json` | 12 | `run1 = run2 = 69a76c5b…16ca00`; covers family-2 code path per FD-16(c) |
+| `drums_family2_render/render.wav` | 12 | 2 678 664 B family-2 concatenative render |
+| `drums_family2_verdict.json` | 12 | **`FAMILY2_RULED_OUT`**, embedding-cosine 0.0372 |
+| `drums_arc_closeout.json` | 12 | **`CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`**; parallels cycle-7 bass closeout shape |
+| `_manager_M-V4-SHOWCASE-1-cg-drums-acceptance-policy.json` | 12 | three named options (OPT1/OPT2/OPT3); `authority = OPERATOR`; `unilateral_action_taken_this_cycle = NONE` |
+| `_replay_regression_c12.json` | 12 | **`REPLAY_REGRESSION_HOLDS`**; bass-v2 and drums both byte-identical, discloses brief-vs-on-disk tail discrepancy |
+| `_c12_track3_summary.json`, `_c12_track4_summary.json` | 12 | per-track sub-milestone summaries |
+
+### A.3 Environment pins in force
+
+The canonical seven-key replay-time pin
+`2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`
+covers every cycle-10–12 render, replay proof, verdict, and
+regression check without change. It comprises: `LC_ALL=C.UTF-8`,
+`MKL_NUM_THREADS=1`, `OMP_NUM_THREADS=1`,
+`OPENBLAS_NUM_THREADS=1`, `PYTHONHASHSEED=0`,
+`SOURCE_DATE_EPOCH=1756463424`, `TZ=UTC`. The cycle-11
+`replay.py` patch was verified to leave the pin unchanged, and the
+cycle-12 independent regression re-verified pin, replay engine,
+and anchor SHAs jointly.
+
+### A.4 Read-only anchors preserved
+
+Every prior anchor exercised by cycles 10–12 was re-checked at
+audit time and found byte-identical. Highlights:
+
+| anchor | SHA (prefix) | status |
+|---|---|---|
+| `coarse_sweep_sf2.py` (c1) | `c74c35bc…` | unchanged |
+| `fine_fit_sf2_v2.py` (c3) | `dc03007365aa29be…` | unchanged |
+| `family2_stem_sampled_spike.py` (c5) | `000c3ef68042f2da6971…` | unchanged |
+| `family2_stem_sampled_builder.py` (c6) | `eaa8fb6cb513f342ff71…` | unchanged |
+| `replay.py` post-c11 | `1f43027039c45f5e066c…` | unchanged after cycle 11 |
+| `stems_6s/drums.wav` | `34492c03f301b6eac3a7…` | unchanged (5 292 044 B) |
+| `bass_v2.json` and its replay proof | UUID `d62cd3b6…`, replay SHA `832868d0…aeac5` | unchanged; re-reproduced from fresh subprocess at cycle 12 |
+| `bass.json`, `bass_family2_v1.json`, both bass verdicts, bass arc closeout | — | unchanged |
+| `FluidR3_GM.sf2` | `74594e8f4250680adf59…` | unchanged |
+
+### A.5 Session references
+
+| cycle | role | session UUID |
+|---|---|---|
+| 10 | researcher | `67b28d09-ab6b-4c0d-9124-7bc40b5f8b50` |
+| 10 | worker | `a46ecebe-098f-47fc-9300-19b34d7f7efe` |
+| 10 | auditor | `64ee51ec-9d3b-4512-8f48-0da0c0b79bd4` |
+| 11 | researcher | `bcd69ec4-e2f0-4ecf-a989-685050638d1d` |
+| 11 | worker | `e90ba69e-0719-4c6c-ae14-4fcdb1c07b60` |
+| 11 | auditor | `08439cb4-82d7-4539-9f85-7e2117eb4f54` |
+| 12 | researcher | `d07132e4-c307-47c7-a8ee-826ef68184cb` |
+| 12 | worker | `1771d189-b272-437c-beab-eae25e55920a` |
+| 12 | auditor | `c7ac41d8-ccea-4cde-b324-0abe9dba166d` |
+
+### A.6 Cross-reference map
+
+- cycle-9 disk-check false positive → cycle-10 `_disk_ok()` rewrite
+  + `test_coarse_sweep_disk_check.py` → cycle-10 detached
+  `coarse_sweep_sf2_drums.py` launch → `drums_sweep_stage1/`
+- cycle-10 stage-1 leaderboard → cycle-11 `fine_fit_sf2_drums.py`
+  → `drums_sweep_stage2/leaderboard.tsv` → `drums.json`
+- cycle-10 auditor moderate (channel-0-only replay coverage) →
+  cycle-11 `replay.py` L79–93 patch → cycle-11
+  `drums.replay_proof.json` (with embedded bass-v2 regression
+  block)
+- cycle-11 auditor moderate (independent re-verify) → cycle-12
+  `_replay_regression_c12.py` → `_replay_regression_c12.json`
+  verdict `REPLAY_REGRESSION_HOLDS` → cycle-12 auditor
+  independent re-run reproduces both anchors
+- cycle-11 `drums_family_verdict.json` (`SF2_RULED_OUT`) +
+  cycle-12 `drums_family2_verdict.json` (`FAMILY2_RULED_OUT`) →
+  cycle-12 `drums_arc_closeout.json`
+  (`CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`) → cycle-12
+  `_manager_M-V4-SHOWCASE-1-cg-drums-acceptance-policy.json`
+  (three named options, operator authority) → cycle-13
+  acceptance-policy resolution
+- cycle-7 bass arc closeout shape → cycle-12 drums arc closeout
+  shape (parallel structure); cycle-9 operator directive scope
+  ("Chicken Grease bass") → cycle-12 escalation refuses
+  unilateral scope extension
