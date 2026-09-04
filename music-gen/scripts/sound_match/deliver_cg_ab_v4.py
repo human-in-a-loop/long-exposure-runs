@@ -90,18 +90,55 @@ def main(argv: list[str] | None = None) -> int:
     else:
         missing.append("bass (no cg_bass_pinned_profile.json)")
 
-    # Drums/piano/guitar/other: expected under data/v4/profiles/<song>/<instrument>.json.
+    # Drums: consume the c14 OPT3 pinned manifest — htdemucs stem substitution
+    # per campaign prompt line 60 + c13-formalized agent-picks invariants.
+    drums_pinned = delivery_dir / "cg_drums_pinned_profile.json"
+    if drums_pinned.exists():
+        dm = json.loads(drums_pinned.read_text())
+        if dm.get("acceptance_option") == "OPT3":
+            present["drums"] = {
+                "pinned_manifest": str(drums_pinned),
+                "manifest_sha256": _sha(drums_pinned),
+                "render_family": "htdemucs_stem_substitution",
+                "source_stem_relpath": dm.get("drums_source_for_showcase"),
+                "source_stem_sha256": dm.get("drums_source_sha256"),
+                "showcase_dispatch": "read source_stem_relpath verbatim, no synthesis",
+            }
+        else:
+            pp = dm.get("pinned_profile") or {}
+            present["drums"] = {
+                "pinned_manifest": str(drums_pinned),
+                "manifest_sha256": _sha(drums_pinned),
+                "profile_relpath": pp.get("relative_path"),
+                "profile_sha256": pp.get("profile_sha256"),
+                "profile_id": pp.get("profile_id"),
+                "render_family": pp.get("render_family"),
+            }
+    else:
+        missing.append("drums (no cg_drums_pinned_profile.json)")
+
+    # Piano/guitar/other: expected under data/v4/profiles/<song>/<instrument>.json.
     profiles_root = root / "data/v4/profiles" / args.song
-    for inst in ["drums", "piano", "guitar", "other"]:
+    for inst in ["piano", "guitar", "other"]:
         p = profiles_root / f"{inst}.json"
+        null_finding = profiles_root / f"{inst}_null_finding.json"
         if p.exists():
             present[inst] = {
                 "profile_relpath": str(p.relative_to(root)),
                 "profile_sha256": _sha(p),
                 "render_family": "unknown_pending_manifest",
             }
+        elif null_finding.exists():
+            nf = json.loads(null_finding.read_text())
+            present[inst] = {
+                "null_finding_relpath": str(null_finding.relative_to(root)),
+                "null_finding_sha256": _sha(null_finding),
+                "verdict": nf.get("verdict"),
+                "render_family": "null_no_synthesis",
+                "showcase_dispatch": "empty MIDI track → silent per-track (v3 spine default)",
+            }
         else:
-            missing.append(f"{inst} ({p.relative_to(root)} not present)")
+            missing.append(f"{inst} ({p.relative_to(root)} not present, no null_finding sibling)")
 
     # Vocals: hybrid from rc7 (per c22 unified-driver pattern). c9 scaffold
     # records the expected location; render happens later.
