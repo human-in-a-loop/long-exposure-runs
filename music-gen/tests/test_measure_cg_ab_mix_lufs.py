@@ -10,9 +10,9 @@
 #           the on-disk measurement values, the piano-silence-floor semantics,
 #           and the discipline guards on measure_cg_ab_mix_lufs.py.
 # ---
-"""c19 Track 2 LUFS diagnostic regression suite.
+"""c19 + c20 LUFS diagnostic regression suite.
 
-Test cases (7 total; ≥6 brief gate):
+Test cases (8 total; ≥6 c19 gate + 1 c20 FETCH_FAIL fixture):
   01  SHA regression on cg_ab_mix.lufs_diagnostic.json (frozen c18 anchor
       6810d5056edf5889...)
   02  Byte-identity: cg_ab_mix.wav SHA `6e13e007...f9484b` unchanged pre==post
@@ -29,6 +29,13 @@ Test cases (7 total; ≥6 brief gate):
       2ac444c36298d6ada... recorded in sidecar
   07  Pyloudnorm probe outcome: fetch_status == "OK" round-trip assertion
       + measurements dict populated for all 7 named cells
+  08  c20 Track 2 FETCH_FAIL branch fixture — simulate pyloudnorm
+      unavailability via sys.modules shim inside a tempfile.mkdtemp()
+      workspace, invoke measure_cg_ab_mix_lufs.main(), assert the
+      FETCH_FAIL row shape (fetch_status='FETCH_FAIL',
+      fetch_status_reason non-null, measurements=None,
+      does_not_mutate_audio=true, env_pin_sha256 pinned). Frozen c18
+      anchor JSON + c17 mix WAV byte-identical pre==post.
 
 Invariant (d) disclosure: the c18 brief spec described the LUFS values with
 2-decimal precision; the on-disk JSON has full float precision. Tests round
@@ -200,6 +207,75 @@ class TestMeasureCgAbMixLufs(unittest.TestCase):
         src = LUFS_SCRIPT.read_text()
         for k in ENV_KEYS:
             self.assertIn(k, src, f"canonical env pin key missing in script: {k}")
+
+    def test_08_fetch_fail_branch_shape(self) -> None:
+        """c20 Track 2: simulate pyloudnorm unavailability via sys.modules
+        shim; assert FETCH_FAIL row shape; c18 anchor JSON + c17 mix WAV
+        byte-identical pre==post (isolated tempdir output)."""
+        import importlib.util
+        import shutil
+        import sys
+        import tempfile
+        from unittest import mock
+
+        # Frozen c18 + c17 anchor SHAs, verified pre==post around the fixture.
+        c18_json_sha_pre = _sha256(LUFS_JSON)
+        mix_wav_sha_pre = _sha256(MIX_WAV)
+        self.assertEqual(c18_json_sha_pre, LUFS_JSON_SHA_C18)
+        self.assertEqual(mix_wav_sha_pre, MIX_WAV_SHA_C17)
+
+        with tempfile.TemporaryDirectory() as td:
+            tmp_root = Path(td)
+            tmp_delivery = tmp_root / "data" / "v4" / "deliveries" / \
+                "31a164f845f8e27e"
+            tmp_delivery.mkdir(parents=True)
+            tmp_mix = tmp_delivery / "cg_ab_mix.wav"
+            shutil.copyfile(MIX_WAV, tmp_mix)
+            tmp_out = tmp_delivery / "cg_ab_mix.lufs_diagnostic.json"
+            tmp_stems = tmp_root / "data" / "v3" / "deliveries" / \
+                "31a164f845f8e27e" / "cert_run1" / "stems_6s"
+            tmp_stems.mkdir(parents=True)
+
+            spec = importlib.util.spec_from_file_location(
+                "measure_cg_ab_mix_lufs_fetch_fail_fixture",
+                str(LUFS_SCRIPT),
+            )
+            self.assertIsNotNone(spec)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            # Redirect module-level paths into the isolated tempdir so the
+            # frozen c18 sidecar under data/v4/deliveries/... is never
+            # overwritten.
+            mod.DELIVERY = tmp_delivery
+            mod.MIX = tmp_mix
+            mod.STEMS = tmp_stems
+
+            # Shim pyloudnorm to force ImportError inside main()'s try/except.
+            with mock.patch.dict(sys.modules, {"pyloudnorm": None}):
+                rc = mod.main()
+
+            self.assertEqual(rc, 0, "FETCH_FAIL path should return 0")
+            self.assertTrue(tmp_out.exists(),
+                "FETCH_FAIL path must write the diagnostic sidecar")
+            data = json.loads(tmp_out.read_text())
+            self.assertEqual(data.get("fetch_status"), "FETCH_FAIL",
+                f"expected fetch_status=FETCH_FAIL, got {data.get('fetch_status')}")
+            self.assertIsInstance(data.get("fetch_status_reason"), str)
+            self.assertIn("import failed", data["fetch_status_reason"])
+            self.assertIsNone(data.get("measurements"),
+                "FETCH_FAIL row must set measurements=None")
+            self.assertTrue(data.get("does_not_mutate_audio"))
+            self.assertTrue(data.get("diagnostic_only"))
+            self.assertEqual(data.get("cg_ab_mix_wav_sha256_pre"),
+                             data.get("cg_ab_mix_wav_sha256_post"))
+            self.assertEqual(data.get("env_pin_sha256"), ENV_PIN_SHA_C18,
+                "FETCH_FAIL row must still pin canonical env_pin_sha256")
+
+        # c18 anchor JSON + c17 mix WAV byte-identical pre==post.
+        self.assertEqual(_sha256(LUFS_JSON), c18_json_sha_pre,
+            "c18 LUFS anchor JSON must remain byte-identical after fixture")
+        self.assertEqual(_sha256(MIX_WAV), mix_wav_sha_pre,
+            "c17 cg_ab_mix.wav must remain byte-identical after fixture")
 
     def test_07_pyloudnorm_probe_ok(self) -> None:
         """Fetch status == OK on the c18 diagnostic; measurements populated
