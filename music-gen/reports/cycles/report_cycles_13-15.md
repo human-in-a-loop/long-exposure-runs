@@ -1,173 +1,223 @@
 ---
-title: "Music-Gen — Cycles 13-15"
-date: "2026-08-28"
+title: "Chicken Grease sound-matching arcs — cycles 13–15"
+date: "2026-09-04"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Cycles 13-15
+# Chicken Grease sound-matching arcs — cycles 13–15
 
 ## Abstract
 
-Cycles 13-15 covered the fork `ed041ef4c1dc` fanout with three parallel clones and its integration. Clone 0 grew the M-RULES-1 rules ledger from 28 to 76 rows by running the cycle-9 extractors over the two M-INGEST-1/breadth-second-seeds merged MusicXMLs, preserved the cycle-9 anchor row prefix byte-identically, and resolved the specific `(salt 1, salt 4)` arrangement collision the cycle-11 audit had named as the mechanical unlock for larger M-GEN-1 batches; the overall salt-collision pair count dropped from 5 to 4, with the residual salt-4 over-representation surfaced honestly as a research finding rather than tuned away. Clone 1 tightened the fanout concat seam so every merged row now validates against the cycle-10 SSoT `_ledger_schema.validate_event` and every candidate stream enforces per-milestone `ts` monotonic ordering with a `content_hash_tiebreak` on collision, closing the last drift surface on the campaign's ledger-write side; the concat surface, the emit surface, and the check surface now all consume the same schema module with `is`-identity of `REQUIRED_EVENT_FIELDS` verified live. Clone 2 attempted the cycle-3 M-DAW-SPIKE-1 documented-GAP fallbacks: GAP-1 (Ardour Lua MIDI-file import) redefined-GAP via fluidsynth pre-render plus hand-authored Ardour audio-region XML (env_correlation 1.000, peak_ratio_db 0.00 dB); GAP-2 (Ardour VST3 plugin-parameter automation delivery) still-GAP with a sharper diagnosis — replacing Surge XT with the ACE Reverb LV2 exposed the same automation-non-delivery mechanism on LV2 as on VST3, so the gap is broader than the cycle-1 VST3-scoped diagnosis. Cycle 15 was a researcher pass framing the next fork. At cycle-15 exit the workspace holds 228 ledger events under the hardened schema, zero `promise_check` ERRORs, and 587 cross-branch integration test PASS lines including new §24 concat-hardening invariants; one pre-existing FAIL (`M-RULES-1/extraction: provenance 28/76 resolvable`) traces to the cycle-12 breadth expansion's provenance-resolution surface and is queued as a repair.
+Cycles 13–15 close the last three per-instrument sound-matching arcs for the Chicken Grease song of the Music-Gen v4 closure campaign. The goal was to drive the `M-V4-SHOWCASE-1` deliverable — a Chicken Grease A/B render whose per-stem tracks are either synthesized from pinned SoundFont / stem-sampled profiles or explicitly refused with a documented substitute — to a state where a smoke test reports no missing cells. At cycle 15 close, that state is reached: all five per-instrument cells (bass, drums, guitar, piano, other-residual) have terminal verdicts, and the vocals stem is covered by a pre-existing hybrid-overlay policy. Two of the five terminal verdicts (drums, guitar) are refusals — the sound-matching sweep exhausted both explored render families under a retained absolute floor on the VGGish embedding-cosine similarity metric, and the operator-heard reference stem is substituted verbatim in the showcase mix. Two more (piano, other-residual) are grounded null findings: the underlying stems are inaudible, and the derived per-instrument MIDI transcription is empty. One (bass) had already been accepted at cycle 9. Alongside the arc closures the three cycles produced two campaign-scoped process documents — a codification of the invariants an agent applies when resolving a pre-registered options fork without waiting on the operator, and an interpreter-guard policy for new scripts. A latent correctness concern about the sign convention of the embedding metric was surfaced at cycle 15 and deferred for operator adjudication in cycle 16; the concern does not affect the safety of the refuse-and-substitute deliveries but may affect the interpretation of every arc's verdict.
 
-## Introduction
+## 1. Introduction
 
-By the end of cycle 12 the campaign had an end-to-end deterministic generation spine (M-GEN-1/first-generation on the cycle-9 28-row rules ledger), a hardened ledger-write emit surface (cycle 10), a matching hardened `promise_check` surface (cycle 11), and a pipeline that had been demonstrated on multiple seeds. Three things were still open. The mechanical unlock the cycle-11 audit had named — grow the rules ledger by rerunning the extractors on the breadth seeds already on disk — was queued but not done; the last drift surface on the ledger-write side (concat) still bytes-appended shadow rows without re-validating them, producing recurring post-merge repair debt; and the two cycle-3 M-DAW-SPIKE-1 documented gaps (Ardour Lua MIDI-file import; Ardour VST3 plugin-parameter automation delivery) had aspirational fallback plans that had never been exercised end-to-end.
+The v4 closure campaign is organized as a sequence of per-song, per-instrument sound-matching arcs. Each arc searches two frozen render families — a General-MIDI SoundFont sweep (family "sf2") and a stem-sampled concatenative builder (family "family2") — for a configuration whose 6-second render best matches the reference stem, scored under a fixed composite objective and evaluated against a fixed decision protocol. The protocol has three outcomes: a candidate above the 0.60 VGGish embedding-cosine threshold is `CONFIRMED`; a family whose best candidate falls below the 0.40 floor is `RULED_OUT`; anything between the two is `STILL_INDETERMINATE`. When both families are ruled out, the arc is closed as `EXHAUSTED_NO_CONFIRMED` and the acceptance question is escalated to a pre-registered options fork, one of which is always to refuse the sub-milestone and substitute the operator-heard reference stem into the deliverable.
 
-Cycle 13 was the researcher pass framing the three-clone fanout that would address all three. Cycle 14 was the worker pass that ran the three clones' underlying investigations. Cycle 15 was a follow-up researcher pass shaping the next fork.
+At the start of cycle 13 the campaign held: bass accepted at cycle 9 under a hybrid `OPT1+OPT3` operator directive; drums arc-exhausted at cycle 12 with a three-option acceptance fork awaiting adjudication; three CG instrument cells untouched (guitar, piano, other-residual); vocals covered by a pre-existing hybrid-overlay policy. Cycles 13–15 were tasked with closing those three untouched cells, resolving the drums acceptance fork, and driving the CG A/B render scaffold from `n_missing = 4` to `n_missing = 0`. Because the last three cycles all executed sequentially against a single song with the same objective and decision protocol, this report treats them as one continuous piece of work and organizes by outcome rather than by cycle boundary.
 
-## Approach
+## 2. Grounded null findings: piano and other-residual (cycle 14)
 
-**Fork `ed041ef4c1dc` (three clones, disjoint file trees).**
+Two of the six per-instrument tracks in the Chicken Grease `merged.mid` — piano (track 5, GM program 0, MIDI channel 2) and other-residual (track 4) — carry zero `note_on` events. Both were produced by the v3 spine's MuScriptor stem transcription during the earlier `cert_run1` unified-driver run; the four sibling stems carry non-empty transcriptions (drums 186, bass 65, guitar 391, vocals 0-by-policy).
 
-- **Clone 0 (M-RULES-1/breadth-expansion).** `scripts/rules/extract/breadth_seeds.py` walks the two breadth seeds' merged MusicXMLs and dispatches the five cycle-9 per-rule-type extractors under a `_common.py` context that names the seed and defaults to `synth_030s` behaviour when unset — so the extractor logic itself is byte-identical to cycle 9 and every cycle-9 anchor row reproduces without modification. A new `NullWithReason` helper returns `{"rule_type", "reason", "detail"}` rather than a `write_rule` call when content-incompatibility fires, so `scripts/rules/schema/*` stays frozen. `rule_id` continues as SHA-256 over canonical-JSON of `{rule_type, scope, sorted provenance_pointers, parameters}`, so cross-seed rule_id uniqueness is structurally guaranteed (different `provenance_pointers` → different hash). A separate `_salt_collision_analysis.py` runs the M-GEN-1 sampler at salts 0..4 against both the pre-expansion 28-row ledger and the post-expansion 76-row ledger and writes `data/rules/salt_collision_before_after.tsv` — out-of-band, no ledger mutation.
-- **Clone 1 (`_infra/fanout-concat-hardening`).** The concat seam `long_exposure.workspace_bootstrap.concat_clone_ledgers(workspace: Path, fork_dir: Path) -> int` (the brief's `long_exposure.tools.fanout._concat_clone_ledgers` was a renamed reference; the worker documented the discrepancy rather than fabricating a module) was tightened to (a) pass every candidate row through `_ledger_schema.validate_event` before write, raising `LedgerConcatError` (subclass of `LedgerSchemaError`, subclass of `ValueError`) with field-named messages on drift, and (b) enforce per-milestone `ts` monotonicity within the candidate stream with a `content_hash_tiebreak` on exact `ts` collision — not file line number, which was the specific mechanism cycle 11's bug. The write is transactional via `NamedTemporaryFile` + `fsync` + `os.replace`. Public API surface is byte-preserved across cycles 1–11. A new `tests/test_fanout_concat_validation.py` (10 named cases) carries the mandatory `_LE_PARENT` `sys.path` shim so it runs cleanly under all three documented PYTHONPATH invocation flavors.
-- **Clone 2 (M-DAW-SPIKE-1/gap-closure).** Cycle-3's coverage matrix (6 GREEN / 1 PARTIAL / 2 GAP over a five-axis × two-engine grid) documented aspirational fallback plans for the two GAPs but never exercised them. Clone 2 attempted each fallback end-to-end in the current environment (torch 2.13.0+cpu + torchvision 0.28.0 workaround already in place from earlier cycles).
+A cycle-13 draft null finding rested on the empty transcription alone. Cycle 14 grounded both nulls in a stem-level audibility measurement using a small helper (`measure_stem_audibility.py`) that reports LUFS-I via `pyloudnorm` and falls back to RMS-dBFS when LUFS-I is non-finite. Both reference stems yielded `pyloudnorm = -inf LUFS-I` (silence-only or near-silence-only content), and the RMS-dBFS fallback measured piano at −81.53 dBFS and other-residual at −81.73 dBFS. Both sit far below the −60 dBFS silence floor. With no audible reference and no MIDI target, the sf2 sweep has no synthesis target by construction, and no retry with looser transcription thresholds is warranted (this is a `FD-1` no-retry / no-fallback binding rule, cited explicitly in the null-finding manifests). The showcase consequence is trivial: the mix uses the original (silent) htdemucs stem verbatim, matching what the v3 spine already does for empty tracks. Both null-finding manifests carry an `audibility_measurement` block with the WAV SHA and the measured dBFS values as first-class evidence, and the cycle-14 `other` sibling closes an audit note from cycle 13 that had asked for symmetry with the piano null.
 
-**Cycle 15 (researcher).** Framed the next fork's shape from the cycle-14 outcomes and queued the surfaced repairs. No new load-bearing engineering.
+## 3. Chicken Grease guitar arc (cycles 13–15)
 
-## Findings
+The guitar arc followed the shape established by the earlier bass and drums arcs: a 15-preset SoundFont coarse sweep, a fine-fit stage-2 sweep on the coarse top-5 programs, a family verdict, then a stem-sampled family-2 spike, builder, and family verdict, then an arc closeout if both families rule out.
 
-### M-RULES-1/breadth-expansion (clone 0) — `validated/high`
+### 3.1 Cycle 13 — stage 1 (coarse sweep)
 
-**Ledger growth:**
+`coarse_sweep_sf2_guitar.py` ran the guitar-analogue of the c1 bass / c10 drums coarse sweep across GM programs 24–31 (the standard guitar bank) plus a small set of adjacent programs, evaluating 6-second renders of `guitar.mid` (391 `note_on` events on MIDI channel 1) against the reference stem. The stage-1 leaderboard ranks the "Nylon" program ahead of the source-of-truth "Rock Guitar" (GM program 27), the third instance in the campaign of the frozen composite ranking a non-source-of-truth program ahead of the source-of-truth program on a CG instrument (following bass c1 organ > bass, and drums c11 Power Kit > Standard Kit).
 
-| Seed | harmonic | rhythmic | melodic | form | arrangement | total | `null-with-reason` |
-|---|---:|---:|---:|---:|---:|---:|---|
-| `seed_mid_50s` | 2 | 6 | 6 | 5 | 5 | **24** | 4 × harmonic / insufficient-progression (measure scope, `unique_chords=1`) |
-| `synth_060s` | 2 | 6 | 6 | 5 | 5 | **24** | 4 × harmonic / insufficient-progression (measure scope, `unique_chords=1`) |
-| **Total appended** | 4 | 12 | 12 | 10 | 10 | **48** | 8 |
+### 3.2 Cycle 14 — stage 2 (fine fit) and SF2 verdict
 
-Cycle-9 base 28 rows → post-expansion **76 rows** (target ≥ 15 rows exceeded 3×). Null-with-reason surfacing is honest, not evasive: on both breadth seeds the measure-scope harmonic extractor finds a single unique chord per window (`unique_chords=1`) and correctly reports `insufficient-progression` rather than fabricating a progression; song-scope harmonic still fires.
+`fine_fit_sf2_guitar.py` swept a 180-cell grid (programs × gain × reverb × post-processing) over the coarse top-5. The stage-2 leaderboard ranks GM program 28 (a muted-electric variant; the c14 profile carries a cosmetic label of "Jazz Guitar" that a later cycle notes should be corrected to the GM standard name) ahead of the source-of-truth program 27 (best rank 84). The top-1 configuration — program 28, gain 1.5, reverb 0.7, EQ-only post-processing — scores composite 129.65, mel-L1 14.72 dB, spectral-centroid RMSE 463 Hz, and **embedding-cosine 0.2584**. The maximum embedding-cosine across all 180 cells is 0.3345.
 
-**Regression contract preserved.** `head -28 data/rules/ledger.jsonl | sha256sum` = `4fe722adde034c099ff9e65437f0d5c138cb3dd2595089960150af5c2546fc4b` — matches cycle 9 bit-for-bit. Post-expansion whole-ledger SHA `a6fd53e9bf9a10f6885888b0bb7d11a9a2aa97007e38ef0e6d47f4ef7d2857ae`; two independent extraction runs produce byte-identical ledgers.
+The cycle-14 worker pinned this as `guitar.json` (profile UUID `bb3e537b-…`, SHA `5e6220ad…`) and emitted a canonical replay proof (`guitar.replay_proof.json`, canonical replay SHA `e2fee72dfa6b408e…`, verdict `REPLAY_PROOF_HOLDS`). The family verdict `guitar_family_verdict.json` records **`SF2_RULED_OUT`** with the verdict reason `top-1 emb_cos 0.2584 < 0.40 retained absolute floor`.
 
-**Salt-collision reduction.** M-GEN-1 sampler at salts 0..4:
+The cycle-14 verdict manifest carries a `systematic_finding` note explicitly recognizing this as the fourth arc where the composite outranks the source-of-truth program, and characterizes the pattern as "content-specific, not a defect."
 
-| Colliding pair | Pre (28 rows) | Post (76 rows) |
-|---|---|---|
-| (0, 1) harmonic | ✓ | ✓ |
-| (0, 1) rhythmic | ✓ | — resolved |
-| (1, 2) melodic | ✓ | — resolved |
-| **(1, 4) arrangement (cycle-11-flagged)** | ✓ | — **resolved** |
-| (2, 3) rhythmic | ✓ | — resolved |
-| (1, 4) rhythmic | — | ✓ (new) |
-| (2, 4) melodic | — | ✓ (new) |
-| (3, 4) arrangement | — | ✓ (new) |
+### 3.3 Cycle 15 — family-2 stem-sampled builder and verdict
 
-The specific cycle-11-flagged `(salt 1, salt 4)` arrangement collision resolves (arrangement rule_id shifts from `rule_b75cc391f671037a` under both salts pre-expansion to `rule_b99a5066e653b247` at salt 1 and `rule_a8ffe2f88dc29eed` at salt 4 post-expansion). Overall pair count drops 5 → 4 (~20 %) — sub-proportional to the 3× pool growth. Three of the four post-expansion pairs involve salt = 4, strongly suggesting the residual rate reflects something specific about salt = 4's hash-space geometry on this rule space rather than a general pool-size effect. The report surfaces "structural diversity within a rule_type may matter more than raw pool size" as a research signal for the next cycle rather than tuning the collision count down.
+Once the SoundFont family ruled out, cycle 15 authored the family-2 stem-sampled path end to end. Two scripts were added under the interpreter-guard policy's canonical `#!/usr/bin/python3` shebang:
 
-Auditor decision: **VALIDATED / COMPLETE** at `/high` — mechanical target hit and cycle-9 regression contract preserved; the sub-proportional overall reduction is honestly documented rather than concealed.
+- `family2_stem_sampled_guitar_spike.py` builds a slice bank from onsets on the reference stem. Bank diagnostics report 147 detected onsets, of which 37 are voiced (i.e. `pyin` returned a defined pitch within the E1–E7 range), yielding **5 unique MIDI pitches** in the bank. The scarcity of voiced content in the guitar reference stem is explicitly flagged in the manifest as a known limitation.
+- `family2_stem_sampled_guitar_builder.py` renders `guitar.mid` by dispatching each of the 391 events to the nearest-pitch bank sample and pitch-shifting the sample with `pyin` down to (or up to) the target pitch. All 391 events route successfully; a librosa `UserWarning` about `pyin` `fmin = 41 Hz` is preserved (kept intentionally to cover the E1 42.2 Hz corner).
 
-### `_infra/fanout-concat-hardening` (clone 1) — `validated/high`
+The render lands at `guitar_family2_render/render.wav` (SHA `f41560714a68415c…`). The replay proof runs the builder twice into fresh temp directories under the canonical 7-key replay-time environment pin (`2ac444c36298d6ad…`); both runs reproduce byte-identically. The verdict manifest `guitar_family2_verdict.json` records:
 
-All ten sufficiency criteria pass under the auditor's live re-verification:
-
-| Criterion | Evidence |
+| field | value |
 |---|---|
-| Concat seam located and modified in place, public API unchanged | `inspect.signature(concat_clone_ledgers)` → `(workspace: Path, fork_dir: Path) -> int` |
-| `LedgerConcatError(LedgerSchemaError)` real subclass, MRO verified | `issubclass(LedgerConcatError, LedgerSchemaError)` and `issubclass(LedgerConcatError, ValueError)` both True |
-| All existing ledger rows pass tightened concat with no schema grandfathering | Case 8 + live re-verification 228 rows |
-| Two documented drift patterns rejected with field-named messages | Case 2 (missing `event_id`, cycle-10 pattern), Case 5 (per-milestone `ts` monotonicity, cycle-11 pattern) |
-| Concat byte-deterministic and idempotent | Cases 6 + 7 + live dogfood on a real shadow ledger (4 rows first, 0 rows second) |
-| All existing worker-side test suites remain green | Writer 13/13; integration 587 PASS (1 pre-existing unrelated FAIL) |
-| New test file runnable in 3 PYTHONPATH flavors via `_LE_PARENT` shim | All three flavors 10/10 |
-| SSoT `is`-identity | `promise_check.REQUIRED_EVENT_FIELDS is _ledger_schema.REQUIRED_EVENT_FIELDS` |
-| `docs/fanout_concat_hardening.md` with all 7 required sections | Grep confirms |
-| `_infra/fanout-concat-hardening` in plan_of_record.md 5-col Milestones table | Ledger events resolve; no plan-file drift ERROR |
+| composite | 164.03 |
+| mel_L1_dB | 13.17 |
+| spectral_centroid_RMSE_Hz | 626.2 |
+| embedding_cos_vggish | **0.03543** |
+| verdict | **`FAMILY2_RULED_OUT`** |
 
-**The one honest carve-out (§5 of the docs).** Applying per-milestone-file-order `ts` monotonicity retroactively to the main ledger *as a candidate stream* surfaces 7 pre-existing cycle-1-era violations plus 11 `ts` collisions. Resolution: invariant scope is candidate-stream only — main ledger rows are grandfathered against monotonicity but *not* against schema (all 222 rows pass schema). This matches real tool usage — no fan-out re-ingests the main ledger as a candidate — avoids the fabricate-repair-`ts` trap cycle 11 fell into, and preserves the brief's "no schema grandfathering" rule.
+with the verdict reason `emb_cos_vggish 0.0354 < 0.40 retained absolute floor`. The predicted-value outcome from the systematic four-arc pattern (bass family-2 at 0.0896; drums family-2 at 0.0372) is recorded in the manifest's `systematic_pattern_note`; the actual measured value is stated honestly rather than fitted to the prediction.
 
-### M-DAW-SPIKE-1/gap-closure (clone 2) — `validated/medium`; parent M-DAW-SPIKE-1 remains `validated/high`
+### 3.4 Arc closeout and acceptance fork
 
-Cycle-3 baseline 6 GREEN / 1 PARTIAL / 2 GAP → cycle-14 8 GREEN / 1 PARTIAL / 0 GAP / 1 redefined-GAP (five-axis × two-engine matrix).
+`guitar_arc_closeout.json` records **`CG_GUITAR_ARC_EXHAUSTED_NO_CONFIRMED`** with both family verdicts and their best embedding-cosine values enumerated; the manifest's `systematic_finding` notes that this is the third CG-instrument arc to exhaust with no `CONFIRMED` family, mirroring the shape of the c7 bass and c12 drums closeouts.
 
-| GAP | Fallback exercised | Verdict | Evidence |
+The pre-registered options fork `_manager/M-V4-SHOWCASE-1-cg-guitar-acceptance-policy.json` enumerates three options:
+
+1. **OPT1** — accept the SF2 top-1 (program 28, embedding-cosine 0.2584) as the guitar WINNER via composite-relative extension of the cycle-9 bass acceptance precedent.
+2. **OPT2** — accept the family-2 render (embedding-cosine 0.0354) as WINNER via embedding-first tiebreak.
+3. **OPT3** — refuse the guitar showcase and deliver the CG A/B with the htdemucs reference stem substituted verbatim.
+
+The fork was resolved by the agent under the codified selection invariants (see §4). OPT1 fails invariant (a) — it requires extending the scope of an operator directive that is currently CG-bass-only — and fails invariant (b) — the candidate is below the 0.40 retained floor. OPT2 fails invariant (b). OPT3 satisfies all four invariants and is selected. The fork manifest's status is set to `resolved_via_agent_picks_invariants` and a delivery-scope pinned profile `cg_guitar_pinned_profile.json` is written under `data/v4/deliveries/31a164f845f8e27e/` recording the OPT3 choice, the rejected options with per-option rationales, the SHA of the substituted htdemucs stem (`e4ff08ea10f9bbcb…`), and a cosmetic-label correction note for the c14 profile.
+
+## 4. Process codification
+
+Two campaign-scoped documents were emitted during these cycles.
+
+### 4.1 Agent-picks selection invariants (cycle 14, extended cycle 15)
+
+`docs/agent_picks_selection_invariants.md` codifies the rules an agent applies when it must resolve a pre-registered options fork without waiting on the operator (the campaign's binding anti-stall rule forbids null-cycle "waiting" behaviour). The document was written at cycle 14 in response to a cycle-13 mis-resolution of the drums acceptance fork: at cycle 13 the agent had elected OPT1 (composite-relative WINNER extension) with a rejection of OPT3 that rested on a paraphrase of OPT3's text as "extending the vocals-only hybrid overlay to drums", where the pre-registered verbatim text was "refuse the drums showcase, use htdemucs drums track as-is in the mix" (a refuse-and-substitute, not an overlay). The cycle-14 auditor flagged this as an incorrect resolution; the cycle-14 worker retracted the cycle-13 pick and re-resolved to OPT3 by codifying three invariants:
+
+- **(a) Prefer no operator-scope extension** — when one option requires enlarging an operator directive's scope and another stays within it, prefer the one that stays within.
+- **(b) Prefer above-floor over below-floor** — when one option selects a candidate below a retained absolute floor and another selects an above-floor candidate or takes a non-candidate policy path (such as refuse-and-substitute), prefer the latter.
+- **(c) Do not reject an option based on a misreading of its own definition** — quote the option's pre-registered text verbatim before rejecting it; if the rejection depends on a paraphrase that contradicts the verbatim text, the rejection is invalid.
+
+Cycle 15 extended the document with a fourth invariant, prompted by a cycle-14 discrepancy in which a brief-hardcoded value diverged from the on-disk canonical value and the worker silently followed the on-disk value without disclosing the divergence:
+
+- **(d) On-disk-versus-brief divergence disclosure norm** — if on-disk truth (anchor SHAs, leaderboard ranks, script contents, grid contents) diverges from the brief text, the divergence must be explicitly disclosed in the work-output issues block, with the on-disk value pinned by SHA and the rationale for choosing on-disk over brief stated. `FD-1` makes on-disk truth authoritative; invariant (d) makes silent-honoring of on-disk truth an anti-pattern.
+
+The invariants sit under (never above) the campaign's binding specs — the `FD-1` retry/tuning/fallback ban, the `FD-6` operator-ear authority, the `FD-16` environment-pin and replay-proof scoping rules, and the operator directive of 2026-09-03 — and constrain only the agent's judgment call, not the operator's.
+
+The cycle-15 guitar acceptance fork (§3.4) was resolved conformantly to all four invariants on the first attempt, which the cycle-15 auditor recorded as empirical validation of the cycle-14 auditor's stated purpose for the codification.
+
+### 4.2 Interpreter guard policy (cycle 15)
+
+`docs/interpreter_guard_policy.md` formalizes an earlier informal convention: new Python scripts added to `scripts/sound_match/` and its siblings from cycle 13 onward must use `#!/usr/bin/python3` (absolute path) rather than `#!/usr/bin/env python3`. The convention was in place informally since cycle 1 to make interpreter choice explicit and avoid PATH-derived Python drift across cycles. Two pre-cycle-13 anchor scripts (`family2_stem_sampled_drums_spike.py` and `family2_stem_sampled_drums_builder.py`, both cycle 12) use the `env` form and are grandfathered as read-only; on this system both forms resolve to `/usr/bin/python3`, so the grandfathering is safe. The policy is enforced through the corresponding tests in `tests/test_sound_match_family2_drums.py`.
+
+## 5. Latent correctness concern — the embedding metric sign convention
+
+The cycle-15 auditor surfaced a semantic question about the embedding metric that threads through every family verdict since cycle 1. The panel `scripts/texture/embedding_panel.py` computes `_cosine_distance(u, v) = 1.0 - cos_sim` and emits the value as `embedding_cosine_distance` (in `[0, 2]`, lower = more similar). The composite objective consumes it correctly as a distance (`+ 0.25 * (embedding_cos_dist * 100.0)`, minimize composite = better match). However, downstream profile and verdict manifests carry the value as `embedding_cos_vggish` (the `cos` suffix reads as a similarity), and the campaign's frozen decision-protocol thresholds — `≥ 0.60 CONFIRMED`, `< 0.40 RULED_OUT` — are worded as if the value were a similarity (higher = better).
+
+If the field is truly a distance, the c15 guitar family-2 value 0.0354 means cos-similarity ≈ 0.965 — extremely similar to the reference stem — rather than "very dissimilar." Under the intended-threshold semantics, the correct application would reject only when the distance exceeds 0.60. Under the current application, low-distance candidates get `RULED_OUT` precisely because they are close matches. The concern is not a defect that a worker could fix unilaterally under `FD-1` (which forbids threshold retuning without cause); it is a semantic ambiguity in the frozen decision protocol that requires operator adjudication, and it potentially inverts the interpretation of every CG family verdict in the record (bass c3, c6; drums c11, c12; guitar c14, c15).
+
+The cycle-15 auditor's guidance for cycle 16 is (i) run a controlled two-clip probe — feed the panel two copies of the same clip and two orthogonal noises; a `~0.0` for the first pair and `~1.0` for the second confirms it is a distance — and (ii) present the operator with a binary choice between correcting the thresholds (accepting that most or all prior candidates would `CONFIRM` under the corrected reading) and correcting the panel or its consumer to emit similarity (with a corresponding trigger under `FD-16(a)` to re-issue every downstream replay proof because the numeric contract of every future profile changes). The refuse-and-substitute pins for drums and guitar remain safe regardless: the htdemucs reference stems they substitute are the operator-heard truth by construction, and no interpretation of the embedding metric makes them worse.
+
+## 6. State of the deliverable
+
+At cycle-15 close all five CG instrument cells in `M-V4-SHOWCASE-1` are terminal:
+
+| cell | terminal state | source of showcase audio |
+|---|---|---|
+| bass | accepted (cycle 9) | `bass_v2.json` render (GM program 33) |
+| drums | refused (cycle 14 OPT3) | htdemucs `drums.wav` verbatim |
+| guitar | refused (cycle 15 OPT3) | htdemucs `guitar.wav` verbatim |
+| piano | grounded null (cycle 14) | htdemucs `piano.wav` verbatim (silent) |
+| other-residual | grounded null (cycle 14) | htdemucs `other.wav` verbatim (silent) |
+| vocals | policy hybrid-overlay (pre-existing) | htdemucs `vocals.wav` overlaid on the instrumental mix |
+
+The smoke test `python scripts/sound_match/deliver_cg_ab_v4.py --smoke-test` reports `n_missing = 0`. The end-to-end CG A/B render is a substantive-advance path unblocked in cycle 16, alongside the embedding-metric adjudication.
+
+The systematic pattern noted across the arcs — three consecutive CG-instrument arcs (bass c7, drums c12, guitar c15) exhausted both explored render families under the retained 0.40 floor, and five instances of the composite ranking a non-source-of-truth GM program ahead of the source-of-truth program — is recorded in each arc-closeout manifest as a content-specific characterization, not a defect claim. Under the latent embedding-metric concern of §5 this pattern may reduce to a threshold-application artifact rather than an empirical finding about the objective's behaviour on Chicken Grease content; the auditor's guidance explicitly asks that the pattern not be extended further until the metric question is settled.
+
+## 7. Discipline gates and validators
+
+Across the three cycles the following discipline gates held:
+
+- **Anchor immutability.** The cycle-9 bass anchor (`832868d0…`), the cycle-11 drums anchor (`dadafcfc…`), and the cycle-14 guitar anchor (`e2fee72d…`) are byte-identical pre- and post-cycle at every subsequent cycle's boundary. The cycle-11 `replay.py` channel-aware fix's post-patch SHA is unchanged through cycle 15.
+- **Absence of forbidden constructs.** No PRNG use in any new script (grep-verified by each cycle's auditor). No imports from the `sidecar_nonfactor` module (which the campaign forbids). The `/usr/bin/python3` interpreter guard is present on every new script authored from cycle 13 onward.
+- **Replay-proof scoping.** Every emitted family verdict has a per-family per-song replay proof under the canonical 7-key environment pin `2ac444c36298d6ad…`, satisfying `FD-16(c)`.
+- **Validators.** `promise_check` runs 0 ERROR through cycle 15 (pre-existing WARN count drifts within a ~3-WARN band across cycles 12–15; the drift is scheduled for a cycle-16 audit fill-in). `org_check` runs 0 ERROR through cycle 15.
+
+## 8. Open items
+
+Handed forward to cycle 16 in order of priority:
+
+1. **Adjudicate the embedding-metric sign convention** (§5). Run the two-clip diagnostic; present the operator with the correct-the-thresholds vs. correct-the-panel choice; re-interpret prior arc verdicts as needed. Do not extend the systematic-pattern narrative or re-open the refuse-and-substitute pins until this is settled.
+2. **Execute the CG A/B render end to end** — the scaffold is unblocked and every cell is terminal.
+3. **Formalize the pinned-profile shape.** The c14 drums pinned profile carries a nested `acceptance_fork.invariants_doc` key; the c15 guitar pinned profile folds the same content into an `authority` string. Neither is a defect, but the drift is exactly the class of thing invariant (d) was written to prevent, applied to profile schemas rather than sweep grids. Options are an invariant (e) on pinned-profile cross-cycle shape stability, or a JSON Schema alongside `profile_writer.py`.
+4. **Back-fill test debt.** Author tests for `family2_stem_sampled_guitar_spike.py` and `family2_stem_sampled_guitar_builder.py`; add an adoption row to close the ~3-WARN drift on `promise_check`; add an audibility measurement smoke test.
+5. **Correct the cosmetic GM label** on `guitar.json` in a follow-up if operator authority for anchor-touch is granted (the profile parameters are correct; only the human-readable program name is wrong).
+
+## 9. Discussion
+
+The three-cycle span shows two closely related dynamics worth noting for the reader.
+
+The first is that the acceptance-fork resolution mechanism went through one full observe-then-codify iteration and one full codify-then-apply iteration inside these three cycles. Cycle 13 resolved the drums fork incorrectly under an implicit rule; cycle 14 codified the rule explicitly in response to that failure and re-resolved the drums fork correctly; cycle 15 encountered the same fork shape on guitar and resolved it correctly on the first attempt using the codified rules. The cycle-14 codification with cycle-15 validation is the healthiest audit-driven feedback loop in the v4 record — every named audit item from the prior cycle closed on the subsequent cycle, with the codified process artefact serving as both the closure evidence and the mechanism preventing recurrence.
+
+The second is that the systematic four-arc pattern surfaced consistently across the arcs — the composite ranking non-source-of-truth programs ahead of source-of-truth programs, and both frozen render families ruling out on every CG instrument by wide margins under the 0.40 floor — was building toward a claim of an empirical finding about the objective's behaviour on Chicken Grease content when the cycle-15 auditor surfaced the sign-convention question in §5. Under the current reading the pattern is a real observation; under the alternative reading the pattern reduces to a threshold-application artifact and the pinned candidates are actually close matches. The correct next move is to settle the ambiguity before extending the narrative — the cycle-15 auditor's explicit guidance — and this report follows that guidance by naming the pattern once (§6) and stopping there. The named anti-pattern from the cycle-15 auditor's discussion, "internal consistency masks external correctness," is a fitting label for the class of concern.
+
+## Appendix: Implementation Details
+
+### A.1 Scripts added or modified during cycles 13–15
+
+Under `scripts/sound_match/`:
+
+- Cycle 13: `coarse_sweep_sf2_guitar.py`; `_emit_c13_ledger_events.py`.
+- Cycle 14: `fine_fit_sf2_guitar.py`; `_launch_cg_guitar_stage2_c14.sh`; `_emit_c14_guitar_profile.py`; `measure_stem_audibility.py`; `_emit_c14_ledger_events.py`.
+- Cycle 15: `family2_stem_sampled_guitar_spike.py`; `family2_stem_sampled_guitar_builder.py`; `_c15_family2_guitar_emit.py`; `_emit_c15_ledger_events.py`.
+
+Under `docs/`:
+
+- Cycle 14: `agent_picks_selection_invariants.md` (invariants (a), (b), (c)).
+- Cycle 15: `agent_picks_selection_invariants.md` extended with invariant (d); `interpreter_guard_policy.md`.
+
+Under `tests/`:
+
+- Cycle 14: `tests/test_sound_match_family2_drums.py`.
+
+### A.2 Data artefacts added during cycles 13–15
+
+Under `data/v4/profiles/31a164f845f8e27e/`:
+
+| file | cycle | SHA prefix |
+|---|---|---|
+| `guitar_sweep_stage1/leaderboard.tsv` | 13 | – |
+| `piano_null_finding.json` | 14 (supersedes c13) | – |
+| `other_null_finding.json` | 14 | – |
+| `audibility/piano_stem_audibility.json` | 14 | – |
+| `audibility/other_stem_audibility.json` | 14 | – |
+| `guitar_sweep_stage2/leaderboard.tsv` | 14 | – |
+| `guitar.json` | 14 | `5e6220ad9971e8fe…` |
+| `guitar.replay_proof.json` | 14 | `cc22105f2ff41509…` |
+| `guitar_family_verdict.json` | 14 | – |
+| `guitar_family2_v1.json` | 15 | `8a11f6532af572a6…` |
+| `guitar_family2_v1.replay_proof.json` | 15 | `e87e09bd91f88ef1…` |
+| `guitar_family2_render/render.wav` | 15 | `f41560714a68415c…` |
+| `guitar_family2_verdict.json` | 15 | `969c4d2f197f4bcd…` |
+| `guitar_arc_closeout.json` | 15 | `a36576d1d3b67576…` |
+| `_manager/M-V4-SHOWCASE-1-cg-guitar-acceptance-policy.json` | 15 | `3a0367155cbd543e…` |
+| `_c15_guitar_family2_summary.json` | 15 | – |
+
+Under `data/v4/deliveries/31a164f845f8e27e/`:
+
+- `cg_drums_pinned_profile.json` (cycle 14; OPT3 pin for drums)
+- `cg_guitar_pinned_profile.json` (cycle 15; OPT3 pin for guitar; SHA `14d0707898b557df…`)
+
+### A.3 Environment pin
+
+The canonical 7-key replay-time environment pin `2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca` (in force since cycle 6) anchors every family verdict, replay proof, and pinned profile emitted in cycles 13–15.
+
+### A.4 Read-only anchors preserved (verified byte-identical pre-cycle and post-cycle across cycles 13–15)
+
+- `coarse_sweep_sf2.py` (cycle 1, SHA `c74c35bc…`); `fine_fit_sf2_v2.py` (cycle 3, SHA `dc03007365aa29be…`); `family2_stem_sampled_{spike,builder}.py` (cycles 5/6); `replay.py` post-cycle-11 patch (SHA `1f43027039c45f5e066c…`); `FluidR3_GM.sf2` soundfont (SHA `74594e8f4250680a…`).
+- Bass artefacts: `bass_v2.json`, `bass_v2.replay_proof.json` (anchor `832868d0…`), `bass_arc_closeout.json`, `cg_bass_pinned_profile.json`.
+- Drums artefacts: `drums.json`, `drums.replay_proof.json` (anchor `dadafcfc…`), `drums_family2_v1.json`, `drums_family2.replay_proof.json` (anchor `69a76c5b…`), `drums_arc_closeout.json`.
+- Cycle-14 anchors extended into cycle 15: `guitar.json`, `guitar_family_verdict.json`, invariants document (a)/(b)/(c) text.
+
+### A.5 Session references
+
+For traceability to the underlying working records:
+
+| cycle | researcher | worker | auditor |
 |---|---|---|---|
-| GAP-1 (Ardour Lua MIDI-file import) | Fallback #2 — fluidsynth pre-render + hand-authored Source/Region/Playlist audio-region XML | **redefined-GAP** | `env_correlation = 1.000`, `peak_ratio_db = 0.00 dB` (`data/daw_spike/gap1_midi_import_measurement.json`) |
-| GAP-2 (Ardour VST3 plugin-parameter automation delivery) | Fallback #2 — replace Surge XT Effects VST3 reverb with ACE Reverb LV2, author wet-mix automation | **still-GAP with sharper diagnosis** | `second/first RMS ratio = 1.0000` vs cycle-1 baseline 2.05 / DawDreamer reference 2.46 (`data/daw_spike/gap2_lv2_measurement.json`); Ardour Lua `plugin_automation()` fails to deliver on LV2 as well as VST3 — gap is broader than the cycle-1 VST3-scoped diagnosis |
+| 13 | `c06b1659-f97d-4657-a709-04cee245fbb9` | `00b0e8f8-6a58-42c9-b524-f43d635fad44` | `525c2020-2dae-467a-96b2-2372e3f203a7` |
+| 14 | `4c0059b5-0c40-4da3-ab74-f976144db2a8` | `40f77ad0-f5ff-4963-8aa6-a4953e74889b` | `5f6569a0-15f3-4190-aca3-bf3633367f9b` |
+| 15 | `3e9c817c-d258-4230-aa98-e463d9f377fb` | `1e053bc5-ee9c-4e8a-92ba-2d5249b47f0e` | `ea8ed426-df62-45d6-aac5-d6462803af60` |
 
-GAP-1's redefined-GAP is the honest kind of closure: the primary Ardour Lua MIDI-file import path was in fact reachable via a different mechanism than cycle 3 had documented (pre-render + audio-region), and the numerical fidelity of that mechanism to the target rendering is perfect. GAP-2's still-GAP is the honest kind of non-closure: the fallback was exercised in full, the same automation-non-delivery mechanism fired on LV2 as on VST3, and the report's contribution is the *sharpened diagnosis* — the gap is not VST3-specific — rather than a claim of closure.
+### A.6 Cross-references between artefacts
 
-Parent M-DAW-SPIKE-1 stays `validated/high` per cycle 3; this cycle's contribution is axis-level detail.
-
-### Cycle-15 researcher pass
-
-Framed the next fork's shape from the three clones' outputs. Recorded the pre-existing FAIL (`M-RULES-1/extraction: provenance 28/76 resolvable`) — the ratio traces to how the cycle-12 breadth expansion's `provenance_pointers` resolve against the cycle-9 anchor prefix and is a repair, not a defect uncovered here — as queued for a future cheap cycle. Queued the cycle-11-audit-named probes on the salt = 4 residual (salts 5..9 on the 76-row ledger) and the structural-diversity axis (a non-F_major seed) as candidate cycle-16 work.
-
-### Campaign-level state at cycle-15 exit
-
-- **Ledger:** 228 events under the SSoT schema. Emit, check, and concat surfaces now all consume the same `_ledger_schema` module with `is`-identity of `REQUIRED_EVENT_FIELDS` verified live.
-- **Rules ledger:** 76 rows across three seeds, cycle-9 anchor prefix preserved byte-for-byte.
-- **Tests:** `test_ledger_writer_validation.py` 13/13; `test_fanout_concat_validation.py` 10/10 × 3 PYTHONPATH flavors; `test_integration_cross_branch.py` 587 PASS with §24 concat-hardening invariants; one pre-existing unrelated FAIL on `M-RULES-1/extraction: provenance 28/76 resolvable` queued.
-- **Validators:** `promise_check` 0 ERRORs, only pre-existing WARNs (the shadow-ledger orphan-artifact WARN on `tests/test_fanout_concat_validation.py` clears at the next fork-conductor merge under the dogfood of clone 1's own tightened concat). `org_check` no new WARNs.
-- **Blocked on rated audio:** parent `M-EAR-1` v0 training; `M-INGEST-1/egress-ready-automation` is `IDLE` and awaits its two-consecutive-`media_ok=true` trigger.
-
-## Discussion
-
-Three things about this range are worth naming.
-
-First, the ledger-write triangle is now complete. Cycle 10 hardened the emit surface, cycle 11 hardened the check surface, and this range's clone 1 hardened the concat surface. All three now route through the same SSoT `_ledger_schema` module, and the last remaining bypass — the `_repair_and_emit_*` direct-append pattern from cycle 10 — is queued for retirement rather than tolerated as a permanent exception. The dogfood confirmation that clone 1's own shadow-ledger closure event will land through the very concat seam it hardened is a satisfying end-to-end proof of the migration claim, and it means the recurring post-merge integration debt from cycles 10 and 11 (roughly one worker-cycle each on shadow-ledger surgery) should now approach zero on ledger-drift shapes. The next fork's post-merge integration will be the ground-truth test of that reduction.
-
-Second, the M-RULES-1 breadth expansion is the campaign's cleanest example so far of a mechanical unlock that hits its named target and then honestly surfaces a residual finding. The cycle-11 audit named the `(salt 1, salt 4)` arrangement collision as *the* unlock; this range resolved that specific collision, and the report did not claim more than that. The overall salt-collision pair count dropped only from 5 to 4 despite the pool tripling, and three of the four post-expansion pairs involve salt = 4 — which strongly suggests something specific about salt = 4's hash-space geometry rather than a general pool-size effect. The report surfaces "structural diversity within a rule_type may matter more than raw pool size" as a hypothesis to test in a future cycle rather than tuning the collision count down. This is the falsifiability discipline paying off in the exact case it was designed for: the mechanical target hits, the mechanism the audit named is closed, and the residual is *not* forced into an artificially clean number.
-
-Third, clone 2's split verdict on the two M-DAW-SPIKE-1 gaps is worth preserving as a canonical example of the three-way outcome distinction the campaign relies on: GREEN (the primary path works within a documented tolerance to a target), still-GAP (the fallback was exercised end-to-end and did not achieve the target, with a specific diagnosis of why), and redefined-GAP (the primary path was actually reachable via a different mechanism than originally documented, and the numeric fidelity of that mechanism is measured against the target). GAP-1's redefined-GAP produces perfect fidelity (`env_correlation = 1.000`, `peak_ratio_db = 0.00 dB`); GAP-2's still-GAP produces a *sharper* diagnosis (the automation-non-delivery is broader than VST3-scoped) rather than a claim of closure. Two very different kinds of research outcome, both honestly delivered.
-
-The uncalibrated CORN head remains the campaign's biggest open credibility gap. The `ear.calibration = "synthetic_labels_only"` sentinel prevents any M-GEN-1 pass's rating from being read as a musical judgment, and the M-INGEST-1/egress-ready-automation state machine will fire the retraining pipeline unattended the moment two consecutive fresh `media_ok=true` rows land. Nothing in this range changes that; nothing in this range needed to.
-
-## Open Questions
-
-- **Cycle-13 batch-v2 rerun on the 76-row ledger.** The live salt = 0 selection will change for melodic / form / arrangement on the expanded ledger; cycle-11 batch-v1 anchors remain pinned in a saved `sampling_manifest.json` and §23 of the cross-branch integration test still passes reading that JSON. The next cycle must expect and document this — it is not a bug.
-- **Salt = 4 over-representation.** Three of four post-expansion collision pairs involve salt = 4. Probe with salts 5..9 on the 76-row ledger to distinguish hash-space geometry for small-N pools from a salt-4-specific effect. Roughly 250 sample cells to characterise (5 rule_types × 5 additional salts × ~10 candidates each).
-- **Structural-diversity bottleneck hypothesis.** The 3× pool growth produced only a ~20 % collision-rate reduction; a non-F_major seed with different instrumentation would test the structural-diversity mechanism cheaply.
-- **`M-RULES-1/extraction: provenance 28/76 resolvable`** repair. Pre-existing FAIL surfaced by clone 1's audit; traces to the cycle-12 breadth expansion's provenance-resolution surface. Small cheap repair; queued.
-- **Retire `_repair_and_emit_*` direct-append callers** so concat, emit, and check are the only three ways a row enters the ledger.
-- **Tighten manually-set `event_id` against content-hash mismatch** — a row whose `event_id` does not derive from its own content is currently accepted at concat; catching that is the next legibility win.
-- **Multi-fork parallel concat race.** Atomic `os.replace` protects the write, but two concurrent concat calls on the same workspace with disjoint fork directories have no cross-lock; low priority, no known live occurrence.
-- **Pre-flight brief-linter** that resolves every named seam in a research brief against the actual module tree (recurring cycles-10/11/12 lesson: clone 1's brief pointed at `long_exposure.tools.fanout._concat_clone_ledgers`, actual seam was `long_exposure.workspace_bootstrap.concat_clone_ledgers`).
-- **GAP-2 fallback #1** on M-DAW-SPIKE-1 — read `libs/ardour/plugin_insert.cc` for the missing Lua-side automation-arming call. Left open by clone 2.
-- **`ardour_region_xml.py` extraction** — the audio-region XML fragment in `gap_closure_midi_import.py` is stable enough to promote to `scripts/daw_spike/ardour_region_xml.py` when a second call-site needs it.
-- **DawDreamer plugin catalog expansion** — with the torchvision workaround live, breadth-probing Dragonfly / MVerb / LSP LV2 reverbs could seed an M-GEN-1/batch-v2+ effects chain disjoint from the cycle-9 pinned chain.
-- **CORN-head calibration** — still blocked on rated audio; will fire unattended through M-INGEST-1/egress-ready-automation.
-
-## Appendix: Provenance
-
-**Cycle range:** cycles 13-15.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:** cycle 13 researcher `a235a90e-2f14-4196-999d-2da2848f36b3`; cycle 14 worker `635e473a-32ac-4f27-9497-6ad6d680251f`; cycle 15 researcher `036d68ca-b9cd-4d43-af0e-0b81620fb08c`.
-
-**Sub-agent transcripts (fork `ed041ef4c1dc` clones).**
-
-- Clone 0 (M-RULES-1/breadth-expansion): researcher `fda6bcdf-ffb1-46be-bd7c-f2c98d2f43c1`, worker `850df679-dc12-4fa2-929a-e77aabe88691`, auditor `f58047a6-cd08-491a-9388-e3da70488aca`. Auditor decision COMPLETE; sub-milestone closes at `validated/high`.
-- Clone 1 (`_infra/fanout-concat-hardening`): researcher `b1a99d47-7d78-4c5c-b3df-4532291a64fc`, worker `2703c070-3f84-4339-928e-596684aef14a`, auditor `4bba1416-da3b-4976-9e82-7ff95e786e36`. Auditor decision VALIDATED; sub-milestone closes at `validated/high`.
-- Clone 2 (M-DAW-SPIKE-1/gap-closure): sub-milestone closes at `validated/medium`; parent M-DAW-SPIKE-1 remains `validated/high`.
-
-**Deliverables on disk at cycle-15 exit.**
-
-- Clone 0: `scripts/rules/extract/breadth_seeds.py` + `_common.py` extended (schema untouched); `data/rules/ledger.jsonl` 28 → 76 rows; `data/rules/breadth_expansion_summary.json`; `data/rules/salt_collision_before_after.tsv`; `docs/figures/rules_extraction_breadth_growth.png`; `docs/rules_extraction_breadth_report.md` (315 lines).
-- Clone 1: seam tightening in `long_exposure/workspace_bootstrap.py`; `LedgerConcatError` and `content_hash_tiebreak` added to `long_exposure/tools/_ledger_schema.py`; `tests/test_fanout_concat_validation.py` (341 lines, 10 cases, `_LE_PARENT` shim); §24 of the cross-branch integration test; `docs/fanout_concat_hardening.md` (185 lines, 7 sections).
-- Clone 2: `scripts/daw_spike/` (new directory, 6 files); `data/daw_spike/{coverage_matrix_v2.json, gap1_midi_import_measurement.json, gap2_lv2_measurement.json, gap_closure_lv2_render.wav, gap_closure_lv2_state.json, gap_closure_midi_prerender.wav, gap_closure_midi_render.wav, sessions/gap_closure_{lv2,midi}/…}`; `docs/daw_spike_gap_closure_report.md`; `docs/figures/daw_spike_coverage_v2.png`.
-
-**Load-bearing SHAs at cycle-15 exit.**
-
-```
-head -28 data/rules/ledger.jsonl | sha256sum
-→ 4fe722adde034c099ff9e65437f0d5c138cb3dd2595089960150af5c2546fc4b   (cycle-9 anchor, preserved)
-
-sha256 data/rules/ledger.jsonl
-→ a6fd53e9bf9a10f6885888b0bb7d11a9a2aa97007e38ef0e6d47f4ef7d2857ae   (post-expansion 76 rows)
-```
-
-**Ledger routing.** Clone 0 emitted 8 shadow events (plan-registration, kickoff, per-seed × 2, parent closure, integration-test extension, archive, `_run/clone-0-scope-complete`); clone 1 emitted 6 shadow events; clone 2 emitted 5 shadow events. Post-integration, `promise_check` reports 228 rows total, 0 ERRORs, 26 pre-existing WARNs unchanged, with one MINOR orphan-artifact WARN on `tests/test_fanout_concat_validation.py` that clears automatically when the fork conductor collapses the shadow ledger via clone 1's own tightened concat (dogfood proof).
-
-**Public API preserved.** `inspect.signature(concat_clone_ledgers)` → `(workspace: Path, fork_dir: Path) -> int` byte-for-byte with cycles 1–11.
-
-**SSoT identity verified live.** `promise_check.REQUIRED_EVENT_FIELDS is _ledger_schema.REQUIRED_EVENT_FIELDS` → True (emit + check + concat now consume the same module).
-
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`; Ardour 8.x for the M-DAW-SPIKE-1 GAP-closure attempts (with the recorded caveat that session-cleanup SIGABRT is intermittent but the render WAV bytes are always committed before cleanup, so post-merge validators should not gate on `ardour8-export` returncode alone). Single-thread BLAS pins throughout.
-
-**Rated audio.** Still egress-blocked per `corpus/CORPUS_STATUS.md`. `M-INGEST-1/egress-ready-automation` state machine remains `IDLE`; runtime state files correctly absent until the first live trigger. Not this range's problem; the machine is pre-wired.
-
-**Handoff to next cycle.** The queued natural next steps are the salt = 4 probe (salts 5..9 on the 76-row ledger), the structural-diversity axis test (a non-F_major seed), the `M-RULES-1/extraction: provenance 28/76 resolvable` repair, and the `_repair_and_emit_*` retirement. Anything requiring rated audio is a straight-line consequence of the egress-ready state machine firing.
+- Cycle-14 guitar stage-2 top-1 → `guitar.json` (SHA `5e6220ad…`) → `guitar.replay_proof.json` (canonical replay SHA `e2fee72dfa6b408e…`) → `guitar_family_verdict.json` (`SF2_RULED_OUT`).
+- Cycle-15 family-2 render → `guitar_family2_render/render.wav` (SHA `f41560714a68415c…`) → `guitar_family2_v1.json` → `guitar_family2_v1.replay_proof.json` → `guitar_family2_verdict.json` (`FAMILY2_RULED_OUT`).
+- Cycle-15 guitar arc closeout → `_manager/M-V4-SHOWCASE-1-cg-guitar-acceptance-policy.json` (three options, `status = resolved_via_agent_picks_invariants`) → `cg_guitar_pinned_profile.json` (OPT3 delivery pin, `supersedes_path` = the acceptance-policy JSON).
+- Cycle-14 drums fork revise → `cg_drums_pinned_profile.json` (OPT3) → `deliver_cg_ab_v4.py --smoke-test` transitions `n_missing` from 4 (cycle 9) through intermediate values to 0 at cycle-15 close.
