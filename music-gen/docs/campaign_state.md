@@ -1,6 +1,6 @@
 ---
-created: 2026-09-04T04:35:00Z
-cycle: 18
+created: 2026-09-04T05:20:00Z
+cycle: 19
 run_id: run-2026-08-28T040704Z
 agent: worker
 milestone: _run/state
@@ -8,32 +8,32 @@ milestone: _run/state
 
 # Music-Gen v4 closure campaign — state snapshot
 
-Refreshed at c18. Ceremony docs like this live next to the on-disk
+Refreshed at c19. Ceremony docs like this live next to the on-disk
 artifacts they summarize; the promise ledger is authoritative for
 per-milestone status.
 
-## Focus songs (5)
+## Focus songs (5) — skeleton coverage 5/5
 
 | SHA-16              | Title                | Section        | v4 status           |
 |:--------------------|:---------------------|:---------------|:--------------------|
-| `31a164f845f8e27e`  | Chicken Grease       | 233.64..263.64 | **SHOWCASE render LANDS_pending_operator** (c17); test-anchored c18 |
+| `31a164f845f8e27e`  | Chicken Grease       | 233.64..263.64 | **SHOWCASE render LANDS_pending_operator** (c17); test-anchored c18; LUFS c18; LUFS test-anchored c19 |
 | `252eb21ce7df7328`  | What If I Go (WIG)   | 72.77..102.77  | stem manifest opened c17; blocked on M-V4-METRIC-SEMANTICS-c16 |
 | `51e433ade2a845e1`  | Rome                 | 62.74..92.74   | stem manifest opened c18; blocked on M-V4-METRIC-SEMANTICS-c16 |
-| `88d247468cb6d49f`  | Peach Dream          | 172.87..202.87 | not yet opened; scheduled for c19+ |
-| `cdd2717e52820ff6`  | Disco A              | 21.92..51.92   | not yet opened; scheduled for c19+ |
+| `cdd2717e52820ff6`  | Disco A              | 21.92..51.92   | stem manifest opened c19; blocked on M-V4-METRIC-SEMANTICS-c16 |
+| `88d247468cb6d49f`  | Peach Dream          | 172.87..202.87 | stem manifest opened c19 (non-standard path via c25-checkpointed run; invariant (d) disclosed); blocked on M-V4-METRIC-SEMANTICS-c16 |
 
 ## Milestones
 
 | Milestone                | Status                            | Notes |
 |:-------------------------|:----------------------------------|:------|
 | M-V4-CERT-1              | validated/high (E2E holds 2026-09-03) | env_pin_sha256 `623df01f…` |
-| M-V4-PROFILES-1          | in-progress (CG cells terminal; WIG + Rome skeletons open) | 3 remaining songs |
-| M-V4-SHOWCASE-1          | **LANDS_pending_operator (rendered + regression-tested)** | cg_ab_mix.wav SHA `6e13e007…f9484b`; 12/12 c18 tests green |
-| M-V4-RULES-1             | schema v1 + validator + rationale doc landed | permissive per invariants (d)+(e) |
+| M-V4-PROFILES-1          | in-progress (5/5 focus-song skeletons opened; CG cells terminal) | stage-1 sweeps for WIG/Rome/Disco A/Peach Dream blocked on Track 2 metric-semantics |
+| M-V4-SHOWCASE-1          | **LANDS_pending_operator (rendered + regression-tested)** | cg_ab_mix.wav SHA `6e13e007…f9484b`; 12/12 c18 tests green; LUFS diagnostic 7/7 c19 tests green |
+| M-V4-RULES-1             | schema v1 + validator + rationale doc landed | permissive per invariants (d)+(e); scaffold deferred from c19 → c20 |
 | M-V4-EAR-1               | not started                       | exemplar-based per operator simplification 2026-09-03 |
 | M-V4-GEN-1               | not started                       | opens on M-V4-RULES + M-V4-EAR lands |
 | M-V4-CLOSE-1             | not started                       | opens on M-V4-GEN lands |
-| _manager/M-V4-METRIC-SEMANTICS-c16 | blocked_on_operator (unchanged) | Path A vs Path B; c18 does not adjudicate |
+| _manager/M-V4-METRIC-SEMANTICS-c16 | blocked_on_operator (unchanged) | Path A vs Path B; c17/c18/c19 do not adjudicate |
 
 ## Chicken Grease (mandatory focus) — instrument cells
 
