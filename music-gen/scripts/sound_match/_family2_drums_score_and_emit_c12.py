@@ -62,8 +62,8 @@ _REF_STEM = (
 )
 _MIDI = (
     _WORKSPACE
-    / "data/v3/deliveries/31a164f845f8e27e/"
-    / "cert_run1/operator_section/per_track/drums.mid"
+    / "data/v4/profiles/31a164f845f8e27e/"
+    / "drums_sweep_stage1/drums_excerpt.mid"
 )
 _MAIN_RENDER = _PROFILE_DIR / "drums_family2_render" / "render.wav"
 
@@ -180,8 +180,7 @@ def score_family2(render_sha_expected: str) -> dict:
     if actual_sha != render_sha_expected:
         raise SystemExit(
             f"render sha mismatch: {actual_sha} != {render_sha_expected}")
-    computer = objmod.ObjectiveComputer(ref_wav=str(_REF_STEM))
-    return computer.score(str(_MAIN_RENDER))
+    return objmod.score_pair(_MAIN_RENDER, _REF_STEM)
 
 
 def build_verdict(scoring: dict, profile: dict, proof: dict) -> dict:

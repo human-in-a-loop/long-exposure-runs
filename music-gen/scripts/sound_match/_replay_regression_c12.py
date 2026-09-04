@@ -43,10 +43,25 @@ _ENV_PINS = {
 }
 
 # c11 pinned anchors that must reproduce byte-identically.
+#
+# NOTE (c12 discrepancy): the c11-summary-and-c12-brief pinned drums
+# anchor `dadafcfc0153f00269e00e9d5d5fee8fe0b5da2f13cc6dc23a55fe80f2fe64c8`
+# is a TRANSCRIPTION ERROR (matches the actual on-disk anchor for the
+# first 16 hex chars `dadafcfc0153f002` then diverges).  The canonical
+# c11 anchor on disk in `data/v4/profiles/31a164f845f8e27e/drums.
+# replay_proof.json` is
+# `dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c`.
+# `data/v4/profiles/31a164f845f8e27e/drums.json` carries the same value
+# in `render_sha256_canonical_replay`.  We anchor to the on-disk value
+# per Fixed Decision 1 (no fabrication of anchors); the brief's value
+# is preserved verbatim below for the audit trail.
 _BASS_V2_ANCHOR = (
     "832868d0ea8a81cab2569e60445f80d516d1b5bb958b1b8b0c2e996bdb3aeac5"
 )
 _DRUMS_ANCHOR = (
+    "dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c"
+)
+_DRUMS_ANCHOR_BRIEF_TRANSCRIPTION = (
     "dadafcfc0153f00269e00e9d5d5fee8fe0b5da2f13cc6dc23a55fe80f2fe64c8"
 )
 
@@ -143,10 +158,16 @@ def main() -> int:
             raise SystemExit(f"midi_path missing in {pjson}")
         return _WORKSPACE / mp if not Path(mp).is_absolute() else Path(mp)
 
+    # bass midi from proof (present); drums midi from profile provenance
+    # (the drums replay-proof did not pin a midi_path field, per c11).
     bass_midi = _midi_from_proof(
         _PROFILE_DIR / "bass_v2.replay_proof.json")
-    drums_midi = _midi_from_proof(
-        _PROFILE_DIR / "drums.replay_proof.json")
+    with open(_PROFILE_DIR / "drums.json") as f:
+        _drums_profile_dict = json.load(f)
+    drums_midi = Path(
+        _drums_profile_dict["provenance"]["drums_midi_source"]["path"])
+    if not drums_midi.is_absolute():
+        drums_midi = _WORKSPACE / drums_midi
 
     results = [
         _verify_anchor(bass_v2_profile, bass_midi,
@@ -174,6 +195,21 @@ def main() -> int:
         "env_pin_sha256": env_pin_sha,
         "results": results,
         "verdict": verdict,
+        "brief_anchor_discrepancy_note": {
+            "instrument": "drums",
+            "brief_anchor_sha256": _DRUMS_ANCHOR_BRIEF_TRANSCRIPTION,
+            "on_disk_anchor_sha256_source":
+                "data/v4/profiles/31a164f845f8e27e/drums.replay_proof.json",
+            "on_disk_anchor_sha256": _DRUMS_ANCHOR,
+            "shared_prefix_len_hex_chars": 16,
+            "note": (
+                "The c12 research brief and c11 session-summary pinned "
+                "the drums anchor with a wrong tail (first 16 hex "
+                "chars match, remainder differs).  The on-disk c11 "
+                "replay proof carries the true anchor; that is the "
+                "authoritative value re-verified here."
+            ),
+        },
     }
 
     _OUT_JSON.parent.mkdir(parents=True, exist_ok=True)

@@ -232,8 +232,8 @@ def main() -> int:
     )
     midi = (
         _WORKSPACE
-        / "data/v3/deliveries/31a164f845f8e27e/"
-        / "cert_run1/operator_section/per_track/drums.mid"
+        / "data/v4/profiles/31a164f845f8e27e/"
+        / "drums_sweep_stage1/drums_excerpt.mid"
     )
     out_dir = (
         _WORKSPACE
