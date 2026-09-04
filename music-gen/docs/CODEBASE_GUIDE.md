@@ -33,11 +33,15 @@ per-song facts belong in data files.
   section selection rc8, htdemucs_6s driver rc9, gold set rc10).
 - `scripts/separation/`, `scripts/ingest/`, `scripts/score*/` — spine
   support (demucs is the SYSTEM binary `/usr/local/bin/demucs`).
-- Satellites: `scripts/v3_rules` + `scripts/rules_rated_corpus` (rules),
-  `scripts/ear` + `scripts/ear_v2p1` (ear, audio-only), `scripts/gen`
-  (generator), `scripts/palette` + `scripts/palette_render_v4` +
-  `scripts/daw` + `scripts/dawdreamer_state` (palette/DAW),
-  `scripts/vst3_nondeterminism` (Surge nondeterminism evidence).
+- Satellites: `scripts/v3_rules` + `scripts/rules_rated_corpus` (rules v3),
+  `scripts/v4_rules` (rules v4 — Model A statistical + Model B CA/VOMM),
+  `scripts/ear` + `scripts/ear_v2p1` (ear v3, audio-only),
+  `scripts/v4_ear` (ear v4 — lightweight VGGish/CLAP exemplar ear),
+  `scripts/gen` (generator v3), `scripts/v4_gen` (generator v4 — seeded
+  hash-driven deterministic MIDI generator + interpolation-hybrid mode),
+  `scripts/palette` + `scripts/palette_render_v4` + `scripts/daw` +
+  `scripts/dawdreamer_state` (palette/DAW), `scripts/vst3_nondeterminism`
+  (Surge nondeterminism evidence).
 - `workspace/` — venv (`learned_transcribers_venv`: MuScriptor, torch,
   librosa), `models/muscriptor-medium/` (weights + SHA receipts),
   provisioning receipts, `smoke_test.py`.
@@ -51,6 +55,16 @@ per-song facts belong in data files.
 - `data/v4/profiles/` — per-instrument sound profiles (see architecture
   doc; the search that produces them may be stochastic, the profile and
   its replay must be deterministic).
+- `data/v4/rules/` — M-V4-RULES-1 artifacts (Model A `statistical_model.json`,
+  Model B `sequence_model.json`, v3-shape `rules_artifact.jsonl`, audio
+  descriptors, CA retention summary, replay proof).
+- `data/v4/ear/` — M-V4-EAR-1 artifacts (`ear_scores.json`, exemplar
+  and band-4 embedding NPZs, replay proof).
+- `data/v4/generated/` — M-V4-GEN-1 outputs (per-song `merged.mid` +
+  `song.wav` + manifest; `batch_full/batch_report.json` summarises the
+  stall-rule iteration; `hybrid_cg_x_pd/` is the interpolation-hybrid demo).
+- `docs/v4_closure_completion_report.md` — the c21 completion report,
+  every deliverable indexed, gaps disclosed, certificate status recorded.
 
 ## Conventions that keep this tree clean
 - Improve modules IN PLACE (git history is the version ladder); never

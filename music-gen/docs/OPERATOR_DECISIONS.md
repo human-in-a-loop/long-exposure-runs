@@ -111,6 +111,20 @@ one, the earlier entry says so.
     (f) Ear exemplar sanity is ≥4 of 5 exemplars ≥6 with none below 5.5.
     IN FORCE.
 
+17. **v4 closure run completes** (2026-09-04 c21): all six closure
+    milestones reach terminal state per campaign prompt. M-V4-RULES-1
+    substantive (Model A statistical + Model B CA/VOMM, 97 rules across
+    5 categories, 5 songs, byte-det ×2 HOLDS), M-V4-EAR-1 lightweight
+    VGGish exemplar ear (CLAP unavailable — recorded substitution;
+    sanity bar met 5/5 exemplars ≥6 LOO), M-V4-GEN-1 stall rule fired
+    at 8 iterations with 3 passers of the 5 target (best 5 delivered +
+    honest gap analysis) plus interpolation-hybrid demo. Two milestones
+    LANDS with honest gaps: M-V4-PROFILES-1 4 non-CG songs blocked_on
+    `_manager/M-V4-METRIC-SEMANTICS-c16` operator-authority escalation;
+    M-V4-GEN-1 3-of-5 passers not 5-of-5. No cycle idled on operator.
+    Completion report: `docs/v4_closure_completion_report.md`. Run
+    ended cleanly per M-V4-CLOSE-1 directive.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.
