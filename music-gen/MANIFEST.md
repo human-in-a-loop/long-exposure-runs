@@ -1,13 +1,14 @@
 # Music-Gen v4 closure campaign — MANIFEST
 
-Snapshot at cycle-9 close. Scope: files produced or extended during
-cycles 1–9 of the v4 closure campaign (Chicken Grease bass
+Snapshot at cycle-12 close. Scope: files produced or extended during
+cycles 1–12 of the v4 closure campaign (Chicken Grease bass
 sound-matching sub-milestone closed under operator OPT1+OPT3
-acceptance; Chicken Grease drums arc scaffolded to launch-ready;
-`M-V4-SHOWCASE-1` A/B render scaffold in place with `n_missing = 4`;
-plus the determinism-certificate check). Prior v3-arc anchors are
-read-only and are not re-inventoried here; the cycles reports §A.1
-and §A.4 list them explicitly.
+acceptance; Chicken Grease drums arc fully closed with both render
+families ruled out and a three-option acceptance policy escalated to
+operator; `M-V4-SHOWCASE-1` A/B render scaffold in place with
+`n_missing = 4`; plus the determinism-certificate check). Prior v3-arc
+anchors are read-only and are not re-inventoried here; the cycles
+reports §A.1 and §A.4 list them explicitly.
 
 ## Scripts (cycles 1–3 delta)
 
@@ -40,10 +41,25 @@ Cycles 7–9 delta in `scripts/sound_match/`:
 
 | file | cycle | purpose |
 |---|---|---|
-| `coarse_sweep_sf2_drums.py` | 9 | drums coarse-sweep sibling (15 471 B); dry-run PASS, detached launch halted by disk-check false positive — cycle-10 fix scope |
+| `coarse_sweep_sf2_drums.py` | 9, patched 10 | drums coarse-sweep sibling (446 lines); dry-run PASS at cycle 9, `_disk_ok()` patched to absolute-budget check at cycle 10, launched detached under canonical env-pin |
 | `deliver_cg_ab_v4.py` | 9 | Chicken Grease A/B render scaffold (5402 B); smoke test only, no render (`n_missing = 4`) |
 
-Cycle-1 anchor `coarse_sweep_sf2.py` (SHA `c74c35bc…`) verified byte-identical through cycle 9.
+Cycles 10–12 delta in `scripts/sound_match/`:
+
+| file | cycle | purpose |
+|---|---|---|
+| `_launch_cg_drums_sweep_c10.sh` | 10 | detached launcher for the cycle-10 drums coarse sweep |
+| `fine_fit_sf2_drums.py` | 11 | 216-cell drums fine-fit (679 lines); channel-10 aware, LUFS-normalised, drums-family sibling to `fine_fit_sf2_v2.py` |
+| `_launch_cg_drums_stage2_c11.sh` | 11 | detached launcher for the cycle-11 drums stage-2 fine-fit |
+| `replay.py` | 11 patched in place | channel-aware `_replay_sf2` extension (L79–93); bass regression byte-identical (`832868d0…`) since bass MIDI is channel-0 only; drums-channel-10 render becomes replayable (`dadafcfc…64b8d7c`). Post-patch SHA `1f43027039c45f5e066c…` |
+| `family2_stem_sampled_drums_spike.py` | 12 | family-2 drums shape probe (144 lines); band-energy onset classifier; spike verdict `VIABLE` |
+| `family2_stem_sampled_drums_builder.py` | 12 | family-2 drums builder (271 lines); MIDI-pitch → sample-class dispatch (kick p36, snare p38, hihat p42/44/46) |
+| `_family2_drums_score_and_emit_c12.py` | 12 | scoring + `drums_family2_v1.json` + replay-proof + verdict emitter |
+| `_family2_drums_closeout_and_escalation_c12.py` | 12 | arc-closeout + manager-escalation emitter |
+| `_replay_regression_c12.py` | 12 | independent Track-1 replay-regression harness (bass_v2 + drums), two runs into fresh tempdirs, from-fresh-subprocess |
+| `_emit_c12_ledger_events.py` | 12 | ledger-event emitter for the cycle-12 milestone slate |
+
+Cycle-1 anchor `coarse_sweep_sf2.py` (SHA `c74c35bc…`) verified byte-identical through cycle 12.
 
 Other files in `scripts/sound_match/` (`objective.py`,
 `replay_proof.py`, `deliver_ab.py`) are prior-arc anchors used
@@ -58,6 +74,15 @@ unchanged through cycle 9.
 | `tests/test_sound_match_profile_writer_v2.py` | 5 | cycle-3 auditor re-run, 5/5 pass; asserts byte-identical replay of cycle-2 profile SHA `11747a42cb1a8f7f…` under extended writer signature |
 
 Test totals for v2 suites at cycle-3 close: 19 of 19 passing.
+
+Cycles 10–12 test delta:
+
+| file | cycle | purpose |
+|---|---|---|
+| `tests/test_coarse_sweep_disk_check.py` | 10 | pins the absolute-budget `_disk_ok()` formula and asserts the c9 false-positive regression |
+| `tests/test_rc10_drums_bass.py` | 10 | drums+bass regression cross-check under channel-aware replay |
+| `tests/test_rc10_drums_v2.py` | 10 | drums-family stage-2 leaderboard structural test |
+| `tests/test_verdict_sha_fields_resolve_on_disk.py` | 12 | asserts every SHA field embedded in a verdict/manifest resolves to a byte-identical on-disk artefact |
 
 ## Data artefacts (cycles 1–3)
 
@@ -138,10 +163,30 @@ Cycles 7–9 data-artefact delta:
 - Family verdicts: 2 — sf2 `STILL_INDETERMINATE` (cycle 4, READ-ONLY thereafter), family-2 `FAMILY2_RULED_OUT` (cycle 6).
 - Foundational unblock: the cycle-6 `replay.py` L79–93 fix converts the SoundFont render family from "cannot ship replay proofs" to "can ship replay proofs on every song and instrument" for the remaining 24 profile cells.
 
-## Downstream state at cycle-9 close
+Cycles 10–12 data-artefact delta under `data/v4/profiles/31a164f845f8e27e/`:
+
+| file | cycle | notes |
+|---|---|---|
+| `drums_sweep_stage1/leaderboard.tsv` | 10 | 15-preset drums coarse-sweep leaderboard, SHA `dd5544d3bd3a549cab95…` |
+| `drums_sweep_stage1/drums_excerpt.mid` | 10 | drums MIDI (channel 10, 186 note-on events), SHA `0fd71ce70a26365c2acf…` |
+| `drums_sweep_stage2/leaderboard.tsv` | 11 | 216-cell drums stage-2 leaderboard, SHA `81a441732f7f7d1da615…`, spread 176.7% |
+| `drums.json` | 11 | drums profile, UUID `83728154-6f48-5c5d-a558-b4d82523ac1b`, program 16 Power Kit, gain 1.0, reverb 0.7, `post=EQ_only`, `embedding_cos_vggish = 0.2374`, canonical replay SHA `dadafcfc…64b8d7c` |
+| `drums.replay_proof.json` | 11 | run1 = run2 = `dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c`; embeds `bass_regression_check` PASS proving the c11 channel-aware `_replay_sf2` extension leaves bass byte-identity intact |
+| `drums_family_verdict.json` | 11 | **`SF2_RULED_OUT`**, `top1_embedding_cos_vggish = 0.2374 ≤ 0.40`; `max_embedding_cos_across_216_cells = 0.4645` (program 48 Orchestra Kit, composite rank 76) |
+| `drums_family2_spike_c12.json` | 12 | family-2 shape-probe verdict `VIABLE`; 147 onsets, class distribution kick 93 / snare 0 / hihat 53 |
+| `drums_family2_v1.json` | 12 | family-2 profile, UUID `13aeeea0-934e-5b4c-9a7a-e69e1c0e5fc4`, canonical replay SHA `69a76c5b4498972d1cb878da94e645c8c341675b113cc4ca315435f6bb16ca00` |
+| `drums_family2.replay_proof.json` | 12 | run1 = run2 = `69a76c5b…16ca00`; per FD-16(c) this covers the family-2 code path for all future CG drums profiles |
+| `drums_family2_render/render.wav` | 12 | family-2 concatenative render, 2 678 664 B, SHA `69a76c5b…` |
+| `drums_family2_verdict.json` | 12 | **`FAMILY2_RULED_OUT`**, `embedding_cos_vggish = 0.0372`; composite 618.16, mel_l1 13.41 dB, spectral-centroid RMSE 2442 Hz |
+| `drums_arc_closeout.json` | 12 | verdict `CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`; parallels `bass_arc_closeout.json` shape; carries `cross_song_parallel_findings` + `systematic_finding` blocks |
+| `_manager_M-V4-SHOWCASE-1-cg-drums-acceptance-policy.json` | 12 | `action_required = true`, `authority = OPERATOR`, three named options (OPT1 composite-relative WINNER extension of the bass_v2 precedent; OPT2 embedding-first tiebreak to program 48 Orchestra Kit; OPT3 refuse drums showcase and deliver A/B without drums recreation); `unilateral_action_taken_this_cycle = NONE` |
+| `_replay_regression_c12.json` | 12 | independent from-fresh-subprocess Track-1 verdict `REPLAY_REGRESSION_HOLDS`; bass_v2 and drums anchors both byte-identical run1 = run2 = anchor; discloses a brief-vs-on-disk drums-anchor tail discrepancy caught in-cycle |
+| `_c12_track3_summary.json`, `_c12_track4_summary.json` | 12 | per-track sub-milestone summaries |
+
+## Downstream state at cycle-12 close
 
 - cg-bass arc closed under operator OPT1+OPT3 hybrid acceptance; `bass_v2.json` (program 33, embedding-cosine 0.4946) is the pinned Chicken Grease bass profile. The 0.60 CONFIRMED threshold is retired for this one acceptance; the 0.40 RULED_OUT floor is retained for future family verdicts.
-- cg-drums arc scaffolded to launch-ready; detached sweep deferred one cycle by a `_disk_ok()` false positive (statvfs vs df: 97.39% vs 82.24% used on a volume with 6.6 GB free against a 500 MB budget) — cycle-10 patch scope.
-- `M-V4-SHOWCASE-1` unblocked in principle; A/B render scaffold (`deliver_cg_ab_v4.py`) reports `n_missing = 4` (drums, piano, guitar, other). Full render fires when the four remaining Chicken Grease instrument profiles land.
-- v4 wait-on-operator heartbeat cadence formally retired at cycle 9 after a single cycle of operational use (cycle 8).
-- Cycle-10 scope: fix `_disk_ok()`, launch drums sweep detached under canonical 7-key env-pin, then rotate through cg-piano/keys, cg-guitar, cg-other at one instrument per cycle.
+- cg-drums arc fully closed at cycle 12 as `CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED`. Both frozen render families are ruled out: SoundFont top-1 (Power Kit, embedding-cosine 0.2374) and family-2 stem-sampled (embedding-cosine 0.0372) both sit below the 0.40 retained honesty floor. A three-option acceptance policy has been escalated to operator authority in `_manager_M-V4-SHOWCASE-1-cg-drums-acceptance-policy.json`; no unilateral OPT1 extension was taken because the c9 threshold retirement is scoped to Chicken Grease bass only.
+- The cycle-11 `replay.py` channel-aware fix has been independently re-verified at cycle 12 from a fresh Python subprocess; both bass_v2 (`832868d0…aeac5`) and drums (`dadafcfc…64b8d7c`) anchors reproduce byte-identical over two runs.
+- `M-V4-SHOWCASE-1` gate: 2 of 5 CG instruments have terminal verdicts (bass accepted; drums arc-exhausted, awaiting operator drums-acceptance decision). Piano, guitar, and other-residual remain pending.
+- Cycle-13 scope: register the drums acceptance-policy outcome (either operator directive on arrival or agent-elected option under the c9 banned-heartbeat rule), open the cg-piano SoundFont coarse sweep, and back-fill accumulated test debt for the family-2 drums render path.
