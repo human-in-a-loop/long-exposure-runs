@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://music-gen/v4/pinned_profile_v1.json",
+  "title": "v4 pinned-profile manifest v1",
+  "description": "Codifies the c14/c16-canonical shape enforced by agent-picks invariant (e). Schema is permissive of observed cross-cycle drift documented under invariant (d): (a) c9 bass_v2 uses 'operator_authority' rather than 'authority' in acceptance_fork; (b) c14 drums / c15 guitar use a nested object for 'chosen' rather than a plain string; (c) c15 guitar lacks top-level manifest_schema_version/agent/env_pin — these are RECOMMENDED but not required, so the schema validates what actually landed on disk. Schema still enforces: (i) required top-level identity fields; (ii) acceptance_fork presence with chosen + rejected + one-of {authority, operator_authority}; (iii) supersedes_path is str or null (c14 lemma), never list.",
+  "type": "object",
+  "required": ["manifest_kind", "song_sha16", "instrument", "cycle", "run_id", "created", "acceptance_fork"],
+  "properties": {
+    "manifest_kind": {"type": "string", "pattern": "^cg_[a-z_]+_pinned_profile$"},
+    "manifest_schema_version": {"type": "string", "enum": ["v4.0"]},
+    "song_sha16": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
+    "instrument": {"type": "string", "enum": ["bass", "drums", "guitar", "piano", "other", "vocals"]},
+    "cycle": {"type": "integer", "minimum": 1},
+    "run_id": {"type": "string"},
+    "created": {"type": "string"},
+    "agent": {"type": "string"},
+    "env_pin": {
+      "type": "object",
+      "required": ["env_pin_sha256", "keys", "values"],
+      "properties": {
+        "env_pin_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "keys": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 7
+        },
+        "values": {"type": "object"}
+      }
+    },
+    "acceptance_fork": {
+      "description": "Invariant (e) canonical shape. Cross-cycle observed variants: c14 has {chosen,rejected,authority,invariants_doc}; c15 has {chosen,rejected,authority}; c9 (grandfathered) has {chosen,rejected,operator_authority,rationale}. Schema requires chosen+rejected + one-of {authority, operator_authority}.",
+      "type": "object",
+      "required": ["chosen", "rejected"],
+      "anyOf": [
+        {"required": ["authority"]},
+        {"required": ["operator_authority"]}
+      ],
+      "properties": {
+        "chosen": {"type": ["string", "object"]},
+        "rejected": {"type": ["array", "string"]},
+        "authority": {"type": "string"},
+        "invariants_doc": {"type": "string"},
+        "operator_authority": {"type": "string"},
+        "rationale": {"type": "string"}
+      }
+    },
+    "supersedes_path": {
+      "description": "Per c14 lemma: str, not list. Nullable when no predecessor.",
+      "type": ["string", "null"]
+    },
+    "family_verdicts_pinned": {"type": "object"},
+    "acceptance_option": {"type": "string"},
+    "operator_veto_post_hoc": {"type": "boolean"},
+    "pinned_profile": {
+      "type": "object",
+      "properties": {
+        "profile_id": {"type": "string"},
+        "profile_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "relative_path": {"type": "string"},
+        "render_family": {"type": "string"}
+      }
+    },
+    "pinned_replay_proof": {
+      "type": "object",
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "relative_path": {"type": "string"}
+      }
+    }
+  }
+}
