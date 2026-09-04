@@ -1,14 +1,15 @@
 # Music-Gen v4 closure campaign — MANIFEST
 
-Snapshot at cycle-12 close. Scope: files produced or extended during
-cycles 1–12 of the v4 closure campaign (Chicken Grease bass
-sound-matching sub-milestone closed under operator OPT1+OPT3
-acceptance; Chicken Grease drums arc fully closed with both render
-families ruled out and a three-option acceptance policy escalated to
-operator; `M-V4-SHOWCASE-1` A/B render scaffold in place with
-`n_missing = 4`; plus the determinism-certificate check). Prior v3-arc
-anchors are read-only and are not re-inventoried here; the cycles
-reports §A.1 and §A.4 list them explicitly.
+Snapshot at cycle-15 close. Scope: files produced or extended during
+cycles 1–15 of the v4 closure campaign. As of cycle 15 all five
+Chicken Grease instrument cells reach a terminal state: bass accepted
+under the cycle-9 hybrid rule; drums, guitar refused-showcase (OPT3)
+under agent-picks selection invariants; piano and other-residual
+grounded as `NULL_MIDI_EMPTY_REFERENCE_INAUDIBLE`; vocals covered by
+the hybrid-overlay policy. `deliver_cg_ab_v4.py --smoke-test`
+reports `n_missing = 0` — the CG A/B render is now realizable end to
+end. Prior v3-arc anchors are read-only and are not re-inventoried
+here; the cycles reports §A.1 and §A.4 list them explicitly.
 
 ## Scripts (cycles 1–3 delta)
 
@@ -190,3 +191,69 @@ Cycles 10–12 data-artefact delta under `data/v4/profiles/31a164f845f8e27e/`:
 - The cycle-11 `replay.py` channel-aware fix has been independently re-verified at cycle 12 from a fresh Python subprocess; both bass_v2 (`832868d0…aeac5`) and drums (`dadafcfc…64b8d7c`) anchors reproduce byte-identical over two runs.
 - `M-V4-SHOWCASE-1` gate: 2 of 5 CG instruments have terminal verdicts (bass accepted; drums arc-exhausted, awaiting operator drums-acceptance decision). Piano, guitar, and other-residual remain pending.
 - Cycle-13 scope: register the drums acceptance-policy outcome (either operator directive on arrival or agent-elected option under the c9 banned-heartbeat rule), open the cg-piano SoundFont coarse sweep, and back-fill accumulated test debt for the family-2 drums render path.
+
+## Scripts (cycles 13–15 delta)
+
+### `scripts/sound_match/`
+
+| file | cycle | purpose |
+|---|---|---|
+| `coarse_sweep_sf2_guitar.py` | 13 | 15-preset guitar coarse-sweep sibling (channel 1, GM programs 24–31); consumes `guitar.mid` transcription |
+| `fine_fit_sf2_guitar.py` | 14 | 180-cell guitar stage-2 fine-fit; LUFS-normalised, channel 1 |
+| `_launch_cg_guitar_stage2_c14.sh` | 14 | detached launcher for the c14 guitar stage-2 fine-fit |
+| `_emit_c14_guitar_profile.py` | 14 | emits `guitar.json` + replay proof + SF2 family verdict |
+| `family2_stem_sampled_guitar_spike.py` | 15 | family-2 guitar shape probe; onset-slice bank builder |
+| `family2_stem_sampled_guitar_builder.py` | 15 | family-2 guitar builder; nearest-pitch dispatch + pyin pitch-shift (E1–E7) |
+| `_c15_family2_guitar_emit.py` | 15 | scoring + `guitar_family2_v1.json` + replay-proof + verdict emitter |
+| `measure_stem_audibility.py` | 14 | LUFS-I / RMS-dBFS audibility measurement helper (with silence-floor fallback) |
+| `_emit_c13_ledger_events.py`, `_emit_c14_ledger_events.py`, `_emit_c15_ledger_events.py` | 13/14/15 | per-cycle ledger-event emitters |
+
+## Tests (cycles 13–15 delta)
+
+| file | cycle | purpose |
+|---|---|---|
+| `tests/test_sound_match_family2_drums.py` | 14 | pins the c12 family-2 drums render SHA `69a76c5b…` and the c12 anchor script SHAs; encodes the interpreter-guard grandfathering contract |
+| (guitar family-2 spike/builder tests) | 15 | deferred by design; scheduled for cycle-16 alongside the embedding-metric diagnostic (see report §5) |
+
+## Data artefacts (cycles 13–15)
+
+Under `data/v4/profiles/31a164f845f8e27e/`:
+
+| file | cycle | notes |
+|---|---|---|
+| `guitar_sweep_stage1/leaderboard.tsv` | 13 | 15-preset guitar coarse-sweep leaderboard |
+| `guitar_sweep_stage2/leaderboard.tsv` | 14 | 180-cell guitar stage-2 leaderboard; source-of-truth GM program 27 best rank 84 |
+| `piano_null_finding.json` | 14 | grounded null (0 note_on + reference RMS −81.5 dBFS ≪ −60 silence floor); supersedes c13 ungrounded version archived under `stale/` |
+| `other_null_finding.json` | 14 | symmetric grounded null for other-residual (0 note_on + reference RMS −81.7 dBFS); closes c13 auditor MINOR #1 |
+| `audibility/piano_stem_audibility.json`, `audibility/other_stem_audibility.json` | 14 | audibility measurement sidecars |
+| `guitar.json` | 14 | SF2 profile, top-1 GM program 28 gain 1.5 reverb 0.7, `embedding_cos_vggish = 0.2584` |
+| `guitar.replay_proof.json` | 14 | canonical replay SHA `e2fee72dfa6b408e…`; `REPLAY_PROOF_HOLDS` |
+| `guitar_family_verdict.json` | 14 | **`SF2_RULED_OUT`**, 0.2584 < 0.40 floor |
+| `guitar_family2_v1.json` + `.replay_proof.json` | 15 | family-2 guitar profile UUID `a7c62e5e-…`; render SHA `f41560714a68415c…`; run1 = run2 |
+| `guitar_family2_render/render.wav` | 15 | family-2 concatenative guitar render |
+| `guitar_family2_verdict.json` | 15 | **`FAMILY2_RULED_OUT`**, `embedding_cos_vggish = 0.0354` |
+| `guitar_arc_closeout.json` | 15 | **`CG_GUITAR_ARC_EXHAUSTED_NO_CONFIRMED`**; parallels bass c7 and drums c12 |
+| `_manager/M-V4-SHOWCASE-1-cg-guitar-acceptance-policy.json` | 15 | three-option fork; `status = resolved_via_agent_picks_invariants` (OPT3) |
+| `_c15_guitar_family2_summary.json` | 15 | cycle-summary sidecar |
+
+Under `data/v4/deliveries/31a164f845f8e27e/`:
+
+| file | cycle | notes |
+|---|---|---|
+| `cg_drums_pinned_profile.json` | 14 | OPT3 pin: htdemucs drums stem substituted verbatim in showcase mix |
+| `cg_guitar_pinned_profile.json` | 15 | OPT3 pin: htdemucs guitar stem (`sha256 = e4ff08ea…`) substituted verbatim; `supersedes_path` string per invariant (d) |
+
+Under `docs/`:
+
+| file | cycle | notes |
+|---|---|---|
+| `agent_picks_selection_invariants.md` | 14 (a/b/c); 15 extends (d) | codifies the three (then four) invariants agents apply to anti-stall option-selection forks |
+| `interpreter_guard_policy.md` | 15 | canonical shebang policy for new sound-match scripts, with c12-anchor grandfathering contract |
+
+## Downstream state at cycle-15 close
+
+- **All 5 CG instrument cells terminal.** bass_v2 accepted (c9); drums OPT3 refuse-showcase (c14); guitar OPT3 refuse-showcase (c15); piano and other-residual grounded null (c14); vocals covered by hybrid-overlay policy. `deliver_cg_ab_v4.py --smoke-test` reports `n_missing = 0`.
+- **Systematic pattern surfaced.** Three consecutive CG arcs (bass c7, drums c12, guitar c15) exhausted both explored render families under the retained 0.40 emb-cos floor. On every SF2 stage-2 sweep the frozen composite ranks a non-source-of-truth program ahead of the ground-truth GM program (organ > bass; Power Kit > Standard; Nylon/Jazz > Rock).
+- **Latent correctness concern outstanding.** The c15 auditor surfaced a sign-convention question on `embedding_cos_vggish`: the panel emits `1 − cos_sim` (a distance, in [0, 2]) while the campaign's verdict thresholds are worded as similarity (≥ 0.60 CONFIRMED, < 0.40 RULED_OUT). If the field is truly a distance, every CG family verdict since c1 is potentially inverted. Escalated as the mandatory first item for c16; downstream OPT3 pins remain safe regardless because htdemucs reference stems are operator-heard truth by construction.
+- **Codified process norms.** `docs/agent_picks_selection_invariants.md` (a/b/c/d) and `docs/interpreter_guard_policy.md` are now the two operating-discipline anchors specific to this campaign. The c14 revise of the c13 drums fork is retroactively conformant to the codified invariants; the c15 guitar fork was resolved conformantly on the first attempt.
+- **Cycle-16 scope**: (1) diagnose the embedding-metric sign convention with a controlled two-clip probe and escalate to operator; (2) either render the CG A/B end to end (unblocked by `n_missing = 0`) or hold pending item 1's resolution per operator guidance; (3) formalize the pinned-profile shape (add invariant (e) or a JSON Schema); (4) back-fill guitar family-2 spike/builder tests + the ~3-WARN adoption-row drift.
