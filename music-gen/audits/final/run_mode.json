@@ -1,11 +1,11 @@
 {
   "agent": "final_auditor",
-  "mode": "fresh",
-  "detection_source": "none",
+  "mode": "delta",
+  "detection_source": "marker",
   "canonical_path": "/home/user/long-exposure-runs/music-gen/audits/final/final_audit_report.md",
   "commit_marker": "/home/user/long-exposure-runs/music-gen/audits/final/final_audit_report.committed",
-  "baseline_boundary_ts": null,
-  "total_input_tokens": 474463,
-  "budget_tokens": 474463,
-  "stages": 48
+  "baseline_boundary_ts": 1788326665.446028,
+  "total_input_tokens": 716196,
+  "budget_tokens": 114919,
+  "stages": 12
 }
