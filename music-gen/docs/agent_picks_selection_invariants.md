@@ -30,6 +30,18 @@ These invariants sit under (never above) FD-1 (no tuning/retry/fallback), FD-6 (
 
 Future acceptance-fork ledger events under `_manager/*acceptance-fork*` or `_manager/*acceptance-policy*` SHOULD cite this document by path (`docs/agent_picks_selection_invariants.md`) in their `authority` block, and their per-option `reason_rejected` fields SHOULD explicitly note which invariants (a)/(b)/(c) apply.
 
+## Invariant (d) — on-disk-vs-brief divergence disclosure norm
+
+If actual on-disk truth (anchor SHAs, leaderboard ranks, script contents, grid contents, etc.) diverges from brief text, the divergence MUST be explicitly disclosed in work_output §Issues, with the on-disk value pinned by SHA and the worker's rationale for choosing on-disk over brief. Precedents:
+
+- c12 audit: brief drums-anchor transcription error `dadafcfc…269e00…` vs on-disk `dadafcfc…651c23…` — worker disclosed in `_replay_regression_c12.json.brief_anchor_discrepancy_note`, cited on-disk canonical per FD-1. Auditor: exemplary hygiene.
+- c14 Track 3 guitar stage-2 grid: brief-specified `{24, 27, 31, 26, 25}` vs on-disk c13 top-5 `{24, 25, 26, 27, 28}` — worker followed on-disk but did NOT disclose in work_output. c15 retroactive disclosure closes this class.
+- c14 Track 4 test debt: brief-hardcoded c12 builder SHA `eaa8fb6c…` vs on-disk canonical `295e5501…` — worker pinned on-disk in test regression, disclosed correctly in work_output §Issues. Correct pattern.
+
+FD-1 makes on-disk truth authoritative; invariant (d) makes silent-honoring an anti-pattern.
+
 ## Version
 
-- c14 (2026-09-04): initial codification.
+- c14 (2026-09-04): initial codification (invariants a/b/c).
+- c15 (2026-09-04): extended with invariant (d) — on-disk-vs-brief disclosure norm.
+
