@@ -942,6 +942,119 @@ def test_26_c38_por_drift_preservation_stand_pat():
     print("test_26 OK — c38 POR stand-pat landed; c37 + c36 + c35 + c34 chain preserved byte-identical")
 
 
+def test_27_c39_emitter_writer_boundary_preservation():
+    """c39 Priority 1: long_exposure/ ABSENT re-probe; preservation stacks on c38."""
+    import subprocess
+    import hashlib
+
+    result = subprocess.run(
+        ["bash", "-lc", "test -d long_exposure && echo PRESENT || echo ABSENT"],
+        capture_output=True, text=True, check=True,
+    )
+    assert result.stdout.strip() == "ABSENT", (
+        f"c39 Priority 1 probe expected ABSENT, got: {result.stdout!r}"
+    )
+
+    ev_path = SELECTION / "c39-emitter-writer-boundary-preservation.json"
+    assert ev_path.exists(), (
+        f"c39 preservation event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c39-emitter-writer-boundary-preservation"
+    # supersedes_path must be str per c14 lemma, pointing at c38 preservation
+    assert isinstance(ev["supersedes_path"], str), (
+        "supersedes_path must be str per c14 lemma, not list or null"
+    )
+    assert ev["supersedes_path"].endswith(
+        "c38-emitter-writer-boundary-preservation.json"
+    ), "supersedes_path must point at c38 preservation event"
+    # Workspace disclosure confirms ABSENT
+    wd = ev["workspace_disclosure"]
+    assert wd["long_exposure_present_in_workspace"] is False
+    assert wd["probe_result"] == "ABSENT"
+    # Policy status must record OPT_B active + OPT_A unreachable
+    ps = ev["policy_status"]
+    assert ps["opt_b_exemption_active"] is True
+    assert ps["opt_a_route_available"] is False
+    assert ps["opt_b_policy_doc_sha256"] == (
+        "fd2c33a78d147341ebfa8df84e80002ff6337779bb3e58e1305de9e936e4eb6b"
+    )
+    # c38 predecessor event must remain byte-identical (invariant (e))
+    c38_ev = SELECTION / "c38-emitter-writer-boundary-preservation.json"
+    assert c38_ev.exists(), "c38 predecessor event must remain on disk"
+    c38_sha = hashlib.sha256(c38_ev.read_bytes()).hexdigest()
+    ct = ev["chain_traceability"]
+    assert c38_sha == ct["c38_preservation_sha256"], (
+        f"c38 preservation event drifted: got {c38_sha}, expected {ct['c38_preservation_sha256']}"
+    )
+    # c37 + c36 + c35 predecessors + c34 fork ancestor also on disk (chain traceability)
+    for name in (
+        "c37-emitter-writer-boundary-preservation.json",
+        "c36-emitter-writer-boundary-preservation.json",
+        "c35-emitter-writer-boundary-preservation.json",
+        "c34-emitter-writer-boundary.json",
+    ):
+        assert (SELECTION / name).exists(), f"{name} must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_27 OK — c39 long_exposure/ ABSENT re-probe + preservation chain intact via c38 sha")
+
+
+def test_28_c39_por_drift_preservation_stand_pat():
+    """c39 Priority 2 stand-pat + full chain-integrity through c38/c37/c36/c35/c34."""
+    import hashlib
+
+    ev_path = SELECTION / "c39-por-drift-preservation.json"
+    assert ev_path.exists(), (
+        f"c39 stand-pat event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c39-por-drift-preservation"
+    # supersedes_path must be str per c14 lemma, pointing at c38 stand-pat
+    assert isinstance(ev["supersedes_path"], str)
+    assert ev["supersedes_path"].endswith(
+        "c38-por-drift-preservation.json"
+    ), "supersedes_path must point at c38 stand-pat"
+    # live_guidance scan must record NONE PRESENT
+    lgs = ev["live_guidance_scan"]
+    assert lgs["result"] == "NONE PRESENT"
+    assert lgs["operator_directive_c31_c32_snapshot"] is None
+    # Preservation verification — c38 stand-pat + c37 stand-pat + c35 blocker + c34 diagnostic byte-identical
+    pv = ev["preservation_verification"]
+    c38_pres = SELECTION / "c38-por-drift-preservation.json"
+    assert c38_pres.exists()
+    c38_sha = hashlib.sha256(c38_pres.read_bytes()).hexdigest()
+    assert c38_sha == pv["c38_preservation_expected_sha256"], (
+        f"c38 stand-pat drifted: got {c38_sha}"
+    )
+    c37_pres = SELECTION / "c37-por-drift-preservation.json"
+    assert c37_pres.exists()
+    c37_sha = hashlib.sha256(c37_pres.read_bytes()).hexdigest()
+    assert c37_sha == pv["c37_preservation_expected_sha256"], (
+        f"c37 stand-pat drifted: got {c37_sha}"
+    )
+    c35_blocker = SELECTION / "c35-por-drift-proof-strengthening-blocker.json"
+    assert c35_blocker.exists()
+    c35_sha = hashlib.sha256(c35_blocker.read_bytes()).hexdigest()
+    assert c35_sha == pv["c35_blocker_expected_sha256"], (
+        f"c35 blocker drifted: got {c35_sha}"
+    )
+    diag = DIAG / "c34_por_delta_proof.json"
+    assert diag.exists()
+    diag_sha = hashlib.sha256(diag.read_bytes()).hexdigest()
+    assert diag_sha == pv["c34_diagnostic_expected_sha256"], (
+        f"c34 diagnostic sha drifted: got {diag_sha}"
+    )
+    # Invariant compliance block enforces c14 lemma + FD-1
+    ic = ev["invariant_compliance"]
+    assert ic["c14_supersedes_path_type"].startswith("str")
+    assert "fd_1_halt_honest" in ic
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    # Full chain-integrity — c36 stand-pat also byte-identical (transitive predecessor)
+    c36_pres = SELECTION / "c36-por-drift-preservation.json"
+    assert c36_pres.exists(), "c36 predecessor stand-pat must remain on disk"
+    print("test_28 OK — c39 POR stand-pat landed; c38 + c37 + c36 + c35 + c34 chain preserved byte-identical")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -969,8 +1082,10 @@ def main():
     test_24_c37_por_drift_preservation_stand_pat()
     test_25_c38_emitter_writer_boundary_preservation()
     test_26_c38_por_drift_preservation_stand_pat()
+    test_27_c39_emitter_writer_boundary_preservation()
+    test_28_c39_por_drift_preservation_stand_pat()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 = 26/26)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 = 28/28)")
 
 
 if __name__ == "__main__":
