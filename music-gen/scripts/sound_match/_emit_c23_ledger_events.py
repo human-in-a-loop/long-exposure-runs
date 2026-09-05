@@ -242,11 +242,14 @@ EVENTS = [
 
 
 def main():
-    import os
-    from datetime import datetime
+    import hashlib
+    import uuid
     ok = 0
+    NS = uuid.UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8")  # DNS namespace fallback
     for i, ev in enumerate(EVENTS):
-        # canonical event shape matching promise_ledger.jsonl
+        # derive event_id via UUID5 of canonical content-hash
+        content = f"{ev['milestone_id']}|{ev['narrative']}|{RUN_ID}|{TS}|{i}"
+        eid = str(uuid.uuid5(NS, content))
         full = {
             "agent": "worker",
             "artifacts": ev["artifacts"],
@@ -256,6 +259,7 @@ def main():
                 "rationale": "on-disk artifacts sha-pinned in narrative + verdict JSON",
             },
             "cycle": 23,
+            "event_id": eid,
             "milestone_id": ev["milestone_id"],
             "narrative": ev["narrative"],
             "run_id": RUN_ID,
