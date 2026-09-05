@@ -197,5 +197,115 @@ class TestDiscipline(unittest.TestCase):
                 self.assertNotIn(node.func.attr, banned_attrs)
 
 
+class TestC28DriverIntegration(unittest.TestCase):
+    """c28 Track A: 6-driver hygiene-module integration regression tests.
+
+    For each of the 6 sweep drivers (bass/drums/guitar x coarse/fine) assert
+    that the c27 canonical module is imported and that its symbols appear in
+    the driver source at expected call sites (df_guard_before_stage,
+    RunningTopK, prune_after_pin). Also assert the two new flags are wired.
+
+    Structural (AST + source-scan) rather than subprocess-based: full-cell
+    legacy regression via fluidsynth is deferred to the first sweep launch
+    under this integrated code (documented via c28 driver-integration ledger
+    events per invariant (d)).
+    """
+
+    DRIVERS = (
+        "scripts/sound_match/coarse_sweep_sf2.py",
+        "scripts/sound_match/coarse_sweep_sf2_drums.py",
+        "scripts/sound_match/coarse_sweep_sf2_guitar.py",
+        "scripts/sound_match/fine_fit_sf2_v2.py",
+        "scripts/sound_match/fine_fit_sf2_drums.py",
+        "scripts/sound_match/fine_fit_sf2_guitar.py",
+    )
+
+    def _read(self, relpath: str) -> str:
+        return (REPO / relpath).read_text()
+
+    def _assert_c27_wiring(self, relpath: str) -> None:
+        src = self._read(relpath)
+        # (1) import c27 hygiene module
+        self.assertIn(
+            "from scripts.sound_match._sweep_hygiene_c27 import",
+            src,
+            f"{relpath} missing c27 hygiene import",
+        )
+        for sym in ("RunningTopK", "df_guard_before_stage", "prune_after_pin",
+                    "DEFAULT_KEEP_TOP"):
+            self.assertIn(sym, src, f"{relpath} missing symbol {sym}")
+        # (2) flags wired with correct defaults
+        self.assertIn("--score-and-delete-per-candidate", src,
+                      f"{relpath} missing --score-and-delete-per-candidate")
+        self.assertIn("--legacy-batch-render", src,
+                      f"{relpath} missing --legacy-batch-render")
+        self.assertIn("--keep-top-c27", src,
+                      f"{relpath} missing --keep-top-c27")
+        # (3) df guard at entry (prune@85, abort@90)
+        self.assertIn("df_guard_before_stage(", src,
+                      f"{relpath} missing df_guard_before_stage call")
+        self.assertIn("prune_pct=85.0", src,
+                      f"{relpath} missing prune_pct=85.0")
+        self.assertIn("abort_pct=90.0", src,
+                      f"{relpath} missing abort_pct=90.0")
+        # (4) per-cell top-K push
+        self.assertIn("topk.push(", src,
+                      f"{relpath} missing per-cell topk.push")
+        # (5) post-pin cleanup
+        self.assertIn("prune_after_pin(", src,
+                      f"{relpath} missing prune_after_pin call")
+
+    def test_11_coarse_sweep_sf2_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/coarse_sweep_sf2.py")
+
+    def test_12_coarse_sweep_sf2_drums_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/coarse_sweep_sf2_drums.py")
+
+    def test_13_coarse_sweep_sf2_guitar_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/coarse_sweep_sf2_guitar.py")
+
+    def test_14_fine_fit_sf2_v2_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/fine_fit_sf2_v2.py")
+
+    def test_15_fine_fit_sf2_drums_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/fine_fit_sf2_drums.py")
+
+    def test_16_fine_fit_sf2_guitar_integrated(self) -> None:
+        self._assert_c27_wiring("scripts/sound_match/fine_fit_sf2_guitar.py")
+
+    def test_17_all_drivers_parse_and_import_hygiene(self) -> None:
+        """AST-parse each driver + verify hygiene import resolves at module load."""
+        for relpath in self.DRIVERS:
+            src = self._read(relpath)
+            try:
+                ast.parse(src)
+            except SyntaxError as e:  # pragma: no cover
+                self.fail(f"{relpath} AST-parse failed: {e}")
+        # hygiene symbols must resolve
+        self.assertTrue(callable(hyg.df_guard_before_stage))
+        self.assertTrue(callable(hyg.prune_after_pin))
+        self.assertTrue(hasattr(hyg, "RunningTopK"))
+        self.assertEqual(hyg.DEFAULT_KEEP_TOP, 5)
+
+    def test_18_no_forbidden_ast_patterns_in_edited_drivers(self) -> None:
+        """No PRNG / sidecar_nonfactor / VST3 state APIs introduced by edits."""
+        banned_imports = {"random", "numpy.random"}
+        banned_attrs = {"sidecar_nonfactor", "get_state", "save_state",
+                        "load_state", "set_state", "save_preset"}
+        for relpath in self.DRIVERS:
+            tree = ast.parse(self._read(relpath))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        self.assertNotIn(alias.name, banned_imports,
+                                         f"{relpath} imports {alias.name}")
+                if isinstance(node, ast.ImportFrom):
+                    self.assertNotIn(node.module, banned_imports,
+                                     f"{relpath} imports {node.module}")
+                if isinstance(node, ast.Attribute):
+                    self.assertNotIn(node.attr, banned_attrs,
+                                     f"{relpath} references .{node.attr}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

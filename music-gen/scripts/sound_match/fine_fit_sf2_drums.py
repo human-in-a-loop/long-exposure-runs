@@ -86,6 +86,11 @@ from scripts.sound_match.coarse_sweep_sf2_drums import (  # noqa: E402
 )
 # READ-ONLY import of the iirpeak apply function.
 from scripts.palette_render.render_stem import _apply_eq_curve_iirpeak  # noqa: E402
+# c28: canonical sweep-hygiene helpers per POR 2026-09-05 (adoption of c27 module).
+from scripts.sound_match._sweep_hygiene_c27 import (  # noqa: E402
+    RunningTopK, df_guard_before_stage, prune_after_pin,
+    DEFAULT_KEEP_TOP, DEFAULT_MAX_AUDIO_MB,
+)
 
 # --- fetchability probe for pyloudnorm (mandatory for LUFS-I; RMS fallback if missing) ---
 _LOUDNORM_AVAILABLE = False
@@ -437,6 +442,13 @@ def main(argv: list[str] | None = None) -> int:
                     help="Number of top-composite cells to preserve on disk.")
     ap.add_argument("--max-audio-mb", type=int, default=500,
                     help="Working-audio budget in MB (hygiene).")
+    # c28 hygiene flags (default: per-candidate render->score->delete).
+    ap.add_argument("--score-and-delete-per-candidate", action="store_true",
+                    default=True,
+                    help="c27 default: render->score->delete each candidate; retain running top-K only.")
+    ap.add_argument("--legacy-batch-render", action="store_true", default=False,
+                    help="c26 legacy: batch-render then prune. Regression only.")
+    ap.add_argument("--keep-top-c27", type=int, default=DEFAULT_KEEP_TOP)
     args = ap.parse_args(argv)
 
     for k, v in _PINS.items():
@@ -449,6 +461,20 @@ def main(argv: list[str] | None = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     renders_dir = out_dir / "renders"
     renders_dir.mkdir(exist_ok=True)
+
+    # c28: df guard at stage entry (prune@85%, abort@90%).
+    if not args.legacy_batch_render:
+        _ws_root = Path(__file__).resolve().parents[2]
+        _df_status = df_guard_before_stage(
+            workspace_root=_ws_root, stage_dir=out_dir,
+            prune_pct=85.0, abort_pct=90.0,
+        )
+        (out_dir / "df_guard_status.json").write_text(
+            json.dumps(_df_status, sort_keys=True, indent=2)
+        )
+        topk = RunningTopK(k=args.keep_top_c27)
+    else:
+        topk = None
 
     budget_bytes = int(args.max_audio_mb) * 1024 * 1024
     if not _disk_ok(out_dir, budget_bytes, safety_factor=2.0):
@@ -557,6 +583,13 @@ def main(argv: list[str] | None = None) -> int:
         except OSError:
             pass
         rows.append(row)
+        # c28: per-candidate top-K displacement. Push a normalized row shape.
+        if topk is not None:
+            topk.push({
+                "render_path": str(final_wav),
+                "composite": row["composite"],
+                "render_wav_sha": row.get("render_sha256"),
+            })
         # Mid-sweep disk check (1x floor). FD-1: hard halt on breach.
         if not _disk_ok(out_dir, budget_bytes, safety_factor=1.0):
             raise RuntimeError(
@@ -671,6 +704,27 @@ def main(argv: list[str] | None = None) -> int:
     }
     with open(out_dir / "run_manifest.json", "w") as f:
         json.dump(manifest, f, sort_keys=True, indent=2)
+    # c28: post-pin cleanup - top-1 render is "pinned"; delete other kept WAVs.
+    if topk is not None and rows:
+        try:
+            top1 = rows[0]
+            top1_render_path = str(renders_dir / (
+                f"prog{top1['program']:03d}"
+                f"_gain{int(top1['gain']*100):03d}"
+                f"_rev{int(top1['reverb_send']*100):03d}"
+                f"_{top1['post']}"
+                "/render.wav"
+            ))
+            pinned_paths = {top1_render_path}
+            _deleted = prune_after_pin(topk.kept_rows(), pinned_paths)
+            (out_dir / "post_pin_cleanup.json").write_text(json.dumps({
+                "pinned_paths": sorted(pinned_paths),
+                "n_deleted": len(_deleted),
+                "deleted_paths": _deleted[:20],
+                "topk_stats": topk.stats(),
+            }, sort_keys=True, indent=2))
+        except Exception:  # pragma: no cover
+            pass
     print(f"DONE: leaderboard at {tsv_path}, pruned={len(pruned)}")
     return 0
 

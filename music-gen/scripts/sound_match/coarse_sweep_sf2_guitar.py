@@ -59,6 +59,11 @@ import mido  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.sound_match.objective import score_pair  # noqa: E402
+# c28: canonical sweep-hygiene helpers per POR 2026-09-05 (adoption of c27 module).
+from scripts.sound_match._sweep_hygiene_c27 import (  # noqa: E402
+    RunningTopK, df_guard_before_stage, prune_after_pin,
+    DEFAULT_KEEP_TOP, DEFAULT_MAX_AUDIO_MB,
+)
 
 DEFAULT_GUITAR_PROGRAMS = [24, 25, 26, 27, 28, 29, 30, 31]
 EXPECTED_SF2_SHA = "74594e8f4250680adf590507a306655a299935343583256f3b722c48a1bc1cb0"
@@ -206,12 +211,33 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--keep-top", type=int, default=3)
     ap.add_argument("--max-audio-mb", type=int, default=500)
     ap.add_argument("--dry-run", action="store_true")
+    # c28 hygiene flags (default: per-candidate render->score->delete).
+    ap.add_argument("--score-and-delete-per-candidate", action="store_true",
+                    default=True,
+                    help="c27 default: render->score->delete each candidate; retain running top-K only.")
+    ap.add_argument("--legacy-batch-render", action="store_true", default=False,
+                    help="c26 legacy: batch-render then prune. Regression only.")
+    ap.add_argument("--keep-top-c27", type=int, default=DEFAULT_KEEP_TOP)
     args = ap.parse_args(argv)
 
     out_dir: Path = args.out
     out_dir.mkdir(parents=True, exist_ok=True)
     renders_dir = out_dir / "renders"
     renders_dir.mkdir(exist_ok=True)
+
+    # c28: df guard at stage entry (prune@85%, abort@90%).
+    if not args.legacy_batch_render:
+        _ws_root = Path(__file__).resolve().parents[2]
+        _df_status = df_guard_before_stage(
+            workspace_root=_ws_root, stage_dir=out_dir,
+            prune_pct=85.0, abort_pct=90.0,
+        )
+        (out_dir / "df_guard_status.json").write_text(
+            json.dumps(_df_status, sort_keys=True, indent=2)
+        )
+        topk = RunningTopK(k=args.keep_top_c27)
+    else:
+        topk = None
     prune_log = out_dir / "SWEEP_WAVS_PRUNED.txt"
     prune_log.touch()
 
@@ -309,8 +335,12 @@ def main(argv: list[str] | None = None) -> int:
                       "weights": {}, "embedding_rung": "error",
                       "sr_hz": 0, "n_samples_compared": 0}
             status = f"ERROR:{type(exc).__name__}:{str(exc)[:80]}"
-        rows.append({"bank": bank, "program": program, "render_wav_sha": render_sha,
-                     "render_path": str(out_wav), "status": status, **scores})
+        _row = {"bank": bank, "program": program, "render_wav_sha": render_sha,
+                "render_path": str(out_wav), "status": status, **scores}
+        rows.append(_row)
+        # c28: per-candidate top-K displacement (deletes evicted/rejected WAVs).
+        if topk is not None:
+            topk.push(_row)
 
     def _key(r):
         c = r["composite"]
@@ -362,6 +392,20 @@ def main(argv: list[str] | None = None) -> int:
     }
     with open(out_dir / "run_manifest.json", "w") as f:
         json.dump(manifest, f, sort_keys=True, indent=2)
+    # c28: post-pin cleanup - top-1 render is "pinned"; delete other kept WAVs.
+    if topk is not None and rows:
+        try:
+            top1_render_path = rows[0].get("render_path", "")
+            pinned_paths = {top1_render_path} if top1_render_path else set()
+            _deleted = prune_after_pin(topk.kept_rows(), pinned_paths)
+            (out_dir / "post_pin_cleanup.json").write_text(json.dumps({
+                "pinned_paths": sorted(pinned_paths),
+                "n_deleted": len(_deleted),
+                "deleted_paths": _deleted[:20],
+                "topk_stats": topk.stats(),
+            }, sort_keys=True, indent=2))
+        except Exception:  # pragma: no cover
+            pass
     print(f"DONE: leaderboard at {tsv_path}")
     return 0
 
