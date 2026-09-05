@@ -32,6 +32,22 @@ CANON_ENV_PIN = "2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922c
 CANON_HYGIENE_SHA = "771ff42b768d9c44dd96bc9066666bcaa3d6b81ebdc6930fea07f452a3fa51c4"
 
 
+# c52 O-2 Path B: retire tests 38-42 as historical (retired per docs/c30_test_debt_c52_disposition.md).
+# c47 operator omnibus (2026-09-05) closed 6 escalation memos with append-only c47_omnibus_closure blocks
+# (SHA drift by design) and BANNED preservation-spin cadence (tests 38-42 pin the c33-c46 preservation
+# chain's monotonic-continuation assertions, which have no c47+ successor). Preserved sidecars remain
+# byte-identical on-disk as historical anchors; only assertions retire.
+HISTORICAL_PRE_C47_SKIP = True
+
+
+def _skip_historical(test_name: str) -> bool:
+    """Return True (skip test body) with a diagnostic print, when the historical-skip flag is set."""
+    if HISTORICAL_PRE_C47_SKIP:
+        print(f"{test_name} SKIPPED_HISTORICAL — retired per docs/c30_test_debt_c52_disposition.md (c47 omnibus)")
+        return True
+    return False
+
+
 def _load(path: Path) -> dict:
     assert path.exists(), f"missing sidecar: {path}"
     return json.loads(path.read_text())
@@ -252,7 +268,7 @@ def test_10_c30_anchor_table_byte_identical_pre_post():
 # ============================================================================
 
 
-CANON_INVARIANTS_SHA_POST_C32 = "210e07f793d138e3c75b8c4b1355927cda84f3a56b725a25d7034bd55cca0d65"  # c51 update: post promotion-criterion any-preset clarification (was 24eefd19… pre-c51)
+CANON_INVARIANTS_SHA_POST_C32 = "572139a3293ffa3da24eaaada09e896acbff9e8bdb66c4acc54f462522ed2cb6"  # c52 update: post trio-promotion addendum (was 210e07f7… pre-c52)
 CANON_OP1_HELPER_SHA = "121809db63cb05edf61ef2abcd83a3cf25d16b0774b73f9a7364d06f32d5eff5"
 
 
@@ -1619,6 +1635,8 @@ def test_37_c44_chain_supersede_invariant_string_not_list():
 
 
 def test_38_c44_escalation_memo_counter_monotonicity():
+    if _skip_historical("test_38"):
+        return
     """c44 P7 (b): escalation-memo counter monotonicity vs c43.
 
     On-disk escalation memos do NOT carry a `counter` field (verified at c44
@@ -1680,6 +1698,8 @@ def test_38_c44_escalation_memo_counter_monotonicity():
 
 
 def test_39_c45_chain_supersede_invariant_string_not_list():
+    if _skip_historical("test_39"):
+        return
     """c45 P7 (a): chain-supersede invariant across all c45 preservation records.
 
     Verify supersedes_path is `str` (never list) on every c45 preservation
@@ -1748,6 +1768,8 @@ def test_39_c45_chain_supersede_invariant_string_not_list():
 
 
 def test_40_c45_p0_sidecar_shape_i2_canonical_adoption():
+    if _skip_historical("test_40"):
+        return
     """c45 P7 (b): P0 sidecar shape assertion (I-2 canonical adoption from c44).
 
     Assert data/v4/_selection/c45-escalation-preservation.json:
@@ -1821,6 +1843,8 @@ def test_40_c45_p0_sidecar_shape_i2_canonical_adoption():
 
 
 def test_41_c46_chain_supersede_invariant_string_not_list():
+    if _skip_historical("test_41"):
+        return
     """c46 P7 (a): chain-supersede invariant across all c46 preservation records.
 
     Verify supersedes_path is `str` (never list) on every c46 preservation
@@ -1898,6 +1922,8 @@ def test_41_c46_chain_supersede_invariant_string_not_list():
 
 
 def test_42_c46_p0_sidecar_shape_i2_canonical_adoption():
+    if _skip_historical("test_42"):
+        return
     """c46 P7 (b): P0 sidecar shape assertion (I-2 canonical shape from c44/c45).
 
     Assert data/v4/_selection/c46-escalation-preservation.json:
