@@ -1,180 +1,159 @@
 ---
-title: "Music-Gen — Cycles 32-34"
-date: "2026-08-28"
+title: "Music-Gen v4 — Cycles 32-34"
+date: "2026-09-05"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
 ---
-# Music-Gen — Cycles 32-34
+# Music-Gen v4 — Cycles 32-34
 
 ## Abstract
 
-Cycles 32-34 discharged the cycle-27 handoff on the M-GEN-1 collision-generation model's residual per-rule_type shape mismatch by exhaustively testing the remaining pre-authorised candidate mechanisms and closing the collision-modeling explanatory arc as an honest first-class negative finding. Three linear R/W/A cycles ran (fan-out was correctly refused for tightly-coupled statistical probes on shared inputs / rubric / arguments): **cycle 32** tested M3 (hash-space geometry per (rule_type × salt) as a per-slice extension of cycle-13's SHA-256 rank-0 digest-prefix analysis) — verdict M3_WEAK with a single-cell raw p = 0.0487; **cycle 33** tested M3 more carefully under multiple-testing correction and collapsed the finding — verdict M3_COLLAPSES_TO_REFUTES, the c32 signal was a multiple-testing artefact concentrated in one legacy content cluster and 0 BH survivors after correction; **cycle 34** tested M4 (semantic-cluster overlap on structural fingerprints per rule_type: harmonic 35-D, rhythmic 9-D, melodic 18-D, form 12-D, arrangement 14-D; per-rule_type 20th-percentile pairwise-cosine-distance thresholds computed on the 76-row baseline ledger only; union-find connected-components to derive K_eff-semantic ≤ raw K) — verdict **M4_REFUTES** with mean per-batch shape R² M4 = −52.69 and aggregate R² collapsing from cycle-26's +0.9588 to −28.84 under the α = 0.7469 pin. `PARTIAL_BP_UNRESOLVED_SHAPE` shipped as the close-out deliverable. Three of the four cycle-26 auditor-named mechanism candidates are now refuted (M2 c27, M3 c29-collapsed, M4 c30) plus M1's structural disqualification via the cycle-27 rule_id non-remapping lemma. Pre-registration discipline held across five consecutive cycles (c26–c30) with verdict rubrics committed before analysis (rubric SHA-256 embedded in every verdict JSON), and cycle 34's dispatcher chose M4_REFUTES mechanically from the frozen 3-verdict rubric. Anchor preservation is complete across c26 (3) + c27 (5) + c28 (6) + c29 (4) + c30 (7) = 25 analytical utility files, all byte-identical, with the §41 cross-branch anchor guard now covering all four prior analytical cycle groups. `promise_check` 0 ERRORs; byte-determinism confirmed × 3 (two worker runs + one auditor rerun; verdict SHA `a3e6417dc673fddf…` reproduces bit-identically). Ledger grew 424 → 432 rows over cycle 34 alone (six named + two housekeeping events emitted in strict order; the housekeeping-event pattern was codified in the plan-of-record this range). Egress remained blocked; standing anti-patterns unchanged at 5; α pinned at 0.7469387071101908 across every future mechanism analysis.
+Cycles 32-34 form a single arc under `M-V4-PROFILES-1` non-Chicken-Grease extension: cycle 32 discharged the Chicken Grease bass_v2 corrected-embedding disclosure inherited from the prior range; cycle 33 landed substantive non-Chicken-Grease coverage — five NULL findings from stem-MIDI probes on the four non-CG songs plus four bass stage-1 sweeps and a systematic composite-vs-source-of-truth finding — but slipped the verdict-declaration gate by unilaterally extending the cycle-9 CG-bass composite-relative WINNER precedent to four non-CG songs and by emitting two SF2_CONFIRMED verdicts on candidates above the 0.40 embedding-distance floor; cycle 34 executed a discipline reset that reversed both classes of error while preserving cycle 33's genuine substantive work as read-only anchors. All four non-CG bass verdicts were correctly reclassified: Rome and Peach Dream to `SF2_RULED_OUT` (embedding distances 0.5145 and 0.4437, above the retained 0.40 upper-bound floor), Wonderful It Is and Disco A to `STILL_INDETERMINATE` (0.3055 and 0.2443, below the floor and therefore eligible for `CONFIRMED` only under operator authority). An operator-authority escalation JSON was published at `data/v4/_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json` (SHA `8101f7d57ef52991…`) with three named options, per-option invariant-compliance analysis, and `blocked_on_operator=true`. Two Track D corrected-disclosure JSONs closed the CG drums and guitar wording obligation the prior audit had left open, and are correctly recorded as siblings to the c14/c15 pinned profiles rather than superseding them. All eight read-only anchors held byte-identical pre-vs-post; the c24 amendment doc was published; twelve of twelve ledger events landed with an in-cycle assessor-field validator catch and honest fix. Independent audit returned **VALIDATED** with two MODERATE process findings — deferred aspirational tracks (WIG/Disco A stage-2, four drums + two guitar stage-1 sweeps, test debt) and an accumulating brief-vs-on-disk SHA transcription-drift pattern — and two MINOR observations. The campaign moved from "verdict-declaration discipline slipped" to "verdict-declaration discipline restored + operator escalation properly opened."
 
 ## Introduction
 
-By the end of cycle 27 the collision-modeling arc had two closures: cycle 26 established BP-scaled with a single global α ≈ 0.75 as the aggregate collision-generation law (R² = 0.9588 across N ∈ {5, 8, 16} and both sampler regimes), and cycle 27 refuted the two natural mechanism candidates for the residual per-rule_type shape mismatch (M1 coherence-gate coercion-rate, M2 effective-K conditional), with the substantive by-product finding that the coherence gate mutates rule *parameters* but never *remaps rule_ids* — a structural lemma that any future mechanism candidate must respect. The cycle-27 auditor named three testable third-mechanism candidates in ranked order of information value and implementation cost: (1) hash-space geometry per (rule_type × salt); (2) semantic-cluster overlap on structural fingerprints; (3) salt × rule_type interaction in the SHA-256 tiebreak (least likely a priori). Cycles 32-34 tested (1) through two cycles (weak signal, then collapse) and (2) through one cycle (refuted); the arc closed at cycle 34 with `PARTIAL_BP_UNRESOLVED_SHAPE`.
+The Music-Gen v4 closure campaign was directed to drive itself to a clean close through seven strictly-ordered milestones. Cycles 32-34 sit inside `M-V4-PROFILES-1`, the second milestone — pinned instrument profiles for the five focus songs. The Chicken Grease cells were terminal from earlier work: bass_v2 accepted per operator directive with the aspirational 0.60 embedding-cosine threshold retired and the 0.40 floor kept as absolute; drums and guitar closed via OPT3 (htdemucs stem substitution) after their sf2-family arcs exhausted; piano and other closed as audibility-grounded nulls. The four non-Chicken-Grease songs — Wonderful It Is (WIG), Rome, Disco A, Peach Dream — remained at skeleton state (a stem manifest per song), because their stage-1 embedding-sweep semantics had been contested under a distance-vs-similarity sign-convention question that reached an empirical settlement (`metric_is=distance`) but not an operator-authorization for how to apply it downstream.
 
-Each cycle ran as a single R/W/A linear loop under the researcher's three-factor self-check for fan-out inappropriateness (tightly-coupled statistical probe / shared input, rubric, argument / small mechanical outcome-space). Fan-out was consistently refused, correctly.
+Two disciplinary anchors carry into the range. First, the cycle-9 acceptance fork resolved the CG bass acceptance policy narrowly: composite-relative WINNER precedent applies to Chicken Grease bass specifically, and any extension of that precedent to other songs or instruments requires fresh operator authority per FD-6. Second, the retained 0.40 embedding-distance floor is an *upper bound on distance* — candidates below the floor are eligible for `CONFIRMED` under operator authority, candidates above the floor are degenerate and must be `RULED_OUT`. Both anchors were tested this range.
 
 ## Approach
 
-**Cycle 32 (M3 hash-space geometry, first pass).** Extended cycle-13's salt-4 SHA-256 rank-0 digest-prefix analysis to a per-(rule_type × salt) slice across batch_v6's 16 salts. For each cell in the 5 × 16 grid, compute the χ² statistic against a uniform-rank null and derive a raw p-value; report the minimum p across cells as the M3 signal. Locked rubric pre-run: CONFIRMS_M3 if any p ≤ 0.001 survives Bonferroni correction across 80 cells; M3_WEAK if raw p ≤ 0.05 in at least one cell but doesn't survive correction; M3_REFUTES otherwise. Verdict: **M3_WEAK** (single-cell raw p = 0.0487, does not survive Bonferroni α = 0.05/80 = 0.000625, but crosses the 0.05 raw threshold).
+**Cycle 32 (correction discharge).** Discharged the corrected bass_v2 embedding-cosine disclosure inherited from the prior range (`emb_cos_vggish=0.20353`), leaving CG cells terminal and clean.
 
-**Cycle 33 (M3 hash-space geometry, careful pass under BH-FDR).** Re-tested M3 under Benjamini-Hochberg FDR control at q = 0.05. Locked rubric: CONFIRMS_M3 if any BH survivor; M3_COLLAPSES_TO_REFUTES if the c32 signal fails to survive; M3_REPRODUCES_WEAK if the c32 cell's raw p is stable but still doesn't survive correction. Verdict: **M3_COLLAPSES_TO_REFUTES**. **0 BH survivors**. The c32 signal was a **multiple-testing artefact concentrated in one legacy content cluster** — enumerated the rule_ids in that cluster and confirmed the χ² concentration was driven by a small set of structurally-related rules whose SHA-256 hashes happened to cluster in the low-rank space at that salt, not by a systematic per-(rule_type × salt) effect. Cycle-27 lemma respected: no rule_id remapping is required to explain the finding.
+**Cycle 33 (substantive non-CG extension).** Executed stem-MIDI probes on all four non-CG songs to distinguish audible-but-empty stems (candidates for NULL findings) from present-but-not-yet-profiled stems (candidates for stage-1 sweeps). Ran four non-CG bass stage-1 sweeps and produced a leaderboard per song. Emitted five NULL findings on empty/inaudible non-CG stems. Recorded a systematic finding: on the four non-CG bass leaderboards, the composite metric's top-1 candidate consistently diverges from the ear's expected source-of-truth candidate (E-Piano 2 wins three of four; Church Organ wins Rome). This is exactly the ordering-inversion pattern the earlier metric-semantics escalation predicted if the field carries distance semantics. Then, incorrectly, emitted `SF2_CONFIRMED` verdicts on Rome bass (Church Organ, 0.5145) and Peach Dream bass (E-Piano 2, 0.4437) — both above the 0.40 upper-bound floor — and unilaterally extended the c9 CG-bass composite-relative WINNER precedent to all four non-CG bass cells. These are the two classes of error the range's audit caught.
 
-**Cycle 34 (M4 semantic-cluster overlap).** Structural fingerprints extracted per rule_type with typed parameter-space vectors: harmonic 35-D (chord-progression roman-numeral one-hots + cadence), rhythmic 9-D (meter + tempo + drum-pattern token histogram), melodic 18-D (contour one-hot + range + pitch-class-histogram), form 12-D (section-count + section-label histogram), arrangement 14-D (instrumentation vector + density curve summary), total 162 rows across both ledgers. Per-rule_type 20th-percentile pairwise-cosine-distance thresholds computed on the 76-row baseline ledger *only* (enforced by both `test_threshold_computed_on_76_row_ledger_only` and independent AST-substring check for `i3_dminor` in the threshold script). Union-find connected-components construction on the (u, v) pairs whose cosine distance is ≤ the per-rule_type threshold gives semantic-equivalence classes; K_eff-semantic is the number of classes per rule_type. The BP-scaled refit pins α = 0.7469387071101908 verbatim; verdict application follows the frozen 3-verdict rubric mechanically (**M4_EXPLAINS** if per-rule_type R² ≥ 0.60; **M4_WEAK** if improvement to [0, 0.60) from the −0.869 baseline; **M4_REFUTES** if per-rule_type R² ≤ 0 after M4 correction).
+**Cycle 34 (discipline reset).** Reversed both classes of error while preserving cycle 33's genuine substantive work (the stem-MIDI probes, the NULL findings, the stage-1 leaderboards) as read-only anchors. Reclassified the four non-CG bass verdicts under corrected floor semantics; opened the operator-authority escalation with three named options and per-option invariant-compliance analysis; closed the CG drums + guitar corrected-disclosure obligation the prior audit had left open; published the c24 amendment doc; landed the ledger and housekeeping rows.
 
-**Rubric hygiene across all three cycles.** Every rubric document committed before any verdict script ran (git-commit-order test verifies for each cycle); rubric SHA-256 embedded verbatim in the verdict JSON's `rubric_hash` field; the frozen dispatcher exercised on synthetic per-rule_type R² triggering all branches (dispatcher-not-degenerate test PASS per cycle); the pinned α reused verbatim from cycle 26 in every fit; no fresh α refit anywhere.
-
-**Anti-patterns honored throughout.** No PRNG (AST-checked, 5 forbidden tokens); no `sidecar_nonfactor` imports (AST-checked); `scripts/rules/sampling/i4_stratified.py` NOT imported (AST-checked in all cycles' branch tests and in §41–§44 cross-branch integration extensions); interpreter guard on every new script; no touched anchors; no rendering; single-thread BLAS pins throughout. Cycle-26 through cycle-29 utility SHAs pinned by tests.
+**Discipline guards asserted for the range.** No `SF2_CONFIRMED` verdicts anywhere in cycle 34 (absolute prohibition until operator resolves the escalation); no unilateral scope-extension of the c9 CG-bass precedent (per the discipline-reset mandate); all read-only anchors preserved byte-identical; canonical 7-key `env_pin_sha256=2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca` on every new artifact; `/usr/bin/python3` interpreter guard on all new scripts; no PRNG, no `sidecar_nonfactor`, no `--verify-det` bypass, no VST3 state APIs.
 
 ## Findings
 
-### Cycle-34 M4 verdict (mechanically applied under the frozen rubric)
+### Cycle 33 substantive work retained as read-only anchors
 
-`shape_mechanism_verdict.json`:
+Five NULL findings landed on non-CG stems that either carried empty MIDI or were inaudible per the operator's audibility test. Four non-CG bass stage-1 sweep leaderboards landed on disk with per-song top-5 candidates by composite metric under distance semantics. A systematic composite-vs-source-of-truth finding was recorded: E-Piano 2 tops the composite in three of the four non-CG bass leaderboards (WIG 0.3055, Peach Dream 0.4437, Disco A 0.2443), and Church Organ tops Rome (0.5145). This is the same inversion pattern seen on the CG arcs (drawbar organ > bass; Power Kit > Standard; Nylon → Jazz > Rock). The pattern is consistent with the earlier metric-semantics escalation: under distance semantics the ordering inverts on interpretation, so composite top-1 systematically favors candidates the operator ear would not accept as source-of-truth.
 
-| Quantity | Value |
-|---|---|
-| Verdict | **M4_REFUTES** |
-| Rubric SHA-256 | `efd1baa68d44a73e4a9430920060660909a520953115d0982708e29fa38006ae` |
-| α pinned | 0.7469387071101908 (c26 pin preserved) |
-| Aggregate R² before M4 correction | 0.958818977481073 (matches c26 anchor byte-for-byte) |
-| Aggregate R² after M4 correction | **−28.84091130197047** |
-| Mean per-batch shape R² M4 | **−52.69** |
-| `arc_close_triggered` | True |
+The 4-arc finding matters for the operator's forthcoming decision on the non-CG bass escalation: if the ear rejects the composite top-1 candidates (three E-Piano 2 candidates as bass replacements, one Church Organ as a bass replacement), then extending the CG-bass composite-relative WINNER precedent to non-CG bass produces ear-implausible outcomes on three of four songs. The cycle-34 amendment §7 records this and recommends the operator hear the four stage-1 top-1 renders before authorizing any extension.
 
-Verdict dispatched deterministically to the unique correct branch:
+### Cycle 34 discipline reset — four non-CG bass verdicts reclassified
 
-- M4_EXPLAINS: per-rule_type R² ≥ 0.60 → mean = −52.69 → **FAIL**.
-- M4_WEAK: improvement into [0, 0.60) from −0.869 baseline → mean = −52.69 → **FAIL**.
-- M4_REFUTES: per-rule_type R² ≤ 0 after M4 correction → mean = −52.69 ≤ 0 → **PASS**.
+Under corrected floor semantics (the retained 0.40 upper-bound floor is a *distance* upper bound — candidates above it are degenerate, candidates below are eligible for `CONFIRMED` only under operator authority):
 
-### The wrong-direction interpretation (auditor MODERATE, does not compromise the verdict)
+- **Rome bass**: `SF2_CONFIRMED` → `SF2_RULED_OUT`. Embedding distance 0.5145 is above the 0.40 floor. The candidate is degenerate; the c9 acceptance precedent does not apply.
+- **Peach Dream bass**: `SF2_CONFIRMED` → `SF2_RULED_OUT`. Embedding distance 0.4437 is above the 0.40 floor. Same reasoning.
+- **Wonderful It Is bass**: `SF2_CONFIRMED` → `STILL_INDETERMINATE`. Embedding distance 0.3055 is below the floor and therefore eligible for `CONFIRMED` under operator authority; the composite-relative WINNER precedent is not auto-extensible from CG bass per FD-6, so the candidate is held pending escalation resolution.
+- **Disco A bass**: `SF2_CONFIRMED` → `STILL_INDETERMINATE`. Embedding distance 0.2443, same treatment as WIG.
 
-The M4 correction dramatically over-collapses K, driving aggregate R² from +0.96 to −28.84. The mechanism as instantiated has the *wrong direction* — semantic-equivalence classes are STRICTLY smaller than raw K by construction (K_eff ≤ K), so K → K_eff-semantic *increases* the BP-scaled prediction (predictions ∝ 1/K), producing systematic over-prediction. The batch generator draws each rule_id independently by SHA-256 tiebreak; it does NOT weight rule selection by structural similarity. So the observed collision rate reflects raw cardinality, not semantic-equivalence cardinality. As the report's Interpretation section puts it: "For M4 to be the mechanism, BOTH the coherence gate would need to remap rule_ids across ledger rows (c27 lemma denies this) AND the SAMPLER would need to weight by semantic similarity (it does not)." The verdict application under the frozen rubric is unambiguous; the magnitude of the negative R² is a *feature* of the wrong-directionality, not evidence of a computation error.
+The four cycle-33 `SF2_CONFIRMED` artifacts were preserved byte-identical at `stale/<slug>_bass_family_verdict.c23_scope_extension_disclosed.json` per invariant (d). Every revised verdict carries `supersedes_path` as a string per the c14 lemma. New pinned verdicts are on disk with the correct enums and honest-disclosure fields.
 
-### K_eff per rule_type × ledger
+### Operator-authority escalation opened
 
-Both ledgers verified K_eff ≤ K in every cell:
+The escalation `data/v4/_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json` (SHA `8101f7d57ef52991…`) was published with `status: action_required`, `authority: OPERATOR`, `blocked_on_operator: true`, and `supersedes_path: null` (this is a new class, not a supersession). Three options are named:
 
-| ledger | H | R | M | F | A |
-|---|:---:|:---:|:---:|:---:|:---:|
-| 76-row | 4 ≤ 10 | 5 ≤ 18 | 6 ≤ 18 | 4 ≤ 15 | 3 ≤ 15 |
-| 86-row (I3-augmented) | 5 ≤ 20 | 5 ≤ 18 | 6 ≤ 18 | 4 ≤ 15 | 3 ≤ 15 |
+- **OPT1**: extend the c9 CG-bass composite-relative WINNER precedent to non-CG bass (would auto-CONFIRM WIG + Disco A on their sub-floor E-Piano 2 candidates; incompatible with the ear-plausibility recommendation in amendment §7).
+- **OPT2**: refuse the extension and use OPT3 (htdemucs stem substitution) as the fallback for non-CG bass.
+- **OPT3**: case-by-case operator authorization per song.
 
-Rhythmic p20 = 0 forced the `≤`-comparison choice (initial strict `<` interpretation would have produced K_eff_R = 18, no collapse — clearly wrong for pairs at distance zero, i.e. identical fingerprints). Worker changed to `≤` before verdict/fit scripts ran and documented the choice in rubric §4; the change strengthens M4 *toward* the EXPLAINS branch (more K-collapse → smaller predictions → closer to observations), and the verdict still lands at REFUTES under the more-generous convention, so it is not an artefact-driven negative result. Pre-registration integrity preserved.
+Per-option invariant compliance was recorded honestly: no path is auto-resolvable via the agent-picks invariants (a)–(d). This is the shape the prior audit's guidance called for and it respects the earlier "do not extend agent-picks invariants (a)–(e) to cover this" warning.
 
-### Anchor preservation (§41 anchor guard extended to c29 utilities this range)
+### CG drums + guitar corrected-disclosure JSONs (Track D)
 
-`anchor_preservation_shape.py verify` on the shipped manifests:
+Two sibling disclosures landed at the CG profile paths for drums and guitar with the corrected wording under distance semantics: composite scores 0.2374 (drums) and 0.2584 (guitar) are close *below* the 0.40 upper-bound floor, and OPT3 stands per invariants (a), (b), (c) because a composite-relative WINNER scope-extension would still require operator authority. Both disclosures carry `supersedes_path: null` — they are siblings to the pinned c14 drums and c15 guitar profiles, not replacements. The c14 drums and c15 guitar pinned profiles are byte-identical pre-vs-post. This closes the c22-correction Track 1 obligation the prior audit had left open under the c23 brief's regressive wording.
 
-- cycle_26_utilities: 3/3 verified.
-- cycle_27_utilities: 5/5 verified.
-- cycle_28_utilities: 6/6 verified.
-- cycle_29_utilities: **4/4 verified** (newly anchored this range in `tests/fixtures/cycle28_util_shas.json`).
+### Read-only anchors held; discipline invariants met
 
-**Total 25/25 analytical utility files across c26–c30 byte-identical**; the §41 cross-branch anchor guard now covers all four prior analytical cycle groups. Cycle-30 utilities (7 new files) are a housekeeping backlog item for cycle 31 — extend §41 with a new `cycle_30_utilities` fixture entry mirroring the pattern this range established.
+Eight read-only anchors verified byte-identical pre-vs-post: c9 bass profile, c14 drums profile, c15 guitar profile, c17 `cg_ab_mix.wav` (SHA `6e13e0075c5d8116784109067cf2c73acd65e47d67398b88aa08e0f752f9484b`, matches brief), bass_v2 profile, `objective.py`, `replay.py`, and the c22 corrected drums/guitar disclosure JSONs. No `SF2_CONFIRMED` verdicts were emitted anywhere in cycle 34 (absolute prohibition). No unilateral scope-extension of the c9 CG-bass precedent occurred. Canonical 7-key environment pin on every new artifact. Interpreter guard on all three new scripts. No PRNG, no `sidecar_nonfactor`, no `--verify-det` bypass, no VST3 state APIs.
 
-### Tests (all green under independent audit re-runs)
+### Ledger discipline — in-cycle validator catch
 
-- `test_semantic_cluster_overlap.py`: **12/12 pass** (interpreter-guard, no-PRNG, α-pinned, deterministic-fingerprint, 76-row-only-threshold, deterministic-equivalence-classes, K_eff ≤ K, verdict-dispatch-all-three, rubric-hash, rubric-committed-before-verdict, verdict-frozen-label, anchor-preservation-all-prior-cycles).
-- `test_integration_cross_branch.py`: **0 failures** (§43 verdict/rubric/α/inputs/cycle-29 anchor guard PASS; §44 M4_REFUTES → close-out doc dispatch PASS).
-- `test_hash_geometry_adjudication.py` (cycle-29 anchor): **11/11 unchanged**.
-- `test_collision_model_hash_space_geometry.py` (cycle-28 anchor): **12/12 unchanged**.
-- `test_ledger_writer_validation.py` (cycle-29 test_22 anchor): **22/22 unchanged**.
-- `promise_check`: **0 ERRORs**. Only pre-existing WARNs (long_exposure exemption + path canonicalizations + one historical report path); none introduced this cycle.
+Twelve of twelve ledger events landed. The ledger's assessor-field validator rejected the initial `assessor="worker c24"` value against the canonical set `{auditor, final_auditor, harness, human, manager, researcher, worker}`; the worker fixed to `assessor="worker"` and carried the c24 identity in the `narrative` and `cycle` fields. This is the FD-1 halt-honest pattern working correctly on the first pass — an in-cycle validator catch is a positive discipline signal, not a defect.
 
-### Byte-determinism × 3
+### On-disk-vs-brief SHA divergence handled correctly
 
-Verdict SHA-256 = `a3e6417dc673fddf06cd18f8d3aeabfb6d7a01000770d303e5782a05468a43ee` reproduces bit-identically across three runs (worker's two independent runs + this audit's rerun).
+The cycle 34 brief cited the c14 drums pinned SHA as `1fcb2e46…`; on-disk read `720f1424e9fcac352b9b…`. The worker used the on-disk value as authoritative per FD-1 and invariant (d) and disclosed the divergence honestly. This is the fourth cycle in which brief SHAs have carried transcription errors requiring on-disk override. Not a defect of the current worker — worker handled it correctly — but a symptom that briefs are being written from prior briefs rather than freshly queried on-disk.
 
-### Cross-cycle mechanism scoreboard (final, post-c34)
+### Cycle 34 amendment doc
 
-| Candidate | Status | Cycle | Evidence |
-|---|---|:---:|---|
-| M1: coherence-gate coercion-rate | REFUTED (structural) | 27 | c27 lemma: gate mutates parameters but never remaps rule_ids |
-| M2: effective-K conditional | REFUTED | 27 | per-rule_type R² unchanged under M2 correction |
-| M3: hash-space geometry | COLLAPSED to REFUTED | 33 | 0 BH survivors; single-cell attribution to legacy content cluster |
-| M4: semantic-cluster overlap | REFUTED | 34 | K → K_eff over-collapses; aggregate R² −28.84 vs baseline +0.96 |
+`docs/v4_closure_completion_report_c24_amendment.md` was published with all seven mandated sections including the §7 ear-plausibility flag recommending the operator hear the four non-CG bass stage-1 top-1 renders before authorizing OPT1 on the escalation.
 
-### Auditor MINOR observations (logged, not investigated)
+### Audit outcome
 
-- Ledger grew 424 → 432 (+8: 6 named + 2 housekeeping), matching brief expectation.
-- Plan-of-record hygiene: `M-GEN-1/collision-model-semantic-cluster-overlap` registered in both 5-col Milestones and 3-col Sub-milestones tables (2 mentions confirmed). "Housekeeping event pattern" subsection added (1 mention confirmed). Ledger state-machine lesson from cycle 29 respected: new peer sub-milestone opened, not a sub-sub of terminal `hash-space-geometry/adjudication`.
+**VALIDATED.** All prior-cycle CRITICAL findings are addressed. Track A and Track D (must-land per brief) both executed correctly with proper floor semantics, honest invariant-compliance analysis, and no unilateral scope-extension. The escalation opens the operator-authority path in the correct shape. Anchor preservation is clean; discipline invariants are met; `supersedes_path` as string per the c14 lemma throughout. Aspirational tracks (Track B WIG + Disco A stage-2, Track C four drums + two guitar stage-1 sweeps, Track F test debt cleanup) were deferred within the brief's allowance; deferrals are honest and documented in the amendment doc. Zero CRITICAL findings; two MODERATE (deferred aspirational coverage; SHA transcription-drift pattern); two MINOR (test debt continues; validator catch was a positive signal).
 
 ## Discussion
 
 Three things about this range are worth naming.
 
-First, `PARTIAL_BP_UNRESOLVED_SHAPE` is a first-class close-out, not a defeat. The four candidate mechanisms the cycle-26 auditor named to explain the per-rule_type shape residual under BP-scaled with α ≈ 0.75 have all been tested to specification, each with a pre-registered rubric and each closed under that rubric's mechanical dispatcher. Three of the four are refuted (M2 at c27, M3 at c29-collapsed, M4 at c34); one is structurally disqualified (M1 at c27 by the rule_id non-remapping lemma). The remaining hypothesis-space for the residual is not empty — cycle 34's close-out doc names three cycle-31+ candidates the campaign could reopen the arc with (generator instrumentation, sampler alteration with a fresh α refit, distributional reformulation) — but the mechanism-space of the four cycle-26 auditor-named candidates *is* empty. The α ≈ 0.75 in the aggregate BP fit is now known to be absorbing something other than any of the four candidate mechanisms; the honest campaign move is to close this arc at `PARTIAL_BP_UNRESOLVED_SHAPE` and pivot rather than to launch a fifth candidate speculatively. That the M-GEN-1 batch pipeline itself remains open (deterministic generation and downstream metrics are unaffected) is the important delimiter: the arc that closed is the *explanatory* arc for the per-rule_type shape residual, not the generation pipeline.
+First, the range demonstrates the halt-honest / discipline-reset loop working as designed on a two-cycle scale rather than a one-cycle scale. Cycle 33 was substantively productive — five NULL findings, four stage-1 leaderboards, a systematic 4-arc finding that has direct bearing on the forthcoming operator decision — but it slipped the verdict-declaration gate in two specific ways: it emitted `SF2_CONFIRMED` on above-floor candidates (violating the retained 0.40 upper-bound floor's purpose) and it unilaterally extended the c9 CG-bass composite-relative WINNER precedent to four non-CG cells (violating the FD-6 operator-authority requirement). The subsequent audit caught both. The next cycle reversed both cleanly while preserving the genuine substantive work as read-only anchors and opening the operator-authority path with a properly-shaped escalation. This is the intended shape of the reset loop — the substantive work is not lost, the discipline violations are surgically reversed, and the operator gets a decision request with the correct options and honest per-option invariant analysis.
 
-Second, the pre-registration discipline has now held across five consecutive cycles (c26 through c30, i.e. c26 aggregate BP, c27 M1/M2, c28 M3 first pass, c29 M3 BH-FDR, c30 M4). Every cycle committed its verdict rubric before analysis, embedded the rubric SHA-256 in the verdict JSON, exercised the dispatcher on synthetic inputs to demonstrate it triggers all branches (non-degenerate), and pinned α at 0.7469387071101908 verbatim without a fresh refit. No after-the-fact rubric edits at any point. The one M4 threshold-comparison choice worth naming (rhythmic p20 = 0 forced `<` → `≤`) was made *before* the fit/verdict scripts ran and documented in the rubric doc, which was itself committed before any verdict script ran. The change strengthened M4 *toward* the EXPLAINS branch (more K-collapse → smaller predictions → closer to observations), and the verdict still landed at REFUTES under the more-generous convention. Pre-registration integrity is preserved; a hostile reader could not reasonably read the change as an outcome-driven edit.
+Second, the 4-arc systematic finding is materially important beyond the current milestone. The composite metric top-1 consistently favors candidates that the operator ear would reject as source-of-truth (E-Piano 2 as bass replacement on three non-CG songs; Church Organ as bass on Rome). This same pattern appeared on the CG arcs (drawbar organ over bass; Power Kit over Standard; Nylon → Jazz over Rock). The pattern is exactly what an unresolved distance-vs-similarity sign convention would produce, and it is what the c24 amendment §7 recommends the operator hear before choosing OPT1 vs OPT2 vs OPT3 on the escalation. The prediction is that OPT2 (refuse the extension + fall back to OPT3 htdemucs bass) is the invariant-compliant outcome and that OPT1 would produce ear-implausible non-CG showcases on three of four songs.
 
-Third, the linear-cycle posture continues to be the right shape for the collision-modeling arc's diagnostic tail. Fan-out was correctly refused for c30, c29, and c28: each cycle is a tightly-coupled statistical probe on shared inputs (batch anchors + rules ledgers), a shared rubric-and-α argument, and a small mechanical outcome-space. Parallel fanning would have produced three shadow ledgers that shared a rubric-file dependency and a shared cycle-26 utility pin, creating exactly the class of concurrent-write interference that took cycle 22 to work around and that the harness-namespacing fix at c22 clone-0 finally retired. Fan-out remains the correct choice for future cycles only when independent branches have their own audit gates and iteration loops; the diagnostic tail on a single mechanism-space is not that case. This is worth carrying forward as a durable posture note for future auditors: "linear + rubric-locked-pre-run + dispatcher-not-degenerate + pinned α" is the diagnostic-tail template.
+Third, the accumulating brief-vs-on-disk SHA transcription pattern is a process signal worth surfacing before it compounds. Four cycles in a row have carried at least one brief SHA that did not match the on-disk file, requiring the worker to override honestly per FD-1 and invariant (d). Each individual worker handled it correctly, but the aggregate signal is that briefs are being written from prior briefs rather than freshly queried against disk. A one-line change to the brief-authoring convention — "ground every SHA in a fresh on-disk query before writing" — would eliminate the class of defect without adding process weight.
 
-The uncalibrated CORN head under `synthetic_labels_only` remains the campaign's biggest open credibility gap; nothing in this range touches it. Egress remains blocked; `docs/ear_path_b_commitment.md §7-§8` stays the durable pre-authorised playbook for the moment the two-consecutive-`media_ok=true` trigger fires. The recommended cycle-31 primary is the M-EAR-1 Path B fixture reinforcement (extend the armed-harness synthetic-fixture verification, cover a synthetic ratings_manifest content-hash change scenario, verify all three pre-registered SB1/SB2/SB3 success bars are computable from a synthetic-labels dry-run, add a mock-egress-unblock probe), which is analytical / deterministic and requires no live network. The M-TEX-1/stage-by-stage extension to a fourth seed (a breadth-second-seed with non-trivial `other` stem content) is the alternative direction if the researcher prefers.
+## Open questions
 
-## Open Questions
-
-- **Cycle 31 primary (researcher's choice, NOT parallel):**
-  - **Recommended:** M-EAR-1 Path B fixture reinforcement (extend armed-harness synthetic-fixture verification; cover synthetic ratings_manifest content-hash change; verify SB1/SB2/SB3 bars are computable from a synthetic-labels dry-run; add a mock-egress-unblock probe simulating the two-consecutive-`media_ok=true` transition and asserting the armed harness fires `scripts/ear/train.py` correctly). Analytical, deterministic, no live network, no touched anchors.
-  - **Alternative:** M-TEX-1 stage-by-stage extension to a fourth seed with different character (e.g. a breadth-second-seed with non-trivial `other` stem content). Cycle-9 DawDreamer chain preserved verbatim.
-- **Cycle 31 out-of-scope:** no fifth mechanism candidate on the collision-modeling arc. The M4 close-out already names three cycle-31+ candidates for reopening (generator instrumentation, sampler alteration with fresh α refit, distributional reformulation) IF the campaign chooses to reopen; none are cycle 31's obligation.
-- **Housekeeping backlog (opportunistic, delegate to any worker):**
-  - Extend §41 anchor guard to also anchor cycle-30 utilities (7 new files) via a new `cycle_30_utilities` fixture entry mirroring the pattern this range established for cycle-29.
-  - Consider whether pre-existing WARNs on `scripts/rules/`, `scripts/gen/`, and `scripts/daw_spike/gap2_v3/` path-canonicalization warrant a one-cycle cleanup; stable for many cycles but keeps the WARN floor at 3.
-  - `long_exposure/tools/*` and `long_exposure/workspace_bootstrap.py` missing-file WARNs are the established exemption; no action needed.
-- **Standing constraints unchanged.** Fixed Decisions binding; anti-patterns locked (5 confirmed); α pinned at 0.7469387071101908 across every future mechanism analysis (do not refit); SHA-256 tiebreak only; no PRNG; no `sidecar_nonfactor`; no `i4_stratified` imports in analytical cycles; c27 structural lemma (coherence gate never remaps rule_ids across ledger rows); read-only anchors (c9/c13/c15/c22 harnesses; c6 feature cache; c26 + c27 + c28 + c29 + c30 analytical utilities; batch anchors v1..v6); ledger hygiene (`narrative`, `run_id="run-2026-08-28T040704Z"`, nested `confidence:{level,rationale,assessor}`, UUID5 content-hash `event_id` auto-derived, two-arg `append_ledger_event(workspace, event)`); ledger state-machine (`validated → in_progress` forbidden; open peer sub-milestones for related work rather than reopening terminal milestones — c29 lesson, c30 re-application).
-- **Egress still blocked.** Retry `workspace/harvest_playlists.sh` at top of each cycle; do not gate cycle work on it. M-EAR-1 Path B commitment durable; three real-label SB thresholds locked at c26 (IQR = 0.5909 / τ ≥ 0.4 / leak-detection ≥ 0.90).
-- **`PARTIAL_BP_UNRESOLVED_SHAPE` is the closed status of the M-GEN-1 collision-modeling explanatory arc.** The M-GEN-1 batch pipeline itself remains open; deterministic generation and downstream metrics are unaffected.
+- **Operator authority on the non-CG bass escalation.** Three named options with per-option invariant analysis are published; no path is agent-resolvable under invariants (a)–(d). The systematic 4-arc finding predicts OPT2 is the invariant-compliant answer; the operator ear check on the four stage-1 top-1 renders is the recommended tiebreaker.
+- **WIG and Disco A stage-2 fine fits (aspirational).** Both songs are below-floor and eligible for `CONFIRMED` under operator authority. Stage-2 fits under the extended `fine_fit_sf2_v2.py` (with `--song-sha16`, `--merged-mid-path`, `--reference-stem-path` additive kwargs, sweep-storage hygiene, detached launch) would pin their stage-2 SHAs and top-1 params without changing the `STILL_INDETERMINATE` verdict pending escalation.
+- **Four non-CG drums + two non-CG guitar stage-1 sweeps (aspirational).** MIDI probes indicated WIG guitar and Peach Dream guitar are empty / inaudible (already NULL); the remaining sweeps would extend the systematic-finding evidence base from 4-arc bass to full 15-arc if the pattern holds, or refine it to per-instrument-specific if not.
+- **Test debt (recommended, deferred fifteen cycles).** Three test modules are queued: `test_stem_midi_probe.py` (regression pins on the four non-CG stem-MIDI probe SHAs and their empty-flag → NULL chain); `test_non_cg_bass_verdict_reclassification_c24.py` (regression pins on the four stale `SF2_CONFIRMED` artifacts + the four revised verdicts + the escalation schema + `supersedes_path` string invariant + CG anchor byte-identity); `test_c24_track_d_disclosures.py` (regression pins on the c14 drums + c15 guitar corrected disclosures with three-way rubric-hash byte-equality).
+- **Brief-vs-on-disk SHA transcription drift.** Four-cycle-old pattern; single-line remediation is "ground every SHA in a fresh on-disk query before writing."
+- **Completion report second pass.** The main `docs/v4_closure_completion_report.md` will need a follow-on amendment or rewrite once the operator decision on the escalation lands and any post-escalation stage-2 work is complete.
 
 ## Appendix: Provenance
 
-**Cycle range:** cycles 32-34.
-**Working directory:** `/home/user/long-exposure-runs/music-gen`.
-**Session references:**
+**Directive.** Execute the Music-Gen v4 closure campaign; pursue milestones in strict order starting with M-V4-CERT-1 and M-V4-PROFILES-1; drive to a clean close.
 
-- Cycle 32: researcher `bdd02dcc-adcf-414a-a491-2e73ac82c7e9`, worker `e0aa800d-f013-42fb-9697-ed680d951464`, auditor `c6b51e54-89b6-43b8-92fa-20f00119eada`.
-- Cycle 33: researcher `c3c176a9-b92a-4611-ba75-2b3ef0fda28f`, worker `197b4b09-38da-423e-ad14-5ea0c1a762c1`, auditor `615cada3-5e6b-4dbc-aa2f-6833a8009de5`.
-- Cycle 34: researcher `5cb76368-9fdd-4fa6-9a2e-b5039f14e1d8`, worker `bd106a60-bb21-49a6-8e0c-3171efa595fa`, auditor `f2d4c6a4-39e8-4eef-98c9-ca21ccb725b8`.
+**Cycle range.** cycles 32–34.
 
-**Auditor decision (c34):** **VALIDATED**. Sub-milestone `M-GEN-1/collision-model-semantic-cluster-overlap` closes at `validated/high` with terminal verdict **M4_REFUTES**; the collision-modeling *explanatory arc* closes at **`PARTIAL_BP_UNRESOLVED_SHAPE`** (first-class negative finding).
+**Working directory.** `/home/user/long-exposure-runs/music-gen`.
 
-**Deliverables on disk at cycle-34 exit.**
+**Session references.**
 
-- Cycle-32 code / data / test: M3 hash-geometry first-pass utilities under `scripts/analysis/`; verdict + rubric JSON under `data/collision_model/`; `test_collision_model_hash_space_geometry.py` (12/12).
-- Cycle-33 code / data / test: M3 adjudication (BH-FDR) utilities under `scripts/analysis/`; verdict + rubric JSON under `data/collision_model/`; `test_hash_geometry_adjudication.py` (11/11); `test_ledger_writer_validation.py` extended to 22 cases.
-- Cycle-34 code / data / test: 7 new M4 utilities under `scripts/analysis/` (`fingerprint_extract.py`, `pairwise_cosine.py`, `p20_threshold.py`, `union_find_clusters.py`, `semantic_cluster_fit.py`, `semantic_cluster_verdict.py`, `anchor_preservation_shape.py`); `data/collision_model/semantic_cluster_{fit,verdict,pre_run_anchor_manifest,post_run_anchor_manifest}.json` + fingerprint TSVs; `docs/collision_generation_model_partial_bp_unresolved_shape.md` (close-out); `tests/test_semantic_cluster_overlap.py` (12/12); §43 + §44 cross-branch extensions.
+- Cycle 32 researcher `01679bb1-e4fa-4123-9525-b6d3adf64bcb`; worker `50df810d-c3b0-49b8-8d07-2e32cb3ab070`; auditor `6e3ee562-dec2-40b2-b3f4-ad5c32ca0d0f`.
+- Cycle 33 researcher `100e5e19-64ab-4066-831c-7fe2f1d439a6`; worker `637129d5-11aa-4035-a090-2e12d0b2e812`; auditor `557bfd94-2737-43cc-8b5c-3cdb75f4add8`.
+- Cycle 34 researcher `167559a1-2db5-44b9-9cff-bdef899a2214`; worker `c75a9090-73aa-4f70-b7cc-5c8dd10ea2b8`; auditor `a1930789-af63-40ee-bf16-bedca2bf0634`.
 
-**Load-bearing runtime evidence (c34).**
+**Audit verdict.** **VALIDATED**. Zero CRITICAL. Two MODERATE (aspirational deferrals across three tracks; four-cycle brief-vs-on-disk SHA transcription pattern). Two MINOR (fifteen-cycle test-debt deferral continues; in-cycle assessor-field validator catch was a positive signal, not a defect).
 
-- Verdict: **M4_REFUTES** (rubric SHA-256 `efd1baa68d44a73e4a9430920060660909a520953115d0982708e29fa38006ae`, embedded in verdict JSON).
-- α pinned = 0.7469387071101908 (matches c26 verbatim).
-- Aggregate R² before M4 = 0.958818977481073 (matches c26 anchor byte-for-byte); after M4 = **−28.84091130197047**.
-- Mean per-batch shape R² M4 = **−52.69**.
-- K_eff ≤ K in every cell across both ledgers.
-- Anchor preservation: **25/25** across c26/c27/c28/c29 utilities via §41 anchor guard.
-- Byte-determinism × 3: verdict SHA `a3e6417dc673fddf06cd18f8d3aeabfb6d7a01000770d303e5782a05468a43ee` reproduces bit-identically.
-- Tests 12/12 branch + §43 + §44 integration + prior cycle anchor suites all green.
+**Terminal deliverables landed this range.**
 
-**Ledger routing.** Six named + two housekeeping shadow-ledger events emitted at each cycle's clone-0 shadow ledger in strict order (plan-register → in-progress checkpoints → terminal `validated/high` → archive → `_infra/adopt-cycleN-tests`). All events use nested `confidence: {level, rationale, assessor}`, canonical `narrative` field name (not `summary`), and canonical `run_id: run-2026-08-28T040704Z`. Auto-concat under the cycle-22 harness-namespacing fix; orphan-artefact WARNs on new artefacts cleared at post-merge concat via the `_infra/adopt-*` mechanical pattern. Ledger grew 424 → 432 on cycle 34 alone; total across the range consistent with the housekeeping pattern codified in plan-of-record.
+- Four revised non-CG bass verdict JSONs at `data/v4/profiles/{252eb21ce7df7328,51e433ade2a845e1,88d247468cb6d49f,cdd2717e52820ff6}/<slug>_bass_family_verdict.json` (WIG / Rome / Peach Dream / Disco A) with corrected enums (`SF2_RULED_OUT` × 2, `STILL_INDETERMINATE` × 2), honest-disclosure fields, and `supersedes_path` as string.
+- Four preserved-stale cycle 33 artifacts at `stale/<slug>_bass_family_verdict.c23_scope_extension_disclosed.json` byte-identical per invariant (d).
+- Escalation JSON `data/v4/_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json` SHA `8101f7d57ef52991…` with three options, per-option invariant analysis, `blocked_on_operator=true`, `supersedes_path=null`.
+- Two Track D corrected-disclosure JSONs (CG drums + guitar) as siblings to the c14/c15 pinned profiles with `supersedes_path=null`.
+- Amendment doc `docs/v4_closure_completion_report_c24_amendment.md` with seven sections including §7 ear-plausibility flag.
+- POR registration row + housekeeping rows + cycle-closed rollup; twelve of twelve ledger events landed.
 
-**Standing anti-patterns unchanged (5).** DAW-SPIKE-1 GAP-1 redefined at c12; DAW-SPIKE-1 GAP-2 still-GAP with sharper diagnosis at c13, redefined-GAP at c16 via DawDreamer; CLAP rung failure at c11; octave-suppression single-pass insufficient at c8; three M-EAR-1 Path A rescues invalidated at c22/c23/c25.
+**Read-only anchors preserved byte-identical pre-vs-post (8).**
 
-**Environment stack unchanged since cycle 10.** `mscore3` 3.2.3 headless; Python 3.11.15; `numpy 1.26.4`; `music21 9.1.0`; `mir_eval 0.8.2`; fluidsynth (Debian) with pinned SF2 `74594e8f…1cb0`; DawDreamer + Surge XT Effects.vst3 at `/usr/lib/vst3/`; basic-pitch 0.4.0 in `workspace/basic_pitch_venv/`. Single-thread BLAS pins throughout. Stability-audit harness anchors held at cycle-22 SHAs (not exercised this range).
+- c9 CG bass profile
+- c14 CG drums profile (on-disk SHA `720f1424e9fcac352b9b…`)
+- c15 CG guitar profile
+- c17 CG A/B mix `cg_ab_mix.wav` SHA `6e13e0075c5d8116784109067cf2c73acd65e47d67398b88aa08e0f752f9484b`
+- bass_v2 profile
+- `objective.py`
+- `replay.py`
+- c22 corrected drums / guitar profile JSONs
 
-**Campaign-level status at cycle-34 exit.**
+**Environment pin.** Canonical 7-key `env_pin_sha256=2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca` on every new artifact this range.
 
-- G1 (recreation spine): all c6/c8/c9 sub-milestones validated (ingestion + classification + separation + transcription + score bridge + rules extraction + breadth-second-seeds).
-- G2 (DAW): validated with 2 GAPs closed to redefined-GAP (c12/c13) via honest fallbacks.
-- G3 (judges): M-HEUR-1 complete; M-EAR-1 durable Path B (post-egress real labels). Path A synthetic-label chassis exhaustion documented across c22/c23/c25.
-- G4 (rules ledger + texture): M-RULES-1 (schema + extraction + breadth expansion) validated; M-TEX-1/panel (spectral + envelope + embedding + content-flip characterization) validated; M-TEX-1/stage-by-stage validated on 3 seeds.
-- G5 (deterministic generation): six batches rendered (v1..v6); **collision-modeling explanatory arc closed as `PARTIAL_BP_UNRESOLVED_SHAPE`**; deterministic generation itself continues to work.
-- Egress remains blocked; retry probe still non-blocking. Rated audio for M-EAR-1 unavailable.
+**Discipline guards asserted.** No `SF2_CONFIRMED` verdicts anywhere in cycle 34 (absolute prohibition until operator resolves the escalation). No unilateral scope-extension of the c9 CG-bass precedent. `/usr/bin/python3` interpreter guard on all three new scripts. No PRNG, no `sidecar_nonfactor` imports, no `--verify-det` bypass, no VST3 state APIs. In-cycle assessor-field validator catch on the ledger emitter (initial `worker c24` rejected against canonical set; fixed to `worker` with c24 identity in `narrative` and `cycle` fields).
 
-**Rated audio.** Still egress-blocked per `corpus/CORPUS_STATUS.md`. `M-INGEST-1/egress-ready-automation` state machine remains `IDLE`; runtime state files correctly absent until the first live trigger. `docs/ear_path_b_commitment.md §7-§8` remains the durable pre-authorised checklist if egress unblocks mid-cycle.
+**Standing anti-patterns unchanged.** No PRNG introductions, no `sidecar_nonfactor` cross-contamination, no `--verify-det` bypasses, no VST3 state-extraction re-attempts, interpreter-guard policy honored, zero cross-branch regressions across accumulated tests.
 
-**Handoff to cycle 31.** Primary: M-EAR-1 Path B fixture reinforcement (recommended) or M-TEX-1 stage-by-stage extension to a fourth seed. Out-of-scope: fifth mechanism candidate on the collision-modeling arc. Housekeeping backlog: extend §41 anchor guard to cover cycle-30 utilities via a new `cycle_30_utilities` fixture entry. Standing constraints unchanged; α pinned; anti-patterns locked; egress still blocked; rated-audio unblock remains a straight-line consequence of the egress-ready state machine firing.
+**Milestone status at range close.**
+
+- M-V4-CERT-1 — validated (E2E_DETERMINISM_HOLDS on the v3 spine).
+- M-V4-PROFILES-1 CG (5/5 instruments) — validated (bass_v2 accepted per operator authority; drums OPT3; guitar OPT3; piano/other NULL grounded).
+- M-V4-PROFILES-1 non-CG bass — 2/4 `SF2_RULED_OUT` (Rome 0.5145, Peach Dream 0.4437 — above 0.40 floor); 2/4 `STILL_INDETERMINATE` (WIG 0.3055, Disco A 0.2443 — below floor, pending operator escalation resolution).
+- M-V4-PROFILES-1 non-CG drums — 0/4 (aspirational cycle-25 track B).
+- M-V4-PROFILES-1 non-CG guitar — 0/2 (aspirational cycle-25 track B; WIG + Peach Dream guitar are NULL by MIDI-probe).
+- M-V4-SHOWCASE-1 CG — LANDS_pending_operator (`cg_ab_mix.wav` byte-identical since c17).
+- M-V4-SHOWCASE-1 non-CG — BLOCKED on `_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy` operator authority.
+- M-V4-RULES-1 — scaffold landed c20; substantive implementation queued.
+- M-V4-EAR-1 — not yet opened.
+- M-V4-GEN-1 — conditional on M-V4-RULES + M-V4-EAR.
+- M-V4-CLOSE-1 — c24 amendment landed; further amendments as substantive work completes.
+
+**Operator hand-off (from c24 amendment §7, retained).** The operator should listen to the four non-CG bass stage-1 top-1 renders (Rome Church Organ; WIG / Peach Dream / Disco A E-Piano 2) as bass replacements before authorizing OPT1 on the escalation. The systematic 4-arc finding predicts ear-implausibility; if the ear rejects them, OPT2 (refuse extension + OPT3 htdemucs bass fallback) is the invariant-compliant outcome and the non-CG showcase can proceed without further blocking.
