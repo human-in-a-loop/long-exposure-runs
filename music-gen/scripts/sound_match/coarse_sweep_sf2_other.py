@@ -1,22 +1,23 @@
 #!/usr/bin/env -S /usr/bin/python3
 # ---
-# created: 2026-09-05T17:38:00Z
-# cycle: 60
+# created: 2026-09-05T18:00:00Z
+# cycle: 61
 # run_id: run-2026-09-05T210000Z
 # agent: worker
-# milestone: M-V4-PROFILES-1/wig-piano-stage1
+# milestone: M-V4-PROFILES-1/other-family-sibling-driver
 # ---
-"""Family-1 coarse sweep: piano-family sibling of coarse_sweep_sf2.py.
+"""Family-1 coarse sweep: other-family sibling of coarse_sweep_sf2.py.
 
-Authored per docs/sweep_driver_family_policy.md sha
-`1546a6fc01e141a0bfdad41672a3f659083c1adf543e78761f9beb2206c73269`
-(c59 P4 codification of OPT_A → OPT_B path). The bass-anchor driver
-`scripts/sound_match/coarse_sweep_sf2.py` (sha
-`3f8bfa0822b62cc99ffcdb8cecfe950f4ccb0f5e1665cbeabfed782d27454129`)
-hard-codes `t.name == "bass"` at L178 and `channel=0` at L96 with an
-unconditional call at L266 so a `--instrument` kwarg cannot reroute
-the extraction; policy step 2 requires a sibling driver. This module
-is that sibling for piano-family sweeps.
+Authored per docs/sweep_driver_family_policy_other_c60.md sha
+`55be79b82ad19ecf9c95f50d6d96d9e969e9a49883ef2d571a537c5836d4a838`
+(c60 P4 codification for the "other" stem). Minimal-diff sibling to
+the piano driver `coarse_sweep_sf2_piano.py` sha
+`ddecdc5b0f6dc7f3a1f9f4cb91508f4b0893bcb1d51209d555f7492666092846`
+(c60 P1 anchor), which is itself a sibling to the bass-anchor
+`coarse_sweep_sf2.py` sha
+`3f8bfa0822b62cc99ffcdb8cecfe950f4ccb0f5e1665cbeabfed782d27454129`.
+Policy step 2 requires per-family driver siblings; this module is
+that sibling for the "other" stem.
 
 Discipline:
     - env pins (BLAS single-thread + PYTHONHASHSEED + SOURCE_DATE_EPOCH
@@ -30,17 +31,17 @@ Discipline:
     - Panel objective is READ-ONLY over scripts.texture.panel.
     - Interpreter guard: /usr/bin/python3.
 
-Piano vs. bass differences (minimal, per policy step 2):
-    - `_extract_piano_midi` reads track `t.name == "piano"` (not "bass").
-    - `_rewrite_piano_midi_with_program` preserves channel=0 (piano is
-      pitched, same as bass; drum ch10 is not applicable here).
+Other vs. piano differences (minimal, per policy step 2):
+    - `_extract_other_midi` reads track `t.name == "other"` (not "piano").
+    - `_rewrite_other_midi_with_program` preserves channel=0 (pitched
+      residual per v3 doctrine; drum ch10 not applicable).
     - `--song-sha16` is the required kwarg (aliased with `--song` via a
       shared argparse dest per c48 additive precedent). No legacy stage
       to preserve; new-driver-fresh convention.
-    - GM piano program range recommended: 0..7 (Acoustic Grand,
-      Bright Acoustic, Electric Grand, Honky-tonk, Electric Piano 1,
-      Electric Piano 2, Harpsichord, Clavinet). Configurable via
-      `--presets`.
+    - GM program range recommended: {48, 49, 52, 88, 89, 90, 95, 96}
+      (String Ensemble 1, String Ensemble 2, Choir Aahs, Pad 1 New Age,
+      Pad 2 Warm, Pad 3 Polysynth, Pad 8 Sweep, FX 1 Rain) per c60 P4
+      plan §Recommended presets. Configurable via `--presets`.
 """
 from __future__ import annotations
 
@@ -68,7 +69,7 @@ for k, v in _PINS.items():
 
 if sys.executable != "/usr/bin/python3":  # pragma: no cover
     raise RuntimeError(
-        f"coarse_sweep_sf2_piano requires /usr/bin/python3 "
+        f"coarse_sweep_sf2_other requires /usr/bin/python3 "
         f"(got {sys.executable})"
     )
 
