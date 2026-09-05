@@ -381,7 +381,26 @@ def _dir_size_bytes(p: Path) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     # c32 OP-1 wrap: serial-launch lock per docs/agent_picks_selection_invariants.md.
-    with SerialLock(driver="fine_fit_sf2_guitar", cycle=32):
+    # c53 fix (symmetry): extract --cycle N arg (default 32, backward-compat).
+    _cycle = 32
+    _av = list(argv) if argv is not None else list(sys.argv[1:])
+    for _i, _a in enumerate(_av):
+        if _a == "--cycle" and _i + 1 < len(_av):
+            try:
+                _cycle = int(_av[_i + 1])
+            except ValueError:
+                pass
+            _av = _av[:_i] + _av[_i + 2:]
+            break
+        if _a.startswith("--cycle="):
+            try:
+                _cycle = int(_a.split("=", 1)[1])
+            except ValueError:
+                pass
+            _av = _av[:_i] + _av[_i + 1:]
+            break
+    argv = _av
+    with SerialLock(driver="fine_fit_sf2_guitar", cycle=_cycle):
         return _main_body(argv)
 
 

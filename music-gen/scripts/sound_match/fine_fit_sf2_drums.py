@@ -421,8 +421,27 @@ def _dir_size_bytes(p: Path) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     # c32 OP-1 wrap: serial-launch lock per docs/agent_picks_selection_invariants.md.
-    with SerialLock(driver="fine_fit_sf2_drums", cycle=32):
-        return _main_body(argv)
+    # c53 fix (symmetry with fine_fit_sf2_v2): extract --cycle arg (default 32
+    # preserving c32-c52 behavior per invariant (f) legacy-mode regression bar).
+    _cycle = 32
+    _av = list(argv) if argv is not None else list(sys.argv[1:])
+    for _i, _a in enumerate(_av):
+        if _a == "--cycle" and _i + 1 < len(_av):
+            try:
+                _cycle = int(_av[_i + 1])
+            except ValueError:
+                pass
+            _av = _av[:_i] + _av[_i + 2:]
+            break
+        if _a.startswith("--cycle="):
+            try:
+                _cycle = int(_a.split("=", 1)[1])
+            except ValueError:
+                pass
+            _av = _av[:_i] + _av[_i + 1:]
+            break
+    with SerialLock(driver="fine_fit_sf2_drums", cycle=_cycle):
+        return _main_body(_av)
 
 
 def _main_body(argv: list[str] | None = None) -> int:
