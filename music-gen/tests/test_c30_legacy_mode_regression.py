@@ -1518,6 +1518,137 @@ def test_36_c43_por_drift_preservation_stand_pat():
     print("test_36 OK - c43 POR stand-pat; chain-length=10; c42/c41/c40/c39/c38/c37/c36 + c35 blocker + c34 diagnostic byte-identical")
 
 
+def test_37_c44_chain_supersede_invariant_string_not_list():
+    """c44 P7 (a): chain-supersede invariant across all c44 preservation records.
+
+    Verify supersedes_path is `str` (never list) on every c44 preservation
+    sidecar that carries one, per c14 lemma. Also assert the target of each
+    supersedes_path is the corresponding c43 predecessor filename, and each
+    c44 sidecar is well-formed JSON on disk.
+    """
+    import hashlib
+
+    # (path, expected_supersedes_target_basename, expected_predecessor_sha)
+    supersede_targets = [
+        ("c44-emitter-writer-boundary-preservation.json",
+         "c43-emitter-writer-boundary-preservation.json",
+         "predecessor_c43_sha256",
+         "671d266b589752409b93fc08974a3aeed8b8e98482ad0c0d0389213dbeb3b448"),
+        ("c44-por-drift-preservation.json",
+         "c43-por-drift-preservation.json",
+         "predecessor_c43_sha256",
+         "efdd5ec1d87f627727584eb49331f9d5c1e1f4b51b1f4d2c5f55d09dd3b9b87f"),
+        ("c44-track-bcd-deferral-preservation.json",
+         "c43-track-bcd-deferral-preservation.json",
+         "predecessor_c43_sha256",
+         "888f714dc11016ea47372e1bb12838b1fc8a13f605b963a824c61d72938309df"),
+        ("c44-consolidation-proposal-hold.json",
+         "c43-consolidation-proposal-hold.json",
+         "predecessor_c43_sha256",
+         "347bbde5a44de8b91da0c1181d4a9b21f1819fd0eb1ca7cbf3a77878e62a84ec"),
+    ]
+
+    for name, expect_target, sha_field, expect_pred_sha in supersede_targets:
+        ev_path = SELECTION / name
+        assert ev_path.exists(), f"c44 sidecar missing: {ev_path.relative_to(ROOT)}"
+        ev = _load(ev_path)
+        # supersedes_path type check per c14 lemma
+        sp = ev["supersedes_path"]
+        assert isinstance(sp, str), (
+            f"{name}: supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+        )
+        assert sp.endswith(expect_target), (
+            f"{name}: supersedes_path must point at {expect_target}, got {sp}"
+        )
+        # Predecessor byte-identical on-disk vs pinned SHA
+        pred_path = SELECTION / expect_target
+        assert pred_path.exists(), f"c43 predecessor {expect_target} must remain on disk"
+        pred_sha = hashlib.sha256(pred_path.read_bytes()).hexdigest()
+        assert pred_sha == ev[sha_field], (
+            f"{name}: c43 predecessor sha drifted; got {pred_sha}, expected {ev[sha_field]}"
+        )
+        assert pred_sha == expect_pred_sha, (
+            f"c43 predecessor {expect_target} drifted from test-pinned value; "
+            f"got {pred_sha}, expected {expect_pred_sha}"
+        )
+        # env_pin canonical
+        assert ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    # POR shadow-zone hold sidecar carries supersedes_path=null (new-attestation)
+    shadow_ev = _load(SELECTION / "c44-por-shadow-zone-hold.json")
+    assert shadow_ev["supersedes_path"] is None, (
+        "c44-por-shadow-zone-hold supersedes_path must be null (new-attestation-per-cycle)"
+    )
+    # Escalation-preservation sidecar carries supersedes_path=null (new sidecar class)
+    esc_ev = _load(SELECTION / "c44-escalation-preservation.json")
+    assert esc_ev["supersedes_path"] is None, (
+        "c44-escalation-preservation supersedes_path must be null"
+    )
+    print("test_37 OK - c44 chain-supersede invariant: all 4 chain sidecars use str supersedes_path per c14 lemma; "
+          "2 new-attestation sidecars use null; predecessors byte-identical")
+
+
+def test_38_c44_escalation_memo_counter_monotonicity():
+    """c44 P7 (b): escalation-memo counter monotonicity vs c43.
+
+    On-disk escalation memos do NOT carry a `counter` field (verified at c44
+    open via json inspection); counter is tracked in the c44-escalation-
+    preservation sidecar (narrative-only, per invariant (d) disclosure).
+    Verify that each of the 6 memos:
+      (i) is byte-identical pre==post (file unchanged this cycle)
+      (ii) c44_counter == c43_counter + 1 exactly
+      (iii) narrative_counter_monotonicity claim present
+    """
+    import hashlib
+
+    esc_ev = _load(SELECTION / "c44-escalation-preservation.json")
+    assert esc_ev["all_byte_identical_pre_post"] is True
+    assert esc_ev["count_preserved"] == 6, (
+        f"expected 6 escalations preserved, got {esc_ev['count_preserved']}"
+    )
+    assert "narrative_counter_monotonicity" in esc_ev
+
+    expected_escalation_files = {
+        "M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json",
+        "M-V4-METRIC-SEMANTICS-c16.json",
+        "M-V4-CERT-fine-fit-sf2-drums-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-v2-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-guitar-legacy-halt.json",
+        "M-V4-CERT-composite-fp-drift-adjudication-c32.json",
+    }
+    seen_files = set()
+    for row in esc_ev["escalations_preserved"]:
+        # (i) byte-identical on-disk vs recorded SHA
+        p = ROOT / row["file"]
+        assert p.exists(), f"escalation memo missing: {row['file']}"
+        sha_now = hashlib.sha256(p.read_bytes()).hexdigest()
+        assert sha_now == row["before_sha256"], (
+            f"{row['file']} drifted vs before_sha: got {sha_now}"
+        )
+        assert sha_now == row["after_sha256"], (
+            f"{row['file']} before != after (should be byte-identical pre==post)"
+        )
+        assert row["byte_identical"] is True
+        # (ii) monotonicity: c44 == c43 + 1
+        assert row["c44_counter"] == row["c43_counter"] + 1, (
+            f"{row['file']} counter not monotonic: c43={row['c43_counter']} c44={row['c44_counter']}"
+        )
+        seen_files.add(p.name)
+
+    assert seen_files == expected_escalation_files, (
+        f"missing/extra escalation files: got {seen_files}, expected {expected_escalation_files}"
+    )
+    # env_pin canonical
+    assert esc_ev["env_pin_sha256"] == CANON_ENV_PIN
+    # Invariant (d) disclosure re: brief counter offset
+    assert "invariant_d_disclosure_brief_counter_values" in esc_ev, (
+        "invariant (d) disclosure of brief counter offset must be present"
+    )
+    print("test_38 OK - c44 escalation-memo counter monotonicity: 6/6 byte-identical pre==post; "
+          "narrative counters {15,15,15,14,14,13} = c43 {14,14,14,13,13,12} + 1; "
+          "invariant (d) brief-counter-offset disclosed")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1555,8 +1686,10 @@ def main():
     test_34_c42_por_drift_preservation_stand_pat()
     test_35_c43_emitter_writer_boundary_preservation()
     test_36_c43_por_drift_preservation_stand_pat()
+    test_37_c44_chain_supersede_invariant_string_not_list()
+    test_38_c44_escalation_memo_counter_monotonicity()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 = 36/36)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 = 38/38)")
 
 
 if __name__ == "__main__":
