@@ -1,0 +1,11 @@
+OPERATOR STEERING (2026-09-05, post-listening) — RENDER DEFECT: THE A/B MIXES DROPPED AUDIBLE HARMONIC STEMS; APPLY YOUR OWN SUBSTITUTION POLICY AND RE-RENDER.
+
+The operator approved the four new A/Bs overall but heard missing guitar. Verified by stem RMS over each operator section (rc9_6stem): Rome guitar is AUDIBLE (-24.0 dBFS) and Disco A guitar (-24.8), other (-20.8) and piano (-21.6) are AUDIBLE; WIG other (-19.1) and Peach Dream other (-17.7) are LOUD (htdemucs routed the harmonic bed into "other" for those songs). Yet the c79 ab_mix renders included only bass+drums+vocals and dropped guitar/piano/other wholesale ("absent, honest render").
+
+That contradicts the campaign's own recorded policy: the c63 skip-close ledger entries state that downstream showcases for unprofiled audible stems "default to htdemucs stem substitution per c14 CG-drums + c15 CG-guitar OPT3 precedent". The substitution was never applied. This is a render-path bug, not a profiling reopening.
+
+REQUIRED, this cycle or next:
+1. Fix the ab_mix render path to implement the recorded policy: for each stem with no pinned profile, if its htdemucs section stem is audible (use the existing audibility probe; threshold as in audibility_*.json), include the ORIGINAL htdemucs stem in the mix (same workspace-only privacy rule as the vocals overlay; RMS-matched like other cells). Silent stems stay absent.
+2. Re-render the four affected A/Bs (WIG 252eb21ce7df7328: + other; Rome 51e433ade2a845e1: + guitar; Peach Dream 88d247468cb6d49f: + other; Disco A cdd2717e52820ff6: + guitar + other + piano) and land as ab_mix_v2.wav with manifest + replay proof; keep v1 for comparison. Also verify the open WIG duration question in the same pass.
+3. Record the defect and fix honestly in the plan of record and the amended completion report.
+4. Generation batch continues in parallel or immediately after — do not let this preempt M-V4-GEN beyond one cycle; the re-renders took one cycle last time.
