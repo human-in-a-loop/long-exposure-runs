@@ -1175,6 +1175,107 @@ def test_30_c40_por_drift_preservation_stand_pat():
     print("test_30 OK — c40 POR stand-pat landed; c39 + c38 + c37 + c36 + c35 + c34 chain preserved byte-identical")
 
 
+def test_31_c41_emitter_writer_boundary_preservation():
+    """c41 Priority 1: long_exposure/ ABSENT re-probe; preservation chain-supersedes c40."""
+    import subprocess
+    import hashlib
+
+    result = subprocess.run(
+        ["bash", "-lc", "test -d long_exposure && echo PRESENT || echo ABSENT"],
+        capture_output=True, text=True, check=True,
+    )
+    assert result.stdout.strip() == "ABSENT", (
+        f"c41 Priority 1 probe expected ABSENT, got: {result.stdout!r}"
+    )
+
+    ev_path = SELECTION / "c41-long-exposure-absent-preservation.json"
+    assert ev_path.exists(), f"c41 preservation event missing at {ev_path.relative_to(ROOT)}"
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c41-long-exposure-absent-preservation"
+    # supersedes_path str per c14 lemma, pointing at c40 predecessor
+    assert isinstance(ev["supersedes_path"], str), (
+        "supersedes_path must be str per c14 lemma"
+    )
+    assert ev["supersedes_path"].endswith(
+        "c40-emitter-writer-boundary-preservation.json"
+    ), "supersedes_path must point at c40 predecessor"
+    # Chain length = 7 (c35..c41)
+    assert ev["chain_length_cycles"] == 7
+    assert ev["first_probed_cycle"] == 35
+    assert ev["re_probe_result"] == "ABSENT"
+    # c40 predecessor byte-identical
+    c40_pres = SELECTION / "c40-emitter-writer-boundary-preservation.json"
+    assert c40_pres.exists(), "c40 predecessor must remain on disk"
+    c40_sha = hashlib.sha256(c40_pres.read_bytes()).hexdigest()
+    assert c40_sha == ev["supersedes_sha256"], (
+        f"c40 predecessor drifted: got {c40_sha}, expected {ev['supersedes_sha256']}"
+    )
+    # Full chain-integrity - c39..c35 preservations + c34 fork ancestor on disk
+    for name in (
+        "c39-emitter-writer-boundary-preservation.json",
+        "c38-emitter-writer-boundary-preservation.json",
+        "c37-emitter-writer-boundary-preservation.json",
+        "c36-emitter-writer-boundary-preservation.json",
+        "c35-emitter-writer-boundary-preservation.json",
+        "c34-emitter-writer-boundary.json",
+    ):
+        assert (SELECTION / name).exists(), f"{name} must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    # Policy anchor byte-identical
+    policy_doc = ROOT / "docs" / "emitter_exemption_policy.md"
+    policy_sha = hashlib.sha256(policy_doc.read_bytes()).hexdigest()
+    assert policy_sha == ev["readonly_anchor_verified"]["docs/emitter_exemption_policy.md"]
+    print("test_31 OK - c41 long_exposure/ ABSENT re-probe; chain-length=7; c40 predecessor byte-identical")
+
+
+def test_32_c41_por_drift_preservation_stand_pat():
+    """c41 Priority 2 stand-pat + chain-integrity through c40/c39/c38/c37/c36/c35 + c34 diagnostic."""
+    import hashlib
+
+    ev_path = SELECTION / "c41-por-drift-preservation.json"
+    assert ev_path.exists(), f"c41 stand-pat event missing at {ev_path.relative_to(ROOT)}"
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c41-por-drift-preservation"
+    # supersedes_path str per c14 lemma
+    assert isinstance(ev["supersedes_path"], str)
+    assert ev["supersedes_path"].endswith(
+        "c40-por-drift-preservation.json"
+    ), "supersedes_path must point at c40 stand-pat"
+    assert ev["chain_length_cycles"] == 8
+    # c40 predecessor byte-identical
+    c40_pres = SELECTION / "c40-por-drift-preservation.json"
+    assert c40_pres.exists()
+    c40_sha = hashlib.sha256(c40_pres.read_bytes()).hexdigest()
+    assert c40_sha == ev["supersedes_sha256"], (
+        f"c40 stand-pat drifted: got {c40_sha}"
+    )
+    # c34 diagnostic byte-identical
+    diag = DIAG / "c34_por_delta_proof.json"
+    assert diag.exists()
+    diag_sha = hashlib.sha256(diag.read_bytes()).hexdigest()
+    assert diag_sha == ev["origin_diagnostic_sha256"], (
+        f"c34 diagnostic drifted: got {diag_sha}"
+    )
+    # c35 blocker byte-identical
+    c35_blocker = SELECTION / "c35-por-drift-proof-strengthening-blocker.json"
+    assert c35_blocker.exists()
+    c35_sha = hashlib.sha256(c35_blocker.read_bytes()).hexdigest()
+    assert c35_sha == ev["strengthening_blocker_sha256"]
+    # E-4 operator snapshot absent
+    e4 = ev["operator_e4_snapshot_check"]
+    assert e4["result"] == "ABSENT"
+    # Chain-integrity - c39/c38/c37/c36 stand-pats also on disk (transitive predecessors)
+    for name in (
+        "c39-por-drift-preservation.json",
+        "c38-por-drift-preservation.json",
+        "c37-por-drift-preservation.json",
+        "c36-por-drift-preservation.json",
+    ):
+        assert (SELECTION / name).exists(), f"{name} predecessor must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_32 OK - c41 POR stand-pat; chain-length=8; c40/c39/c38/c37/c36 + c35 blocker + c34 diagnostic byte-identical")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1206,8 +1307,10 @@ def main():
     test_28_c39_por_drift_preservation_stand_pat()
     test_29_c40_emitter_writer_boundary_preservation()
     test_30_c40_por_drift_preservation_stand_pat()
+    test_31_c41_emitter_writer_boundary_preservation()
+    test_32_c41_por_drift_preservation_stand_pat()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 = 30/30)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 = 32/32)")
 
 
 if __name__ == "__main__":
