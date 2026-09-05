@@ -36,3 +36,19 @@ ingests `trading-research/<topic>/reports/final/final_report.md`.
 - `trading-research/consumer/`
 
 Cadence: monthly fresh runs + weekly follow-up guidance (human-prompted for now).
+
+## Branching policy — `main` is the single source of truth
+
+This repository keeps exactly one long-lived branch: `main`. Everything that
+belongs to a run — scaffolding, cycle sweeps, artifacts, final reports — is
+tracked there, so `main` alone reflects the complete, current state.
+
+- Work happens on short-lived PR branches, which are merged into `main` and
+  then deleted. Nothing is left parked on a branch.
+- `.github/workflows/delete-merged-branch.yml` deletes a PR's head branch
+  automatically when the PR closes. Enable **Settings → General →
+  Automatically delete head branches** as well, so the cleanup holds even if
+  Actions are disabled.
+- Long-running runs land their periodic sweeps on `main` rather than
+  accumulating on a run branch, so a reader never has to hunt across branches
+  to find the newest artifacts.

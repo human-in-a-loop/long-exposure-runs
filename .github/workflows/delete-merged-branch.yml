@@ -1,0 +1,37 @@
+name: Delete merged branch
+
+# Single-source-of-truth policy: main is the only long-lived branch in this
+# repository. Every PR branch is deleted as soon as its PR closes, so the
+# branch list never accumulates run branches again.
+#
+# This workflow is the belt to the repository setting's braces: enable
+# "Automatically delete head branches" in Settings -> General as well.
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete-branch:
+    # Only branches living in this repository can be deleted (fork PRs are skipped).
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete the pull request head branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          if [ "$BRANCH" = "${{ github.event.repository.default_branch }}" ]; then
+            echo "Refusing to delete the default branch."
+            exit 0
+          fi
+          echo "Deleting branch: $BRANCH"
+          gh api \
+            --method DELETE \
+            "repos/${{ github.repository }}/git/refs/heads/$BRANCH" \
+            || echo "Branch already gone; nothing to do."
