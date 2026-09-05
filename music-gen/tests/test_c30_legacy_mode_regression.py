@@ -531,6 +531,115 @@ def test_18_c34_por_delta_empirical_proof_landed():
     print("test_18 OK — c34 empirical proof landed; c33 hypothesis amended honestly")
 
 
+# ============================================================================
+# c35 EXTENSION (per c18 additive-in-place pattern):
+# Priority 1 preservation: long_exposure/ ABSENT re-probe, c34 OPT_B preserved
+#            via `_selection/c35-emitter-writer-boundary-preservation`
+# Priority 2 blocker:      row-set reconstruction not feasible (no archive
+#            subtree, no c31/c32 git sweep commits); c34 empirical proof
+#            preserved byte-identical, strengthening deferred honestly
+# ============================================================================
+
+
+def test_19_c35_emitter_writer_boundary_preservation():
+    """c35 Priority 1: long_exposure/ ABSENT re-probe; OPT_B preservation event."""
+    import subprocess
+
+    # On-disk re-probe must return ABSENT this cycle
+    result = subprocess.run(
+        ["bash", "-lc", "test -d long_exposure && echo PRESENT || echo ABSENT"],
+        capture_output=True, text=True, check=True,
+    )
+    assert result.stdout.strip() == "ABSENT", (
+        f"c35 Priority 1 probe expected ABSENT, got: {result.stdout!r}"
+    )
+
+    ev_path = SELECTION / "c35-emitter-writer-boundary-preservation.json"
+    assert ev_path.exists(), (
+        f"c35 preservation event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c35-emitter-writer-boundary-preservation"
+    # Must supersede c34 fork event via str per c14 lemma
+    assert isinstance(ev["supersedes_path"], str), (
+        "supersedes_path must be str per c14 lemma, not list or null"
+    )
+    assert ev["supersedes_path"].endswith("c34-emitter-writer-boundary.json"), (
+        "supersedes_path must point at c34 fork event"
+    )
+    # Workspace disclosure confirms ABSENT
+    wd = ev["workspace_disclosure"]
+    assert wd["long_exposure_present_in_workspace"] is False
+    assert wd["probe_result"] == "ABSENT"
+    # Policy status must record OPT_B active + OPT_A unreachable
+    ps = ev["policy_status"]
+    assert ps["opt_b_exemption_active"] is True
+    assert ps["opt_a_route_available"] is False
+    assert ps["opt_b_policy_doc"] == "docs/emitter_exemption_policy.md"
+    assert ps["opt_b_policy_doc_sha256"] == (
+        "fd2c33a78d147341ebfa8df84e80002ff6337779bb3e58e1305de9e936e4eb6b"
+    )
+    # c34 predecessor must remain byte-identical (invariant (e))
+    c34_ev = SELECTION / "c34-emitter-writer-boundary.json"
+    assert c34_ev.exists(), "c34 predecessor event must remain on disk"
+    c34_body = _load(c34_ev)
+    assert c34_body["fork"]["chosen"] == "OPT_B", (
+        "c34 fork content must remain OPT_B (byte-identical preservation)"
+    )
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_19 OK — c35 long_exposure/ ABSENT re-probe + OPT_B preservation event")
+
+
+def test_20_c35_por_drift_proof_strengthening_blocker():
+    """c35 Priority 2 blocker: row-set reconstruction not feasible; c34 preserved."""
+    ev_path = SELECTION / "c35-por-drift-proof-strengthening-blocker.json"
+    assert ev_path.exists(), (
+        f"c35 blocker event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c35-por-drift-proof-strengthening-blocker"
+    # supersedes_path must be str per c14 lemma, pointing at c34 empirical proof
+    assert isinstance(ev["supersedes_path"], str), (
+        "supersedes_path must be str per c14 lemma"
+    )
+    assert ev["supersedes_path"].endswith(
+        "c34-por-drift-empirical-proof.json"
+    ), "supersedes_path must point at c34 empirical proof event"
+    # Reconstruction probes must show all three fallback avenues blocked
+    ra = ev["reconstruction_attempt"]
+    assert "No such file or directory" in ra["probe_1_archive_dirs"]["result_data_v4_archive"]
+    assert "No such file or directory" in ra["probe_1_archive_dirs"]["result_root_archive"]
+    assert "no cycle-31 or cycle-32 sweep commits" in ra["probe_3_git_history"]["coverage_summary"]
+    # c34 finding preserved byte-identical
+    c34_status = ev["c34_finding_status"]
+    assert c34_status["attribution_finding"].startswith("CONFIRMED")
+    pv = c34_status["preservation_verification"]
+    assert pv["byte_identical_pre_post_this_cycle"] is True
+    # c34 diagnostic on disk with expected sha
+    import hashlib
+    diag = DIAG / "c34_por_delta_proof.json"
+    assert diag.exists(), "c34 diagnostic must remain byte-identical"
+    diag_sha = hashlib.sha256(diag.read_bytes()).hexdigest()
+    assert diag_sha == pv["c34_diagnostic_expected_sha256"], (
+        f"c34 diagnostic sha drifted: got {diag_sha!r}, expected "
+        f"{pv['c34_diagnostic_expected_sha256']!r}"
+    )
+    # c34 selection event on disk (byte-content spot-check via attribution)
+    c34_sel = SELECTION / "c34-por-drift-empirical-proof.json"
+    assert c34_sel.exists(), "c34 empirical-proof event must remain on disk"
+    c34_body = _load(c34_sel)
+    assert c34_body["measured_amended_finding"]["delta_c31_close_to_c32_open"] == 4
+    # FD-1 discipline: no fabricated diff
+    assert "fabricated" in ev["why_no_fabricated_diff"].lower()
+    # Invariant compliance block enforces c14 lemma + FD-1
+    ic = ev["invariant_compliance"]
+    assert ic["c14_supersedes_path_type"].startswith("str")
+    assert "fd_1_halt_honest" in ic, "invariant compliance must call out FD-1"
+    assert "fabricated" in ic["fd_1_halt_honest"].lower()
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_20 OK — c35 POR strengthening blocker landed; c34 proof preserved")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -550,8 +659,10 @@ def main():
     test_16_c33_por_shadow_drift_selection_event()
     test_17_c34_emitter_exemption_policy_landed()
     test_18_c34_por_delta_empirical_proof_landed()
+    test_19_c35_emitter_writer_boundary_preservation()
+    test_20_c35_por_drift_proof_strengthening_blocker()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 = 18/18)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 = 20/20)")
 
 
 if __name__ == "__main__":
