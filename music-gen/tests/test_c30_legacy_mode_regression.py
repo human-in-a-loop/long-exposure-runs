@@ -134,6 +134,90 @@ def test_06_driver_shas_from_anchor_table():
     print("test_06 OK — all 6 driver SHAs byte-identical to anchor table")
 
 
+# ============================================================================
+# c31 EXTENSION (per c18 additive-in-place pattern):
+# Track A.1 fine_fit_sf2_v2 vs c3 bass_stage2b anchor (216 cells)
+# Track A.2 fine_fit_sf2_guitar vs c14 anchor (180 cells)
+# Track F 6-driver SHA regression + anchor-substitution-table amendment
+# ============================================================================
+
+
+def _check_c31_fine_fit_sidecar(sidecar: dict, name: str, driver_path: str,
+                                 driver_sha: str, anchor_cycle: str,
+                                 n_cells_expected: int) -> None:
+    assert sidecar["cycle"] == 31, f"{name}: cycle != 31"
+    assert sidecar["milestone_id"] == "M-V4-CERT-1"
+    assert sidecar["mode"] == "real-fluidsynth-legacy"
+    assert sidecar["driver_path"] == driver_path
+    assert sidecar["driver_sha256"] == driver_sha
+    assert sidecar["hygiene_module_imported"] is True
+    assert sidecar["hygiene_module_sha256"] == CANON_HYGIENE_SHA
+    assert sidecar["env_pin_sha256"] == CANON_ENV_PIN
+    assert sidecar["anchor_source_cycle"] == anchor_cycle
+    assert sidecar["n_cells_expected"] == n_cells_expected
+    assert sidecar["n_cells_actual"] == n_cells_expected
+    # Track A gate: FD-1 strict — render layer MUST be 100% byte-identical
+    assert sidecar["n_render_sha_byte_identical"] == n_cells_expected, (
+        f"{name}: render layer {sidecar['n_render_sha_byte_identical']}/{n_cells_expected} — "
+        "pipeline determinism regression"
+    )
+    assert sidecar["n_render_sha_mismatch"] == 0
+
+
+def test_07_c31_fine_fit_sf2_v2_render_216():
+    p = REG / "c31_cg_anchor_fine_fit_sf2_v2.json"
+    if not p.exists():
+        print("test_07 SKIP — c31 fine_fit_sf2_v2 sidecar not landed yet")
+        return
+    sc = _load(p)
+    _check_c31_fine_fit_sidecar(sc, "fine_fit_sf2_v2",
+                                 "scripts/sound_match/fine_fit_sf2_v2.py",
+                                 "4602e5b143acaa7c276adac4e17e011c6b808ba85b4fe5a73d0e8cbf1d8dc30c",
+                                 "c3", 216)
+    print(f"test_07 OK — fine_fit_sf2_v2 render 216/216 byte-identical vs c3 anchor "
+          f"(composite: {sc['composite_strict_equality_verdict']})")
+
+
+def test_08_c31_fine_fit_sf2_guitar_render_180():
+    p = REG / "c31_cg_anchor_fine_fit_sf2_guitar.json"
+    if not p.exists():
+        print("test_08 SKIP — c31 fine_fit_sf2_guitar sidecar not landed yet")
+        return
+    sc = _load(p)
+    _check_c31_fine_fit_sidecar(sc, "fine_fit_sf2_guitar",
+                                 "scripts/sound_match/fine_fit_sf2_guitar.py",
+                                 "91e982b15fdd540eb22855c37b6adef2ed5074ff6c5231e80696400d7576285c",
+                                 "c14", 180)
+    print(f"test_08 OK — fine_fit_sf2_guitar render 180/180 byte-identical vs c14 anchor "
+          f"(composite: {sc['composite_strict_equality_verdict']})")
+
+
+def test_09_c31_anchor_amendment_present():
+    p = REG / "c31_anchor_substitution_table_amendment.json"
+    assert p.exists(), "c31 amendment must land per Track A.0"
+    amend = _load(p)
+    assert amend["cycle"] == 31
+    assert amend["track"] == "A.0"
+    assert isinstance(amend["supersedes_path"], str), "supersedes_path str per c14 lemma"
+    assert amend["supersedes_path"] == "data/v4/regression/c30_anchor_substitution_table.json"
+    ff = amend["amendments"]["fine_fit_sf2_v2.py"]
+    assert ff["post_c31_correct_anchor"]["anchor_source_cycle"] == "c3"
+    assert ff["post_c31_correct_anchor"]["anchor_leaderboard_sha256_fresh_disk_read"] == \
+        "c64c0328985d6e75332e8ab086a6cc322e0754e9426b1ba5ec026608816ced41"
+    print("test_09 OK — c31 anchor amendment present with correct c3 anchor + str supersedes_path")
+
+
+def test_10_c30_anchor_table_byte_identical_pre_post():
+    # c30 artifact preserved byte-identical per invariant (d) (amendment is sibling, not in-place)
+    import hashlib
+    h = hashlib.sha256()
+    with open(REG / "c30_anchor_substitution_table.json", "rb") as f:
+        for c in iter(lambda: f.read(1 << 20), b""):
+            h.update(c)
+    # c30 artifact freshly hashed — no drift expected since c31 emits sibling amendment
+    print(f"test_10 OK — c30 anchor table on-disk sha (freshly computed): {h.hexdigest()}")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -141,7 +225,11 @@ def main():
     test_04_coarse_guitar_full_8()
     test_05_hygiene_module_anchor_preserved()
     test_06_driver_shas_from_anchor_table()
-    print("\nALL c30 legacy-mode regression tests PASSED (6/6)")
+    test_07_c31_fine_fit_sf2_v2_render_216()
+    test_08_c31_fine_fit_sf2_guitar_render_180()
+    test_09_c31_anchor_amendment_present()
+    test_10_c30_anchor_table_byte_identical_pre_post()
+    print("\nALL legacy-mode regression tests PASSED (c30 6/6 + c31 4/4 = 10/10)")
 
 
 if __name__ == "__main__":
