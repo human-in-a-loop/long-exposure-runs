@@ -1,0 +1,97 @@
+slug: naio
+scientific_name: Myoporum sandwicense
+authority: A. Gray
+family: Scrophulariaceae
+common_names:
+  hawaiian: [naio]
+  english: [false sandalwood, bastard sandalwood]
+status: indigenous
+conservation_status: null
+coastal_zones: [sea_cliff, valley_mouth, strand]
+tier: notable
+occurrence_notes: >-
+  Naio is extraordinarily variable in form across an altitudinal
+  gradient — from prostrate shore mats to interior forest trees. On the
+  unpopulated Kauaʻi coast it is a shrub-to-small-tree of dry cliff
+  bases and back-beach slopes on the Nā Pali–Kona (drier western) sector.
+how_to_identify:
+  growth_form: >-
+    Evergreen shrub or small tree; growth form depends on exposure —
+    windswept coastal populations are compact and often prostrate, more
+    sheltered plants become upright small trees.
+  leaves: >-
+    Alternate, lanceolate to obovate, 4–10 cm long, thick and somewhat
+    fleshy, with resinous glands — visibly gland-dotted when held to
+    the light and aromatic when a leaf is crushed.
+  flowers: >-
+    Small, 5-lobed, tubular-campanulate, 6–10 mm across, white to pale
+    pink, with distinctive dark purple spots inside the throat; borne
+    in small clusters in the leaf axils.
+  fruit: >-
+    Small ovoid drupe, 4–8 mm long, ripening pink → purple then whitish
+    at maturity.
+  bark_stem: Pale grey and smooth on young stems, becoming furrowed on older trunks.
+  size: 1–4 m on the coast (up to ~15 m in interior mesic forest).
+  zone_hint: >-
+    Dry sea-cliff bases, back-beach shrub zones, and the drier valley
+    mouths of the western Nā Pali coast.
+  clinchers:
+    - Alternate, gland-dotted, aromatic-when-crushed leaves.
+    - Small tubular white flowers with dark purple spots inside the throat.
+    - Small pink-to-purple drupes ripening whitish.
+    - Highly variable in form but leaves are always resin-dotted and aromatic.
+  look_alikes:
+    - species: Osteomeles anthyllidifolia (ʻūlei)
+      how_to_distinguish: >-
+        Also a coastal shrub, but ʻūlei has pinnately-compound leaves
+        with rounded leaflets and white five-petalled rose-family
+        flowers — nothing about it is glandular or tubular.
+    - species: Chenopodium oahuense (ʻāweoweo)
+      how_to_distinguish: >-
+        Some prostrate coastal chenopodium forms can look similar at a
+        distance; chenopodium leaves are grey-green and mealy-scurfy
+        (not resin-dotted), and its tiny wind-pollinated flowers are
+        greenish, never tubular with purple spots.
+ecology: >-
+  A widespread Pacific coastal-to-montane species (native populations
+  also on Mangaia and Mauritius through the genus). Since 2009 Hawaiian
+  populations have been threatened by naio thrips (*Klambothrips
+  myopori*), an invasive insect discovered on Hawaiʻi Island that
+  causes serious dieback; DLNR-DOFAW considers it a significant threat
+  to naio across the archipelago.
+cultural_significance: >-
+  In the early 1800s, when the export sandalwood (ʻiliahi, *Santalum*
+  spp.) trade had exhausted true sandalwood stocks, Hawaiian and
+  foreign traders shipped naio wood as a substitute — hence the
+  English names "false sandalwood" and "bastard sandalwood," a
+  historical episode Hawaiian writers have documented as an example
+  of extractive pressure on native forests. Wood was also used
+  historically for house posts, fence posts, and tool handles; this
+  guide names those relationships without giving working instructions.
+hazards: >-
+  Not hazardous to people directly. Note that naio thrips is a serious
+  conservation threat; hikers should clean footwear between islands
+  to avoid inter-island spread of the pest.
+images:
+  - id: naio-habit-01
+    role: habit
+    diagnostic_pointer: "Whole-plant coastal habit — evergreen shrub form."
+  - id: naio-flowers-fruit-01
+    role: flowers and fruit
+    diagnostic_pointer: "Small tubular white flowers and pink-to-purple drupes on the same shoot."
+  - id: naio-flower-01
+    role: flower
+    diagnostic_pointer: "Dark purple spots inside the flower throat — the diagnostic marking."
+diagrams:
+  - file: leaf-lanceolate.svg
+    caption: "Naio's alternate lanceolate-to-obovate leaves — always resin-dotted and aromatic when crushed."
+  - file: habit-mounding-shrub.svg
+    caption: "Compact coastal shrub form — one of naio's many forms across exposure."
+taxonomic_notes: >-
+  Family placement follows APG (Scrophulariaceae s.l.). Wagner, Herbst
+  & Sohmer 1999 places *Myoporum* in the segregate family Myoporaceae;
+  APG II onward merges Myoporaceae into a broadened Scrophulariaceae
+  (with Buddleja and related genera). Both names refer to the same
+  genus. Chinnock (2007) [B:4] is the monograph that still uses
+  Myoporaceae. The species is unchanged.
+citations: [1, 2, 3, 8, "B:1", "B:4", "B:8"]

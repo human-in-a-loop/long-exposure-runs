@@ -1,0 +1,108 @@
+slug: hau
+scientific_name: Hibiscus tiliaceus
+authority: L.
+family: Malvaceae
+common_names:
+  hawaiian: [hau]
+  english: [beach hibiscus, sea hibiscus]
+status: indigenous
+conservation_status: null
+coastal_zones: [valley_mouth, riparian, strand]
+tier: notable
+occurrence_notes: >-
+  Forms dense often-impenetrable thickets at valley bottoms and along
+  streams reaching the coast; common at Kalalau, Honopū, Nuʻalolo Kai,
+  and Miloliʻi valley mouths and back-beach flats. Frequently the
+  dominant lowland-coastal woody plant on the Nā Pali coast.
+how_to_identify:
+  growth_form: >-
+    Sprawling shrub-to-small-tree forming dense thickets — branches
+    root where they touch the ground, so a single hau can spread
+    laterally into an impassable tangle. On more open sites can become
+    a rounded small tree.
+  leaves: >-
+    Alternate, large, heart-shaped (cordate) with a broadly rounded
+    outline and a pointed tip, 10–25 cm long. Upper surface dark green
+    and smooth; underside notably velvety-white from a coating of tiny
+    stellate (star-shaped) hairs.
+  flowers: >-
+    Classic hibiscus form, ~8–12 cm across, with five overlapping
+    petals. Opens bright yellow with a dark maroon centre in the
+    morning; petals darken through the day to orange, then red-purple
+    by late afternoon; drops by evening. The colour change on a single
+    day is diagnostic and easy to teach.
+  fruit: >-
+    A small dry ovoid capsule 1.5–2 cm long, splitting into five
+    valves to release small hairy seeds.
+  bark_stem: >-
+    Smooth pale grey on younger stems; inner bark strongly fibrous, the
+    source of the traditional cordage material.
+  size: 4–8 m tall, spread often more than double the height.
+  zone_hint: >-
+    Valley bottoms, back-beach flats, along low-elevation streams —
+    always in accessible-water settings, never on dry sea cliffs.
+  clinchers:
+    - Cordate leaf with velvety-white stellate-hair underside.
+    - Hibiscus flower that changes colour through the day — yellow morning to red-purple evening.
+    - Sprawling thicket habit with layering (branches rooting where they touch).
+    - Fibrous inner bark visible on a broken twig.
+  look_alikes:
+    - species: Thespesia populnea (milo)
+      how_to_distinguish: >-
+        Milo also has heart-shaped leaves and yellow-with-maroon-centre
+        flowers, but its leaves are more triangular-deltoid with a
+        drawn-out tip and lack the velvety-white stellate underside;
+        milo grows as an upright small tree rather than a sprawling
+        thicket; and milo's capsule is a flattened woody disk that
+        does not split open, while hau's dry capsule splits into
+        five valves.
+    - species: Hibiscus rosa-sinensis and cultivated hibiscus
+      how_to_distinguish: >-
+        Cultivated ornamental hibiscus species have long-lasting
+        flowers of many colours and do not grow into wild coastal
+        thickets. If it is a garden shrub, it is not hau.
+ecology: >-
+  Pantropical strand species with buoyant, salt-tolerant seeds and
+  layering vegetative growth — a combination that produces the dense
+  coastal thickets characteristic of Nā Pali valley mouths. Provides
+  cover for native land snails and birds and shade for freshwater
+  seeps at valley bottoms.
+cultural_significance: >-
+  Hau is a foundational plant for Hawaiian cordage, sandals, and light
+  float wood — the fibrous inner bark was worked into rope, cord, and
+  lashing that held houses, canoes, and daily tools together. This
+  guide names those relationships; the transmission of hau-fibre
+  practice belongs to Hawaiian rope-making and fibre-arts traditions
+  and their contemporary keepers.
+hazards: null
+uncertainty: >-
+  Biogeographic status is contested. This guide adopts the current
+  standard treatment (Wagner, Herbst & Sohmer 1999; Herbst 1988) of
+  hau as indigenous to Hawaiʻi — the species is pantropical, its
+  seeds are buoyant and salt-tolerant, and it fits the biogeographic
+  pattern of natively-arrived strand plants. A minority position,
+  present in some older ethnobotanical writing, treats hau as a
+  Polynesian introduction because it is so heavily culturally used
+  and often planted; the cultural argument alone does not override
+  the biogeographic evidence, but readers should know both views
+  exist. This guide follows Wagner/Herbst/Sohmer as indigenous;
+  the alternative is noted.
+images:
+  - id: hau-flower-leaves-01
+    role: flower and leaves
+    diagnostic_pointer: "Yellow-with-maroon-centre flower alongside cordate leaves — the diagnostic combination."
+  - id: hau-flower-close-01
+    role: flower
+    diagnostic_pointer: "Close view of the hibiscus corolla — morning colour before the daily fade."
+  - id: hau-leaves-01
+    role: leaves
+    diagnostic_pointer: "Leaves showing the heart-shaped outline; the stellate-hair underside is best seen with the leaf turned over."
+  - id: hau-fruit-01
+    role: fruit
+    diagnostic_pointer: "Dry capsule — splits into five valves at maturity (contrast with milo's non-opening woody disk)."
+diagrams:
+  - file: leaf-cordate.svg
+    caption: "Cordate leaf outline — hau's leaves match this shape, with velvety-white underside."
+  - file: habit-mounding-shrub.svg
+    caption: "Sprawling thicket-forming habit — hau lays down and roots along the ground."
+citations: [1, 2, 3, 10, "B:1", "B:5"]

@@ -1,0 +1,103 @@
+slug: sesbania-tomentosa
+scientific_name: Sesbania tomentosa
+authority: Hook. & Arn.
+family: Fabaceae
+common_names:
+  hawaiian: [ʻōhai]
+  english: [Hawaiʻi riverhemp]
+status: endemic
+conservation_status: "US Endangered (USFWS 1994)"
+coastal_zones: [strand, dune]
+tier: notable
+occurrence_notes: >-
+  Historically widespread on Hawaiian coastal strand and dunes,
+  including Kauaʻi. Present-day wild populations are severely
+  reduced; Kauaʻi-specific extant coastal locations should be treated
+  cautiously (see uncertainty note). Included here for its cultural
+  significance and its historical role in Kauaʻi coastal vegetation;
+  cross-listed in the RARE index via federal listing status.
+how_to_identify:
+  growth_form: >-
+    Sprawling or somewhat erect shrub, often prostrate near the shore
+    and more upright farther back. Young stems and foliage densely
+    silvery-hairy — the whole plant reads silvery from a distance.
+  leaves: >-
+    Alternate, pinnately compound with many (12–36) small oblong
+    leaflets 5–15 mm long, all densely covered in fine silvery hairs.
+    Leaflets often fold at midday in heat.
+  flowers: >-
+    Classic pea-family flowers in racemes of 3–8 blossoms, ~2–3 cm
+    long; colour varies among populations from salmon-orange to red,
+    coral-pink, or yellow — a single population is typically one
+    colour.
+  fruit: >-
+    Long, slender legume pod 10–25 cm long, narrowly cylindrical,
+    containing 8–20 small dark seeds.
+  bark_stem: >-
+    Young stems silvery-hairy; older woody stems grey-brown, often
+    trailing along sand.
+  size: 0.5–3 m tall (or trailing to several metres long on dunes).
+  zone_hint: >-
+    Open sand of dune systems, strand behind the wrack line, and
+    disturbed coastal flats; historically on many Hawaiian shores
+    including Kauaʻi.
+  clinchers:
+    - Whole plant silvery-hairy — the most striking field mark.
+    - Pinnately compound leaves with many small silver leaflets.
+    - Pea-family racemes of red/orange/salmon/yellow flowers.
+    - Long slender legume pod (a Sesbania hallmark).
+  look_alikes:
+    - species: Sesbania grandiflora (introduced)
+      how_to_distinguish: >-
+        A much larger tree with large white or red flowers, not
+        silvery-hairy, and cultivated rather than wild-coastal. Not
+        native and not found on the unpopulated coast.
+    - species: Introduced Fabaceae shrubs (Crotalaria spp., Cassia spp.)
+      how_to_distinguish: >-
+        None of the common introduced coastal legumes are densely
+        silvery-hairy across leaves and stems — the silvery pubescence
+        is essentially diagnostic on Hawaiʻi shores.
+ecology: >-
+  Endemic Hawaiian legume adapted to coastal sand and dune substrates,
+  with nitrogen-fixing root nodules that enrich impoverished coastal
+  soils. Populations are threatened by feral ungulates (goats, pigs,
+  deer), rodent seed predation, competition from introduced grasses,
+  and habitat conversion. USFWS listed the species as endangered in
+  1994; a recovery plan documents Kauaʻi as part of the historical range.
+cultural_significance: >-
+  ʻŌhai flowers are treasured in Hawaiian lei-making tradition, and
+  the species appears in mele (chants) associated with several
+  islands. Sacred associations vary by place and lineage — Hawaiian
+  cultural practitioners are the appropriate keepers of that
+  knowledge. This guide names the significance without asserting
+  ceremonial detail.
+hazards: >-
+  Not hazardous to people. As a federally listed endangered species,
+  do not disturb, collect, or trample any wild plant encountered —
+  regulatory protection is strict, and the species is fragile.
+uncertainty: >-
+  Kauaʻi-specific present-day wild populations are thinly documented
+  in the literature accessible for this cycle. The USFWS recovery plan
+  and Hawaiian biodiversity records include Kauaʻi in the species'
+  historical range; contemporary confirmed wild coastal populations
+  on Kauaʻi are best treated cautiously. The species is included in
+  this guide for its documented historical range and its cultural
+  importance; users on the Nā Pali or Māhāʻulepū coast who encounter
+  a silvery-hairy shrubby Sesbania should photograph and report to
+  DLNR-DOFAW rather than treat the sighting as a confirmed record.
+images:
+  - id: ohai-flowering-habit-01
+    role: habit
+    diagnostic_pointer: "Whole flowering plant at Papanalahoa, Maui — silvery foliage and coloured pea flowers."
+  - id: ohai-flowers-pods-01
+    role: flowers and fruit
+    diagnostic_pointer: "Flowers and slender legume pods on the same shoot."
+  - id: ohai-leaves-01
+    role: leaves
+    diagnostic_pointer: "Silvery pinnately-compound leaves — the diagnostic pubescence."
+diagrams:
+  - file: leaf-pinnate-compound.svg
+    caption: "Pinnate compound leaf schematic — ʻōhai has many small silvery leaflets."
+  - file: habit-mounding-shrub.svg
+    caption: "Sprawling coastal shrub silhouette — ʻōhai is often prostrate on open dune."
+citations: [1, 2, 3, 5, 10, "B:7"]

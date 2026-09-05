@@ -1,0 +1,85 @@
+slug: ohe-makai
+scientific_name: Polyscias sandwicensis
+authority: (A. Gray) Lowry & G. M. Plunkett
+family: Araliaceae
+common_names:
+  hawaiian: [ʻohe makai, ʻohe]
+  english: [Hawaiian polyscias]
+status: endemic
+conservation_status: null
+coastal_zones: [sea_cliff, valley_mouth]
+tier: notable
+occurrence_notes: >-
+  Dry coastal slopes and cliff bases of the drier western Nā Pali–Kona
+  sector; often on rocky substrate above the strand. Once more
+  widespread; now scattered.
+how_to_identify:
+  growth_form: >-
+    Small-to-medium tree, distinctive for its thick, fleshy,
+    water-storing trunk when young — the trunk narrows with age and
+    develops rough bark. Deciduous during the dry season.
+  leaves: >-
+    Clustered at the branch tips; pinnately compound with 5–9 leaflets
+    on a long rachis, each leaflet ovate, 5–10 cm long, entire-margined
+    or with fine teeth. The tree drops its leaves during dry-season
+    stress, giving a starkly bare branch structure.
+  flowers: >-
+    Very large terminal panicles of many small (~4 mm), 5-parted,
+    yellow-green to whitish flowers — the inflorescence is
+    disproportionately large relative to the tree.
+  fruit: >-
+    Small drupe, 3–5 mm, ripening purple-black in clusters on the
+    panicle.
+  bark_stem: >-
+    Pale grey-green and smooth on the swollen juvenile trunk; becoming
+    rough and fissured with age. Wood soft and light when cut.
+  size: 3–10 m tall.
+  zone_hint: >-
+    Dry sea-cliff bases and rocky slopes above the strand on the
+    western/leeward sector — not on the wet windward valleys.
+  clinchers:
+    - Thick, fleshy, water-storing juvenile trunk — no other coastal Kauaʻi tree looks like this.
+    - Pinnately compound leaves clustered at the branch tips.
+    - Very large terminal panicle of tiny yellowish flowers.
+    - Deciduous during dry season — bare branch structure diagnostic when leafless.
+  look_alikes:
+    - species: Other coastal Araliaceae
+      how_to_distinguish: >-
+        No close look-alike on the coastal Kauaʻi flora at this size.
+        Interior dry-forest Araliaceae (e.g., other *Polyscias* spp.)
+        occur off the coast; coastal occurrence combined with the
+        swollen trunk is diagnostic.
+uncertainty: >-
+  Nomenclatural change (not a factual dispute): ʻohe makai was
+  transferred from the genus *Reynoldsia* to *Polyscias* by Lowry &
+  Plunkett (2010). Many Hawaiian field guides, botanical-garden
+  labels, and photograph metadata (including some images used in this
+  profile) still use "*Reynoldsia sandwicensis*"; the two names refer
+  to the same species. This guide adopts the current name and lists
+  the synonym here so identifications made from older sources are not
+  disrupted.
+ecology: >-
+  A drought-adapted dry-forest and dry-coastal endemic that stores
+  water in its trunk and drops its leaves during the driest months.
+  Fruits are dispersed by frugivorous birds.
+cultural_significance: >-
+  ʻOhe makai wood was used historically for tapa beaters, canoe parts,
+  and other implements per Rock (1913); this guide names those
+  relationships without providing working technique.
+hazards: null
+images:
+  - id: ohe-makai-habit-01
+    role: habit
+    diagnostic_pointer: "Whole-tree habit at LaPerouse, Maui — dry coastal setting."
+  - id: ohe-makai-branches-01
+    role: leaves and branches
+    diagnostic_pointer: "Branch tips carrying the pinnately compound leaves."
+  - id: ohe-makai-flowers-01
+    role: flowers
+    diagnostic_pointer: "Terminal panicle of small yellowish flowers — inflorescence disproportionately large."
+diagrams:
+  - file: leaf-pinnate-compound.svg
+    caption: "Pinnately compound leaf schematic — ʻohe makai carries these at branch tips."
+  - file: habit-small-tree.svg
+    caption: "Small-tree silhouette — juvenile trunk swollen and water-storing."
+citations: [1, 2, 3, "B:1", "B:3"]

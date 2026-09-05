@@ -1,0 +1,101 @@
+slug: koa-haole
+scientific_name: Leucaena leucocephala
+authority: (Lam.) de Wit
+family: Fabaceae
+common_names:
+  hawaiian: [koa haole, ekoa]
+  english: [white leadtree, lead tree, jumbay]
+status: invasive
+conservation_status: null
+coastal_zones: [strand, valley_mouth, sea_cliff]
+tier: rare_exotic
+occurrence_notes: >-
+  One of the most abundant woody invasives in Kauaʻi's dry lowlands and
+  coastal fringes. Forms dense multi-stemmed thickets on disturbed
+  ground behind beaches, in the drier valley mouths of the Nā Pali–Kona
+  coastal strand, and on lower sea-cliff slopes. Frequently the dominant
+  woody cover in areas once cleared for agriculture or grazing.
+how_to_identify:
+  growth_form: >-
+    Multi-stemmed shrub or small tree, 3–10 m tall, often forming a
+    single-species thicket so dense you cannot walk through it. Crown
+    open and feathery from a distance.
+  leaves: >-
+    Twice-pinnately compound (bipinnate) — a mimosa-like leaf. Each
+    leaf has 4–9 pairs of side branches (pinnae), and each pinna carries
+    10–20 pairs of small (~1 cm) narrowly oblong leaflets. Leaves fold
+    partly at night. Overall leaf can be 15–25 cm long.
+  flowers: >-
+    Small creamy-white flowers packed into dense spherical heads
+    (~1.5–2 cm across) on stalks from the leaf axils; each head looks
+    like a fuzzy white pom-pom.
+  fruit: >-
+    Flat brown papery seed pods 10–20 cm long, 1.5–2 cm wide, hanging
+    in prominent clusters. Each pod holds 15–25 flat, glossy dark-brown
+    seeds. Old pods persist on the tree long after opening.
+  bark_stem: >-
+    Grey-brown, shallowly fissured on older stems; young branches
+    green and slender.
+  size: 3–10 m; thickets frequently 20+ m across.
+  zone_hint: >-
+    Dry to mesic disturbed ground, sea level to about 800 m. On this
+    coast, above the beach strand line and through the drier valley
+    mouths; usually absent from wet interior valleys.
+  clinchers:
+    - Bipinnate mimosa-like leaf (feather-of-feathers) — not a single-pinnate leaf like Christmas berry.
+    - Spherical creamy-white pom-pom flower heads.
+    - Flat brown 10–20 cm seed pods hanging in dense clusters.
+    - Dense monotypic thicket habit on disturbed dry ground.
+  look_alikes:
+    - species: Acacia species (koa, formosa koa)
+      how_to_distinguish: >-
+        Mature Hawaiian koa (Acacia koa) carries flattened phyllodes
+        (sickle-shaped false leaves), not bipinnate compound leaves;
+        seedlings can show bipinnate leaves briefly but never form the
+        dense monotypic lowland thickets of Leucaena.
+    - species: Prosopis pallida (kiawe)
+      how_to_distinguish: >-
+        Kiawe has similar bipinnate leaves but is armed with paired
+        spines at the leaf bases, has yellow catkin-like flowers (not
+        white pom-poms), and produces long cylindrical yellow-brown
+        pods, not flat brown ones.
+    - species: Schinus terebinthifolia (Christmas berry, this guide)
+      how_to_distinguish: >-
+        Christmas berry has singly-pinnate leaves with a winged rachis
+        and red winter berries — very different from Leucaena's
+        bipinnate feather-leaves and flat pods.
+ecology: >-
+  Native to Central America. Introduced to Hawaiʻi in the 1800s as a
+  fast-growing fodder, fuelwood, and soil-cover species; spread widely
+  from plantings and now the dominant woody invader of dry-lowland
+  disturbed ground. Fixes atmospheric nitrogen, allowing it to enrich
+  and re-shape soils in a way that favors more invasives and disfavors
+  native dry-forest species.
+cultural_significance: null
+hazards: >-
+  Leaves and seeds contain mimosine, a toxin that causes hair loss
+  and reproductive problems in non-ruminant livestock; this is not a
+  hazard to human hikers passing through, but do not let dogs or
+  horses graze the plant.
+uncertainty: null
+_migration_note: >-
+  Written during cycle-2 Branch C fan-out. Uses the single shared
+  data/images.json manifest and integer citation numbers; if a future
+  cycle lands sharded per-branch manifests, this file may need its
+  citations remapped to shard-local tokens.
+images:
+  - id: koa-haole-habit-01
+    role: habit
+    diagnostic_pointer: "Dense multi-stemmed thicket — the shape you see from a distance."
+  - id: koa-haole-flowers-01
+    role: flowers
+    diagnostic_pointer: "Spherical white pom-pom flower heads — the visual signature at bloom."
+  - id: koa-haole-pods-01
+    role: fruit
+    diagnostic_pointer: "Flat brown seed pods in clusters — persist year-round."
+diagrams:
+  - file: leaf-pinnate-compound.svg
+    caption: "Compound leaf schematic. Leucaena's leaf is bipinnate — each 'leaflet' shown here is itself further divided into small oblong leaflets."
+  - file: habit-mounding-shrub.svg
+    caption: "Multi-stemmed shrubby thicket habit."
+citations: [1, 2, 13, 14]

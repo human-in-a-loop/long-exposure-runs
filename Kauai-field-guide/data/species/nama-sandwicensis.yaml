@@ -1,0 +1,85 @@
+slug: nama-sandwicensis
+scientific_name: Nama sandwicensis
+authority: A. Gray
+family: Boraginaceae
+common_names:
+  hawaiian: [hinahina kahakai]
+  english: [Hawaiian nama]
+status: endemic
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Hawaiian endemic prostrate herb of coastal sand and coral flats. On
+  Kauaʻi's roadless coast it is a component of open silvery mat vegetation
+  on stable strand and low back-beach dunes; less common than pōhuehue or
+  ʻakiʻaki, but distinctive where it occurs.
+how_to_identify:
+  growth_form: >-
+    Prostrate to weakly ascending perennial herb, forming small silvery
+    mats or diffuse cushions rooted from a taproot.
+  leaves: >-
+    Alternate to sub-opposite, narrow linear to linear-oblanceolate,
+    1–4 cm long, densely covered in short white silky hairs — giving
+    the whole plant a silvery-grey cast diagnostic of Hawaiian "hinahina"
+    plants.
+  flowers: >-
+    Small (~5 mm), white to pale pinkish, 5-lobed, funnel-shaped, solitary
+    or in small axillary clusters. Not showy but visible against silvery
+    foliage.
+  fruit: A small dry capsule with many minute seeds.
+  bark_stem: Slender silvery-hairy stems that trail along the ground.
+  size: Mats 20–60 cm across; only a few cm tall.
+  zone_hint: >-
+    Open sand strand and stabilized low dune; often intermixed with pōhuehue
+    or Sesuvium.
+  clinchers:
+    - Silvery-hairy narrow linear leaves crowded on prostrate stems.
+    - Small white 5-lobed funnelform flowers solitary or in small axillary clusters.
+    - Prostrate silvery mat on coastal sand — smaller and finer-leaved than heliotrope species.
+  look_alikes:
+    - species: Heliotropium anomalum (hinahina kū kahakai — a different hinahina)
+      how_to_distinguish: >-
+        Heliotropium anomalum is also a silvery Hawaiian prostrate "hinahina,"
+        but its leaves are broader-oblanceolate and crowded in dense rosettes
+        at branch tips, and its small white flowers sit in coiled (scorpioid)
+        cymes rather than solitary or in small axillary clusters. Both share
+        the "hinahina" name in Hawaiian usage — flag both possibilities in
+        the field and check flower arrangement.
+    - species: Vitex rotundifolia (pōhinahina)
+      how_to_distinguish: >-
+        Also silvery and prostrate, but with rounded (not linear) opposite
+        leaves that smell aromatic when crushed, and violet-blue tubular
+        flowers rather than tiny white ones.
+    - species: Achyranthes splendens (introduced, absent from most roadless coast)
+      how_to_distinguish: >-
+        Erect, not prostrate; wide silvery leaves in opposite pairs; different
+        life form entirely — mentioned here only because it, too, is called
+        a Hawaiian "silvery-leaved" plant.
+ecology: >-
+  Sand-stabilizing endemic herb; its silvery hairs are a xerophytic
+  adaptation reducing water loss and reflecting salt spray. Rare enough on
+  the main-island coast to be a satisfying find for a careful observer.
+cultural_significance: >-
+  Hinahina — silvery — is a Hawaiian botanical name shared by several
+  small coastal plants (Heliotropium anomalum, Achyranthes splendens on
+  other islands, and this endemic Nama). The shared name reflects a
+  cultural recognition of the silvery-mat coastal community; framed
+  respectfully.
+hazards: null
+taxonomic_notes: >-
+  Wagner, Herbst, and Sohmer treat *Nama* in Hydrophyllaceae; under APG IV
+  the genus *Nama* is placed in Boraginaceae (subfamily Namoideae, order
+  Boraginales), which is the placement used here. Older Hawaiian floras
+  may list the family as Hydrophyllaceae without any change to the
+  species name.
+images:
+  - id: a-nama-sandwicensis-habit-01
+    role: habit
+    diagnostic_pointer: "Silvery prostrate mat on coastal ground — the hinahina kahakai signature."
+  - id: a-nama-sandwicensis-flowers-01
+    role: flower
+    diagnostic_pointer: "Small white five-lobed flowers among silvery narrow leaves."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate/trailing habit — Nama sandwicensis forms low silvery mats."
+citations: ["A:1", "A:5", "A:6", "A:7", "A:8"]

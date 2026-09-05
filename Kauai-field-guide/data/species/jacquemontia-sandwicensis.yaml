@@ -1,0 +1,69 @@
+slug: jacquemontia-sandwicensis
+scientific_name: Jacquemontia ovalifolia subsp. sandwicensis
+authority: (A. Gray) K.R. Robertson
+family: Convolvulaceae
+common_names:
+  hawaiian: [pāʻū o Hiʻiaka]
+  english: [Hawaiian jacquemontia]
+status: endemic
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Kauaʻi coastal endemic subspecies (species range broader, but this
+  Hawaiian subspecies is endemic to the archipelago). On the roadless
+  coast it occurs as low trailing mats on stable open sand and coral
+  rubble at Māhāʻulepū and above upper Nāpali beaches.
+how_to_identify:
+  growth_form: >-
+    A trailing morning-glory relative forming low creeping mats on open
+    ground; stems slender, running along the surface rather than climbing.
+  leaves: >-
+    Alternate, ovate to oblong-ovate, 1–3 cm long, thin, with entire
+    margins and a slightly pointed tip; light green.
+  flowers: >-
+    Small (~1.5 cm across), funnelform, pale blue with a paler throat.
+    Solitary or in small axillary clusters. Open in the morning and close
+    by midday on hot days.
+  fruit: A small dry capsule with a few small seeds.
+  bark_stem: Slender wiry green stems, hairy, running along the ground.
+  size: Trailing mats to 1–2 m across; only a few cm tall.
+  zone_hint: >-
+    Open sandy strand, stable dune surfaces, and coral rubble flats above
+    the wrack line. Not on rocky sea cliffs.
+  clinchers:
+    - Small pale-blue funnelform morning-glory flowers on a low creeping mat.
+    - Slender trailing stems that run flat along the ground (do not climb).
+    - Alternate ovate light-green leaves ~1–3 cm long — much smaller than pōhuehue.
+  look_alikes:
+    - species: Ipomoea pes-caprae (pōhuehue)
+      how_to_distinguish: >-
+        Pōhuehue has much larger pink-purple funnelform flowers (5–6 cm
+        across), notched two-lobed "goat's foot" leaves, and thicker
+        rope-like vines that run for many metres.
+    - species: Ipomoea indica / other blue-flowered Ipomoea
+      how_to_distinguish: >-
+        Ipomoea indica is a robust climber with big deep-blue-to-purple
+        funnelform flowers 6–8 cm across and heart-shaped or three-lobed
+        leaves — a very different scale plant.
+ecology: >-
+  Sand-stabilizing pioneer on open strand and dune. Salt-tolerant; low
+  creeping habit ties down fine sediment. Its population on the roadless
+  coast tracks the availability of undisturbed open sand.
+cultural_significance: >-
+  Pāʻū o Hiʻiaka — "the skirt of Hiʻiaka" — refers to the Hawaiian
+  tradition in which the plant sheltered the infant goddess Hiʻiaka on
+  the beach. The plant is named for that story; this guide records the
+  association respectfully and does not provide harvest or use
+  instructions, which belong to Hawaiian cultural transmission.
+hazards: null
+images:
+  - id: a-jacquemontia-sandwicensis-flower-01
+    role: flower
+    diagnostic_pointer: "Pale-blue funnelform flowers on a low creeping mat — the pāʻū o Hiʻiaka signature."
+  - id: a-jacquemontia-sandwicensis-habit-01
+    role: habit
+    diagnostic_pointer: "Trailing mat habit on open coastal ground."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Trailing/prostrate habit — Jacquemontia runs flat over sand rather than climbing."
+citations: ["A:1", "A:6", "A:7", "A:8"]

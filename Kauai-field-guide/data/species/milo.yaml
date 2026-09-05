@@ -1,0 +1,75 @@
+slug: milo
+scientific_name: Thespesia populnea
+authority: (L.) Sol. ex Corrêa
+family: Malvaceae
+common_names:
+  hawaiian: [milo]
+  english: [portia tree, Pacific rosewood, seaside mahoe]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, valley_mouth]
+tier: notable
+occurrence_notes: >-
+  Scattered along back-beach strand and lower valley mouths on the
+  unpopulated coast; most reliable on Miloliʻi and Nuʻalolo Kai flats
+  and around back-beach pond margins.
+how_to_identify:
+  growth_form: >-
+    Small evergreen tree, typically 5–10 m tall with a dense rounded
+    canopy; often multi-trunked when growing on windswept shore.
+  leaves: >-
+    Heart-shaped (cordate) with a long tapered tip, 6–15 cm long, glossy
+    dark green above and paler below, with tiny brownish scales visible
+    on the underside with a hand lens.
+  flowers: >-
+    Bell-shaped, 5–7 cm wide, lemon-yellow with a deep maroon centre in
+    the morning; petals fade to pinkish and drop by afternoon. Cup-like
+    calyx persists.
+  fruit: >-
+    Distinctive: a flattened rounded woody capsule 2.5–4 cm across,
+    green when young and turning brown-black; does not open widely, and
+    floats — the buoyant capsule is the diagnostic clue in beach wrack.
+  bark_stem: Grey, becoming furrowed on older trunks; twigs with scaly bark.
+  size: 5–12 m tall, canopy 4–8 m across.
+  zone_hint: >-
+    Back-beach edge, valley-mouth pond margins, and salt-splash bluffs;
+    tolerates full sun and salt spray but not persistent inundation.
+  clinchers:
+    - Heart-shaped leaf with a drawn-out tip and glossy dark upper surface.
+    - Yellow-with-maroon-centre bell flower in the morning.
+    - Flattened, woody, non-opening round capsule — floats.
+    - Never has hairy or lobed leaves like hau.
+  look_alikes:
+    - species: Hibiscus tiliaceus (hau)
+      how_to_distinguish: >-
+        Also has heart-shaped leaves and yellow-with-maroon-centre hibiscus
+        flowers, but hau leaves have a fuzzy underside and toothed margin,
+        the tree sprawls sideways into thickets, and the capsule splits
+        open to release seeds (milo's does not).
+    - species: Cordia subcordata (kou)
+      how_to_distinguish: >-
+        Similar coastal habit and leaf shape, but kou has bright orange
+        (not yellow) flowers and a smaller, harder rounded fruit; also
+        entire (non-tapered) leaf tips.
+ecology: >-
+  Salt- and drought-tolerant coastal indigenous tree present throughout
+  the Indo-Pacific tropics via floating fruits. Provides nesting habitat
+  for coastal birds and shade in beach communities.
+cultural_significance: >-
+  Milo wood is honored in Hawaiian carving traditions for its rich colour
+  and non-tainting quality; this guide names that relationship without
+  offering harvesting or working guidance.
+hazards: null
+images:
+  - id: milo-fruit-leaves-01
+    role: fruit and leaves
+    diagnostic_pointer: "Heart-shaped leaves and round woody capsules that do not split open."
+  - id: milo-habit-01
+    role: habit
+    diagnostic_pointer: "Young beach-planted milo showing rounded canopy and coastal tolerance."
+diagrams:
+  - file: leaf-cordate.svg
+    caption: "Cordate (heart-shaped) leaf shape, common to milo."
+  - file: habit-small-tree.svg
+    caption: "Small coastal tree silhouette."
+citations: [1, 2, 3, 9]

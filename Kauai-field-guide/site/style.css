@@ -1,0 +1,101 @@
+/* Kauai Coastal Field Guide — offline CSS, system fonts only */
+:root {
+  --bg: #fafaf7;
+  --fg: #1a1a1a;
+  --muted: #55605a;
+  --accent: #2a6f4d;
+  --accent-2: #7a4d1c;
+  --card: #ffffff;
+  --border: #d6d8d1;
+  --tier-common: #2a6f4d;
+  --tier-notable: #7a4d1c;
+  --tier-rare: #8a1e2c;
+  --warn: #a83232;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px; line-height: 1.5;
+}
+header.site {
+  background: linear-gradient(180deg, #143c2a, #2a6f4d);
+  color: #f5f3ea;
+  padding: 1.2rem 1.5rem;
+}
+header.site h1 { margin: 0 0 0.25rem 0; font-size: 1.5rem; font-weight: 600; }
+header.site p { margin: 0; opacity: 0.85; font-size: 0.95rem; }
+nav.top { padding: 0.6rem 1.5rem; background: #eef1eb; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+nav.top a { color: var(--accent); text-decoration: none; margin-right: 1rem; }
+nav.top a:hover { text-decoration: underline; }
+main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+.intro { background: var(--card); border: 1px solid var(--border); padding: 1rem 1.25rem; border-radius: 6px; margin-bottom: 1.5rem; }
+.intro h2 { margin-top: 0; }
+.filter-bar { display: flex; gap: 0.75rem; align-items: center; margin: 1rem 0; flex-wrap: wrap; }
+.filter-bar input[type="search"] {
+  flex: 1 1 240px; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;
+}
+.filter-bar .count { color: var(--muted); font-size: 0.9rem; }
+.tier { margin: 2rem 0 1rem; padding-bottom: 0.35rem; border-bottom: 2px solid var(--border); }
+.tier h2 { margin: 0; font-size: 1.25rem; }
+.tier .desc { color: var(--muted); font-size: 0.9rem; }
+.grid {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+  overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column;
+  transition: box-shadow 0.15s;
+}
+.card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.card .thumb { width: 100%; aspect-ratio: 4/3; background: #eef1eb; display: block; object-fit: cover; }
+.card .thumb.svg { object-fit: contain; padding: 0.4rem; }
+.card .meta { padding: 0.6rem 0.75rem; }
+.card .sci { font-style: italic; font-size: 0.95rem; margin: 0 0 0.15rem 0; }
+.card .haw { font-size: 0.85rem; color: var(--muted); margin: 0; }
+.card .badge {
+  display: inline-block; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 3px;
+  color: #fff; margin-top: 0.35rem; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.badge.common { background: var(--tier-common); }
+.badge.notable { background: var(--tier-notable); }
+.badge.rare { background: var(--tier-rare); }
+.badge.zone { background: #4a5a70; margin-right: 0.2rem; }
+
+/* Species profile */
+.profile { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; }
+.profile h1 { margin: 0 0 0.25rem 0; font-style: italic; }
+.profile .authority { color: var(--muted); font-style: normal; font-weight: normal; font-size: 0.9rem; margin-left: 0.35rem; }
+.profile .common { color: var(--muted); font-size: 1.05rem; margin: 0.25rem 0 0.75rem; }
+.profile .badges { margin-bottom: 1rem; }
+.gallery { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 1rem 0 1.5rem; }
+.figure { margin: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #f4f5f0; }
+.figure img, .figure svg { width: 100%; height: auto; display: block; }
+.figure figcaption { padding: 0.5rem 0.7rem; font-size: 0.85rem; color: var(--fg); }
+.figure .attr { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 0.3rem; }
+.section { margin: 1.25rem 0; }
+.section h2 { border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; font-size: 1.15rem; }
+.id-block dt { font-weight: 600; margin-top: 0.5rem; }
+.id-block dd { margin: 0 0 0.25rem 0; }
+.clinchers { background: #eef7f0; border-left: 3px solid var(--accent); padding: 0.6rem 0.9rem; margin: 0.75rem 0; }
+.clinchers h3 { margin: 0 0 0.3rem 0; font-size: 1rem; color: var(--accent); }
+.lookalikes li { margin-bottom: 0.4rem; }
+.hazards { background: #fbeeee; border-left: 5px solid var(--warn); padding: 0.75rem 1rem; margin: 0.85rem 0; color: #6a1a1a; font-weight: 500; }
+.hazards strong { color: var(--warn); }
+.uncertainty { background: #fff7e0; border-left: 3px solid #b28a2a; padding: 0.5rem 0.8rem; margin: 0.5rem 0; font-size: 0.9rem; }
+.meta-table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
+.meta-table th, .meta-table td { text-align: left; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 0.92rem; }
+.meta-table th { color: var(--muted); font-weight: 500; width: 32%; }
+.cite { color: var(--accent); text-decoration: none; font-size: 0.8em; vertical-align: super; }
+.cite:hover { text-decoration: underline; }
+footer.site { padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; border-top: 1px solid var(--border); }
+.hidden { display: none !important; }
+.credits table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.credits th, .credits td { text-align: left; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.credits th { background: #eef1eb; }
+.glossary dt { font-weight: 600; margin-top: 0.6rem; }
+.glossary dd { margin: 0.1rem 0 0.25rem 1rem; color: var(--fg); }
+.refs ol li { margin-bottom: 0.5rem; }
+.notice { background: #eef7f0; border: 1px solid #b7d4c0; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }

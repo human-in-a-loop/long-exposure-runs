@@ -1,0 +1,74 @@
+slug: kou
+scientific_name: Cordia subcordata
+authority: Lam.
+family: Boraginaceae
+common_names:
+  hawaiian: [kou]
+  english: [sea trumpet, kerosene wood]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, valley_mouth]
+tier: notable
+occurrence_notes: >-
+  Historically abundant in Hawaiian lowland coastal forest and still
+  scattered along the unpopulated coast — usually as small groves near
+  back-beach flats or in restored valley-mouth plantings.
+how_to_identify:
+  growth_form: >-
+    Small evergreen tree, 4–10 m tall, with a rounded spreading crown and
+    a short trunk that frequently branches low.
+  leaves: >-
+    Broadly ovate to sub-cordate, 8–20 cm long, dull dark green with a
+    slightly rough (sandpapery) upper surface and prominent venation.
+  flowers: >-
+    Vivid orange, trumpet-shaped, 3–5 cm across, with a crinkled
+    (crepe-paper) texture and 5–7 spreading lobes. Borne in showy
+    terminal clusters and dropping intact — a scattering of bright orange
+    trumpets beneath the tree is diagnostic.
+  fruit: >-
+    Hard, corky, rounded green-to-brown drupe about 2–3 cm across,
+    partially enclosed in a persistent cup-shaped calyx; buoyant and
+    ocean-dispersed.
+  bark_stem: Grey-brown, becoming fissured on older trunks.
+  size: 4–10 m tall, canopy 4–7 m across.
+  zone_hint: >-
+    Back-beach and valley-mouth flats; tolerates salt spray but not
+    heavy prolonged inundation.
+  clinchers:
+    - Bright orange trumpet flower in a showy cluster — the standout ID feature.
+    - Fallen orange flowers ring the ground beneath the tree.
+    - Broadly ovate, sandpapery-textured leaves.
+    - Hard corky rounded fruit in a persistent green cup.
+  look_alikes:
+    - species: Thespesia populnea (milo)
+      how_to_distinguish: >-
+        Similar coastal habit, but milo has yellow (not orange) flowers with
+        a maroon centre and a flattened woody capsule for fruit.
+    - species: Cordia sebestena (Geiger tree, ornamental)
+      how_to_distinguish: >-
+        Non-native; larger leaves, larger orange flowers with broader lobes,
+        white fleshy (not corky) fruit; typically only in cultivated settings.
+ecology: >-
+  A pantropical coastal tree with buoyant seed dispersal; kou stands were
+  once a dominant lowland coastal forest type but have been much reduced
+  by clearing and by the kou leafworm. Provides nesting and shade habitat.
+cultural_significance: >-
+  Kou is prized in Hawaiian carving for its close-grained wood and
+  historically ranked among the most respected timber woods. This guide
+  names that relationship without instructing on harvest or working
+  practice.
+hazards: null
+images:
+  - id: kou-flower-01
+    role: flower
+    diagnostic_pointer: "Bright orange trumpet cluster — the diagnostic flower."
+  - id: kou-leaves-flowers-01
+    role: leaves and flower
+    diagnostic_pointer: "Broadly ovate leaves paired with the orange flower cluster."
+  - id: kou-fruit-01
+    role: fruit
+    diagnostic_pointer: "Hard, corky rounded fruits — ocean-dispersed."
+diagrams:
+  - file: habit-small-tree.svg
+    caption: "Small rounded-crown coastal tree."
+citations: [1, 2, 3, 9, 10]

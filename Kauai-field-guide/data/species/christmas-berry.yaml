@@ -1,0 +1,82 @@
+slug: christmas-berry
+scientific_name: Schinus terebinthifolia
+authority: Raddi
+family: Anacardiaceae
+common_names:
+  hawaiian: []
+  english: [Christmas berry, Brazilian pepper]
+status: invasive
+conservation_status: "Widely designated invasive (Hawaii Invasive Species Council alert list; ISSG / IUCN Global Invasive Species Database; HEAR; Plant Pono high-risk); not statutorily listed as a Hawaii state noxious weed per HAR §4-68 (which is a targeted eradication list dominated by species such as Miconia, banana poka, and kahili ginger)"
+uncertainty: >-
+  The term "wilelaiki" is sometimes applied to this plant in Hawaiʻi.
+  It does not appear in Wagner, Herbst & Sohmer's Manual [1] as a
+  traditional Hawaiian botanical name. Weed and invasive-plant
+  literature (e.g., Motooka et al. [14]) records the term as a
+  Hawaiianized transliteration reportedly derived from "Willie Rice,"
+  a person associated with the plant's introduction or spread — a
+  post-contact coinage rather than a traditional common name. We
+  therefore omit it from the Hawaiian names list; a reader who
+  encounters "wilelaiki" locally should recognize this same plant.
+coastal_zones: [valley_mouth, sea_cliff, riparian]
+tier: rare_exotic
+occurrence_notes: >-
+  Widespread and dominant in the drier lower Nā Pali valleys and along
+  the Nā Pali–Kona coastal strand. Forms dense thickets in disturbed
+  valley mouths, choking out native shrubs and hala understorey.
+how_to_identify:
+  growth_form: >-
+    Dense, sprawling, evergreen shrub or small tree, 3–8 m tall, often
+    multi-stemmed and forming impenetrable thickets. Branches arching.
+  leaves: >-
+    Pinnately compound, 7–20 cm long, with 5–13 oblong leaflets on a
+    winged central rachis (the wings between the leaflets are
+    diagnostic). Leaflets glossy, slightly toothed, aromatic when crushed —
+    reminiscent of turpentine or pepper.
+  flowers: >-
+    Tiny (~3 mm), whitish, in dense terminal branched clusters (panicles).
+    Individually unshowy; conspicuous en masse.
+  fruit: >-
+    Bright red to pink small drupes, ~5 mm, densely packed in showy
+    clusters. Ripe November–January — hence "Christmas berry."
+  bark_stem: Grey-brown, becoming rough on older stems.
+  size: 3–8 m tall; thickets can be 15+ m across.
+  zone_hint: >-
+    Dry lower valleys and coastal slopes, thriving on disturbed ground;
+    especially aggressive on the drier leeward stretches of the coast.
+  clinchers:
+    - Pinnate leaf with a winged rachis between the leaflets (turn the leaf up to check).
+    - Bright red berry clusters in winter — the seasonal signature.
+    - Aromatic pepper/turpentine smell when a leaf is crushed.
+    - Dense arching thicket habit in disturbed ground.
+  look_alikes:
+    - species: Rhus sandwicensis (native neneleau, Hawaiian sumac)
+      how_to_distinguish: >-
+        Native sumac has a rachis without prominent wings, whiter flower
+        clusters, and does not form the dense monotypic thickets of
+        Christmas berry; typically upland, not coastal.
+    - species: Toxicodendron (poison oak/ivy, absent from Hawaiʻi)
+      how_to_distinguish: >-
+        Not present here. Included because Schinus is in the same family
+        (Anacardiaceae) and its sap can cause a similar contact rash in
+        sensitive people.
+ecology: >-
+  Native to South America; introduced to Hawaiʻi as an ornamental in the
+  late 1800s and now a major invader of lowland dry to mesic forest.
+  Bird-dispersed berries carry it into remote valleys. Its dense canopy
+  and allelopathic leaf litter suppress native seedling regeneration.
+cultural_significance: null
+hazards: >-
+  Sap can cause contact dermatitis (family Anacardiaceae — poison-ivy
+  cousin). Do not crush leaves against exposed skin if you are sensitive.
+  Berries are mildly toxic in quantity.
+images:
+  - id: christmas-berry-berries-01
+    role: fruit
+    diagnostic_pointer: "The eponymous pink-red berries; unmistakable in winter."
+  - id: christmas-berry-habit-01
+    role: habit
+    diagnostic_pointer: "Dense arching thicket that shades out native ground layer."
+diagrams:
+  - file: leaf-pinnate-compound.svg
+    caption: "Pinnately compound leaf (paired leaflets on a rachis); Christmas berry's rachis is winged between leaflets."
+citations: [1, 2, 13, 14, "C:13", "C:14", "C:15"]

@@ -1,0 +1,85 @@
+slug: ipomoea-imperati
+scientific_name: Ipomoea imperati
+authority: (Vahl) Griseb.
+family: Convolvulaceae
+common_names:
+  hawaiian: [hunakai]
+  english: [beach morning-glory (white), sea foam morning-glory]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  A prostrate strand vine of open sandy beaches and low fore-dunes. On
+  the roadless Kauaʻi coast it occurs alongside pōhuehue at Miloliʻi,
+  Kalalau, and on stabilized sand at Māhāʻulepū, but is much less
+  common than pōhuehue. Pantropical.
+how_to_identify:
+  growth_form: >-
+    Prostrate trailing mat-vine with long slender runners that root at
+    nodes and creep across bare sand; rarely twining.
+  leaves: >-
+    Alternate, and — critically — highly variable on the SAME plant,
+    ranging from entire ovate through shallowly 3-lobed to deeply
+    3–5-lobed on the same runner. This within-individual leaf
+    polymorphism is the single strongest field cue.
+  flowers: >-
+    White (occasionally very pale pink) funnel-shaped, 3–5 cm across,
+    with a pale yellow throat. Open in morning, closed by early
+    afternoon.
+  fruit: >-
+    Small dry brown capsule, ~1 cm, containing a few hairy black seeds
+    that float on ocean currents.
+  bark_stem: Slender green fleshy stems, rooting at nodes.
+  size: Runners 1–5 m long; leaves at ground level.
+  zone_hint: >-
+    Bare to lightly stabilized sand at and just above the tideline,
+    typically the outermost belt of vegetation. Not on rocky sea cliff.
+  clinchers:
+    - WHITE funnel flower (versus pōhuehue's magenta) with a pale yellow throat.
+    - Leaves on a single plant vary from entire ovate to deeply 3–5-lobed — check several leaves on one runner.
+    - Prostrate rooting runners in bare beach sand, not twining or climbing.
+  look_alikes:
+    - species: Ipomoea pes-caprae (pōhuehue)
+      how_to_distinguish: >-
+        Pōhuehue has BRIGHT MAGENTA flowers and uniformly two-lobed
+        "goat's foot" leaves that never show the entire-to-lobed
+        variation of hunakai. If in doubt, check flower colour first,
+        leaf polymorphism second.
+    - species: Ipomoea indica (blue morning-glory, introduced)
+      how_to_distinguish: >-
+        A large twining vine of inland gardens and forest edges, with
+        larger blue-purple flowers and hairy stems; not a prostrate
+        strand vine.
+    - species: Calystegia soldanella (introduced beach false-bindweed)
+      how_to_distinguish: >-
+        Reniform (kidney-shaped) leaves with a broad notched base, pink
+        flowers, and a stouter creeping habit; not present as an
+        established coastal weed on Kauaʻi but sometimes confused in
+        photographs.
+ecology: >-
+  Salt-water-tolerant strand pioneer with ocean-buoyant seeds, which
+  accounts for its near-global tropical shoreline range. Runners
+  stabilize the outer belt of loose beach sand and initiate low-dune
+  formation. In many Hawaiian strand systems it coexists with pōhuehue
+  in mixed mats.
+cultural_significance: >-
+  Hunakai is less prominent in Hawaiian cultural record than pōhuehue,
+  its more conspicuous magenta-flowered congener. The Hawaiian name
+  "hunakai" (sea foam) refers to the white flowers scattered along the
+  sand.
+hazards: null
+images:
+  - id: a-ipomoea-imperati-habit-flowers-01
+    role: habit
+    diagnostic_pointer: "Prostrate mat with WHITE funnel flowers (vs. pōhuehue's magenta) and leaves showing the within-plant polymorphism from ovate to lobed."
+  - id: a-ipomoea-imperati-flower-01
+    role: flower
+    diagnostic_pointer: "White funnel flower with a pale yellow throat."
+  - id: a-ipomoea-imperati-leaves-01
+    role: leaves
+    diagnostic_pointer: "Habit view showing intra-plant leaf polymorphism: entire ovate to 3–5-lobed on the same runner."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate creeping habit — long runners in bare sand, rooting at nodes; not twining."
+citations: ["A:1", "A:6", "A:7", "A:12"]

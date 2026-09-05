@@ -1,0 +1,127 @@
+slug: kokia-kauaiensis
+scientific_name: Kokia kauaiensis
+authority: (Rock) O.Deg. & Duvel
+family: Malvaceae
+common_names:
+  hawaiian: [kokiʻo, kokiʻo ʻula]
+  english: [Kauai treecotton, Kauai kokiʻo]
+status: endemic
+conservation_status: "US Endangered (USFWS 1996; 5-Year Review 2017 documents severe decline — from ca. 145 trees at listing to ca. 19 wild individuals reported by USFWS); IUCN Critically Endangered (assessment updated 2020, Heintzman, Nyberg & Wood)"
+coastal_zones: [valley_mouth, sea_cliff]
+tier: rare_exotic
+occurrence_notes: >-
+  Endemic to west and northwest Kauaʻi. Documented populations occur
+  in Paʻaiki, Mahanaloa, Kuia, and Kalalau Valleys, in Nā Pali Coast
+  State Park, in Pōhākuao, and in the Koaiʻe Stream branch of Waimea
+  Canyon — all on State-owned land. Sits at the boundary of the
+  guide's coastal scope: most individuals grow at 350–660 m in mesic
+  forest with lama (*Diospyros sandwicensis*) and ʻōhiʻa
+  (*Metrosideros polymorpha*), reaching down toward the upper
+  reaches of Nā Pali valleys visible from Kalalau Trail vantage
+  points. A hiker will almost never encounter a wild plant; the
+  species is included as an emblematic Nā Pali cliff-and-valley
+  endemic and a visual anchor for Kauaʻi's Malvaceae diversity.
+how_to_identify:
+  growth_form: >-
+    Small deciduous tree 5–10 m tall with a broad open crown; drops
+    its leaves seasonally, which is unusual among Hawaiian native
+    trees and helps distinguish the genus in the field.
+  leaves: >-
+    Large, palmately lobed, roughly circular in outline, 12–25 cm
+    wide, with seven or nine deep lobes and a heart-shaped (cordate)
+    base; petiole long, blade texture leathery. Deciduous, so mature
+    trees may be leafless in dry periods.
+  flowers: >-
+    Spectacular — the diagnostic feature. Five thick red petals
+    arranged in a distinct spiral / twist, ~7–10 cm across, with a
+    prominent central column (the fused staminal tube typical of
+    Malvaceae) that projects and curves. Unlike garden hibiscus,
+    the petals stay overlapped and twisted, giving the flower a
+    pinwheel silhouette.
+  fruit: >-
+    A dry capsule, 3–5 cm long, opening at maturity into five
+    valves and releasing dark seeds surrounded by short reddish
+    fibres.
+  bark_stem: >-
+    Grey-brown, becoming shallowly furrowed on older trunks;
+    slender for the crown size.
+  size: >-
+    5–10 m tall; trunk usually 15–30 cm diameter.
+  zone_hint: >-
+    Upper reaches of Nā Pali valleys and adjacent mesic forest
+    ridges at 350–660 m. Not on beaches, not in the strand. If you
+    are on the coast proper, you are almost certainly not looking
+    at wild Kokia kauaiensis; if you are hiking Kalalau or looking
+    across a Nā Pali valley, an isolated deciduous tree with big
+    palmately-lobed leaves and a spiral red flower would be a
+    candidate.
+  clinchers:
+    - Big palmately 7–9-lobed roughly circular leaves with cordate base — no other Nā Pali native tree looks like this.
+    - Spectacular spiral / twisted red flower with a projecting curved central column (diagnostic; visible only in flower).
+    - Small deciduous tree in Kauaʻi west/NW mesic forest; other native trees at this elevation are largely evergreen.
+    - Endemic to Kauaʻi — off-island geography alone rules out this species.
+  look_alikes:
+    - species: Hibiscus waimeae subsp. hannerae (in this guide)
+      how_to_distinguish: >-
+        White flowers fading pink (not red) with a slender pink
+        staminal column; leaves ovate, not palmately lobed; small
+        evergreen tree of moist Nā Pali valley bottoms rather than
+        upper mesic ridges.
+    - species: Hibiscus rockii and other native / cultivated red hibiscuses
+      how_to_distinguish: >-
+        Hibiscus petals open flat (not spiraled) and do not stay
+        twisted; leaves are simple ovate to lobed but not palmately
+        7–9-lobed on a circular blade with a cordate base. If the
+        flower opens flat it is not Kokia.
+    - species: Kokia drynarioides (Hawaiʻi Island kokiʻo) and Kokia cookei (Molokaʻi)
+      how_to_distinguish: >-
+        Sister species on other islands, similar spiral red flower.
+        Off-island geography settles it — wild Kokia kauaiensis is
+        the only *Kokia* on Kauaʻi.
+ecology: >-
+  Long-lived Kauaʻi mesic-forest endemic. Population declines have
+  been driven by feral ungulates, landslides in the Nā Pali
+  drainages, invasive plants, and fire. Kokia species have unusually
+  low genetic diversity for the number of individuals extant, so
+  seed banking and ex situ cultivation (NTBG, other botanical
+  gardens) are central to recovery. Holocene fossil seed capsules
+  suggest the species had a much wider historical range before
+  human-era pressures.
+cultural_significance: >-
+  Kokia species were used historically as sources of red / brown dye
+  from the bark; this guide records the association without dye-
+  extraction instructions, which properly belong to Hawaiian
+  practitioners. Cultural documentation specific to *K. kauaiensis*
+  (as opposed to the more widely-cited *K. drynarioides*) is sparse
+  in the accessible literature — we note the association honestly
+  rather than inventing use claims.
+hazards: null
+uncertainty: >-
+  Population and individual-count numbers vary between publications
+  (typically 100–200 wild plants across 6–11 populations depending
+  on survey year). Treat any specific count as approximate;
+  refer to current NTBG and USFWS documentation for authoritative
+  figures. Do not approach or handle any wild individual —
+  federally listed, and the terrain is dangerous.
+image_search_notes: >-
+  As of cycle 3 (Branch C), no license-verified photograph of
+  *Kokia kauaiensis* was located under the CC / public-domain
+  allow-list. The best available Flickr image (Jim Denny) is
+  All-Rights-Reserved and cannot be embedded. USFWS Kauaʻi Plant
+  Cluster recovery-plan PDFs contain no diagnostic-quality plant
+  photographs. This profile therefore uses SVG-only visuals — a
+  reused habit-small-tree schematic, a reused palmately-lobed
+  leaf schematic (both from the existing SVG library), and a new
+  flower-kokia-red-spiral.svg authored specifically for the
+  spiral-petaled red flower with curved staminal column. If a
+  future cycle locates a CC-BY / CC0 photograph (Wikimedia,
+  USFWS, or NPS), it should be added and this note updated.
+images: []
+diagrams:
+  - file: habit-small-tree.svg
+    caption: "Habit schematic — small deciduous tree with a broad open crown; typical Malvaceae architecture for this size class."
+  - file: leaf-palmate-lobed.svg
+    caption: "Palmately 7–9-lobed leaf schematic; Kokia kauaiensis blades are large (12–25 cm) with a distinct cordate (heart-shaped) base."
+  - file: flower-kokia-red-spiral.svg
+    caption: "Kokia flower schematic — five thick red petals in a spiral / twist with a projecting curved central staminal column. This spiral petal arrangement is the diagnostic field mark."
+citations: [1, 2, 3, 5, "C:7", "C:11", "C:12"]

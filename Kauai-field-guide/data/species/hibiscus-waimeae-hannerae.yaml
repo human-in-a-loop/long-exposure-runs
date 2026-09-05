@@ -1,0 +1,104 @@
+slug: hibiscus-waimeae-hannerae
+scientific_name: Hibiscus waimeae subsp. hannerae
+authority: (O.Deg. & I.Deg.) D.M.Bates
+family: Malvaceae
+common_names:
+  hawaiian: [kokiʻo keʻokeʻo]
+  english: [Hannera's white hibiscus, Nā Pali white hibiscus]
+status: endemic
+conservation_status: "US Endangered (federally listed)"
+coastal_zones: [valley_mouth, riparian]
+tier: rare_exotic
+occurrence_notes: >-
+  Kauaʻi endemic. Restricted to a small number of moist to mesic
+  Nā Pali valleys — including Limahuli, Hanakāpīʻai, Hanakoa, and
+  a handful of neighboring drainages — on shaded lower valley
+  slopes and stream corridors. Extremely restricted range; most
+  wild plants are behind the valley mouths a hiker sees from the
+  coast rather than at the beach itself.
+how_to_identify:
+  growth_form: >-
+    Small to medium tree 4–7 m tall, with a slender trunk and open,
+    somewhat sparse crown. Not a shrub.
+  leaves: >-
+    Ovate to broadly ovate, 6–12 cm long, glossy green above and
+    slightly paler below; margins entire to shallowly toothed.
+    Leaves are smaller and narrower than in the more common
+    upland subsp. *waimeae*.
+  flowers: >-
+    Large white hibiscus flowers 8–12 cm across, opening white in
+    the morning and fading to pink through the day. The staminal
+    column is slender, distinctly pink, and projects well past the
+    petals — this pink column is the field mark that separates
+    *H. waimeae* from other white Hawaiian hibiscuses.
+  fruit: >-
+    Small dry brown capsule, opening into 5 valves; not conspicuous.
+  bark_stem: Grey-brown, becoming lightly furrowed on older trunks.
+  size: 4–7 m tall; trunk to about 15 cm diameter.
+  zone_hint: >-
+    Shaded lower slopes and stream corridors of moist Nā Pali
+    valleys, typically from 60 to about 400 m elevation — reachable
+    on foot from Kalalau Trail into Limahuli, Hanakāpīʻai, or
+    Hanakoa but you should NOT collect, disturb, or approach any
+    listed individual.
+  clinchers:
+    - Large white hibiscus fading pink, with a distinctly pink projecting staminal column.
+    - Slender tree (not shrub) in shaded Nā Pali valley understory.
+    - Leaves smaller and narrower than the more common upland subsp. waimeae.
+  look_alikes:
+    - species: Hibiscus waimeae subsp. waimeae (Waimea white hibiscus)
+      how_to_distinguish: >-
+        The nominate subspecies is a broader-leaved plant of higher-
+        elevation Kauaʻi and is not federally listed. Foliage is
+        larger and coarser; flowers similar. If you are at a
+        low-elevation Nā Pali valley bottom, subsp. *hannerae* is
+        the expected taxon.
+    - species: Hibiscus arnottianus (kokiʻo keʻokeʻo, Oʻahu/Molokaʻi)
+      how_to_distinguish: >-
+        The other native white hibiscus is not native to Kauaʻi.
+        Its staminal column tends to be white rather than the
+        pink column characteristic of *H. waimeae*.
+    - species: Hibiscus tiliaceus (hau) — see this guide (Branch B)
+      how_to_distinguish: >-
+        Hau is a sprawling coastal tree with yellow-turning-orange
+        flowers and heart-shaped leaves — very different from the
+        white flower and ovate leaf of *hannerae*.
+ecology: >-
+  A moist-valley understory tree; part of the low-elevation mesic
+  and wet-forest flora of northwestern Kauaʻi. Threatened by feral
+  ungulates (goats and pigs), rat seed predation, non-native
+  understory plants that shade out seedlings, and habitat loss to
+  hurricanes and landslides.
+cultural_significance: >-
+  Kokiʻo keʻokeʻo (native white hibiscus) is one of the storied
+  flowers of Hawaiʻi; a small number of native white hibiscuses
+  produce a subtle fragrance, unusual in the genus. Respect any
+  wild plants encountered — do not pick flowers or seed.
+hazards: null
+uncertainty: null
+_migration_note: >-
+  Written during cycle-2 Branch C fan-out. Uses the single shared
+  data/images.json manifest and integer citation numbers.
+image_search_notes: >-
+  Cycle 2 added two Forest & Kim Starr photos (CC-BY-3.0) of cultivated
+  Oʻahu material — flower detail and leaves-with-flower. Cycle 3 (Branch
+  C) extended the allow-list to CC-BY-2.0 and added one supplemental
+  David Eickhoff photograph of the same subspecies (also cultivated
+  Oʻahu). No license-verifiable wild-Kauaʻi Nā Pali photograph has
+  surfaced; cultivated plants show the diagnostic characters (white
+  flower fading pink + projecting pink staminal column + smaller
+  narrower leaves than subsp. waimeae) faithfully.
+images:
+  - id: hibiscus-hannerae-flower-01
+    role: flower
+    diagnostic_pointer: "White flower fading pink; note the projecting slender pink staminal column — the H. waimeae signature."
+  - id: hibiscus-hannerae-leaves-01
+    role: leaves
+    diagnostic_pointer: "Leaves and a flower; leaves distinctly smaller and narrower than subsp. waimeae."
+  - id: hibiscus-hannerae-eickhoff-01
+    role: flower
+    diagnostic_pointer: "Supplemental view of the endangered Kauaʻi endemic under CC-BY-2.0 (cycle 3 allow-list extension)."
+diagrams:
+  - file: leaf-ovate-serrate.svg
+    caption: "Ovate leaf schematic; subsp. hannerae leaves are ovate, sometimes shallowly toothed near the tip."
+citations: [1, 2, 3, 5, "C:3"]

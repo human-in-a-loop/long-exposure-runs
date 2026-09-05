@@ -1,0 +1,80 @@
+slug: kukui
+scientific_name: Aleurites moluccanus
+authority: (L.) Willd.
+family: Euphorbiaceae
+common_names:
+  hawaiian: [kukui]
+  english: [candlenut, Indian walnut]
+status: polynesian_introduction
+conservation_status: null
+coastal_zones: [valley_mouth, riparian]
+tier: notable
+occurrence_notes: >-
+  Forms bright silvery-green groves at the mouths of Nā Pali valleys —
+  Kalalau, Hanakoa, Hanakāpīʻai — often the most conspicuous tree from
+  offshore. Marks Polynesian settlement zones along the entire island.
+how_to_identify:
+  growth_form: >-
+    A medium tree, 10–20 m tall, with a broad, dense canopy and
+    stout spreading branches.
+  leaves: >-
+    Highly variable within a single tree — palmately 3–5 lobed on young
+    growth (like a maple leaf), plain ovate on mature growth — 10–20 cm
+    long, distinctly pale silvery-green above and covered in short
+    star-shaped hairs on the new growth, so the whole canopy appears
+    silvery from distance.
+  flowers: >-
+    Small (~1 cm), white, five-petaled, in loose branched clusters at the
+    branch tips; individual flowers unshowy but collectively conspicuous.
+  fruit: >-
+    A green globular drupe 4–6 cm across, becoming black at maturity,
+    containing 1–2 hard round nuts. Nuts are oil-rich.
+  bark_stem: Smooth pale grey to greenish-grey, becoming shallowly furrowed.
+  size: 10–20 m tall.
+  zone_hint: >-
+    Valley mouths, along stream corridors up into the lower valleys.
+    Absent from the salt-spray strand.
+  clinchers:
+    - Silvery-green canopy visible from distance — the diagnostic remote-view feature on Nā Pali.
+    - Palmately lobed young leaves (5-fingered) on the same tree as ovate mature leaves.
+    - Star-shaped hairs on new leaves and flower clusters (hand lens).
+    - Round green-to-black drupe with a hard oil-rich nut inside.
+  look_alikes:
+    - species: Morinda citrifolia (noni)
+      how_to_distinguish: >-
+        Also a valley-mouth tree with large glossy leaves, but noni leaves
+        are simple, entire, and glossy dark green (not lobed, not silvery),
+        and the fruit is a lumpy multiple fruit — very distinct.
+    - species: Ricinus communis (castor)
+      how_to_distinguish: >-
+        Has similarly lobed leaves but is a smaller shrub (2–4 m), leaves
+        larger and glabrous, with a distinctive prickly seed capsule; also
+        castor is invasive and highly toxic.
+ecology: >-
+  Polynesian settlers carried kukui from island to island as a
+  multipurpose plant; it has since naturalized to the point of
+  forming persistent groves at valley mouths and is included in native
+  vegetation reconstructions.
+cultural_significance: >-
+  Kukui is the official tree of the State of Hawaiʻi. The nuts, bark,
+  and light-giving oil have been used for many purposes across Hawaiian
+  history; that living tradition is not detailed further in this guide.
+hazards: >-
+  Raw kukui nuts are strongly laxative and mildly toxic if eaten in
+  quantity. Traditional food use requires careful processing.
+images:
+  - id: kukui-leaves-fruit-01
+    role: leaves and fruit
+    diagnostic_pointer: "Pale-green lobed leaves alongside the round green nuts."
+  - id: kukui-habit-01
+    role: habit
+    diagnostic_pointer: "Silvery-green canopy marks a valley from a great distance."
+  - id: kukui-flowers-01
+    role: flowers
+    diagnostic_pointer: "Small white flowers in loose branched clusters at branch tips."
+diagrams:
+  - file: leaf-palmate-lobed.svg
+    caption: "Palmately lobed young leaf (mature leaves are simple ovate)."
+  - file: habit-small-tree.svg
+    caption: "Rounded-canopy tree habit."
+citations: [1, 2, 3, 9, 10]

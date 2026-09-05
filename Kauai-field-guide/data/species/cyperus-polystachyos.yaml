@@ -1,0 +1,87 @@
+slug: cyperus-polystachyos
+scientific_name: Cyperus polystachyos
+authority: Rottb.
+family: Cyperaceae
+common_names:
+  hawaiian: [puʻukaʻa]
+  english: [manyspike flatsedge, bunchy flatsedge]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, valley_mouth]
+tier: common
+occurrence_notes: >-
+  A tufted native sedge of moist sand, salt-flat margins, and seep
+  edges on Hawaiian coasts. On the roadless Kauaʻi coast it occurs at
+  back-beach seeps and valley-mouth flats behind Kalalau and along the
+  moist edges of Māhāʻulepū salt pans; pantropical distribution.
+how_to_identify:
+  growth_form: >-
+    Tufted perennial sedge 20–70 cm tall, forming discrete clumps of
+    upright triangular stems from a short rhizome.
+  leaves: >-
+    Basal, linear and grass-like, 2–5 mm wide, shorter than or roughly
+    equalling the flowering stems.
+  flowers: >-
+    Very small; the inflorescence is a dense head-like cluster of many
+    flat brown to golden spikelets at the top of each stem, subtended
+    by 3–6 leaf-like bracts that project well above the head — the
+    overtopping bracts are diagnostic.
+  fruit: >-
+    A tiny brown 3-sided achene enclosed in each spikelet.
+  bark_stem: >-
+    Slender wiry culms triangular in cross-section — pinch or roll one
+    to feel the three flat ridges (the sedge / Cyperaceae sign).
+  size: 20–70 cm tall; clumps 15–30 cm across.
+  zone_hint: >-
+    Moist sand, salt-flat margins, seep edges, and wet valley-mouth
+    flats. Not on exposed dry cliff or open sand.
+  clinchers:
+    - Dense head-like cluster of flat brown-golden spikelets at stem top, with leaf-like bracts overtopping the head.
+    - Triangular stem in cross-section — a sedge, not a grass.
+    - Tufted growth 20–70 cm tall on moist coastal ground.
+  look_alikes:
+    - species: Fimbristylis cymosa (mauʻu ʻakiʻaki)
+      how_to_distinguish: >-
+        Fimbristylis is much smaller (10–40 cm), forms tighter compact
+        button-like brown inflorescences without long overtopping
+        bracts, and grows on drier, harder substrates. Puʻukaʻa's leaf-
+        like bracts projecting well above the flower head are the key
+        contrast.
+    - species: Cyperus rotundus (introduced nutgrass)
+      how_to_distinguish: >-
+        Nutgrass has purple-tinged reddish-brown spikelets on a more
+        open umbel and produces small underground tubers (nutlets);
+        puʻukaʻa has plain brown-golden spikelets in a dense head-like
+        cluster and no tubers.
+    - species: Cyperus laevigatus (makaloa)
+      how_to_distinguish: >-
+        Makaloa is nearly leafless (stems are the visible tissue), with
+        a small lateral head near the stem tip; puʻukaʻa has clear
+        basal grass-like leaves and a terminal head with overtopping
+        bracts.
+ecology: >-
+  A pioneer of moist saline and freshwater-brackish coastal habitats.
+  Its dense root system stabilizes moist sand and seep margins, and it
+  is one of the more salt-tolerant native sedges of Hawaiian coasts.
+cultural_significance: >-
+  Puʻukaʻa is one of several native sedges of coastal wetlands but is
+  less prominent culturally than the mat-weaving *Cyperus laevigatus*
+  (makaloa). Its ecological role in coastal wetland restoration is
+  recognized.
+hazards: null
+images:
+  - id: a-cyperus-polystachyos-habit-01
+    role: habit
+    diagnostic_pointer: "Tufted sedge on the coastal shelf — clump of upright triangular stems."
+  - id: a-cyperus-polystachyos-seedheads-01
+    role: inflorescence
+    diagnostic_pointer: "Head-like cluster of flat brown-golden spikelets with leaf-like bracts overtopping the head (vs. Fimbristylis's tight button)."
+  - id: a-cyperus-polystachyos-habit-02
+    role: habit
+    diagnostic_pointer: "Clump growth on wet coastal margin; roll a stem between fingers to feel three triangular ridges."
+diagrams:
+  - file: habit-grass-tuft.svg
+    caption: "Tufted sedge habit — grass-like from a distance, distinguished by triangular stems and overtopping bracts on the flower head."
+  - file: leaf-linear-grass.svg
+    caption: "Narrow linear leaves — grass-like, but the plant is a sedge (Cyperaceae) identified by the triangular stem cross-section."
+citations: ["A:1", "A:6", "A:7", "A:12"]

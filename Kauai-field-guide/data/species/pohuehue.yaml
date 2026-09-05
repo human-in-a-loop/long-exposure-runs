@@ -1,0 +1,82 @@
+slug: pohuehue
+scientific_name: Ipomoea pes-caprae
+authority: (L.) R. Br. subsp. brasiliensis (L.) Ooststr.
+family: Convolvulaceae
+common_names:
+  hawaiian: [pōhuehue]
+  english: [beach morning-glory, goat's foot]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Sprawling vine on the upper beach and low fore-dunes throughout the
+  unpopulated Kauai coast — very conspicuous on Kalalau, Miloliʻi and Māhāʻulepū.
+how_to_identify:
+  growth_form: >-
+    Long, prostrate, herbaceous vine that trails 5–30 m across bare sand
+    from a woody rootstock, rooting at nodes and rarely twining.
+  leaves: >-
+    Thick, glossy, notched at the tip into two lobes so the outline resembles
+    a cloven hoof or goat's foot (hence "pes-caprae"). 3–10 cm across, held
+    on long petioles.
+  flowers: >-
+    Bright pink to magenta funnel-shaped flowers, 4–5 cm wide, opening in
+    the morning and closing by early afternoon. Typically borne singly on
+    long stalks above the runners.
+  fruit: >-
+    Dry brown papery capsule, ~1.5 cm, containing 4 hairy black seeds
+    that float on ocean currents.
+  bark_stem: >-
+    Green fleshy stems, becoming pale and woody at the base; exude a thin
+    milky sap when cut.
+  size: Runners routinely 5–15 m long; leaves at ground level.
+  zone_hint: >-
+    Bare sand and low dune above the tideline, often the very first plant
+    outward from bare storm beach.
+  clinchers:
+    - Two-lobed "goat's foot" leaf notched at the tip — unmistakable.
+    - Bright magenta funnel flower opening in the morning.
+    - Long prostrate runners in bare sand, not climbing.
+  look_alikes:
+    - species: Vigna marina (nanea, beach pea)
+      how_to_distinguish: >-
+        Also a sandy-beach creeper, but has three-leaflet compound leaves
+        (not a single two-lobed leaf) and small yellow pea flowers instead
+        of large pink morning-glory funnels.
+    - species: Ipomoea indica (blue morning-glory) or other Ipomoea species
+      how_to_distinguish: >-
+        Twines up other plants; leaves entire or three-lobed, not the
+        distinctive cloven-hoof shape.
+    - species: Ipomoea imperati (hunakai)
+      how_to_distinguish: >-
+        Also a prostrate strand vine, but its flowers are WHITE with a
+        pale yellow throat rather than pōhuehue's magenta funnel, and
+        its leaves vary from entire ovate to deeply 3–5-lobed on the
+        same runner rather than showing pōhuehue's uniform cloven-hoof
+        shape. Check flower colour first — the two species commonly
+        grow interspersed on the same beach.
+ecology: >-
+  Salt-tolerant, drought-tolerant pantropical strand vine that anchors
+  loose sand and initiates dune formation, providing microhabitat for
+  ground-nesting invertebrates. Its salt-water-dispersed seeds account
+  for its near-global tropical shoreline distribution.
+cultural_significance: >-
+  Pōhuehue is referenced in surfing chants and coastal moʻolelo; the vines
+  were traditionally used to call in surf. As with all coastal plants
+  described here, cultural use belongs to living Hawaiian practitioners and
+  is not detailed further in this guide.
+hazards: >-
+  Seeds contain small amounts of ergoline alkaloids and should not be
+  ingested.
+images:
+  - id: pohuehue-flower-01
+    role: flower
+    diagnostic_pointer: "Pink funnel morning-glory — the signature flower of the beach."
+  - id: pohuehue-leaves-01
+    role: leaves
+    diagnostic_pointer: "Note the two-lobed 'goat's foot' leaf tip."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate creeping habit — long runners in bare sand, not twining."
+citations: [1, 2, 3, 12]

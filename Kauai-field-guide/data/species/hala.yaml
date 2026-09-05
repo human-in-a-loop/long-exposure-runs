@@ -1,0 +1,100 @@
+slug: hala
+scientific_name: Pandanus tectorius
+authority: Parkinson ex Du Roi
+family: Pandanaceae
+common_names:
+  hawaiian: [hala, pū hala]
+  english: [screwpine, tectorius screwpine]
+status: indigenous
+conservation_status: null
+coastal_zones: [strand, valley_mouth, sea_cliff]
+tier: common
+occurrence_notes: >-
+  Conspicuous at every Nā Pali valley mouth and back-beach, forming
+  distinctive prop-rooted stands at Kalalau, Honopū, Nuʻalolo Kai, and
+  Miloliʻi; also on drier sea cliff slopes.
+how_to_identify:
+  growth_form: >-
+    A small-to-medium branching tree, 4–14 m tall, held up by numerous
+    stilt-like prop roots that fan out from the base and lower trunk.
+  leaves: >-
+    Long, strap-shaped, arranged in three rows spiraling up the branch
+    tips into large tufted crowns. Blades 1–2 m long, 5–10 cm wide, with
+    sharp recurved spines along the margins and the underside midrib.
+  flowers: >-
+    Dioecious. Male flowers are dense, cream-coloured, short-lived,
+    fragrant plumes (hīnano); female heads develop directly into the fruit.
+  fruit: >-
+    A large pineapple-like syncarp 15–25 cm across composed of many wedge-
+    shaped woody-fibrous drupes ("keys"), ripening from green to orange or
+    red. Each key floats and disperses on ocean currents.
+  bark_stem: >-
+    Trunk pale grey with ring-scars from fallen leaves; supported by
+    conspicuous prop roots.
+  size: 4–14 m tall with a crown spread often 3–5 m.
+  zone_hint: >-
+    Back-beach, valley mouths, lower sea cliffs, and along freshwater
+    streams within a kilometre of the coast.
+  clinchers:
+    - Conspicuous prop roots supporting the trunk — no other coastal tree in Hawaiʻi does this.
+    - Long strap leaves with spines along both margins and the underside midrib.
+    - Big pineapple-like woody fruit that breaks into wedge-shaped keys.
+    - Leaves spiral in three vertical ranks up the branch tip.
+  look_alikes:
+    - species: Cocos nucifera (coconut palm, niu)
+      how_to_distinguish: >-
+        Also a coastal tree with a crown of long leaves, but has a single
+        unbranched trunk, no prop roots, and pinnate (feather) leaves rather
+        than strap leaves.
+    - species: Cordyline fruticosa (kī, ti plant)
+      how_to_distinguish: >-
+        Much smaller (understorey shrub 1–3 m), soft entire leaf margins
+        without spines, no prop roots.
+ecology: >-
+  A keystone species of Hawaiian coastal forest — its buoyant, long-lived
+  fruit keys allow ocean dispersal, its prop-root architecture withstands
+  storm surge and wind, and its crowns shelter native land snails and
+  birds. Dense hala forest at valley mouths is one of the few Nā Pali
+  vegetation types that resembles pre-contact structure.
+cultural_significance: >-
+  Hala is central to Hawaiian material culture — lauhala (leaves) are
+  woven into mats, hats, and sails, and hīnano (male flower) is celebrated
+  in mele and hula. This guide names those relationships without giving
+  harvest instructions; that transmission belongs to Hawaiian practitioners.
+hazards: >-
+  Leaf-margin and midrib spines are sharp and recurved; do not push through
+  hala thickets without long sleeves.
+uncertainty: >-
+  Hala's history in Hawaiʻi is best read as *both/and*, not either/or.
+  Wagner, Herbst & Sohmer treat *Pandanus tectorius* as indigenous to
+  Hawaiʻi — present before Polynesian settlement via natural ocean
+  dispersal of its buoyant fibrous fruit keys, consistent with its
+  pantropical distribution [A:1]. Gallaher and colleagues provide direct
+  evidence for that natural-dispersal history: macrofossil *Pandanus*
+  fruit recovered from Kauaʻi is dated to ~1.2 Ma, well before human
+  arrival in the archipelago [A:3]. Gallaher's own ethnobotanical review
+  of hala in Hawaiʻi [A:15] complements this by documenting that
+  Polynesian voyagers subsequently introduced additional cultivated
+  varieties, expanding the plant's diversity and cultural presence in
+  Hawaiʻi (see also Krauss on lauhala/hīnano cultivars [11]). This guide
+  therefore treats hala as *indigenous via natural long-distance
+  dispersal, and additionally enriched by Polynesian-introduced
+  cultivars*. Earlier framings of a clean "Wagner-indigenous vs.
+  Gallaher-Polynesian-introduction" dispute mis-read Gallaher's argument.
+  Either way, hala's cultural place in Hawaiʻi is uncontested.
+images:
+  - id: hala-habit-01
+    role: habit
+    diagnostic_pointer: "The prop-rooted trunk architecture — this alone identifies hala."
+  - id: hala-fruit-01
+    role: fruit
+    diagnostic_pointer: "Pineapple-like fruit composed of many wedge-shaped keys."
+  - id: hala-leaf-margin-01
+    role: leaf detail
+    diagnostic_pointer: "Sharp, recurved spines along the leaf margin."
+diagrams:
+  - file: habit-pandanus.svg
+    caption: "Pandanus prop-rooted habit with three-ranked crown of strap leaves."
+  - file: leaf-strap-pandanus.svg
+    caption: "Strap leaf with recurved marginal spines."
+citations: [1, 2, 3, 10, 11, "A:1", "A:3", "A:15"]

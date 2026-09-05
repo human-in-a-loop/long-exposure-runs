@@ -1,0 +1,72 @@
+slug: boerhavia-repens
+scientific_name: Boerhavia repens
+authority: L.
+family: Nyctaginaceae
+common_names:
+  hawaiian: [alena]
+  english: [creeping spiderling]
+status: indigenous
+coastal_zones: [strand, dune]
+tier: common
+occurrence_notes: >-
+  Indigenous prostrate herb of dry coastal ground, widespread across
+  Kauaʻi's low coastal areas. On the roadless coast it appears on open
+  gravel, coral rubble, and disturbed strand at Māhāʻulepū and lower
+  Nāpali valley mouths.
+how_to_identify:
+  growth_form: >-
+    A slender prostrate to weakly ascending perennial herb, forming diffuse
+    low mats to rounded cushions from a taproot.
+  leaves: >-
+    Opposite (a diagnostic pair often visibly unequal in size), simple,
+    oblong to ovate, 1–3 cm long, entire-margined, thin, often slightly
+    fleshy on exposed ground.
+  flowers: >-
+    Very small (~2–3 mm), pink to purple-pink, in loose branched cymes at
+    the stem tips. The corolla is actually a coloured calyx (Nyctaginaceae
+    trait) — no true petals.
+  fruit: >-
+    A small (~3 mm) elongate, five-ribbed, sticky-glandular anthocarp
+    (accessory fruit) that adheres readily to feet, feathers, and fur —
+    an animal-dispersal adaptation.
+  bark_stem: Slender green stems, sometimes reddish, often glandular near nodes.
+  size: Prostrate mats 20–80 cm across; cushions 5–15 cm tall.
+  zone_hint: >-
+    Open ground on strand, dune margins, and dry disturbed coastal flats;
+    tolerant of trampling and dry rubble.
+  clinchers:
+    - Opposite oblong leaves often unequal in size within a pair.
+    - Tiny pink-purple flowers in a loose branched cyme above the mat.
+    - Sticky-glandular five-ribbed fruit that clings to fingers, clothing, or feathers.
+  look_alikes:
+    - species: Boerhavia coccinea, B. herbstii, other Hawaiian Boerhavia
+      how_to_distinguish: >-
+        Multiple Boerhavia species overlap on Hawaiian coasts and are hard
+        to tell apart in the field — the classical clue is the density and
+        stickiness of the fruit glands and the exact colour of the flowers.
+        Confer against Wagner et al. [A:1] and consider recording the plant
+        as "Boerhavia sp." if uncertain.
+    - species: Portulaca oleracea (introduced pigweed)
+      how_to_distinguish: >-
+        Portulaca has succulent, plump, obovate leaves and a small yellow
+        5-petaled flower — very different once inspected.
+ecology: >-
+  Halophyte and disturbance-tolerant colonizer. The sticky anthocarp
+  disperses by clinging to seabirds and other visitors — the plant's
+  distribution across the Northwestern Hawaiian Islands atolls is a
+  direct signature of that dispersal syndrome.
+cultural_significance: >-
+  Alena is one of several small indigenous coastal herbs known in Hawaiian
+  ethnobotany; framed here without harvest instruction.
+hazards: null
+images:
+  - id: a-boerhavia-repens-habit-01
+    role: habit
+    diagnostic_pointer: "Prostrate mat of opposite oblong leaves — the characteristic alena silhouette."
+  - id: a-boerhavia-repens-habit-02
+    role: habit
+    diagnostic_pointer: "Rounded cushion form on open ground; many small opposite leaves along trailing stems."
+diagrams:
+  - file: habit-prostrate-vine.svg
+    caption: "Prostrate mat/cushion habit — Boerhavia stays low and diffuse over dry coastal ground."
+citations: ["A:1", "A:6", "A:7"]
