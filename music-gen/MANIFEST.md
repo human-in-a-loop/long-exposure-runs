@@ -1,5 +1,38 @@
 # Music-Gen v4 closure campaign — MANIFEST
 
+## Key Files
+
+The following workspace files produced results cited in
+final_report.md. Downstream packaging should include these; other
+files are supporting or exploratory.
+
+- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.wav` — the
+  Chicken Grease A/B showcase mix cited in §9.4 (SHA prefix
+  `6e13e0075c5d8116…`, LUFS-I −15.32).
+- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.manifest.json` —
+  inputs manifest for the showcase mix (§9.4).
+- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.replay_proof.json`
+  — byte-identity replay proof for the showcase mix (§9.4).
+- `scripts/sound_match/deliver_cg_ab_v4.py` — the delivery script
+  whose smoke test reports every Chicken Grease cell terminal
+  (§9.3, §9.4).
+- `scripts/sound_match/pinned_profile_schema_v1.json` — the
+  pinned-profile JSON schema validated as load-bearing for
+  replay discipline (§9.3, §9.6).
+- `scripts/sound_match/profile_validator.py` — validator for the
+  pinned-profile schema (§9.3, §9.6).
+- `scripts/sound_match/objective.py` — composite objective; the
+  emission point named in the Path B remediation option for the
+  metric-semantics escalation (§9.5, §10.3 item 1).
+- `scripts/sound_match/embedding_panel.py` — embedding-cosine
+  computation (`1 − cos(u, v)`) referenced in the same
+  escalation (§9.5).
+- `scripts/v4_rules/extract_v4.py` — the substantive v4-rules
+  extractor whose audit-trail rows are the housekeeping gap
+  named in §9.6 and §10.3 item 2.
+- `scripts/v4_rules/__init__.py` — package init for the
+  extractor above (§9.6).
+
 Snapshot at cycle-15 close. Scope: files produced or extended during
 cycles 1–15 of the v4 closure campaign. As of cycle 15 all five
 Chicken Grease instrument cells reach a terminal state: bass accepted
