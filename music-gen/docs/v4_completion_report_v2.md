@@ -185,3 +185,124 @@ full 6-driver × legacy matrix. c29 Tracks B/C/D honestly deferred with
 concrete resume commands. This report supersedes
 `docs/v4_closure_completion_report.md` (per c14 lemma `supersedes_path` is
 `str`, not list).
+
+---
+
+# c71 render-defect fix amendment — 2026-09-05
+
+## Section: c71 render-defect fix: c63 skip-close policy application deferred at c69, honored at c71
+
+### Operator directive verbatim (2026-09-05, post-listening)
+
+> The operator approved the four new A/Bs overall but heard missing guitar.
+> Verified by stem RMS over each operator section (rc9_6stem): Rome guitar
+> is AUDIBLE (-24.0 dBFS) and Disco A guitar (-24.8), other (-20.8) and
+> piano (-21.6) are AUDIBLE; WIG other (-19.1) and Peach Dream other
+> (-17.7) are LOUD (htdemucs routed the harmonic bed into "other" for
+> those songs). Yet the c79 ab_mix renders included only bass+drums+vocals
+> and dropped guitar/piano/other wholesale ("absent, honest render"). That
+> contradicts the campaign's own recorded policy: the c63 skip-close ledger
+> entries state that downstream showcases for unprofiled audible stems
+> "default to htdemucs stem substitution per c14 CG-drums + c15 CG-guitar
+> OPT3 precedent". The substitution was never applied. This is a
+> render-path bug, not a profiling reopening.
+
+### Root cause
+
+c63 skip-close policy at `_run/cycle_63_closed` explicitly named htdemucs
+stem substitution as the default for unprofiled audible stems (per c14
+CG-drums + c15 CG-guitar OPT3 precedent). c69 driver
+`scripts/sound_match/deliver_ab_v4.py` implemented only the
+absent-silent branch, treating ALL unprofiled stems as silent regardless
+of audibility. Operator ear caught the omission 2026-09-05. The c69 v1
+renders are honest under their own contract, but the contract was wrong:
+it did not implement the c63-documented behavior.
+
+### Fix
+
+`scripts/sound_match/deliver_ab_v4.py`:
+
+- pre-edit sha `52ff05e28d2feb551e6bad03fa4115399fb7fc554fc7c3ab5351882affc92aec` (c69)
+- post-edit sha `937f99a80ce23cfd3255f9133ec564230a0ca1b9fa9b45707b0eed2c453b094c` (c71)
+
+Additive changes:
+
+1. New helper `_absent_stem_dispatch(stem_name, stems_dir, root)` invokes
+   `measure_stem_audibility.measure()` on the reference htdemucs stem;
+   returns either `absent_no_audible_signal` (below -60 dB floor) or
+   `htdemucs_stem_substitution` (audible) with the loaded stereo int16
+   samples + provenance fields.
+2. 3 new branches in `_render_ab_mix` (guitar / piano / other) call the
+   dispatch helper; audible branches get packed into the mix track list.
+3. Truncation policy at `deliver_ab_v4.py:293` changed from
+   `min(bass, drums, vocals)` to `max(bass, drums, vocals, *audible)`.
+   Shorter cells zero-pad to the longest cell. Fixes WIG partial-mix
+   (~11.249 s under c69 min policy) as a side effect.
+4. New `--out-suffix` CLI flag (default empty string preserves c69 output
+   naming; when set to `v2`, outputs land as `ab_mix_v2.wav` alongside
+   c69 v1 anchors).
+5. `_mix.sum_method` string updated to
+   `float_accumulate_peaklimit_099_max_len_zero_pad` (was
+   `float_accumulate_peaklimit_099`).
+
+### Per-song audibility measurements (c71 empirical)
+
+Silence floor: -60 dB RMS (c14 canonical). Probe:
+`data/v4/deliveries/<sha16>/audibility_v2.json`.
+
+| song | guitar rms | guitar | piano rms | piano | other rms | other |
+|------|-----------|--------|-----------|-------|-----------|-------|
+| WIG (252eb21ce7df7328) | -69.55 dBFS | SILENT | -36.05 dBFS | **AUDIBLE** | -19.40 dBFS | AUDIBLE |
+| Rome (51e433ade2a845e1) | -26.21 dBFS | AUDIBLE | -72.42 dBFS | SILENT | -78.15 dBFS | SILENT |
+| Peach Dream (88d247468cb6d49f) | -79.81 dBFS | SILENT | -70.09 dBFS | SILENT | -19.65 dBFS | AUDIBLE |
+| Disco A (cdd2717e52820ff6) | -25.08 dBFS | AUDIBLE | -21.82 dBFS | AUDIBLE | -20.95 dBFS | AUDIBLE |
+
+Note: WIG piano AUDIBLE (-36.05 dBFS) is a new c71 finding vs operator
+brief expectation "probe and record"; per operator directive audibility
+gate, WIG v2 includes +piano+other.
+
+### Per-song v2 delivery table
+
+Landed at `data/v4/deliveries/<sha16>/ab_mix_v2.{wav,manifest.json,replay_proof.json}`
+alongside the READ-ONLY c69 v1 anchors (all 4 v1 SHAs byte-identical
+pre==post per FD-1). All 4 v2 REPLAY_PROOF_HOLDS byte-det ×2.
+
+| song | v1 sha | v2 sha | v2 duration | audible substitutions | replay |
+|------|--------|--------|-------------|-----------------------|--------|
+| WIG | `6feca5d1…` | `29de5ee2…` | 30.000 s | +piano+other | HOLDS |
+| Rome | `81e2ef15…` | `9ea1fe32…` | 32.707 s | +guitar | HOLDS |
+| Peach Dream | `a300cf4c…` | `e164c42b…` | 32.695 s | +other | HOLDS |
+| Disco A | `1b673106…` | `77cd593a…` | 36.476 s | +guitar+piano+other | HOLDS |
+
+### Honest disclosures
+
+- Brief P3 predicted 30.000 s across all 4 v2 outputs. Actual: WIG lands
+  30.000 s exactly (bass/drums ~9 s zero-pad up to vocals 30 s); Rome/PD/
+  Disco A v2 land 32.7-36.5 s because the sf2 bass/drums renders carry
+  SF2 release tail beyond the 30 s MIDI, and max-truncation preserves it.
+  Under c69 min-truncation the tail was clipped by the 30 s vocals cell.
+  This is halt-honest behavior per FD-1: the mix now includes what was
+  previously discarded, not a defect.
+- Operator ear = LANDS authority post-hoc per FD-6. v2 outputs are
+  candidate-preserving, not operator-approved.
+- c69 min-truncation policy retired in favor of max-truncation per c71.
+  The c70 P1 diagnostic answer (`HONEST_SPARSE_CANONICAL_MIDI` on WIG)
+  stands: canonical MIDI durations bass=8.991 s, drums=9.081 s,
+  vocals=29.960 s, piano=29.921 s are real properties of the
+  transcription. What changes is the mix policy, not the MIDI.
+
+### env_pin
+
+7-key subset unchanged from c69: `env_pin_sha256 =
+2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`.
+No FD-16(a) cert re-issue.
+
+### Test coverage
+
+`tests/test_deliver_ab_v4.py` extended in place from 6 to 10 cases
+(c71 additions: `test_07_absent_stem_htdemucs_substitution_when_audible`,
+`test_08_absent_stem_stays_silent_when_below_floor`,
+`test_09_max_truncation_policy`,
+`test_10_v2_output_suffix_writes_sibling_files`). 10/10 PASS via
+`PYTHONPATH=. /usr/bin/python3 tests/test_deliver_ab_v4.py`.
+
