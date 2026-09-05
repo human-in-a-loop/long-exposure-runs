@@ -6,32 +6,75 @@ name: Delete merged branch
 #
 # This workflow is the belt to the repository setting's braces: enable
 # "Automatically delete head branches" in Settings -> General as well.
+#
+# The manual trigger cleans up a branch that was consolidated into main
+# outside the PR flow. It refuses to delete anything main does not already
+# contain, so a live run's branch cannot be dropped by mistake.
 
 on:
   pull_request:
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Merged branch to delete (must be fully contained in main)"
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   delete-branch:
-    # Only branches living in this repository can be deleted (fork PRs are skipped).
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # For PR events, only branches living in this repository can be deleted.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: Delete the pull request head branch
+      - name: Resolve target branch
+        id: target
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
+          EVENT: ${{ github.event_name }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          INPUT_BRANCH: ${{ inputs.branch }}
         run: |
           set -euo pipefail
-          if [ "$BRANCH" = "${{ github.event.repository.default_branch }}" ]; then
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "branch=$INPUT_BRANCH" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch=$PR_BRANCH" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete the branch once main contains it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.target.outputs.branch }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          if [ "$BRANCH" = "$DEFAULT_BRANCH" ]; then
             echo "Refusing to delete the default branch."
+            exit 1
+          fi
+
+          if ! git rev-parse --verify --quiet "origin/$BRANCH" >/dev/null; then
+            echo "Branch '$BRANCH' does not exist; nothing to do."
             exit 0
           fi
+
+          # Never drop work that main has not absorbed yet.
+          if ! git merge-base --is-ancestor "origin/$BRANCH" "origin/$DEFAULT_BRANCH"; then
+            echo "Refusing to delete '$BRANCH': it has commits not reachable from $DEFAULT_BRANCH."
+            git log --oneline "origin/$DEFAULT_BRANCH..origin/$BRANCH"
+            exit 1
+          fi
+
           echo "Deleting branch: $BRANCH"
-          gh api \
-            --method DELETE \
-            "repos/${{ github.repository }}/git/refs/heads/$BRANCH" \
-            || echo "Branch already gone; nothing to do."
+          gh api --method DELETE "repos/${{ github.repository }}/git/refs/heads/$BRANCH"

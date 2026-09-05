@@ -49,6 +49,10 @@ tracked there, so `main` alone reflects the complete, current state.
   automatically when the PR closes. Enable **Settings → General →
   Automatically delete head branches** as well, so the cleanup holds even if
   Actions are disabled.
+- The same workflow takes a manual `workflow_dispatch` run for a branch that
+  reached `main` outside the PR flow. It refuses to delete any branch whose
+  commits `main` does not already contain, so a live run's branch cannot be
+  dropped by mistake.
 - Long-running runs land their periodic sweeps on `main` rather than
   accumulating on a run branch, so a reader never has to hunt across branches
   to find the newest artifacts.
