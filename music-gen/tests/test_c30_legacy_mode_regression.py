@@ -252,7 +252,7 @@ def test_10_c30_anchor_table_byte_identical_pre_post():
 # ============================================================================
 
 
-CANON_INVARIANTS_SHA_POST_C32 = "24eefd19e160ef9c128e7ce115e469beb72674891e00b859a765ae510ea471d5"  # c50 update: post enum-extension addendum (was 29a1610b… pre-c50)
+CANON_INVARIANTS_SHA_POST_C32 = "210e07f793d138e3c75b8c4b1355927cda84f3a56b725a25d7034bd55cca0d65"  # c51 update: post promotion-criterion any-preset clarification (was 24eefd19… pre-c51)
 CANON_OP1_HELPER_SHA = "121809db63cb05edf61ef2abcd83a3cf25d16b0774b73f9a7364d06f32d5eff5"
 
 
@@ -378,9 +378,23 @@ def _check_halt_memo_shape(memo: dict, name: str, expected_carried_cycle: int,
     }
     missing = required_top_level - set(memo.keys())
     assert not missing, f"{name}: missing top-level keys {missing}"
-    assert memo["status"] == "action_required"
+    # c51 update: accept either the original action_required state OR the
+    # c47 operator-omnibus closure state (closed_by_operator). Under closure
+    # the memo carries an additive `c47_omnibus_closure` block; blocked_on_operator
+    # flips to False; authority + supersedes_path invariants remain.
+    if memo["status"] == "closed_by_operator":
+        assert memo["blocked_on_operator"] is False
+        assert "c47_omnibus_closure" in memo, (
+            f"{name}: closed_by_operator status must carry c47_omnibus_closure block"
+        )
+        closure = memo["c47_omnibus_closure"]
+        for k in ("adjudicated_at", "adjudicated_by", "adjudication_outcome",
+                  "chosen_path", "pre_closure_sha256", "rationale"):
+            assert k in closure, f"{name}: c47_omnibus_closure missing {k}"
+    else:
+        assert memo["status"] == "action_required"
+        assert memo["blocked_on_operator"] is True
     assert memo["authority"] == "OPERATOR"
-    assert memo["blocked_on_operator"] is True
     assert memo["supersedes_path"] is None
     assert memo["carried_from_cycle"] == expected_carried_cycle
     assert memo["env_pin_sha256"] == CANON_ENV_PIN
