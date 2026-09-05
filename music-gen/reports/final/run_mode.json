@@ -1,11 +1,11 @@
 {
   "agent": "final_reporter",
-  "mode": "fresh",
-  "detection_source": "none",
+  "mode": "delta",
+  "detection_source": "marker",
   "canonical_path": "/home/user/long-exposure-runs/music-gen/reports/final/final_report.md",
   "commit_marker": "/home/user/long-exposure-runs/music-gen/reports/final/final_report.committed",
-  "baseline_boundary_ts": null,
-  "total_report_tokens": 142657,
-  "budget_tokens": 142657,
-  "stages": 9
+  "baseline_boundary_ts": 1788327541.1653,
+  "total_report_tokens": 189797,
+  "budget_tokens": 114919,
+  "stages": 7
 }

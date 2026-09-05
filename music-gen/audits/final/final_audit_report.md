@@ -1,401 +1,124 @@
 ---
-title: "Final audit report — Music-Gen campaign"
-date: "2026-09-02"
+title: "Final Audit Report — Music-Gen Run (Delta Audit)"
+date: "2026-09-05"
 toc: true
 toc-depth: 2
 numbersections: false
 fontsize: "10pt"
-audit: "final"
-audit_date: "2026-09-02"
-cycles_range: "1..54"
-promise_check: "green (0 ERROR)"
-run_id: "run-2026-08-28T040704Z"
-stage: "document (48 of 48)"
-wall_cap_exceeded: false
 ---
-# Final audit report — Music-Gen campaign
+# Final Audit Report — Music-Gen Run (Delta Audit)
 
-## §0. Scope
+- Run id: `run-2026-08-28T040704Z`
+- Mode: delta (baseline committed 2026-09-02; delta scope covers cycles committed after that boundary)
+- Scope: only NEW per-cycle deliverables newer than the committed baseline. Prior findings are not re-litigated.
+- Wall-cap hit: false
+- Focus songs: Chicken Grease (mandatory), What If I Go, Rome, Peach Dream, Disco A
+- Report source glob: `reports/cycles/report_cycles_*.md` (plus its enumerated siblings)
 
-Closing-the-books pass at run scope, per the final-auditor role
-contract. Assesses the run's structured commitments (plan-of-record
-milestones, ledger events, evidence files, `_manager/*` adjudications,
-`_plan/*` amendments, closure documents), **not** the exploration
-mechanics. The ratings-audio egress block (HTTP 429 + `tv_embedded`)
-is treated as a live external constraint carried forward, not a
-defect.
+---
 
-- Cycles executed: 1..54 (max cycle in ledger = 54).
-- Ledger events: 920 rows across 762 distinct milestones.
-- Substantive `M-*` milestones: 231. Bookkeeping (`_infra` / `_plan` /
-  `_manager` / `_run` / `_archive`): 531.
-- Reports on disk (`reports/cycles/`): 32 cycle-report `.md` (+PDF).
-- `promise_check`: exit 0, 0 ERROR, 3437 WARN (breakdown in §5).
-- Findings across 47 prior audit stages: 111 rows in
-  `findings.jsonl` (0 CRITICAL / 1 MAJOR / 21 MODERATE / 10 MINOR /
-  30 INFO / 45 NONE / 4 PASS). No `reconcile: true` entries — no
-  ledger events are committed by this audit.
+## 1. Status distribution (delta slice)
 
-## §1. Status distribution
+Milestones touched or introduced in the delta slice, by unified status:
 
-Latest event per milestone across all 762 distinct milestone_ids:
+| status                    | count |
+|---------------------------|-------|
+| validated (high)          | 47    |
+| validated (medium)        | 0     |
+| in-progress               | 1     |
+| action_required           | 1     |
+| deferred                  | 3     |
+| superseded (implicit)     | 1     |
+| invalidated               | 0     |
+| not-started               | 4     |
 
-| Status       | Count |
-|--------------|------:|
-| validated    |  731  |
-| in-progress  |   22  |
-| invalidated  |    6  |
-| reopened     |    2  |
-| superseded   |    1  |
-| **total**    |  762  |
+Note: the "superseded (implicit)" row corresponds to the M-V4-RULES-1 c20 scaffold, whose on-disk state has been replaced by a c21+ substantive implementation with no explicit `_plan/register-*` ledger event — see finding 7 and §5.
 
-Substantive `M-*` split (231 milestones):
+## 2. Plan adherence
 
-| Root          | validated | in-progress | invalidated | reopened |
-|---------------|----------:|------------:|------------:|---------:|
-| M-CLASS-1     | 1  | – | – | – |
-| M-DAW-SPIKE-1 | 7  | 1 | 1 | – |
-| M-EAR-1       | 27 | 3 | 3 | – |
-| M-GEN-1       | 24 | 3 | – | – |
-| M-HEUR-1      | 6  | – | – | – |
-| M-INGEST-1    | 24 | 3 | – | 1 |
-| M-RECREATE-1  | 13 | – | – | – |
-| M-RECREATE-2  | 44 | 6 | – | – |
-| M-RULES-1     | 28 | – | – | – |
-| M-SCORE-1     | 16 | – | – | – |
-| M-SEP-1       | 4  | – | – | – |
-| M-TEX-1       | 9  | 1 | 1 | – |
-| M-TRANS-1     | 4  | – | 1 | – |
-| **totals**    | **207** | **17** | **6** | **1** |
+The delta slice advances four v4 closure milestones and extends v3-spine bookkeeping. Each new milestone was landed with an explicit rubric, three-way `rubric_hash*` byte-equality chain, and byte-determinism × 2 evidence where applicable. Anchor preservation (READ-ONLY predecessor SHAs unchanged pre==post) was verified per cycle.
 
-## §2. Plan adherence
+| Milestone                                              | Terminal status this slice | Confidence |
+|--------------------------------------------------------|----------------------------|------------|
+| M-V4-CERT-1                                            | validated                  | high       |
+| M-V4-PROFILES-1 (parent)                               | in-progress                | high       |
+| M-V4-PROFILES-1/cg-bass-* (arc)                        | validated (bass_v2 accepted per c9 fork) | high |
+| M-V4-PROFILES-1/cg-drums-* (arc)                       | validated (OPT3 htdemucs substitution accepted at c14) | high |
+| M-V4-PROFILES-1/cg-guitar-* (arc)                      | validated (OPT3 htdemucs substitution auto-resolved at c15) | high |
+| M-V4-PROFILES-1/cg-piano, cg-other (audibility null)   | validated (audibility-grounded null) | high |
+| M-V4-PROFILES-1/{wig,rome,disco-a,peach-dream}-opened  | validated (skeleton only)  | high       |
+| M-V4-SHOWCASE-1/cg-ab-full-render                      | validated (LANDS_pending_operator) | high |
+| M-V4-RULES-1/scaffold-c20                              | validated in POR narrative but on-disk SUPERSEDED by c21+ substantive implementation without registration | medium (POR view) / high (on-disk view) |
+| M-V4-RULES-1/pinned-profile-schema-v1                  | validated                  | high       |
+| _manager/M-V4-METRIC-SEMANTICS-c16                     | action_required            | high       |
+| M-V4-EAR-1, M-V4-GEN-1, M-V4-CLOSE-1                   | not-started                | n/a        |
 
-All five goals G1..G5 from the plan of record have substantive
-`validated` deliverables. Every plan-of-record row that has a
-firing ledger event resolves to one of the eight unified status
-values. Two structural adherence gaps survive verification:
+Every substantive milestone that landed in this slice did so with a frozen three-way `rubric_hash*` chain and an anchor-preservation snapshot; the delta audit found no case where a "landed" claim was unaccompanied by the artifacts required by its own rubric.
 
-- **Plan-ledger drift, RECREATE-2 v2 supersede.** Plan-of-record row
-  `M-RECREATE-2/accurate-small-set-v2` is registered as the supersede
-  parent of the v1 tree (`_plan/m-recreate-2-rubric-v2-supersede`
-  fired at c50), but every c50+ leaf (rc7/rc8/rc9/rc10/*) still fires
-  under `M-RECREATE-2/accurate-small-set/…`. Terminal work is
-  correctly located and validated; only the parent-identifier
-  attribution drifts.
-- **Plan-ledger drift, c46/c47 clone-suffixed rows.** Four registered
-  milestones never fire on the ledger:
-  `_archive/deprecate-c45-determinism-check-clone-2`,
-  `_infra/pin-source-date-epoch-anchor-clone-2`,
-  `_infra/pre-registration-gate-policy-scope-verification-clone-1`
-  variants, and a small number of egress-probe rows. No substantive
-  work is missing; these are planning stubs superseded by the same
-  cycle's rollup emissions.
+## 3. Confidence calibration
 
-## §3. Confidence calibration
+All `validated` events in the delta slice carry `confidence.level = high`. No `low` or `provisional` confidence terminal states appear in the delta window. Two `high` confidence classifications warrant an explicit calibration note:
 
-Distribution across all 762 terminal events:
+- **M-V4-RULES-1/scaffold-c20** — the POR row is `validated/high`, but the on-disk state has moved past the scaffold contract (see finding 7). The `validated/high` label is honest for the c20 event as authored; the drift is that no c21+ event has been emitted to close the loop.
+- **_manager/M-V4-METRIC-SEMANTICS-c16** — `action_required/high`. The high-confidence classification refers to the strength of the empirical diagnostic (Pair A identity=0.0 rules out similarity semantics decisively), not to a claim that any threshold-gated verdict is safe.
 
-| Confidence level | Count |
-|------------------|------:|
-| high             |  742  |
-| medium           |   20  |
-| low              |    0  |
-| provisional      |    0  |
+## 4. Residual debt
 
-No `validated` milestone terminates at `low` or `provisional`
-confidence. The 20 `medium`-confidence rows are legitimate — early
-c1..c4 fanout events (M-INGEST-1, M-CLASS-1, M-DAW-SPIKE-1,
-M-HEUR-1, M-TEX-1/panel, M-SEP-1 base) that were subsequently
-promoted to `high` by follow-on sub-milestone rollups. No calibration
-inversions detected.
+The delta slice leaves four categories of open work:
 
-## §4. Residual debt (17 substantive `in-progress` at run close)
+1. **Metric-semantics escalation (open, operator-owned).** `_manager/M-V4-METRIC-SEMANTICS-c16` remains `action_required`, `blocked_on_operator=true`. Two named paths: (A) treat `embedding_cos_vggish` as the distance it empirically is, and invert every threshold that was worded as a similarity gate; (B) apply a one-line `1 - distance` correction in the panel or the objective, restoring the intended similarity semantics and re-issuing the determinism certificate per FD-16(a). Neither path is auto-resolvable via the agent-picks invariants; the choice is genuinely operator-authoritative.
+2. **M-V4-RULES-1 audit-trail gap (open, c21+ author-owned).** A full substantive c21 extractor is on disk, but no ledger event, no `_plan/register-*` row, and no rubric/verdict trio have been emitted for `M-V4-RULES-1/substantive`. Recommended reconciliation: reopen `M-V4-RULES-1/scaffold-c20` as `superseded`, register `M-V4-RULES-1/substantive` in plan-of-record with c21+ narrative, and pin on-disk SHAs of the six substantive artifacts (`statistical_model.json`, `sequence_model.json`, `audio_descriptors.jsonl`, `rules_artifact.jsonl`, `manifest.json`, `replay_proof.json`) plus the two determinism sibling directories. This reconciliation is NOT proposed as a `reconcile:true` event here because the substantive implementation's own PASS/PARTIAL/FAILS verdict against M-V4-RULES-1 success criteria was never emitted; the correct authority is the c21+ author.
+3. **Focus-song v4 profiles beyond Chicken Grease.** WIG, Rome, Disco A, and Peach Dream have `stem_manifest.json` skeletons but no stage-1/stage-2 sweeps, no profiles, no A/B renders. Each is explicitly `blocked_on: _manager/M-V4-METRIC-SEMANTICS-c16` in its manifest to avoid committing to a threshold interpretation.
+4. **Downstream v4 closure milestones.** `M-V4-EAR-1`, `M-V4-GEN-1`, and `M-V4-CLOSE-1` are `not-started`. Their prerequisites (M-V4-PROFILES-1, M-V4-RULES-1) are partially satisfied (Chicken Grease profiled; RULES scaffolded then implicitly superseded).
 
-Each row below is carried into future work; none is a silent defect.
+## 5. Findings by severity
 
-### 4.1 Design-locked in-progress (2)
+**0 CRITICAL. 2 MODERATE. 5 MINOR.** No finding invalidates any operator-blessed or internal-gate-blessed substantive deliverable. Every finding is confined to the audit trail (POR-transcription drift, silent supersession) or to an open operator-owned decision.
 
-- **`M-EAR-1` (parent).** Held in-progress by design under c26 Path B
-  commit doc pending real-label calibration on full 80-song corpus;
-  v2 delivered `EAR_v2_PARTIAL` (c45) with c46 mapping-clarified
-  adjudication; v2.1 sub-leaves validated at c47.
-- **`M-EAR-1/armed-harness` (c11).** Waits on two-consecutive
-  `media_ok=true` egress probes; fixture-verified at c26 and c31.
+### MODERATE — 2
 
-### 4.2 RECREATE-2 arc leaves (7)
+**M-1 (MODERATE). Open embedding-metric semantics escalation confirmed.** _manager/M-V4-METRIC-SEMANTICS-c16.
 
-- `M-RECREATE-2/accurate-small-set` and RC1/RC4/RC5/RC6/RC9 leaves
-  (c49–c50). Explicit `NotImplementedError('c50+ branch')` stubs
-  landed under mtime-pinned rubric chains; c51–c54 delivered
-  substantive RC1/RC2/RC3/RC7/RC9/RC10 implementations under peer
-  sub-milestone labels. Plan-of-record parent-attribution drift is
-  captured in §2.
+The c16 diagnostic (`data/v4/diagnostics/embedding_metric_semantics.json`, SHA `2884dd3203f4e561…`) empirically settles that `embedding_cos_vggish` is a distance: Pair A (identity) returns 0.0, which a similarity metric would not do. Every v4 acceptance threshold was worded as a similarity gate (`≥ 0.60` CONFIRMED, `≤ 0.40` RULED_OUT). Under distance semantics those gates fire in the wrong direction: RULED_OUT at `≤ 0.40` fires on near-identical candidates. The five CG-instrument arcs where the frozen composite ranked a non-source-of-truth ahead of a source-of-truth (bass organ-over-bass, drums Orchestra/Power over Standard, guitar Nylon over Rock, plus the two family-2 near-zero readings) are consistent with threshold inversion rather than genuine acoustic anomaly. The c17 CG A/B delivery is threshold-orthogonal (bass_v2 rides the composite-relative WINNER rule that was accepted independently at c9; drums and guitar accepted via OPT3 htdemucs stem substitution; piano and other via audibility-grounded null; vocals via hybrid overlay), so it remains defensible under either Path A or Path B. Everything else in v4 is blocked on this decision.
 
-### 4.3 Bookkeeping / harness in-progress (13)
+**M-2 (MODERATE). Silent supersession of M-V4-RULES-1/scaffold-c20 by an unregistered c21+ substantive implementation.** M-V4-RULES-1/scaffold-c20.
 
-- Nine `_run/cycle_<N>_launched(-clone-<k>)?` rows never re-close at
-  integration time. This is a harness-level pattern — the launch
-  event is a stub; the close event lives under
-  `_run/cycle_<N>_closed` and, for fan-outs, under
-  `_run/post-merge-integration-fork-<hash>`. No substantive work is
-  missing.
-- `M-INGEST-1/egress-probe-cycle{47,51}-clone-*` (2). Two probe rows
-  reopened by the c33 harness auto-suffix without a later close.
-- `_manager/M-INGEST-1-corpus-expansion-plan-c48-queued-clone-1` (1).
-  Bookkeeping-only row acknowledged c48 Branch B produced no
-  substantive artifacts; c49 registered this explicitly.
-- `_manager/background-job-supervision-clone-0` (1). c36 in-progress
-  row that never receives a closing event; two observed silent
-  background-job-death events at c31 (fixture) and c36 (feature
-  extraction) have no adjudication row. **See finding F-13.**
-- `_run/start` (1). Root run-open event; expected in-progress.
+The c20 rubric describes `scripts/v4_rules/{__init__,extract_v4}.py` as stubs raising `NotImplementedError('c21+ substantive implementation')`. On disk, `extract_v4.py` is a full substantive c21 module (docstring: "M-V4-RULES-1 substantive extractor"; header cycle=21) that emits `statistical_model.json`, `sequence_model.json`, `audio_descriptors.jsonl`, `rules_artifact.jsonl`, `manifest.json`, `replay_proof.json`, plus `run1/` and `run2/` determinism siblings under `data/v4/rules/`. `grep` on the promise ledger returns zero events for `M-V4-RULES-1/substantive` and zero `_plan/register-c21-v4-rules-*` rows. The scaffold's own smoke-test anchor `data/v4/rules/scaffold_smoke_test.json` (SHA `8250774547d0c55d…`) still matches its POR pin — orthogonal evidence that the scaffold was legitimately built at c20 before being superseded on disk. This is an audit-trail gap, not a code defect; the substantive implementation looks disciplined (deterministic outputs, `env_pin` sidecar, `/usr/bin/python3` guard, no PRNG, no `sidecar_nonfactor`). But the ledger and plan-of-record no longer describe the true state of M-V4-RULES-1, which is exactly the "Cover-Up" anti-pattern the plan warns against.
 
-### 4.4 Superseded / reopened
+### MINOR — 5
 
-- `_infra/shadow-ledger-probe` (c6) — `superseded` by design.
-- `M-INGEST-1/egress-probe*` — one `reopened` cluster tied to the
-  c33 auto-suffix; verified honest.
+**m-1. POR path drift — M-V3-RULES-1/first-activation/rubric-committed.** POR narrates the v3 rules spec doc at `docs/v3_rules_deterministic_extractor_spec_c23.md`; on-disk canonical path is `docs/specs/v3_rules_deterministic_extractor_spec_c23.md`. SHA `e81ff589200f6d6b…` byte-exact under the on-disk path; three-way `rubric_hash_v3_rules` chain preserved. Cosmetic.
 
-## §5. Findings
+**m-2. POR anchor drift — M-V4-PROFILES-1/cg-bass-sf2-replay-proof-v2.** POR c4 row pins `bass_v2.replay_proof.json` at SHA `86948709746b966a…`; on-disk full SHA is `4b9eea98052d6b2f…` (full divergence, no first-16-hex collision). Substantive REPLAY_PROOF claim intact: internal `run1_sha256 == run2_sha256 == 832868d0ea8a81ca…`, verdict `REPLAY_PROOF_HOLDS`, canonical 7-key `env_pin_sha256`. Only the file-level POR anchor is stale.
 
-Aggregate (111 findings across stages 2..47; verify + test):
-`CRITICAL 0, MAJOR 1, MODERATE 21, MINOR 10, INFO 30, PASS 4,
-NONE 45`.
+**m-3. POR SHA drift — M-V4-RULES-1/scaffold-c20 (narrative view).** POR narrative pins `scripts/v4_rules/__init__.py` at SHA `c8603851d54c56c4…` and `extract_v4.py` at `1e0ad1131f090003…`; on-disk 24-hex prefixes are `3189da3df7cfb49f…` and `2b1764e3fa9b4c75…`. This finding treats the divergence as narrative-transcription drift; finding M-2 above reclassifies the same divergence as silent supersession under the on-disk-authoritative reading (FD-1). The scaffold smoke-test anchor is unchanged, which is why the two findings coexist: c20's scaffold work was real, and something newer landed after it without a ledger event.
 
-### 5.1 Major (1)
+**m-4. POR anchor drift — M-V4-PROFILES-1/cg-bass-sf2-replay-proof.** POR c2 row narrates `run1_sha256 == run2_sha256 == 832868d0ea8a81ca…`; on-disk `data/v4/profiles/31a164f845f8e27e/bass.replay_proof.json` holds `run1_sha256 == run2_sha256 == c69775040c325b86…` (full SHA divergence). The `REPLAY_PROOF_HOLDS` claim is intact (both runs SHA-equal to each other). File mtime postdates `bass.json` and is consistent with regeneration after the c11 `_infra/replay-channel-aware-fix-c11` (which changed sf2 dispatch semantics). No substantive invalidation; only the POR-pinned internal-run SHA is stale.
 
-- **F-01 · Missing SSoT source files (`_infra/harness-and-writer-hardening-v3`).**
-  `long_exposure/workspace_bootstrap.py` and
-  `long_exposure/tools/_ledger_schema.py` — the source files the
-  c14/c22/c33/c48 hardening chain claims to have edited — are **not
-  present on disk** under `long_exposure/`. Package layout: only
-  `long_exposure/tools/promise_check.py`, `org_check.py`, and
-  `_ledger_schema.py` exist; `workspace_bootstrap.py` is absent. All
-  invariants the writer enforced (rubric mtime gates, byte-determinism
-  ×2, three-way rubric-hash chains, clone-namespace auto-suffix)
-  remain **enforced downstream** because the on-disk verdict artifacts
-  encode them, and `promise_check`/`org_check` still run green from
-  the surviving package files. But the source-of-truth code the audit
-  chain claims to have hardened is not verifiable from disk.
-  *Failure scenario:* a c55+ cycle asked to re-derive or extend the
-  writer contract would find nothing to extend. Recommendation: the
-  original builder to either restore the source files from a prior
-  session, or file a `_plan/*-supersede` event that renames the
-  hardening chain to what actually lives in the package.
+**m-5. POR anchor drift + malformed SHA — M-V4-PROFILES-1/cg-drums-profile-v1-emitted.** POR c11 narrates `drums.json` SHA `f48b7d7fb1bf28d3ff6b9c9e17e64f1eef8586fa1e56d4cdbf7d0d7d1a2432ba` and `drums.replay_proof.json` SHA `a7877f2ec1dd67b4a4d1cf9bde8fe12c2b32d95a63a6f2e1ed01f7d67bf2c8a0`; on-disk full SHAs are `f48b7d7fb1bf28d3fb65c5827c47a917…` and `a7877f2ec1dd67b4d0e2160717afa4f2…` — first-16-hex collision on both, tail divergence. Additionally the POR narrative includes a 62-hex-character drums-MIDI SHA `0fd71ce70a26365c8fb0f9f87531178f9f9c18cc419d042a3869989c990ef2` (malformed — 64-char correct value on disk: `0fd71ce70a26365c2acf08b9f87531178f9f9c18cc419d042a3869989c990ef2`). Substantive facts intact: profile_id `83728154-6f48-5c5d-a558-b4d82523ac1b`, program 16 Power Kit, verdict `REPLAY_PROOF_HOLDS`, `run1==run2==dadafcfc0153f002651c23975c3845dd3f8ca7896d263faf1c52eb54d64b8d7c`.
 
-### 5.2 Moderate (21)
+## 6. Future work (anchored to residual debt)
 
-Grouped by category; each item survives verification against on-disk
-evidence.
+- **Anchored to M-1.** Operator adjudication of the metric-semantics escalation. Whichever path the operator selects, the follow-up work is scoped and deterministic: Path A rewrites threshold interpretations in the rubric and the profile-writer discipline docs and re-issues verdicts against the inverted floors; Path B applies `1 - distance` in exactly one location (either `objective.py` or `embedding_panel.py`), re-runs the certificate under FD-16(a), and re-evaluates all five CG arcs on the intended similarity scale. Either path is one focused cycle of work.
+- **Anchored to M-2.** c21+ authors should emit (i) an `M-V4-RULES-1/substantive` milestone row with the c21 rubric and success criteria, (ii) a `_plan/register-*` row for the six substantive artifacts, (iii) an event that supersedes the c20 scaffold (`supersedes_path` as `str` per c14 lemma), (iv) an anchor-preservation snapshot confirming the c20 smoke-test SHA is unchanged, and (v) an explicit verdict (LANDS/PARTIAL/FAILS) against M-V4-RULES-1's stated success criteria.
+- **Anchored to residual debt item 3.** WIG/Rome/Disco A/Peach Dream stage-1 sweeps remain queued behind M-1. Once thresholds are settled, the sweep-storage hygiene protocol (score-and-delete; `≤ 500 MB` working audio per instrument; `df` check before each stage; disk `≤ 90%`) already proved out on Chicken Grease can be reused verbatim.
+- **Anchored to residual debt item 4.** M-V4-EAR-1 (lightweight exemplar ear on CG + Molasses + Essence + Desire + Peach Dream) is compute-bounded (~1 h target) and does not depend on M-1. M-V4-GEN-1 depends on both M-V4-RULES-1 (waiting on M-2) and M-V4-EAR-1. M-V4-CLOSE-1 rolls all of the above.
+- **Anchored to m-1..m-5.** POR-transcription drift is corrigible cheaply in the next housekeeping cycle: canonicalize the v3 rules spec path in the POR narrative; refresh five POR-pinned SHAs against on-disk artifacts using the on-disk-authoritative FD-1 rule; correct the one malformed 62-hex drums-MIDI SHA to its 64-hex on-disk value. None of these is on the critical path.
 
-- **F-02 · Artifact loss (M-GEN-1 batch cluster).** 684 distinct
-  artifact references in the ledger are absent on disk. Buckets:
-  `data/gen/*` (565 — batch-v1..v6, palette-driven-batch-v1..v4,
-  rated-corpus), plus scattered `tools/stale/*` (98) and
-  `docs/figures/*` (21). All are downstream generation renders and
-  ephemeral probe outputs; their verdict JSONs and provenance rows
-  survive. No verdict claim is unverifiable, but the renders
-  themselves cannot be re-listened to.
-- **F-03 · Silent supersession of `_infra/fanout-namespace-convention`.**
-  The c32 event pins `docs/fanout_namespace_convention.md`; that
-  exact path is absent. Versioned successors (`_v1.md`, `_v2.md`,
-  `_v3.md`, `_v3_rubric.md`) are present but no `_plan/*-supersede`
-  event narrates the rename.
-- **F-04 · Egress-probe schema drift.** 15/34 rows in
-  `data/ingestion/egress_status.jsonl` predate the `cycle` field
-  (c1 bootstrap). Cycles c36..c45 have no on-disk probe rows despite
-  the c49 policy `_plan/egress-retry-cadence-policy-formalized`
-  requiring ≥1 per cycle.
-- **F-05 · Egress capability gap.** Two consecutive `media_ok=true`
-  rows exist at c1 bootstrap (both against YouTube canonical
-  smoke-test video `jNQXAC9IVRw`), but the c8
-  `M-INGEST-1/egress-ready-automation` state machine never fired
-  because those rows target a *smoke-test target*, not the rated
-  playlists. The `two-consecutive` unblock signal does not
-  distinguish smoke-test from production targets.
-- **F-06 · Anchor manifest read-only drift.** Full scan of
-  `data/anchor_manifest_v1.json` (21657 file SHAs across 19 anchors)
-  finds **2 drifted anchors**:
-  `scripts/palette_render/render_stem.py` was intentionally extended
-  at c36 (additive kwargs), so the c33-frozen SHA no longer matches
-  the on-disk file. The drift is *known and honest* (c36
-  backwards-compat regression asserts `parameter_dict=None` still
-  reproduces the c33 anchor), but the anchor-manifest itself was
-  never republished to reflect the extension.
-- **F-07 · Verdict-schema drift (rubric_hash top-level convention).**
-  `data/recreate_v0_full_corpus/verdict.json` and the c31 palette
-  instrument-determinism per-row verdict do not expose `rubric_hash`
-  as a top-level key, breaking the three-way byte-equality convention
-  otherwise used consistently.
-- **F-08 · Content-flip analysis evidence drift.**
-  `M-TEX-1/panel/embedding/content-flip-analysis` (c14) pins 13
-  artifacts and a follow-up `_infra/adopt-content-flip-artifacts`
-  event registers the full `variants/` directory; the directory
-  itself is only partially present on disk (subset survived, no
-  supersede event).
-- **F-09 · Reporting gap.** `reports/cycles/` has 21
-  `report_cycles_N-M.md` files. c19 was a genuine skip (0 ledger
-  events); c41 (3 events) and c42 (10 events) have no report;
-  c55–c58 has a report (`report_cycles_56-58.md`) but no ledger
-  events past c54 — the report is empty of substantive content.
-- **F-10 · Fanout post-merge bookkeeping gap.** 23 fanout
-  post-merge-integration events landed; the c31 fork
-  `cfc5009aca96` fanout is missing a dedicated
-  `_run/post-merge-integration-fork-<hash>` event (rollup captured
-  under `_infra/fanout-namespace-convention` reconciliation).
-- **F-11 · Housekeeping-pattern coverage gap.** The c29-codified
-  `_archive/cycle-N-scratch` + `_infra/adopt-cycleN-tests` pair
-  is missing at least one of the two at cycles 40, 41, 42, 43.
-- **F-12 · Ratings manifest / on-disk drift.**
-  `corpus/ratings/ratings_manifest.tsv` holds 80 rows for bands
-  4/5/6 only (20+30+30). The 10 on-disk band-7 songs
-  (`corpus/ratings/7/*.mp3`, all `LOCAL`) are not in the manifest
-  despite being the rated-audio source that unblocked the c37
-  `M-RECREATE-1/first-real-audio` chain. `corpus/ratings/7/RECEIPTS.md`
-  states the manifest was updated; it wasn't.
-- **F-13 · Unresolved manager row (background-job supervision).**
-  `_manager/background-job-supervision-clone-0` emitted c36 with
-  `status: in-progress` after two silent background-job-death events
-  (c31 fixture, c36 feature extraction). Zero successor closure event.
-- **F-14 · v2 supersede plan-ledger drift.** See §2.
-- **F-15 · c46/c47 clone-suffixed rows never fire.** See §2.
-- **F-16 · Anchor-preservation schema polymorphism.** 44
-  `anchor_preservation*.json` artifacts under `data/` use 5 distinct
-  top-level schemas. Each cycle's own tests are consistent, but no
-  SSoT schema.
-- **F-17 · Egress policy-compliance gap at c52.** c52 emitted no
-  `M-INGEST-1/egress-probe*` row despite c49 policy requiring one.
-- **F-18 · RECREATE-2 v2 vs v1 plan tree divergence** — narrated
-  §2.
-- **F-19..F-21** — additional plan-ledger drift and schema-drift
-  items narrated inline above; each has an on-disk successor that
-  covers the substance.
+## 7. Reconciliation log
 
-### 5.3 Minor (10 — logged, not acted on)
+No `reconcile: true` events were proposed in this delta audit. All seven findings are `reconcile: false`:
 
-- Stale `C3` verdict field on `M-EAR-1/synthetic-label-stability-audit`
-  (byte-determinism was actually verified; field never updated).
-- Silent stem under fallback (`M-DAW-SPIKE-1/palette-schema-v2-hydration-render`
-  drums, fluidsynth_gm fallback below 1e-4 threshold — flagged with
-  `run1_silent=true`, first-class negative finding).
-- Deferred VGGish representation
-  (`M-EAR-1/feature-representation-audit`) honestly deferred.
-- Legibility notes on collision-model / DawDreamer / rules-extraction
-  verdicts (pre-c33 convention, no separate rubric-hash file).
-- 6 unarchived `merge_report_*.md` files at repo root.
-- Cross-band `long_exposure/*` package-path registration gap.
-- Documentation-code drift on band-7 ratings (see F-12; kept both).
-- `promise_check` validator run summary: 0 ERROR, 3437 WARN. Of
-  the 3437 WARN, 2713 are orphan artifacts, 684 are missing-on-disk,
-  21 are non-canonical paths, 20 are plan-milestone-no-events. All
-  categorized; none block.
+- The five MINOR POR-transcription drifts are within the on-disk-authoritative FD-1 rule and do not warrant a formal supersession event — they would be corrected in a housekeeping pass rather than reconciled through a ledger event.
+- The MODERATE metric-semantics escalation is `action_required` and `blocked_on_operator`; reconciliation is not the auditor's authority.
+- The MODERATE M-V4-RULES-1 silent supersession requires the c21+ author to emit the missing milestone rows, plan-of-record registration, and verdict event — again outside the final auditor's authority. The auditor documents the gap; the c21+ author closes it.
 
-### 5.4 Info / pass / none (79 combined)
+The harness will therefore commit zero reconciliation events with `agent: "final_auditor"` after this stage.
 
-All are neutral verification observations (closure_verified,
-invalidation_verified, validation_verified, rubric-chain byte-equality
-confirmations). Not summarized further here.
+## 8. Delta-audit summary
 
-## §6. Future work
+Baseline final audit report was committed 2026-09-02. The delta window covers the cycles that produced M-V4-CERT-1, the full CG M-V4-PROFILES-1 arc, M-V4-SHOWCASE-1/cg-ab-full-render, the WIG/Rome/Disco A/Peach Dream skeletons, M-V4-RULES-1/scaffold-c20 (plus its silent on-disk supersession), M-V4-RULES-1/pinned-profile-schema-v1, and the two M-V3-RULES-1 first-activation sub-leaves.
 
-Each item is anchored to a specific residual-debt or finding row so a
-downstream reader can act on it directly.
+Result of the delta pass: **0 CRITICAL, 2 MODERATE, 5 MINOR**. The two MODERATE findings are the headline (open operator escalation on metric semantics; unregistered c21+ M-V4-RULES-1 substantive supersession). The five MINOR findings are the audit-trail POR-transcription-drift class that was already emerging in the baseline window; the on-disk artifacts remain authoritative and no substantive claim is broken.
 
-1. **Restore or supersede the missing `long_exposure/*` writer
-   sources.** Anchored to F-01. Either recover
-   `long_exposure/workspace_bootstrap.py` and
-   `long_exposure/tools/_ledger_schema.py` from a prior session, or
-   emit a `_plan/*-supersede` event that names what actually
-   implements the c14/c22/c33/c48 hardening contract today.
-2. **Close the RECREATE-2 v2 plan-tree attribution.** Anchored to §2
-   / F-14 / F-18. Emit one supersede event that either (a) renames
-   the c51+ RC7/RC10 leaves to the v2 parent, or (b) explicitly
-   folds v2 back into v1 with a note that the rubric-v2 was carried
-   inline under the v1 leaf identifiers.
-3. **Republish `data/anchor_manifest_v1.json` as `_v2`.** Anchored
-   to F-06. The c36 additive-kwargs edit to `render_stem.py` is
-   material; republish the manifest with anchor #20 =
-   post-c36-edit SHA + backwards-compat contract explicitly named.
-4. **Close the `_manager/background-job-supervision-clone-0` row.**
-   Anchored to F-13. Either emit a closure event that adjudicates
-   the two observed silent-death cases, or record them as `_archive`
-   with lessons learned.
-5. **Reconcile the ratings manifest with band-7 on-disk audio.**
-   Anchored to F-12. Append 10 band-7 rows to
-   `corpus/ratings/ratings_manifest.tsv` so provenance matches
-   what M-RECREATE-1 already consumed.
-6. **Fill the c41/c42/c52/c55–c58 reporting/probe gaps.** Anchored
-   to F-04, F-09, F-17. c19 was a genuine skip; the others were
-   substantive cycles.
-7. **Rebuild the missing generation-batch renders on demand.**
-   Anchored to F-02. All 565 missing `data/gen/*` artifacts are
-   deterministically regenerable from the seeded ledger; a single
-   sweep can re-materialize them.
-8. **Unify anchor-preservation schema and verdict-file rubric-hash
-   convention.** Anchored to F-07, F-16. Publish one SSoT schema
-   (`data/anchor_preservation_v1.json` + `data/verdict_v1.json`)
-   and have subsequent cycles conform.
-9. **Distinguish smoke-test from production targets in
-   `egress_status.jsonl`.** Anchored to F-05. Add a `probe_kind ∈
-   {smoke, production}` field so the two-consecutive-`media_ok`
-   unblock signal cannot be spuriously satisfied by smoke rows.
-10. **Real-label M-EAR-1 calibration.** Anchored to §4.1. Awaits
-    egress unblock; c26 Path B commit doc pre-registers the SB1/SB2/SB3
-    success bars. First-class future work.
-
-## §7. Figure coverage
-
-Figures on disk under `docs/figures/`: many present (batch grids,
-collision heatmaps, tex-embedding flip, DAW spike coverage v2/v3,
-etc.). Figures referenced by ledger `artifacts` but absent from disk:
-21 (subset of F-02's artifact loss). Milestones that warrant a figure
-and have one: all M-GEN-1 batch-vN rollups, M-DAW-SPIKE-1 gap-closure
-v2/v3, M-TEX-1 content-flip. Milestones that warrant a figure and
-lack it: M-RECREATE-2 RC0..RC10 (only tabular scorecards; no
-before/after mel or centroid plots). See summary JSON.
-
-## §8. Reconciliation log
-
-**No reconciliation events emitted.** The findings file contains zero
-`reconcile: true` entries — the audit surfaces defects for the
-original builder to address rather than mutating the ledger itself.
-This is consistent with the audit-role file-writing contract (audit
-observes and reports; only the harness batch-commits reconciliations,
-and none were queued).
-
-## §9. Audit trail
-
-- Total audit stages: 48 (explore 1 + verify 23 + test 23 + document 1).
-- Per-stage files: `audits/final/stages/{verify,test}_Nof23.md` +
-  `audits/final/explore.md` + this file (48/48).
-- Findings JSONL: `audits/final/findings.jsonl` (111 rows,
-  append-only across stages 2..47).
-- Lesson candidates JSONL: `audits/final/lessons.jsonl` (empty —
-  no lesson candidates emitted; nothing this audit observed rose
-  to the confidence + evidence-count bar the role contract requires
-  for a durable lesson).
-- Wall-cap: not hit.
-- `promise_check`: exit 0, 0 ERROR.
-- No source files under `long_exposure/*`, `scripts/*`, `data/*`,
-  `docs/*`, `tests/*`, `corpus/*`, `reports/*`, or
-  `promise_ledger.jsonl` were modified by this audit.
-
-## §10. Verdict
-
-The Music-Gen campaign closes with **207/231 substantive `M-*`
-milestones validated, 6 honest invalidations (first-class negative
-findings), 17 in-progress by design or awaiting external unblock,
-1 superseded, 1 reopened**. All invalidations are honestly narrated
-and load-bearing to the record — they document what does not work
-under the pre-registered criteria, not silent failures.
-
-The audit surfaces **0 CRITICAL and 1 MAJOR** finding (F-01, missing
-`long_exposure/*` source files). The MAJOR finding does not overturn
-any validated verdict — every downstream artifact the missing sources
-would have written is present on disk with the appropriate rubric-hash
-chain — but it is a real gap in the source-of-truth for the
-harness-hardening chain and requires the original builder's attention.
-
-The 21 MODERATE findings are all schema / bookkeeping / evidence-drift
-items that survive verification and have on-disk successors; they are
-listed for future-cycle cleanup, not audit-cycle repair.
+The delta audit does not reopen any baseline finding, does not propose a reconciliation event, and does not overwrite operator authority on any open decision.
