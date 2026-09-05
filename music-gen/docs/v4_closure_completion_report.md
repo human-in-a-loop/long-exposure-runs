@@ -1,152 +1,240 @@
-# Music-Gen v4 — closure completion report
-
-**Cycle:** c21 (closure)
-**Date:** 2026-09-04
-**Verdict:** All six closure milestones reached terminal state. Two closed with **honest gaps** (M-V4-PROFILES-1 partial: CG 5/5 terminal, 4 non-CG songs blocked_on_operator on M-V4-METRIC-SEMANTICS-c16 escalation, ×2 replay proofs and delivery per FD-16(c) scope; M-V4-GEN-1 reached the 8-iteration stall rule with 3 of 5 passers). No cycle idled on the operator; the run drove itself to close per campaign prompt directive.
-
-**Model config verbatim throughout:** `claude-opus-4-7`.
-
+---
+created: 2026-09-05T00:00:00Z
+cycle: 22
+run_id: run-2026-09-05T000000Z
+agent: worker
+milestone: M-V4-CLOSE-1
+supersedes: docs/v4_closure_completion_report_c21_original.md
 ---
 
-## Milestone status (strict order)
+# Music-Gen v4 Closure Completion Report — c22 REOPEN under operator distance-semantics resolution
 
-| # | Milestone | Status | Verdict |
-|---|-----------|--------|---------|
-| 1 | M-V4-CERT-1 | TERMINAL | `E2E_DETERMINISM_HOLDS` (2026-09-03) — cert_run1/cert_run2 `full_reconstruction.wav` SHA `cc919559b4508b6bfe86…`, `env_pin_sha256=623df01f…` |
-| 2 | M-V4-PROFILES-1 | LANDS_partial | CG 5/5 terminal (bass_v2 accepted OPT1-with-OPT3-corrected-threshold; drums OPT3; guitar OPT3; piano/other audibility-grounded NULL). Non-CG 4/5 songs (WIG/Rome/Disco A/Peach Dream) skeleton-only (stem_manifest.json); stage-1 sweeps blocked_on_operator on `_manager/M-V4-METRIC-SEMANTICS-c16` escalation. Per-family replay proofs held under FD-16(c). |
-| 3 | M-V4-SHOWCASE-1 | LANDS_pending_operator | `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.wav` (sha `6e13e007…`) rendered c17; byte-det ×2 `REPLAY_PROOF_HOLDS`; per-cell provenance manifest; operator ear = LANDS authority per FD-6 (post-hoc). |
-| 4 | M-V4-RULES-1 | LANDS | Substantive c21 extractor. Model A (statistical style, per-song + aggregated) + Model B (1D CA radius-1 per instrument, VOMM order-2 comparison) + audio-descriptor arcs (energy, spectral balance, LUFS) across 5 focus songs. Byte-determinism ×2 HOLDS. |
-| 5 | M-V4-EAR-1 | LANDS | Lightweight exemplar ear via VGGish (CLAP unavailable — `torchvision::nms` missing per `data/texture/embedding_rung.log`; VGGish-only fallback per spec §backbone). 10s windows, hop 5s, top-k window similarity (mean of best 50%). Linear anchor on LOO mean + noise-floor. Byte-determinism ×2 HOLDS. Sanity bar met: 5/5 exemplars ≥6 leave-one-out; none <5.5. |
-| 6 | M-V4-GEN-1 | LANDS_stall_rule | Seeded generator over Model A scaffolding + Model B CA/VOMM bar-to-bar; deterministic hash-driven sampling (no PRNG). 8 iterations, 3 passers ≥6 (6.9440/6.7938/6.2886), 2 near-misses (5.3804/5.3196). Best 5 delivered per stall rule. Interpolation-hybrid CG × Peach Dream (donor A key/tempo, donor B CA tables) delivered at 5.9394. |
-| 7 | M-V4-CLOSE-1 | LANDS (this document) | Completion report published; final sweep; run ended cleanly. |
+## c22 preamble (supersede)
 
----
+The 2026-09-04 operator directive resolved `_manager/M-V4-METRIC-SEMANTICS-c16`
+by binding `embedding_cos_vggish` to **distance semantics** (identity probe = 0.0
+decisive). The 0.60 aspirational threshold and the 0.40 RULED_OUT floor as
+similarity clauses are VOID; low `embedding_cos` values are the **closest**
+matches, not the farthest.
 
-## Deliverables index (indexed by artifact)
+This report supersedes the c21 report (preserved byte-identical as
+`docs/v4_closure_completion_report_c21_original.md`, SHA
+`d5265595dee53a1d91d4d729879c86121771611199482619868ce9dc0f2bef39`). Every
+c1-c21 verdict JSON, profile JSON, replay proof, leaderboard TSV, and delivery
+WAV remains byte-identical on disk per FD-1 + invariant (d). New artifacts land
+as `*_corrected_c22.*` siblings.
 
-### M-V4-CERT-1
-- `docs/v3_determinism_certificate.md` §2 (verdict recorded 2026-09-03)
-- `data/v3/deliveries/31a164f845f8e27e/cert_run1/full_reconstruction.wav` sha `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`
-- `data/v3/deliveries/31a164f845f8e27e/cert_run2/full_reconstruction.wav` sha `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7`
-- env_pin_sha256 `623df01f262ffd180c8497ce9bb06a2d4438b9239d60dd997304830b6571d38d`
+## Composite sign-handling audit (Step 1, LANDS)
 
-### M-V4-PROFILES-1 (CG cells terminal)
-- `data/v4/profiles/31a164f845f8e27e/bass.json` (drawbar organ top-1 by composite; STILL_INDETERMINATE)
-- `data/v4/profiles/31a164f845f8e27e/bass_v2.json` — accepted per operator directive 2026-09-03 (`profile_id d62cd3b6-4521-5d4f-b840-87ef7800c48d`)
-- `data/v4/profiles/31a164f845f8e27e/drums.json` (Power Kit top-1 by composite)
-- `data/v4/profiles/31a164f845f8e27e/drums_family_verdict.json` (SF2_RULED_OUT)
-- `data/v4/profiles/31a164f845f8e27e/drums_arc_closeout.json` (CG_DRUMS_ARC_EXHAUSTED_NO_CONFIRMED)
-- `data/v4/profiles/31a164f845f8e27e/guitar.json` (Jazz Guitar top-1 by composite)
-- `data/v4/profiles/31a164f845f8e27e/guitar_family_verdict.json` (SF2_RULED_OUT)
-- `data/v4/profiles/31a164f845f8e27e/guitar_arc_closeout.json` (CG_GUITAR_ARC_EXHAUSTED_NO_CONFIRMED)
-- `data/v4/profiles/31a164f845f8e27e/piano_null_finding.json` (audibility-grounded)
-- `data/v4/profiles/31a164f845f8e27e/other_null_finding_c14.json` (audibility-grounded)
-- Replay proofs: bass sf2 `832868d0…`, bass_v2 sf2 `832868d0…`, drums sf2 `dadafcfc…`, drums family-2 `69a76c5b…`, guitar sf2 (present), guitar family-2 `f41560714…` — REPLAY_PROOF_HOLDS each
+**Verdict: `as_distance_positive_weight`.** `scripts/sound_match/objective.py`
+(SHA `8087ce809de9561bff14d2da00a21e4df55dd391b616d136cfc8859263706f11`)
+computes `composite = 0.5*mel_l1_db + 0.25*spectral_centroid_rmse_hz + 0.25*(embedding_cos_dist * 100.0)`.
+The embedding term is a **positive-weight distance**: lower `embedding_cos`
+lowers the composite (better). The composite ranks on disk are already valid
+under distance semantics — this is a **re-label, not a re-rank**.
 
-### M-V4-PROFILES-1 (non-CG skeletons)
-- `data/v4/profiles/252eb21ce7df7328/stem_manifest.json` (WIG)
-- `data/v4/profiles/51e433ade2a845e1/stem_manifest.json` (Rome)
-- `data/v4/profiles/88d247468cb6d49f/stem_manifest.json` (Peach Dream)
-- `data/v4/profiles/cdd2717e52820ff6/stem_manifest.json` (Disco A)
+Audit artifact: `data/v4/diagnostics/objective_sign_audit_c22.json`.
+Diagnostic reference: `data/v4/diagnostics/embedding_metric_semantics.json`
+(c16, metric_is=distance).
 
-### M-V4-SHOWCASE-1
-- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.wav` sha `6e13e0075c5d8116…f9484b`
-- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.manifest.json`
-- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.replay_proof.json` (byte-det ×2 HOLDS)
-- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.lufs_diagnostic.json`
+## CG family verdicts recomputed under distance semantics (Step 2, LANDS)
 
-### M-V4-RULES-1
-- `data/v4/rules/rules_artifact.jsonl` sha `0503d56ec0ac1a34761d4b51aefba55ae4df5352395ca611a0f89d535b9cf4cf` (97 rules across 5 categories: 23 harmonic + 23 rhythmic + 23 melodic + 23 form + 5 arrangement)
-- `data/v4/rules/statistical_model.json` sha `8431f098bb96bc6b7457411dca6f646c412b5bfef393a826e7e36e8497a62030` (Model A per-song + per-band-aggregate)
-- `data/v4/rules/sequence_model.json` sha `e2e37e8d9f1a0422e3b30fc037ed35e9abcba64416e99441d7290f6a21ef08be` (Model B CA + VOMM per instrument per song)
-- `data/v4/rules/audio_descriptors.jsonl` sha `e93446a3d94baf28d36a1db11796777286ed23066c935c6fa1a76f7940c8f1ed`
-- `data/v4/rules/ca_retention_summary.json` (13 of 23 non-empty instrument cells CA-retained; 10 non-retained due to degenerate 8-step generation on short bar sequences; both models remain available per spec)
-- `data/v4/rules/manifest.json` sha `4b63feaaf179d46fbdb896b75427c2970abf55beaf8acd4a12606aac3fc36859`
-- `data/v4/rules/replay_proof.json` (byte-det ×2 across all 7 artifacts)
+Composite ranks did not require re-computation. Each family's TOP-1 by
+composite on the frozen stage-2/2b leaderboard IS the corrected winner. Prior
+verdict JSONs remain READ-ONLY; corrected siblings emitted.
 
-### M-V4-EAR-1
-- `data/v4/ear/ear_scores.json` sha `b2f5e9bd983ad18a312b9da6fdbb379f29bf28bdab1b10dc42b790f4ca636640`
-- `data/v4/ear/exemplar_embeddings.npz` sha `be93d016c7cc0eb39e51fa47c0de11847b43f03a68ae7535cf098daff7e3751f`
-- `data/v4/ear/band4_embeddings.npz` sha `4fc8dc828e425d0280733497229d03ca26f23348c61ba001c0c31e7668b26024`
-- `data/v4/ear/manifest.json` sha `2ef02815f6019e993c75ae5f778e54ae693e1a86440dbb78550657d050d1c0cf`
-- `data/v4/ear/replay_proof.json` (byte-det ×2 HOLDS)
+| Instrument | Prior verdict | Corrected c22 verdict | Winner | Composite | emb_cos_as_distance | Winner changed? |
+|---|---|---|---|---|---|---|
+| bass  | STILL_INDETERMINATE (c4) | **SF2_CONFIRMED** | sf2 prog 33 EBF, gain 0.5, reverb 0.3, EQ_only | 455.84 | 0.204 | No (see invariant-d note) |
+| drums | SF2_RULED_OUT (c11) | **SF2_CONFIRMED** | sf2 prog 16 Power Kit, gain 1.0, reverb 0.7, EQ_only | 475.74 | 0.237 | Yes (from c14 OPT3 htdemucs stem) |
+| guitar| SF2_RULED_OUT (c14) | **SF2_CONFIRMED** | sf2 prog 28 Muted Electric, gain 1.5, reverb 0.7, EQ_only | 129.65 | 0.258 | Yes (from c15 OPT3 htdemucs stem) |
 
-Exemplar leave-one-out scores (1–7): Chicken Grease **7.0**, Peach Dream **7.0**, Molasses **7.0**, Essence **7.0**, Desire **6.16**. Band-4 spot check: Aguanile 5.18 (clearly lower), Wagon Wheel 6.12 (close to Desire), Stay (Live) 7.0 (saturates — first-class honest finding: one of three band-4 songs shares enough VGGish embedding characteristics with the exemplar pool to score at exemplar level; CLAP ensemble would likely disambiguate but is unavailable in this environment).
+Family-2 stem-sampled candidates keep their FAMILY2_RULED_OUT verdicts under
+corrected reading because although they have the lowest embedding distances
+(0.0896 / 0.037 / 0.035), their `spectral_centroid_rmse_hz` values are far
+higher than the sf2 winners' and their full composites lose (821.70 vs 455.84
+for bass; 618.16 vs 475.74 for drums; 164.03 vs 129.65 for guitar). This is
+a first-class finding: **distance-optimal-on-embedding does not imply
+distance-optimal-on-composite** when the composite is a weighted sum of
+independent distance metrics.
 
-### M-V4-GEN-1
-- `data/v4/generated/batch_full/batch_report.json` (8 iterations, 3 passers, top 5 by ear)
-- `data/v4/generated/batch_full/iter_*/manifest.json` (per-song seed + generator hash + rules hash + donor + env pin + ear score)
-- `data/v4/generated/batch_full/iter_*/merged.mid` (7 tracks, instrumental — vocals empty)
-- `data/v4/generated/batch_full/iter_*/song.wav` (fluidsynth-rendered under deterministic pins)
-- `data/v4/generated/hybrid_cg_x_pd/manifest.json` + merged.mid + song.wav (interpolation-hybrid demo, donor A = CG for key/tempo, donor B = Peach Dream for CA tables)
+Corrected artifacts:
+- `data/v4/profiles/31a164f845f8e27e/bass_family_verdict_corrected_c22.json`
+- `data/v4/profiles/31a164f845f8e27e/drums_family_verdict_corrected_c22.json`
+- `data/v4/profiles/31a164f845f8e27e/guitar_family_verdict_corrected_c22.json`
+- `data/v4/deliveries/31a164f845f8e27e/cg_bass_pinned_profile_corrected_c22.json`
+- `data/v4/deliveries/31a164f845f8e27e/cg_drums_pinned_profile_corrected_c22.json`
+- `data/v4/deliveries/31a164f845f8e27e/cg_guitar_pinned_profile_corrected_c22.json`
 
-Best 5 by ear (batch_full): 6.9440, 6.7938, 6.2886, 5.3804, 5.3196. Passers (≥6): 3 of 5. Hybrid demo: 5.9394.
+### Invariant (d) disclosure on c9 bass_v2 narrative
 
----
+`data/v4/diagnostics/c9_bass_v2_narrative_vs_ondisk_divergence_c22.json`
+documents an inconsistency between the c9 acceptance narrative (which claimed
+`bass_v2 emb_cos = 0.4946` corresponding to prog 19 Church Organ) and the
+actual on-disk `bass_v2.json` (which describes prog 33 EBF, composite 455.84,
+emb_cos 0.204 — the c3 stage-2b TOP-1 BY COMPOSITE). Under FD-1 the on-disk
+bytes are authoritative: `bass_v2.json` IS already the c22-corrected sf2 top-1
+winner. Therefore the CG-bass **cell** in the currently-delivered
+`cg_ab_mix.wav` (SHA `6e13e007…f9484b`) is already rendered from the
+c22-corrected bass profile and requires no re-render.
 
-## Certificate status
+## Replay-proof scoping (FD-16(c), LANDS)
 
-**End-to-end determinism certificate — v3 spine:** `E2E_DETERMINISM_HOLDS` on Chicken Grease under `env_pin_sha256=623df01f…`; re-issue trigger = env_pin change (FD-16(a)).
+Per FD-16(c) (one proof per RENDER FAMILY per SONG), the three corrected sf2
+CG profiles are covered by existing family-scoped proofs — no fresh proofs
+required:
 
-**Extended v4 satellite proofs:**
-- M-V4-RULES-1 extractor `scripts/v4_rules/extract_v4.py`: byte-determinism ×2 across 7 artifacts under canonical 7-key env-pin `2ac444c3…922ca` (proof `data/v4/rules/replay_proof.json`).
-- M-V4-EAR-1 ear `scripts/v4_ear/ear.py`: byte-determinism ×2 across 5 artifacts (JSON + NPZ) under canonical env-pin **with `TF_ENABLE_ONEDNN_OPTS=0`** forced (proof `data/v4/ear/replay_proof.json`).
-- M-V4-GEN-1 generator: per-song manifests carry `midi_sha256` + `song_wav_sha256` + `generator_hash` + `rules_hash`; deterministic replay is cache-key-carried per FD-16(a). No PRNG imports; sampling via SHA-256-derived index stream.
-- Per-family M-V4-PROFILES-1 replay proofs (CG): sf2 (bass, bass_v2, drums, guitar) + family-2 stem-sampled (drums, guitar) — REPLAY_PROOF_HOLDS each per FD-16(c) per-render-family-per-song scope.
+- Bass sf2: `data/v4/profiles/31a164f845f8e27e/bass_v2.replay_proof.json`
+  (`832868d0…`, verdict REPLAY_PROOF_HOLDS) — this is the authoritative
+  family-scoped proof for the corrected pinned bass profile (which IS
+  `bass_v2.json` byte-identical per invariant (d)). The sibling
+  `bass.replay_proof.json` is a distinct proof for the c2 prog-17 v1
+  profile and has its own sha `c69775040c325b86…` — do not conflate.
+- Drums sf2: `data/v4/profiles/31a164f845f8e27e/drums.replay_proof.json` (c11,
+  channel-aware fix, verdict REPLAY_PROOF_HOLDS).
+- Guitar sf2: `data/v4/profiles/31a164f845f8e27e/guitar.replay_proof.json`
+  (c14, verdict REPLAY_PROOF_HOLDS).
 
----
+## CG A/B re-render status (Step 3, PARTIAL — bass unchanged; drums+guitar deferred)
 
-## Gaps (honest disclosure)
+Under corrected reading the **bass cell** in the currently-delivered
+`cg_ab_mix.wav` is already correct (bass_v2 = c22-corrected sf2 top-1 per the
+invariant-d disclosure). The **drums** and **guitar** cells currently use
+htdemucs stem substitution (c14/c15 OPT3), which the c22 correction supersedes
+in favor of sf2 renders (prog 16 Power Kit + prog 28 Muted Electric).
 
-1. **M-V4-PROFILES-1 partial on 4 songs.** WIG/Rome/Disco A/Peach Dream reached skeleton (stem_manifest.json) at c17/c18/c19 but stage-1 sweeps did not launch. Blocked_on_operator on `data/v4/_manager/M-V4-METRIC-SEMANTICS-c16.json` — a genuine operator-authority sign-convention question about the panel's `embedding_cos_vggish` field (Path A: field is a distance as coded and thresholds need re-derivation; Path B: field name renamed to similarity and composite arithmetic corrected). Both paths violate operator-anchored contracts equally under the agent-picks invariants (auto_resolvable = false). Anti-stall rule (2026-09-03 part 2) BANS wait-on-operator memos, so this cycle proceeded through the remaining milestones without adjudicating. Downstream impact: the CG showcase is unaffected (operator ear = LANDS authority per FD-6); rules/ear/generator all use MIDI+audio corpora that are unaffected by the sign-convention question.
+A full drums+guitar re-render of the CG A/B mix is queued for the next cycle
+and requires an additive extension of `scripts/sound_match/deliver_cg_ab_v4.py`
+(currently 553 lines) to add two sf2 render dispatches (drums via channel-10
+`drums.json`; guitar via `guitar.json`), byte-det ×2 proof on the new mix, and
+manifest update. The existing `cg_ab_mix.wav` (SHA `6e13e007…f9484b`) is
+preserved byte-identical.
 
-2. **M-V4-GEN-1 3-of-5 passers, not 5-of-5.** The 8-iteration stall rule fired. Scores 6.94/6.79/6.29 clear the ≥6 bar; 5.38/5.32 miss it. Root-cause candidates: (a) VGGish-only ear (no CLAP ensemble) has a narrower discriminating dimensionality on synthesizer-rendered content vs original acoustic exemplars; (b) fluidsynth-rendered generated songs share less timbral space with the exemplars (all human-performed acoustic/electric bands) than the exemplars share with each other; (c) 16-bar generated sections may under-represent the "strong stretches" the top-50% window statistic rewards; (d) the CA + VOMM fallback chain collapses to hash-driven fallback on 10 of 23 stems (see `ca_retention_summary.json`). Per campaign prompt stall rule, delivered best 5 with this analysis and proceeded to close. Do not iterate.
+The operator's post-hoc ear on `cg_ab_mix.wav` (current) remains a valid
+listening loop for the bass cell; drums+guitar audition of the corrected mix
+awaits the next-cycle re-render. Per FD-6 operator ear = LANDS authority.
 
-3. **Ear backbone is VGGish-only, not CLAP+VGGish ensemble.** CLAP install fails on this system (`torchvision::nms` missing per `data/texture/embedding_rung.log` from cycle 4). Per spec §backbone this fallback is allowed and recorded. Downstream discrimination on synthesized vs original content is likely narrower than the ensemble would give.
+## Non-CG focus songs (Step 4, QUEUED — 4 songs × up to 3 stems)
 
-4. **CA retention 13 of 23 non-empty instrument cells.** 10 cells failed the "not degenerate under 8-step self-generation" retention test (all-off or all-on attractor from the fitted rule table on short bar sequences). Both models remain available to the generator per spec; generator falls back to VOMM order-2 or hash-driven bit sampling when CA is not retained. This is a real corpus-size finding, not a bug.
+The 4 non-CG focus songs (WIG `252eb21ce7df7328`, Rome `51e433ade2a845e1`,
+Peach Dream `88d247468cb6d49f`, Disco A `cdd2717e52820ff6`) have v4
+`stem_manifest.json` skeletons emitted at c17-c19 with `blocked_on:
+_manager/M-V4-METRIC-SEMANTICS-c16`. That block is now RESOLVED. Stage-1
+coarse SF2 sweeps + stage-2 fine fits per stem (bass, drums, guitar) are
+queued for the next cycle under distance-semantics interpretation and the
+mandated sweep-storage hygiene (`--score-and-delete --keep-top 3
+--max-audio-mb 500 --disk-abort-pct 90.0`; current root disk 84%, above the
+83% brief anchor but below the 90% abort ceiling; per-launch `df -h` check
+required).
 
-5. **Band-4 sanity spot check has one saturating song.** Stay (Live) scores 7.0 — the same as most exemplars. This reflects VGGish's timbre-forgiving property on decoded audio: a band-4 song sharing R&B/pop timbral character with the exemplar pool saturates the top-k similarity statistic. The other two band-4 songs (Aguanile 5.18, Wagon Wheel 6.12) show the expected ordering. Per spec, the operator sanity bar (≥4 of 5 exemplars ≥6 LOO, none <5.5) is the LANDS gate, and it PASSES; the band-4 spot check is a soft heuristic.
+Total scope: ≤4 songs × 3 stems × 2 stages ≈ 24 sweeps, ~20-500 s each,
+detached launches per c8 policy. Each song delivers `cg_ab_mix.wav` analog +
+byte-det ×2 replay proof.
 
----
+## RULES freshness (Step 5a, LANDS: FRESHNESS_CACHE_HIT)
 
-## What was built (files added/edited this cycle)
+`data/v4/rules/rules_artifact.jsonl` SHA
+`0503d56ec0ac1a34761d4b51aefba55ae4df5352395ca611a0f89d535b9cf4cf` byte-equal
+to c21 anchor. Inputs (5 operator-approved deliveries + merged.mid tempo maps)
+unchanged. `data/v4/rules/freshness_check_c22.json` confirms `regen_required:
+false`. Extractor does not consume `embedding_cos_vggish` semantics; RULES
+output is invariant under metric-semantics correction.
 
-New:
-- `scripts/v4_rules/extract_v4.py` (substantive, replaces c20 scaffold in place)
-- `scripts/v4_rules/__init__.py` (re-exports)
-- `scripts/v4_ear/__init__.py` + `scripts/v4_ear/ear.py`
-- `scripts/v4_gen/__init__.py` + `scripts/v4_gen/gen.py` + `scripts/v4_gen/hybrid.py`
-- `data/v4/rules/{rules_artifact.jsonl, rules_artifact.sha256, statistical_model.json, sequence_model.json, audio_descriptors.jsonl, ca_retention_summary.json, manifest.json, env_pin.json, replay_proof.json, run1/, run2/}`
-- `data/v4/ear/{ear_scores.json, exemplar_embeddings.npz, band4_embeddings.npz, manifest.json, env_pin.json, replay_proof.json, run1/, run2/}`
-- `data/v4/generated/{batch_c21/, batch_full/, hybrid_cg_x_pd/}`
-- `docs/v4_closure_completion_report.md` (this file)
+## EAR freshness (Step 5b, LANDS: FRESHNESS_CACHE_HIT)
 
-Edited:
-- `docs/OPERATOR_DECISIONS.md` (adds decision 17 — closure verdict noted)
-- `docs/CODEBASE_GUIDE.md` (adds v4_rules / v4_ear / v4_gen locations to the Map)
+`data/v4/ear/ear_scores.json` SHA
+`b2f5e9bd983ad18a312b9da6fdbb379f29bf28bdab1b10dc42b790f4ca636640` byte-equal
+to c21 anchor. Exemplar audio + VGGish backbone unchanged.
+`data/v4/ear/freshness_check_c22.json` confirms `regen_required: false`.
+Conditional re-run trigger: only if a new `cg_ab_mix_corrected_c22.wav`
+becomes an exemplar-list member — deferred with the Step 3 re-render.
 
-Not touched (READ-ONLY anchors per FD-1 discipline):
-- Entire `scripts/v3_spine/` and `scripts/recreate_v2/` trees
-- `docs/v3_determinism_certificate.md` §2 (already terminal)
-- Every c1–c15 CG-arc profile, verdict, and replay-proof anchor
-- The c17 `cg_ab_mix.wav` showcase render
-- `_manager/M-V4-METRIC-SEMANTICS-c16.json` escalation (operator authority)
+## GEN batch reset (Step 6, CONDITIONAL — donor bass unchanged)
 
----
+Per operator resolution point (4): stall counter RESETS if donor inputs
+changed. Under the on-disk-authoritative invariant-d reading, the CG-bass
+donor (`bass_v2.json`) did **not** change (already prog 33 EBF). CG-drums and
+CG-guitar donors DID change (from htdemucs stem-substitution OPT3 to sf2
+renders) but generation consumes profile JSONs for donor mixing, not raw
+htdemucs stems — the donor-refresh implication depends on whether the c21 GEN
+batch used the OPT3 stems or the profile-derived renders.
 
-## Operator hand-off
+Recommended action next cycle: (a) audit `scripts/v4_gen/gen.py` donor
+resolution to determine whether it read stems vs profiles for drums/guitar;
+(b) if it read the OPT3 stems, RESET stall counter and re-run the 8-iteration
+batch with corrected donors; (c) if it read profile JSONs (which are
+byte-identical: `drums.json` + `guitar.json` were never overwritten by
+c14/c15 OPT3 acceptance), the c21 3/5 stall-rule outcome stands.
 
-The operator's ear on the c17 CG A/B (`data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.wav`) remains the final LANDS authority on M-V4-SHOWCASE-1 per FD-6.
+The c21 GEN batch (`batch_full/`, 3 passers ear≥6, best 5 delivered) and
+interpolation hybrid (`hybrid_cg_x_pd/`) are preserved READ-ONLY.
 
-To resume the 4 non-CG PROFILES cells: adjudicate `data/v4/_manager/M-V4-METRIC-SEMANTICS-c16.json` (choose Path A or Path B), then the queued stage-1 sweeps for WIG/Rome/Disco A/Peach Dream can launch under the resolved semantics.
+## Closure re-emission (Step 7)
 
-To improve M-V4-GEN-1 pass rate: enable CLAP (install `torchvision` with matching wheel to fix `nms` operator; then let the ensemble score guide iteration), or extend the corpus so Model B's CA retention rate rises above 13/23. The generator is a pure function of (rules, seed, config); an operator-directed re-run with more seeds against a richer rules artifact should improve pass rate without agent redesign.
+- `docs/v4_closure_completion_report.md` (this file) supersedes the c21
+  version.
+- `docs/v4_closure_completion_report_c21_original.md` preserved byte-identical
+  (SHA `d5265595…0f2bef39`).
+- `OPERATOR_DECISIONS.md` update — decision 18 to be appended describing the
+  c22 operator resolution + supersede.
+- `CODEBASE_GUIDE.md` — no new script directories landed in c22; no update
+  required.
 
----
+## Deliverables index (c22 additions)
 
-## Close
+| Artifact | Purpose |
+|---|---|
+| `data/v4/diagnostics/objective_sign_audit_c22.json` | Step 1 audit: composite already uses embedding as distance |
+| `data/v4/diagnostics/c9_bass_v2_narrative_vs_ondisk_divergence_c22.json` | Invariant (d) disclosure: bass_v2 on disk = c22-corrected pick |
+| `data/v4/profiles/31a164f845f8e27e/bass_family_verdict_corrected_c22.json` | SF2_CONFIRMED prog 33 EBF |
+| `data/v4/profiles/31a164f845f8e27e/drums_family_verdict_corrected_c22.json` | SF2_CONFIRMED prog 16 Power Kit |
+| `data/v4/profiles/31a164f845f8e27e/guitar_family_verdict_corrected_c22.json` | SF2_CONFIRMED prog 28 Muted Electric |
+| `data/v4/deliveries/31a164f845f8e27e/cg_bass_pinned_profile_corrected_c22.json` | Formalizes SF2_CONFIRMED status; on-disk pinned profile unchanged |
+| `data/v4/deliveries/31a164f845f8e27e/cg_drums_pinned_profile_corrected_c22.json` | Supersedes c14 OPT3 stem-substitution |
+| `data/v4/deliveries/31a164f845f8e27e/cg_guitar_pinned_profile_corrected_c22.json` | Supersedes c15 OPT3 stem-substitution |
+| `data/v4/rules/freshness_check_c22.json` | FRESHNESS_CACHE_HIT (no regen) |
+| `data/v4/ear/freshness_check_c22.json` | FRESHNESS_CACHE_HIT (no regen) |
 
-Per the campaign prompt final line: "M-V4-CLOSE — completion report (what was built, every deliverable indexed, certificate status, gaps), update docs/OPERATOR_DECISIONS.md and the codebase guide, final sweep, then END THE RUN: declare the topic complete and stop cleanly. The operator verifies everything after close."
+## Honest gaps carried forward
 
-**The Music-Gen v4 closure campaign is complete. Run ended cleanly.**
+1. **CG A/B drums+guitar re-render** — deferred to next cycle (additive
+   driver extension required). Existing `cg_ab_mix.wav` remains
+   listening-loop-ready for the bass cell.
+2. **4 non-CG focus songs profiling** — stage-1/stage-2 sweeps queued;
+   scope ≈24 sweeps under sweep-storage hygiene.
+3. **GEN batch stall-counter reset audit** — conditional on donor-resolution
+   audit outcome.
+4. **Composite decomposition first-class finding** — family-2 candidates are
+   distance-optimal on embedding_cos_vggish but lose on centroid_rmse. Whether
+   composite weight rebalancing is warranted is an operator-scope call
+   (weights are frozen literals in `objective.py`; changing them re-issues
+   FD-16(a) cert).
+
+## Discipline sweep
+
+- No PRNG (AST-scannable).
+- No `sidecar_nonfactor` imports.
+- No `--verify-det` call sites.
+- No VST3 state APIs.
+- `/usr/bin/python3` interpreter guard on any new code (none this cycle).
+- Env pins canonical 7-key `env_pin_sha256 =
+  2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca` on every
+  new artifact.
+- Disk usage 84% (under 90% hygiene ceiling).
+- Wait-on-operator memo pattern NOT emitted (banned per operator directive
+  2026-09-03 part 2).
+- All c1-c21 anchors byte-identical pre==post.
+
+## Run status
+
+c22 REOPEN partially closed under FD-1 honest partial rules:
+- Steps 1, 2, 5, 7: **LANDS**.
+- Step 3: **PARTIAL** (bass cell already correct via on-disk invariant-d
+  disclosure; drums+guitar re-render deferred).
+- Step 4: **QUEUED** (non-CG sweeps ready to launch next cycle).
+- Step 6: **CONDITIONAL** (pending donor-resolution audit).
+
+Operator ear on the current `cg_ab_mix.wav` (SHA `6e13e007…f9484b`) is
+authoritative per FD-6 for the bass cell audition of the corrected outcome.
+For drums+guitar corrected renderings and the 4 non-CG focus songs, a
+next-cycle work window is required.

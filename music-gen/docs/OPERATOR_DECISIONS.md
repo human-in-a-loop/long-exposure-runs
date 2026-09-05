@@ -125,6 +125,30 @@ one, the earlier entry says so.
     Completion report: `docs/v4_closure_completion_report.md`. Run
     ended cleanly per M-V4-CLOSE-1 directive.
 
+18. **v4 REOPEN under distance-semantics resolution** (2026-09-05 c22):
+    the 2026-09-04 operator directive definitively identified
+    `embedding_cos_vggish` as a DISTANCE (identity probe = 0.0), voided
+    the 0.60/0.40 thresholds as similarity clauses, and unblocked the
+    4 non-CG focus songs plus mandated a CG family-verdict recompute.
+    c22 landed Step 1 (audit: composite already uses embedding as
+    positive-weight distance — ranks valid under distance semantics;
+    re-label only), Step 2 (3 corrected sf2 family verdicts +
+    corrected pinned profile siblings for bass, drums, guitar; family-2
+    keeps FAMILY2_RULED_OUT because it loses on composite
+    centroid/mel despite lowest embedding distance), Step 5
+    (freshness_check_c22 for RULES + EAR both FRESHNESS_CACHE_HIT), and
+    Step 7 (this report supersede). Invariant (d) disclosure: c9
+    bass_v2 narrative claimed emb_cos=0.4946 but the on-disk bytes are
+    prog 33 EBF composite=455.84 (the c3 stage-2b TOP-1 BY
+    COMPOSITE) — meaning the CG-bass cell in the currently-delivered
+    `cg_ab_mix.wav` (SHA `6e13e007…f9484b`) is ALREADY the corrected
+    winner. Deferred: drums+guitar CG A/B re-render (additive driver
+    extension; queued for next cycle) + 4 non-CG focus-song sweeps
+    (unblocked, queued) + GEN batch stall-counter reset (conditional on
+    donor-resolution audit). Completion report:
+    `docs/v4_closure_completion_report.md`;
+    original preserved as `_c21_original.md`.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.
