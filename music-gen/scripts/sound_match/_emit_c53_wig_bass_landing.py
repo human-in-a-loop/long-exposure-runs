@@ -136,13 +136,15 @@ def main() -> None:
             "render_sha256_in_sweep": render_sha_sweep,
             "rank_stage2": 1, "n_configs_stage2": len(rows),
             "landing_note": (
-                "c51 EXECUTE: Disco A bass stage-2 fine fit launched detached "
-                "under OP-1 SerialLock and completed in-cycle under c27 hygiene "
-                "(RunningTopK + prune_after_pin). c26 sweep was interrupted "
-                "mid-run (leaderboard missing per c27 verification); c50 handoff "
-                "moved partial output to tools/stale/; c51 fresh launch replaces. "
-                "c23 stage-1 top-1 emb_cos_dist=0.5145 predicted SF2_RULED_OUT "
-                "under distance semantics; stage-2 result determines c23 supersede."
+                "c53 EXECUTE: WIG bass stage-2 fine fit launched detached under "
+                "c53-fixed OP-1 SerialLock (driver takes --cycle 53 CLI arg; the "
+                "c52 anomaly was a driver-hardcoded cycle=32 literal, not a writer "
+                "bug — writer honestly serializes what the driver passes). c52 "
+                "sweep was interrupted mid-run (17 renders, no leaderboard); c53 "
+                "relaunched fresh under corrected lock. c23 stage-1 top-1 "
+                "emb_cos_dist=0.335 already inside 0.40 distance floor; c26 "
+                "prior stage-2 (preserved as tools/stale c28 residual) predicted "
+                "prog 35 EBF top-1 composite 467.66 emb_cos 0.187."
             ),
         },
         provenance={
@@ -163,7 +165,7 @@ def main() -> None:
     )
 
     # Canonical replay to populate render_sha256_canonical_replay.
-    with tempfile.TemporaryDirectory(prefix=f"v4_c51_{SLUG}_canonical_") as td:
+    with tempfile.TemporaryDirectory(prefix=f"v4_c53_{SLUG}_canonical_") as td:
         wav = Path(td) / "canonical.wav"
         canonical_sha = _replay(row, MIDI, wav)
     row["render_sha256_canonical_replay"] = canonical_sha
@@ -174,10 +176,10 @@ def main() -> None:
     profile_id = row["profile_id"]
 
     # Replay proof x2: fresh temp dirs, byte-equal assertion.
-    with tempfile.TemporaryDirectory(prefix=f"v4_c51_replay_{SLUG}_a_") as ta:
+    with tempfile.TemporaryDirectory(prefix=f"v4_c53_replay_{SLUG}_a_") as ta:
         wav_a = Path(ta) / "run1.wav"
         sha_a = _replay(row, MIDI, wav_a)
-    with tempfile.TemporaryDirectory(prefix=f"v4_c51_replay_{SLUG}_b_") as tb:
+    with tempfile.TemporaryDirectory(prefix=f"v4_c53_replay_{SLUG}_b_") as tb:
         wav_b = Path(tb) / "run2.wav"
         sha_b = _replay(row, MIDI, wav_b)
     proof = {
@@ -194,28 +196,33 @@ def main() -> None:
     proof_path.write_text(json.dumps(proof, sort_keys=True, indent=2))
     proof_sha = sha_of(proof_path)
 
-    # Family verdict under distance semantics + c50 enum extension.
+    # Family verdict under distance semantics + c50/c51 enum + c52 trio-promotion pattern.
+    # Per brief P1.c: if under floor AND trio pattern holds (Rome/PD/Disco A all
+    # SF2_CONFIRMED at c52 with distinct top-1 presets — any-preset criterion), then
+    # direct SF2_CONFIRMED same-cycle. Trio is verified fact from POR c52 O-1 row.
     if emb <= FLOOR:
-        verdict = "SF2_CONFIRMED_provisional"
+        verdict = "SF2_CONFIRMED"
         rationale = (
             f"top-1 emb_cos_dist={emb:.4f} <= {FLOOR} distance-upper-bound floor. "
             "Under distance semantics (operator 2026-09-04) + OPT1 extension "
-            "(operator omnibus 2026-09-05 point 3), SF2_CONFIRMED_provisional "
-            "as sf2-family best-of-search winner. c50 enum-extension addendum "
-            "with c51 any-preset promotion-criterion clarification "
-            "(docs/agent_picks_selection_invariants.md) applies. Family-2 "
-            "(stem-sampled) + family-3 (Surge XT) not searched this cycle; "
-            "winner may shift on future cross-family compare per spec Procedure. "
-            "Under the c51 clarification Disco A + Rome (c49) + Peach Dream "
-            "(c50) collectively satisfy the sibling-cell-replication criterion; "
-            "formal promotion of any of them is c52+ auditor scope."
+            "(operator omnibus 2026-09-05 point 3), sf2-family best-of-search "
+            "WINNER. c51 any-preset promotion criterion + c52 O-1 trio pattern "
+            "(Rome GM4 EP1 c49, Peach Dream GM5 EP2 c50, Disco A GM33 EBF c51 "
+            "-- three distinct top-1 presets across three sibling cells, all "
+            "promoted to SF2_CONFIRMED at c52 under any-preset rule) supplies "
+            "the sibling-cell replication requirement for direct SF2_CONFIRMED "
+            "same-cycle emission on WIG (fourth non-CG bass, extending the "
+            "trio to four-of-four). Metadata-only landing per invariant (a); "
+            "canonical replay SHA anchors determinism. Family-2 (stem-sampled) "
+            "and family-3 (Surge XT) cross-family compare not run this cycle; "
+            "winner may shift on future re-search per v4 spec Procedure."
         )
     else:
         verdict = "SF2_RULED_OUT"
         rationale = (
             f"top-1 emb_cos_dist={emb:.4f} > {FLOOR} distance-upper-bound floor; "
             "degenerate (far-from-reference). c23 SF2_RULED_OUT predecessor "
-            "verdict confirmed with fresh stage-2 evidence."
+            "verdict confirmed with fresh c53 stage-2 evidence."
         )
 
     v_doc = {
@@ -244,7 +251,7 @@ def main() -> None:
         sm = json.loads(sm_path.read_text())
         sm.setdefault("bass", {})
         sm["bass"]["family_verdict"] = verdict
-        sm["bass"]["family_verdict_cycle"] = 51
+        sm["bass"]["family_verdict_cycle"] = 53
         sm["bass"]["family_verdict_sha256"] = v_sha
         sm["bass"]["profile_sha256"] = profile_sha
         sm["bass"]["profile_id"] = profile_id
@@ -257,21 +264,23 @@ def main() -> None:
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     ev = {
         "cycle": 53,
-        "run_id": "run-2026-09-05T133000Z",
-        "milestone_id": "M-V4-PROFILES-1/disco-a-bass-landed",
+        "run_id": "run-2026-09-05T140000Z",
+        "milestone_id": "M-V4-PROFILES-1/wig-bass-landed",
         "status": "validated",
         "confidence": {
             "level": "high",
             "rationale": (
-                f"c51 EXECUTE: Disco A bass stage-2 fine-fit ran detached "
-                f"under OP-1 SerialLock. top-1 by composite = prog {program} gain "
-                f"{gain} reverb {reverb} {post}. emb_cos_dist {emb:.4f} vs 0.40 "
-                f"floor -> verdict={verdict}. c50 enum-extension addendum + c51 "
-                f"any-preset promotion-criterion clarification apply. Disco A is "
-                f"the THIRD post-c24 non-CG bass advance (Rome c49, Peach Dream "
-                f"c50, Disco A c51). Under c51 clarification all three collectively "
-                f"satisfy the sibling-cell-replication criterion; formal promotion "
-                f"deferred to c52+ auditor."
+                f"c53 EXECUTE: WIG bass stage-2 fine-fit ran detached under "
+                f"c53-fixed OP-1 SerialLock. top-1 by composite = prog {program} "
+                f"gain {gain} reverb {reverb} {post}. emb_cos_dist {emb:.4f} vs "
+                f"0.40 floor -> verdict={verdict}. WIG is the FOURTH non-CG bass "
+                f"landing (Rome c49, Peach Dream c50, Disco A c51, WIG c53). Trio "
+                f"already promoted to SF2_CONFIRMED at c52 (any-preset criterion, "
+                f"3 distinct top-1 presets); WIG under distance floor extends "
+                f"pattern to 4-of-4 with direct same-cycle SF2_CONFIRMED per "
+                f"brief P1.c decision protocol. c52 sweep interrupted mid-run "
+                f"(driver-hardcoded cycle=32 anomaly, not writer bug); c53 fixed "
+                f"driver + relaunched fresh; 216-cell grid completed clean."
             ),
             "assessor": "worker",
         },
@@ -283,15 +292,16 @@ def main() -> None:
         ],
         "supersedes_path": f"data/v4/profiles/{SONG_SHA16}/bass_family_verdict_c23.json",
         "narrative": (
-            f"Disco A (sha16 {SONG_SHA16}) bass sf2 profile landed. "
+            f"WIG (What If I Go, sha16 {SONG_SHA16}) bass sf2 profile landed. "
             f"profile_id={profile_id} sha={profile_sha[:16]}... "
             f"verdict={verdict} (emb_cos_dist={emb:.4f}, composite={composite:.2f}). "
             f"Replay proof {proof['verdict']} run1==run2={sha_a[:16]}... "
             f"Stage-2 leaderboard sha={stage2_sha[:16]}... {len(rows)} candidates. "
-            f"env_pin_sha256={ENV_PIN_SHA256}. c51 first-act sequence: test_15 "
-            f"accepts closed_by_operator; invariants doc extended with any-preset "
-            f"promotion-criterion clarification; test_12 SHA re-pinned. c50 c26 "
-            f"residual moved to tools/stale/da_bass_stage2_c26_residual_c51/."
+            f"env_pin_sha256={ENV_PIN_SHA256}. c53 first-act sequence: OP-2 "
+            f"filesystem-view-lag operational note codified in invariants doc; "
+            f"OP-1 driver hardcoded-cycle bug fixed (--cycle N CLI arg) with "
+            f"backward-compat default 32 per invariant (f); c52 partial renders "
+            f"cleaned; stale sentinel unlinked; fresh sweep run under c53 lock."
         ),
         "ts": ts,
     }
