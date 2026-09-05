@@ -1,0 +1,14 @@
+OPERATOR STEERING (2026-09-05) — RENDER THE FOUR REMAINING A/B MIXES NOW; BOOKKEEPING IS CLOSED.
+
+The per-song stem disposition matrix is COMPLETE (bass + drums pinned with replay proofs for all 5 songs; guitar/piano/other resolved as pins, nulls, or skip-closes; vocals via hybrid overlay). The operator declares the M-V4-PROFILES bookkeeping phase CLOSED: no further per-stem audibility probes, skip-close memos, disclosure sidecars, test-debt items, or docs codifications until after the renders ship. Any remaining bookkeeping rides along in the same cycle as render work or is dropped with a one-line reason.
+
+PRIORITY ORDER, effective THIS cycle:
+1. Render the four remaining sound-matched A/B mixes through the established cg_ab_mix path (pinned profiles replay + hybrid vocal overlay + rc7 mix match + manifest + replay proof), one song per launch, detached under the driver:
+   - What If I Go (252eb21ce7df7328)
+   - Rome (51e433ade2a845e1)
+   - Peach Dream (88d247468cb6d49f)
+   - Disco A (cdd2717e52820ff6)
+   Land each as data/v4/deliveries/<sha16>/ab_mix.wav (+ .manifest.json + .replay_proof.json), exactly parallel to the delivered CG artifact. A stem with a null/skip disposition is simply absent from the mix — that is the honest render, not a blocker. Do NOT wait to batch all four: land each as it completes; the operator collects them for post-hoc listening per D-A.
+2. Only after all four A/Bs are on disk: proceed to the fresh generation batch (corrected donor profiles, stall budget 8 iterations, 5 passers >=6 + interpolation demo), then the amended completion report and clean re-close.
+
+The operator will evaluate the renders by ear post-hoc; do not idle on verdicts. Sweep hygiene and the preservation-spin ban remain in force.
