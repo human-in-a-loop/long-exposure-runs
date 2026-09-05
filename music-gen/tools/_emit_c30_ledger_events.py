@@ -351,7 +351,11 @@ def _emit_close(drums_landed: bool) -> str:
         "A.3 coarse_sweep_sf2_guitar full 8/8 byte-identical vs c13",
     ]
     if drums_landed:
-        landed_lines.append("A.3 fine_fit_sf2_drums 216/216 byte-identical vs c11 (in-cycle landing)")
+        landed_lines.append(
+            "A.3 fine_fit_sf2_drums MIXED: 216/216 render_sha byte-identical vs c11 (rendering deterministic) "
+            "but 143/216 strict-equal composite (73 FP-drift ~1e-6). HALT + manager escalation emitted per FD-1 "
+            "strict brief reading"
+        )
     landed_str = "; ".join(landed_lines)
     return _emit({
         "ts": "2026-09-05T06:10:00Z",
