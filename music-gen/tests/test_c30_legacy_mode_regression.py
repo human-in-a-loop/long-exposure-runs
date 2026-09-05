@@ -118,20 +118,31 @@ def test_05_hygiene_module_anchor_preserved():
 
 
 def test_06_driver_shas_from_anchor_table():
+    """c32-aware: 3 coarse drivers pinned to c30 table; 3 fine-fit drivers
+    pinned to c32 amendment (post-OP-1 SHAs) per invariant (d)."""
+    import hashlib
     tbl = _load(REG / "c30_anchor_substitution_table.json")
     per = tbl["per_driver_anchors"]
-    # Fresh sha of each named driver; must equal recorded SHA
-    import hashlib
+    # c32 amendment overlay for fine-fit drivers (OP-1 SHA drift).
+    c32_amend_path = REG / "c32_anchor_substitution_table_amendment.json"
+    c32_overlay: dict = {}
+    if c32_amend_path.exists():
+        c32 = _load(c32_amend_path)
+        for k, v in c32["amendments"].items():
+            c32_overlay[k] = v["post_c32_sha256_fresh_disk_read"]
     for driver_name, entry in per.items():
         p = ROOT / "scripts/sound_match" / driver_name
         h = hashlib.sha256()
         with open(p, "rb") as f:
             for c in iter(lambda: f.read(1 << 20), b""):
                 h.update(c)
-        assert h.hexdigest() == entry["driver_sha256"], (
-            f"{driver_name}: on-disk sha {h.hexdigest()} != table {entry['driver_sha256']}"
+        actual = h.hexdigest()
+        expected = c32_overlay.get(driver_name, entry["driver_sha256"])
+        assert actual == expected, (
+            f"{driver_name}: on-disk sha {actual} != expected {expected} "
+            f"(c32 overlay: {driver_name in c32_overlay})"
         )
-    print("test_06 OK — all 6 driver SHAs byte-identical to anchor table")
+    print("test_06 OK — 6 driver SHAs match (3 c30 + 3 c32 OP-1 amendment)")
 
 
 # ============================================================================
@@ -218,6 +229,117 @@ def test_10_c30_anchor_table_byte_identical_pre_post():
     print(f"test_10 OK — c30 anchor table on-disk sha (freshly computed): {h.hexdigest()}")
 
 
+# ============================================================================
+# c32 EXTENSION (per c18 additive-in-place pattern):
+# Priority 1 OP-1 (fine-fit-driver serial-launch lock) — codification,
+# helper-module presence, anchor amendment shape, and invariants-doc drift.
+# ============================================================================
+
+
+CANON_INVARIANTS_SHA_POST_C32 = "29a1610b9f16adc419f8a16ec3ca47d1943481b1744f8f0a95425501a0551ca7"
+CANON_OP1_HELPER_SHA = "121809db63cb05edf61ef2abcd83a3cf25d16b0774b73f9a7364d06f32d5eff5"
+
+
+def test_11_op1_helper_module_present():
+    """OP-1 helper module lands with expected public surface."""
+    import hashlib
+    p = ROOT / "scripts/sound_match/_serial_lock_op1.py"
+    assert p.exists(), "OP-1 helper module _serial_lock_op1.py missing"
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for c in iter(lambda: f.read(1 << 20), b""):
+            h.update(c)
+    assert h.hexdigest() == CANON_OP1_HELPER_SHA, (
+        f"_serial_lock_op1.py sha drift: on-disk={h.hexdigest()} "
+        f"expected={CANON_OP1_HELPER_SHA}"
+    )
+    # Verify import + public surface without side effects.
+    import importlib
+    m = importlib.import_module("scripts.sound_match._serial_lock_op1")
+    for name in ("SerialLock", "SerialLockRefusal", "sentinel_path",
+                 "refuse_if_held"):
+        assert hasattr(m, name), f"OP-1 helper missing public {name}"
+    print("test_11 OK — OP-1 helper module + public surface intact")
+
+
+def test_12_invariants_doc_op1_section_present():
+    """Invariants doc contains the OP-1 operational-invariant section."""
+    import hashlib
+    p = ROOT / "docs/agent_picks_selection_invariants.md"
+    body = p.read_text()
+    assert "Operational invariant OP-1" in body, "OP-1 section absent"
+    assert "fine-fit-driver serial-launch lock" in body, "OP-1 title absent"
+    assert "data/v4/_run/fine_fit_serial_lock" in body, "OP-1 sentinel path absent"
+    assert "O_EXCL" in body, "OP-1 O_EXCL mechanism absent"
+    h = hashlib.sha256(body.encode()).hexdigest()
+    assert h == CANON_INVARIANTS_SHA_POST_C32, (
+        f"invariants doc sha drift: on-disk={h} expected={CANON_INVARIANTS_SHA_POST_C32}"
+    )
+    print("test_12 OK — invariants doc contains OP-1 section; SHA pinned")
+
+
+def test_13_c32_anchor_amendment_shape():
+    """c32 amendment records OP-1 SHA drift for 3 fine-fit drivers with str
+    supersedes_path per c14 lemma."""
+    p = REG / "c32_anchor_substitution_table_amendment.json"
+    assert p.exists(), "c32 amendment must land per Priority 1"
+    a = _load(p)
+    assert a["cycle"] == 32
+    assert a["track"] == "Priority 1 (OP-1)"
+    assert isinstance(a["supersedes_path"], str), "supersedes_path str per c14 lemma"
+    assert a["supersedes_path"] == "data/v4/regression/c31_anchor_substitution_table_amendment.json"
+    assert set(a["amendments"].keys()) == {
+        "fine_fit_sf2_v2.py",
+        "fine_fit_sf2_drums.py",
+        "fine_fit_sf2_guitar.py",
+    }
+    for drv, entry in a["amendments"].items():
+        assert entry["operational_invariant"].startswith("OP-1")
+        assert entry["post_c32_sha256_fresh_disk_read"] != entry.get("pre_c32_sha256")
+    assert a["new_helper_module"]["sha256_fresh_disk_read"] == CANON_OP1_HELPER_SHA
+    assert a["readonly_anchors_verified_pre_post"]["objective.py"].startswith(
+        "8087ce80"
+    )
+    print("test_13 OK — c32 amendment shape valid; 3 fine-fit SHA drifts recorded")
+
+
+def test_14_op1_sentinel_behavior_contract():
+    """OP-1 sentinel: acquire creates + refuses concurrent + releases on exit."""
+    import tempfile
+    import importlib
+    m = importlib.import_module("scripts.sound_match._serial_lock_op1")
+    with tempfile.TemporaryDirectory() as td:
+        sentinel = Path(td) / "op1_sentinel"
+        # (i) sentinel created on entry
+        with m.SerialLock(driver="test_driver", cycle=32, sentinel=sentinel):
+            assert sentinel.exists(), "sentinel not created on acquire"
+            payload = json.loads(sentinel.read_text())
+            assert payload["driver"] == "test_driver"
+            assert payload["cycle"] == 32
+            # (ii) second driver refuses with clear error while sentinel present
+            try:
+                second = m.SerialLock(driver="other_driver", cycle=32,
+                                       sentinel=sentinel)
+                second.acquire()
+                raise AssertionError("second acquire should have refused")
+            except m.SerialLockRefusal as e:
+                assert "test_driver" in str(e), "refusal must name incumbent"
+                assert "OP-1" in str(e), "refusal must cite OP-1"
+        # (iii) sentinel removed on normal exit
+        assert not sentinel.exists(), "sentinel not removed after normal exit"
+
+        # (iv) sentinel removed on exception exit
+        try:
+            with m.SerialLock(driver="test_driver_2", cycle=32,
+                               sentinel=sentinel):
+                assert sentinel.exists()
+                raise RuntimeError("simulated driver crash")
+        except RuntimeError:
+            pass
+        assert not sentinel.exists(), "sentinel not removed after exception exit"
+    print("test_14 OK — OP-1 sentinel: create + refuse + release (normal + exc)")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -229,7 +351,12 @@ def main():
     test_08_c31_fine_fit_sf2_guitar_render_180()
     test_09_c31_anchor_amendment_present()
     test_10_c30_anchor_table_byte_identical_pre_post()
-    print("\nALL legacy-mode regression tests PASSED (c30 6/6 + c31 4/4 = 10/10)")
+    test_11_op1_helper_module_present()
+    test_12_invariants_doc_op1_section_present()
+    test_13_c32_anchor_amendment_shape()
+    test_14_op1_sentinel_behavior_contract()
+    print("\nALL legacy-mode regression tests PASSED "
+          "(c30 6 + c31 4 + c32 4 = 14/14)")
 
 
 if __name__ == "__main__":

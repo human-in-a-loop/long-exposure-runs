@@ -74,9 +74,48 @@ Enforcement: new pinned-profile emissions test-assert this shape via
 drift is grandfathered as a documented DRIFT precedent — the test
 records it as such rather than failing on it.
 
+## Operational invariant OP-1 — fine-fit-driver serial-launch lock
+
+Numbered separately from the (a)–(e) selection invariants; this is an
+operational discipline invariant, not a candidate-selection rule.
+
+Fine-fit drivers that load VGGish embeddings (via the composite objective)
+MUST run serial — no concurrent driver launch. Empirical trigger: c31 guitar
+fine-fit was SIGSTOP-killed (exit 147 = 128+19) at cell 163/180 due to
+parallel VGGish memory contention with a concurrent bass fine-fit sweep on
+the same machine. A serial-solo retry succeeded 180/180.
+
+Enforcement:
+
+- Every fine-fit driver (`fine_fit_sf2_v2.py`, `fine_fit_sf2_drums.py`,
+  `fine_fit_sf2_guitar.py`) checks-and-refuses at entry against a sentinel
+  file `data/v4/_run/fine_fit_serial_lock` — if present, driver exits
+  non-zero with a clear error message identifying the incumbent lock owner
+  (pid, driver name, start timestamp) and hands off to operator.
+- On accepted entry, the driver creates the sentinel via `os.open(...,
+  O_CREAT | O_EXCL | O_WRONLY)` with `{pid, driver, cycle, started_at}` as
+  a canonical JSON payload — the `O_EXCL` guarantees mutual exclusion at
+  the syscall boundary even under race.
+- The sentinel is removed in a `finally` block that covers normal exit,
+  exceptions, and (best-effort) signal handling.
+- Regression coverage: `tests/test_fine_fit_serial_lock_c32.py` asserts
+  (i) sentinel creation on entry, (ii) second driver refusal-with-clear-
+  error while sentinel present, (iii) sentinel removal on normal exit,
+  (iv) sentinel removal on halt/exception exit.
+- Extended in `tests/test_c30_legacy_mode_regression.py` (in-place, per
+  c18 additive pattern) with OP-1 sentinel behaviour cases so the OP-1
+  contract stays visible in the campaign-wide regression suite.
+
+Scope: OP-1 applies to any driver that instantiates a VGGish model on the
+same host. Non-VGGish drivers (e.g. `coarse_sweep_sf2*.py` before hygiene
+integration) are exempt; they may run concurrently. If a future driver
+adds VGGish, it MUST adopt OP-1 sentinel behaviour before its first
+detached launch.
+
 ## Version
 
 - c14 (2026-09-04): initial codification (invariants a/b/c).
 - c15 (2026-09-04): extended with invariant (d) — on-disk-vs-brief disclosure norm.
 - c16 (2026-09-04): extended with invariant (e) — cross-cycle pinned-profile shape stability.
+- c32 (2026-09-05): extended with operational invariant OP-1 — fine-fit-driver serial-launch lock.
 

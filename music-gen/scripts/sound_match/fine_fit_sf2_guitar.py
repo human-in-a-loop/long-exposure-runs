@@ -78,6 +78,8 @@ from scripts.sound_match.coarse_sweep_sf2_guitar import (  # noqa: E402
 )
 # READ-ONLY import of the iirpeak apply function.
 from scripts.palette_render.render_stem import _apply_eq_curve_iirpeak  # noqa: E402
+# c32 OP-1: fine-fit-driver serial-launch lock (docs/agent_picks_selection_invariants.md).
+from scripts.sound_match._serial_lock_op1 import SerialLock  # noqa: E402
 # c28: canonical sweep-hygiene helpers per POR 2026-09-05 (adoption of c27 module).
 from scripts.sound_match._sweep_hygiene_c27 import (  # noqa: E402
     RunningTopK, df_guard_before_stage, prune_after_pin,
@@ -378,6 +380,12 @@ def _dir_size_bytes(p: Path) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # c32 OP-1 wrap: serial-launch lock per docs/agent_picks_selection_invariants.md.
+    with SerialLock(driver="fine_fit_sf2_guitar", cycle=32):
+        return _main_body(argv)
+
+
+def _main_body(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description="Family-1 stage-2 fine fit (guitar, CG target c14).",
     )
