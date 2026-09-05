@@ -129,6 +129,16 @@ HALTs (drums c30, bass v2 c31, guitar c31) are CLOSED with
 (touch a READ-ONLY anchor `scripts/sound_match/objective.py`,
 invalidate history) are disproportionate and were REJECTED.
 
+## Family-verdict enum extension (c49/c50)
+
+The frozen c23 family-verdict enum `{SF2_CONFIRMED, SF2_INDETERMINATE, SF2_RULED_OUT, STILL_INDETERMINATE}` is extended with `SF2_CONFIRMED_provisional`. Semantics:
+
+- `SF2_CONFIRMED_provisional`: emitted when a non-CG song's stage-2 sf2 sweep yields a WINNER under OPT1-extended acceptance (best-of-search across families, per operator omnibus point 3 lifting SF2_CONFIRMED on non-CG bass), BUT the campaign-canonical cross-family search (family-2 stem-sampled and, where applicable, family-3 Surge XT) has not yet run per v4 spec §Procedure. The `_provisional` suffix marks the verdict as WINNER-in-family without cross-family adjudication.
+- `SF2_CONFIRMED`: unchanged. Reserved for CG-domain historical usage and for the post-promotion form of `SF2_CONFIRMED_provisional`.
+- **Promotion criterion**: `SF2_CONFIRMED_provisional` → `SF2_CONFIRMED` when at least one sibling cell (same instrument family) on a different song under the same render family also lands as WINNER under OPT1 (best-of-search replication). Cross-family adjudication with family-2 (and family-3 where fetchable) also LANDS as WINNER-in-sf2. Do NOT retro-relabel prior provisional verdicts until the criterion is met per song per instrument.
+
+*First applied*: c49 Rome bass (`51e433ade2a845e1`) landed `SF2_CONFIRMED_provisional` (bank 0 prog 4 EP1, composite 323.55, emb_cos_dist 0.168). c50 Peach Dream bass, and subsequent non-CG bass cells, follow the same emission path.
+
 ## Version
 
 - c14 (2026-09-04): initial codification (invariants a/b/c).
@@ -136,4 +146,5 @@ invalidate history) are disproportionate and were REJECTED.
 - c16 (2026-09-04): extended with invariant (e) — cross-cycle pinned-profile shape stability.
 - c32 (2026-09-05): extended with operational invariant OP-1 — fine-fit-driver serial-launch lock.
 - c47 (2026-09-05): extended with invariant (f) — legacy-mode regression bar (per operator omnibus adjudication).
+- c50 (2026-09-05): extended with family-verdict enum extension — `SF2_CONFIRMED_provisional` semantics + promotion criterion (per c49 O-1 handoff).
 

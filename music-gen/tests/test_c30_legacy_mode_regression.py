@@ -252,7 +252,7 @@ def test_10_c30_anchor_table_byte_identical_pre_post():
 # ============================================================================
 
 
-CANON_INVARIANTS_SHA_POST_C32 = "29a1610b9f16adc419f8a16ec3ca47d1943481b1744f8f0a95425501a0551ca7"
+CANON_INVARIANTS_SHA_POST_C32 = "24eefd19e160ef9c128e7ce115e469beb72674891e00b859a765ae510ea471d5"  # c50 update: post enum-extension addendum (was 29a1610b… pre-c50)
 CANON_OP1_HELPER_SHA = "121809db63cb05edf61ef2abcd83a3cf25d16b0774b73f9a7364d06f32d5eff5"
 
 
