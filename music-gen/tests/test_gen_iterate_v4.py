@@ -125,6 +125,33 @@ def test_06_replay_proofs_hold_5_of_5() -> bool:
     return True
 
 
+def test_07_iteration_02_manifest_shape() -> bool:
+    """c74 P3: pin iter-02 structural contract per c73 forward-guidance.
+
+    Asserts all 5 iter-02 per-song manifests carry the c72 §3 forward-guidance
+    fields (generator_hash + sampled_rule_ids + seed=1 + donor_song_sha16 in known
+    5-donor set). Prevents iter-03+ from silently regressing on manifest shape.
+    """
+    KNOWN_DONORS = {
+        '31a164f845f8e27e', '252eb21ce7df7328', '51e433ade2a845e1',
+        '88d247468cb6d49f', 'cdd2717e52820ff6',
+    }
+    VOMM_HASH = 'e25b520372ff6abd63a5636342ff7735f85d07509776db91682a19a861054e38'
+    songs = sorted(Path('data/v4/gen/iteration_02').glob('gen_v4_song_*'))
+    assert len(songs) == 5, f'expected 5 iter-02 songs, got {len(songs)}'
+    for song_dir in songs:
+        m = json.loads((song_dir / 'ab_mix.manifest.json').read_text())
+        assert m.get('generator_hash') == VOMM_HASH, \
+            f'{song_dir.name}: generator_hash mismatch {m.get("generator_hash")}'
+        assert isinstance(m.get('sampled_rule_ids'), list) and len(m['sampled_rule_ids']) >= 1, \
+            f'{song_dir.name}: sampled_rule_ids missing or empty'
+        assert m.get('seed') == 1, f'{song_dir.name}: seed != 1 got {m.get("seed")}'
+        assert m.get('donor_song_sha16') in KNOWN_DONORS, \
+            f'{song_dir.name}: donor {m.get("donor_song_sha16")} not in 5-donor set'
+        assert m.get('generator') == 'vomm', f'{song_dir.name}: generator != vomm'
+    return True
+
+
 def _run_all() -> int:
     tests = [
         ('test_01_donor_map_5_songs', test_01_donor_map_5_songs),
@@ -133,6 +160,7 @@ def _run_all() -> int:
         ('test_04_iteration_01_manifest_shape', test_04_iteration_01_manifest_shape),
         ('test_05_structural_gate_warn_not_halt', test_05_structural_gate_warn_not_halt),
         ('test_06_replay_proofs_hold_5_of_5', test_06_replay_proofs_hold_5_of_5),
+        ('test_07_iteration_02_manifest_shape', test_07_iteration_02_manifest_shape),
     ]
     passed = 0
     for name, fn in tests:

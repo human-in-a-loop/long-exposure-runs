@@ -29,22 +29,24 @@ sys.path.insert(0, str(ROOT))
 from scripts.ear import v4_ear as VE
 
 
-def test_01_module_imports_and_stubs_raise() -> None:
+def test_01_module_imports_and_substantive_api_present() -> None:
+    """c74 substantive-landing supersede of c73 scaffold-stubs-raise test.
+
+    c73 scaffold declared NotImplementedError; c74 wired the API to load
+    pre-existing VGGish embeddings + score. Substantive impl asserted here:
+    build_exemplar_signatures returns non-empty dict; leave_one_out returns
+    per-exemplar float scores.
+    """
     assert hasattr(VE, "build_exemplar_signatures")
     assert hasattr(VE, "score_audio")
     assert hasattr(VE, "leave_one_out")
-    raised = 0
-    for fn, args in [
-        (VE.build_exemplar_signatures, ({},)),
-        (VE.score_audio, ("/nonexistent.wav", {})),
-        (VE.leave_one_out, ({},)),
-    ]:
-        try:
-            fn(*args)
-        except NotImplementedError as e:
-            assert "c74+" in str(e), f"stub error message must reference c74+: {e}"
-            raised += 1
-    assert raised == 3, f"expected 3 NotImplementedError, got {raised}"
+    es = VE.load_exemplar_set()
+    sigs = VE.build_exemplar_signatures(es)
+    assert isinstance(sigs, dict) and len(sigs) == 5, f"expected 5 exemplar signatures, got {len(sigs)}"
+    scores = VE.leave_one_out(es, sigs)
+    assert isinstance(scores, dict) and len(scores) == 5, f"expected 5 loo scores, got {len(scores)}"
+    for k, v in scores.items():
+        assert isinstance(v, float) and 1.0 <= v <= 7.0, f"{k}: score {v} out of [1,7]"
 
 
 def test_02_exemplar_set_structural_validation() -> None:
@@ -107,7 +109,7 @@ def test_05_env_pin_manifest_canonical() -> None:
 
 def main() -> int:
     tests = [
-        ("test_01_module_imports_and_stubs_raise", test_01_module_imports_and_stubs_raise),
+        ("test_01_module_imports_and_substantive_api_present", test_01_module_imports_and_substantive_api_present),
         ("test_02_exemplar_set_structural_validation", test_02_exemplar_set_structural_validation),
         ("test_03_spec_compliant_window_size_constant", test_03_spec_compliant_window_size_constant),
         ("test_04_no_prng_no_sidecar_no_vst3_state", test_04_no_prng_no_sidecar_no_vst3_state),

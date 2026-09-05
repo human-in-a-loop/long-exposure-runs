@@ -60,33 +60,135 @@ def load_exemplar_set() -> dict:
         return json.load(f)
 
 
-def build_exemplar_signatures(exemplar_set: dict, backbone: str = "clap_vggish_ensemble") -> Dict[str, list]:
+# c74 substantive-implementation constants
+EMBEDDINGS_PATH = ROOT / "data/v4/ear/exemplar_embeddings.npz"
+BAND4_EMBEDDINGS_PATH = ROOT / "data/v4/ear/band4_embeddings.npz"
+BACKBONE = "vggish"  # CLAP unavailable per data/v4/ear/fetchability_ladder.jsonl c74; VGGish-only fallback active per spec §backbone
+
+
+def _load_embeddings(path: Path) -> Dict[str, "list"]:
+    """Load pre-computed VGGish embeddings from NPZ.
+
+    Returns dict mapping short_id -> list of 128-D float vectors (one per 10 s window).
+    Backbone: VGGish (128-D, 0.96 s frames aggregated to 10 s windows via best-50%
+    self-similarity per M-V4-EAR-1 spec).
+    """
+    import numpy as np  # noqa: local import — heavy dep gated to callers
+    npz = np.load(path)
+    return {k: npz[k].astype("float64").tolist() for k in npz.files}
+
+
+def build_exemplar_signatures(exemplar_set: dict, backbone: str = BACKBONE) -> Dict[str, list]:
     """Build per-exemplar top-k window signatures.
 
-    c74+ implementation: for each exemplar, extract 10 s windows over the whole
-    section, embed with CLAP + VGGish, retain best 50% by within-exemplar
-    self-similarity. Returns dict mapping exemplar_sha16 -> list of signatures.
+    c74 substantive implementation (VGGish-only backbone per fetchability_ladder.jsonl):
+    loads pre-computed VGGish 128-D window embeddings from EMBEDDINGS_PATH; each
+    exemplar contributes N windows (54-57 typical); top-k selection = best 50%
+    by within-exemplar cosine self-similarity is baked into the pre-computed set
+    (see docs/specs/v4_rules_and_ear_spec.md §top-k policy).
+    Returns dict mapping short_id -> list of window embeddings.
     """
-    raise NotImplementedError(
-        "c74+ substantive implementation with CLAP+VGGish weight fetch. "
-        "Scaffold pinned at c73 per M-V4-EAR-1 opening; see docs/specs/v4_rules_and_ear_spec.md."
-    )
+    if backbone not in ("vggish", "clap_vggish_ensemble"):
+        raise ValueError(f"Unknown backbone: {backbone!r}")
+    return _load_embeddings(EMBEDDINGS_PATH)
 
 
-def score_audio(audio_path: str, exemplar_signatures: Dict[str, list],
+def _cosine(a: list, b: list) -> float:
+    """Deterministic cosine similarity between two equal-length vectors. No PRNG."""
+    import math
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    if na == 0.0 or nb == 0.0:
+        return 0.0
+    return dot / (na * nb)
+
+
+def _max_over_exemplar_windows(candidate_windows: list, exemplar_signatures: Dict[str, list]) -> float:
+    """Return the maximum cosine similarity of any candidate window against any
+    exemplar window across the whole exemplar set. Top-k mean applied per-candidate
+    within the best-50% frame."""
+    if not candidate_windows:
+        return 0.0
+    per_candidate_best = []
+    for cw in candidate_windows:
+        best = 0.0
+        for _short_id, sig_windows in exemplar_signatures.items():
+            for ew in sig_windows:
+                s = _cosine(cw, ew)
+                if s > best:
+                    best = s
+        per_candidate_best.append(best)
+    # Best-50% mean per spec BEST_FRACTION.
+    per_candidate_best.sort(reverse=True)
+    k = max(1, int(len(per_candidate_best) * BEST_FRACTION))
+    return sum(per_candidate_best[:k]) / k
+
+
+def _calibrate_1_7(statistic: float, anchor_high: float, anchor_low: float) -> float:
+    """Linear map: score = 1 + 6*(s - low)/(high - low), clipped [1,7]."""
+    if anchor_high <= anchor_low:
+        return 1.0
+    raw = 1.0 + 6.0 * (statistic - anchor_low) / (anchor_high - anchor_low)
+    return max(1.0, min(7.0, raw))
+
+
+def score_audio(candidate_windows: list, exemplar_signatures: Dict[str, list],
                 anchor_high: float | None = None, anchor_low: float | None = None,
                 noise_floor: float = NOISE_FLOOR_DEFAULT) -> float:
     """Return ear score in [1, 7] via max-over-exemplar-windows top-k similarity.
 
-    anchor_high: leave-one-out mean (default = RATING_ANCHOR_HIGH region).
-    anchor_low: fixed noise floor (default NOISE_FLOOR_DEFAULT).
+    candidate_windows: list of 128-D VGGish window embeddings for the audio to be scored.
+    anchor_high: leave-one-out mean (defaults to 0.930365 per data/v4/ear/ear_scores.json calibration_E_mean_loo).
+    anchor_low: fixed noise floor (defaults to noise_floor arg).
     """
-    raise NotImplementedError("c74+ substantive implementation")
+    if anchor_high is None:
+        anchor_high = 0.930365  # per data/v4/ear/ear_scores.json calibration_E_mean_loo
+    if anchor_low is None:
+        anchor_low = noise_floor
+    statistic = _max_over_exemplar_windows(candidate_windows, exemplar_signatures)
+    return _calibrate_1_7(statistic, anchor_high, anchor_low)
 
 
-def leave_one_out(exemplar_set: dict) -> Dict[str, float]:
-    """Per-exemplar leave-one-out score. Sanity gate: ≥4/5 ≥6, none < 5.5."""
-    raise NotImplementedError("c74+ substantive implementation")
+def leave_one_out(exemplar_set: dict, exemplar_signatures: Dict[str, list] | None = None,
+                  noise_floor: float = NOISE_FLOOR_DEFAULT) -> Dict[str, float]:
+    """Per-exemplar leave-one-out score.
+
+    For each exemplar X: score X against the exemplar set with X removed. Sanity
+    gate per campaign L115-117: >=4/5 exemplars score >=6.0, none <5.5.
+    Returns dict mapping short_id -> score in [1,7].
+    """
+    if exemplar_signatures is None:
+        exemplar_signatures = build_exemplar_signatures(exemplar_set)
+    scores: Dict[str, float] = {}
+    ids = list(exemplar_signatures.keys())
+    for held_out in ids:
+        remaining = {k: v for k, v in exemplar_signatures.items() if k != held_out}
+        candidate = exemplar_signatures[held_out]
+        raw_stat = _max_over_exemplar_windows(candidate, remaining)
+        # Recompute anchor_high as loo-mean over remaining (spec: leave-one-out mean anchored linear map).
+        loo_stats = []
+        for other in remaining:
+            other_rest = {k: v for k, v in remaining.items() if k != other}
+            loo_stats.append(_max_over_exemplar_windows(remaining[other], other_rest))
+        anchor_high = sum(loo_stats) / len(loo_stats) if loo_stats else raw_stat
+        scores[held_out] = _calibrate_1_7(raw_stat, anchor_high, noise_floor)
+    return scores
+
+
+def sanity_gate(scores: Dict[str, float]) -> dict:
+    """Apply operator sanity gate per campaign L115-117."""
+    values = list(scores.values())
+    n_at_or_above_6 = sum(1 for v in values if v >= 6.0)
+    n_below_5p5 = sum(1 for v in values if v < 5.5)
+    return {
+        "n_exemplars": len(values),
+        "n_at_or_above_6": n_at_or_above_6,
+        "n_below_5p5": n_below_5p5,
+        "min_score": min(values) if values else None,
+        "max_score": max(values) if values else None,
+        "gate_passes": n_at_or_above_6 >= 4 and n_below_5p5 == 0,
+    }
 
 
 def _no_prng_assertion() -> None:
