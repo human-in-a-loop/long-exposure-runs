@@ -117,18 +117,19 @@ def _parse_presets(spec: str) -> list[tuple[int, int]]:
     return out
 
 
-def _rewrite_piano_midi_with_program(
+def _rewrite_other_midi_with_program(
     src_midi: Path, dst_midi: Path, bank: int, program: int
 ) -> None:
     """Copy src_midi, rewriting/inserting bank+program change on channel 0.
 
-    Piano source-of-truth on the merged.mid piano track sits on channel 0
-    (same convention as bass). The bank-select + program-change must land
-    in the track that actually carries the note events for channel 0;
-    inserting into a meta-only track leaves fluidsynth on the default
-    program 0 (Acoustic Grand) at playback start, which is coincidentally
-    fine for piano-family sweeps but relies on GM default; explicit is
-    better.
+    Other-residual source-of-truth on the merged.mid other track sits on
+    channel 0 (same convention as bass/piano). The bank-select +
+    program-change must land in the track that actually carries the note
+    events for channel 0; inserting into a meta-only track leaves
+    fluidsynth on the default program 0 (Acoustic Grand) at playback
+    start, which is wrong for the "other" family sweep (target is
+    strings/pads/voices per c60 P4 plan §Recommended presets); explicit
+    is required.
     """
     m = mido.MidiFile(str(src_midi))
     if len(m.tracks) == 0:
@@ -200,20 +201,20 @@ def _lufs_i_proxy_db(wav_path: Path) -> float:
     return 20.0 * float(np.log10(max(rms, 1e-9)))
 
 
-def _extract_piano_midi(merged_midi: Path, out_midi: Path) -> None:
-    """Extract track named 'piano' from merged.mid as stand-alone MIDI on ch0.
+def _extract_other_midi(merged_midi: Path, out_midi: Path) -> None:
+    """Extract track named 'other' from merged.mid as stand-alone MIDI on ch0.
 
-    Piano source-of-truth: track named 'piano' in the v3 merged.mid.
-    Preserves tempo/time-signature meta from track 0.
+    Other-residual source-of-truth: track named 'other' in the v3
+    merged.mid. Preserves tempo/time-signature meta from track 0.
     """
     m = mido.MidiFile(str(merged_midi))
-    piano_track = None
+    other_track = None
     for t in m.tracks:
-        if t.name == "piano":
-            piano_track = t
+        if t.name == "other":
+            other_track = t
             break
-    if piano_track is None:
-        raise ValueError("no 'piano' track found in merged.mid")
+    if other_track is None:
+        raise ValueError("no 'other' track found in merged.mid")
     out = mido.MidiFile(ticks_per_beat=m.ticks_per_beat)
     meta = mido.MidiTrack()
     for msg in m.tracks[0]:
@@ -221,7 +222,7 @@ def _extract_piano_midi(merged_midi: Path, out_midi: Path) -> None:
             meta.append(msg.copy())
     out.tracks.append(meta)
     pt = mido.MidiTrack()
-    for msg in piano_track:
+    for msg in other_track:
         pt.append(msg.copy())
     out.tracks.append(pt)
     out_midi.parent.mkdir(parents=True, exist_ok=True)
@@ -230,29 +231,30 @@ def _extract_piano_midi(merged_midi: Path, out_midi: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
-        description="Family-1 coarse SF2 preset sweep (piano-family sibling "
-                    "per docs/sweep_driver_family_policy.md).",
+        description="Family-1 coarse SF2 preset sweep (other-family sibling "
+                    "per docs/sweep_driver_family_policy_other_c60.md).",
     )
     # c48-precedent additive `--song-sha16` alias sharing dest with `--song`.
     ap.add_argument("--song", "--song-sha16", dest="song", required=True,
                     help="song sha16 (either flag form accepted)")
-    ap.add_argument("--stem", default="piano",
-                    help="stem name (piano-family sibling; kept for parity "
-                         "with drums/guitar drivers)")
+    ap.add_argument("--stem", default="other",
+                    help="stem name (other-family sibling; kept for parity "
+                         "with drums/guitar/piano drivers)")
     ap.add_argument("--reference-stem", required=True, type=Path)
     ap.add_argument(
         "--midi-source", type=Path, default=None,
-        help="MIDI file to extract piano track from (e.g. merged.mid).",
+        help="MIDI file to extract other track from (e.g. merged.mid).",
     )
     ap.add_argument(
         "--midi-excerpt", type=Path, default=None,
-        help="Pre-built piano-only MIDI; if set, skips extraction.",
+        help="Pre-built other-only MIDI; if set, skips extraction.",
     )
     ap.add_argument("--sf2", required=True, type=Path)
     ap.add_argument(
         "--presets",
-        default="bank0:programs=0,1,2,3,4,5,6,7",
-        help="Preset spec; default = GM piano range 0..7.",
+        default="bank0:programs=48,49,52,88,89,90,95,96",
+        help="Preset spec; default = GM 'other' set {48,49,52,88,89,90,95,96} "
+             "per c60 P4 plan (strings/pads/voices/FX).",
     )
     ap.add_argument(
         "--env-pin-sha",
@@ -313,22 +315,22 @@ def main(argv: list[str] | None = None) -> int:
     else:
         got_sha = None
 
-    # Resolve piano MIDI.
+    # Resolve other MIDI.
     if args.midi_excerpt is not None:
-        piano_midi = args.midi_excerpt
+        other_midi = args.midi_excerpt
     else:
         if args.midi_source is None:
             raise SystemExit("need --midi-excerpt or --midi-source")
-        piano_midi = out_dir / "piano_excerpt.mid"
-        _extract_piano_midi(args.midi_source, piano_midi)
+        other_midi = out_dir / "other_excerpt.mid"
+        _extract_other_midi(args.midi_source, other_midi)
 
     # Note-count probe.
-    pm = mido.MidiFile(str(piano_midi))
-    n_piano_notes = sum(
+    pm = mido.MidiFile(str(other_midi))
+    n_other_notes = sum(
         1 for tr in pm.tracks
         for msg in tr if msg.type == "note_on" and msg.velocity > 0
     )
-    if n_piano_notes == 0:
+    if n_other_notes == 0:
         with open(out_dir / "leaderboard.tsv", "w") as f:
             f.write(
                 "rank\tbank\tprogram\tcomposite\tstatus\n"
@@ -337,7 +339,7 @@ def main(argv: list[str] | None = None) -> int:
         with open(out_dir / "run_manifest.json", "w") as f:
             json.dump(
                 {"aborted": True, "reason": "NULL_MIDI_EMPTY",
-                 "piano_midi": str(piano_midi)},
+                 "other_midi": str(other_midi)},
                 f, sort_keys=True, indent=2,
             )
         return 2
@@ -374,15 +376,15 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("no presets parsed from --presets")
 
     ref_stem_sha = sha256_of_file(args.reference_stem)
-    piano_midi_sha = sha256_of_file(piano_midi)
+    other_midi_sha = sha256_of_file(other_midi)
 
     rows = []
     t_start = time.time()
     for (bank, program) in presets:
         cell = renders_dir / f"bank{bank}_prog{program:03d}"
         cell.mkdir(exist_ok=True)
-        rewritten_midi = cell / "piano_with_program.mid"
-        _rewrite_piano_midi_with_program(piano_midi, rewritten_midi, bank, program)
+        rewritten_midi = cell / "other_with_program.mid"
+        _rewrite_other_midi_with_program(other_midi, rewritten_midi, bank, program)
         out_wav = cell / "render.wav"
         try:
             _fluidsynth_render(args.sf2, rewritten_midi, out_wav, sr=args.sample_rate)
@@ -441,16 +443,19 @@ def main(argv: list[str] | None = None) -> int:
     manifest = {
         "song_sha16": args.song,
         "instrument": args.stem,
-        "driver": "coarse_sweep_sf2_piano",
+        "driver": "coarse_sweep_sf2_other",
         "sweep_driver_family_policy_sha": (
             "1546a6fc01e141a0bfdad41672a3f659083c1adf543e78761f9beb2206c73269"
+        ),
+        "sweep_driver_family_policy_other_sha": (
+            "55be79b82ad19ecf9c95f50d6d96d9e969e9a49883ef2d571a537c5836d4a838"
         ),
         "sf2_path": str(args.sf2),
         "sf2_sha256": sf2_sha,
         "reference_stem": str(args.reference_stem),
         "reference_stem_sha256": ref_stem_sha,
-        "midi_excerpt_path": str(piano_midi),
-        "midi_excerpt_sha256": piano_midi_sha,
+        "midi_excerpt_path": str(other_midi),
+        "midi_excerpt_sha256": other_midi_sha,
         "n_presets": len(presets),
         "sample_rate": args.sample_rate,
         "elapsed_s": time.time() - t_start,
