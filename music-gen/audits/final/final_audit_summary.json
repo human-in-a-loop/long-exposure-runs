@@ -1,61 +1,73 @@
 {
   "run_id": "run-2026-08-28T040704Z",
-  "mode": "delta",
-  "baseline_committed_at": "2026-09-02T05:24:25.446028+00:00",
+  "mode": "delta_second_pass",
+  "baseline_committed_at": "2026-09-05T00:11:46.654412+00:00",
+  "delta_scope_reports": [
+    "reports/cycles/report_cycles_31-31.md"
+  ],
+  "delta_window_note": "Delta scope carried a single report already covered by the prior committed audit; on-disk artifacts unchanged since baseline (mtime + SHA verified in Stage 3).",
   "milestone_status_distribution": {
-    "validated": 47,
-    "in-progress": 1,
+    "validated_high": 47,
+    "in_progress": 1,
     "action_required": 1,
     "deferred": 3,
     "superseded_implicit": 1,
     "invalidated": 0,
-    "not-started": 4
+    "not_started": 4
   },
   "plan_milestone_state": {
-    "M-V4-CERT-1": {"status": "validated", "confidence": "high", "evidence_count": 3},
-    "M-V4-PROFILES-1": {"status": "in-progress", "confidence": "high", "evidence_count": 55},
-    "M-V4-SHOWCASE-1/cg-ab-full-render": {"status": "validated", "confidence": "high", "evidence_count": 4, "note": "LANDS_pending_operator per FD-6"},
-    "M-V4-RULES-1/scaffold-c20": {"status": "superseded_implicit", "confidence": "medium", "evidence_count": 2, "note": "on-disk substantive c21+ implementation not registered in ledger or POR"},
-    "M-V4-RULES-1/pinned-profile-schema-v1": {"status": "validated", "confidence": "high", "evidence_count": 3},
-    "_manager/M-V4-METRIC-SEMANTICS-c16": {"status": "action_required", "confidence": "high", "evidence_count": 3, "blocked_on_operator": true},
-    "M-V4-PROFILES-1/wig-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only; blocked on metric-semantics escalation"},
-    "M-V4-PROFILES-1/rome-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only; blocked on metric-semantics escalation"},
-    "M-V4-PROFILES-1/disco-a-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only; blocked on metric-semantics escalation"},
-    "M-V4-PROFILES-1/peach-dream-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only; blocked on metric-semantics escalation; invariant (d) path divergence"},
-    "M-V4-EAR-1": {"status": "not-started", "confidence": "provisional", "evidence_count": 0},
-    "M-V4-GEN-1": {"status": "not-started", "confidence": "provisional", "evidence_count": 0},
-    "M-V4-CLOSE-1": {"status": "not-started", "confidence": "provisional", "evidence_count": 0}
+    "M-V4-CERT-1": {"status": "validated", "confidence": "high", "evidence_count": 2},
+    "M-V4-PROFILES-1": {"status": "in-progress", "confidence": "high", "evidence_count": 40},
+    "M-V4-SHOWCASE-1/cg-ab-driver-scaffolded": {"status": "validated", "confidence": "high", "evidence_count": 1},
+    "M-V4-SHOWCASE-1/cg-ab-full-render": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "LANDS_pending_operator per FD-6"},
+    "M-V4-RULES-1/scaffold-c20": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "narrative status; on-disk superseded by c21+ substantive impl w/o registration"},
+    "M-V4-RULES-1/pinned-profile-schema-v1": {"status": "validated", "confidence": "high", "evidence_count": 1},
+    "M-V4-EAR-1": {"status": "not-started", "confidence": "n/a", "evidence_count": 0, "note": "on-disk artifacts exist per c31 closure report; ledger events absent (F1)"},
+    "M-V4-GEN-1": {"status": "not-started", "confidence": "n/a", "evidence_count": 0, "note": "on-disk artifacts exist per c31 closure report; ledger events absent (F1)"},
+    "M-V4-CLOSE-1": {"status": "not-started", "confidence": "n/a", "evidence_count": 0, "note": "on-disk artifacts exist per c31 closure report; ledger events absent (F1)"},
+    "_manager/M-V4-METRIC-SEMANTICS-c16": {"status": "action_required", "confidence": "high", "evidence_count": 1},
+    "_manager/M-V4-SHOWCASE-1-cg-bass-acceptance-policy": {"status": "action_required", "confidence": "high", "evidence_count": 1},
+    "M-V4-PROFILES-1/wig-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only, blocked_on _manager/M-V4-METRIC-SEMANTICS-c16"},
+    "M-V4-PROFILES-1/rome-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only"},
+    "M-V4-PROFILES-1/disco-a-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only"},
+    "M-V4-PROFILES-1/peach-dream-opened": {"status": "validated", "confidence": "high", "evidence_count": 1, "note": "skeleton only; invariant(d) source-path disclosure landed"}
   },
   "residual_debt": [
-    {"milestone": "_manager/M-V4-METRIC-SEMANTICS-c16", "kind": "open_escalation", "narrative": "Operator-authoritative choice between Path A (treat embedding_cos_vggish as distance and invert thresholds) and Path B (apply 1 - distance correction, re-issue certificate per FD-16(a)). Blocks WIG/Rome/Disco A/Peach Dream profile sweeps."},
-    {"milestone": "M-V4-RULES-1/scaffold-c20", "kind": "silent_supersession", "narrative": "Substantive c21+ extractor on disk with no ledger event, no _plan/register row, and no PASS/PARTIAL/FAILS verdict for M-V4-RULES-1/substantive. c21+ author must emit the missing rows."},
-    {"milestone": "M-V4-PROFILES-1/wig|rome|disco-a|peach-dream", "kind": "queued_behind_operator_escalation", "narrative": "Skeleton stem manifests present; no sweeps, profiles, or A/B renders. Queued behind metric-semantics escalation."},
-    {"milestone": "M-V4-EAR-1", "kind": "not_started", "narrative": "Lightweight exemplar ear; ~1 h compute target; not gated on metric semantics."},
-    {"milestone": "M-V4-GEN-1", "kind": "not_started", "narrative": "Seeded generator; depends on both M-V4-RULES-1 (audit-trail gap) and M-V4-EAR-1."},
-    {"milestone": "M-V4-CLOSE-1", "kind": "not_started", "narrative": "Campaign closure roll-up; depends on all v4 predecessors."},
-    {"milestone": "POR-transcription drift (5 rows)", "kind": "housekeeping", "narrative": "One v3-rules spec path drift, three POR-pinned SHA drifts, one 62-hex malformed SHA. Correctable in one housekeeping pass under FD-1."}
+    {"milestone": "M-V4-EAR-1", "kind": "ledger_disk_parity_gap", "narrative": "On-disk artifacts referenced by c31 closure report byte-verify but no completion ledger event exists. See F1."},
+    {"milestone": "M-V4-GEN-1", "kind": "ledger_disk_parity_gap", "narrative": "Same class as M-V4-EAR-1: on-disk lands, ledger silent."},
+    {"milestone": "M-V4-CLOSE-1", "kind": "ledger_disk_parity_gap", "narrative": "Same class as M-V4-EAR-1: on-disk lands, ledger silent."},
+    {"milestone": "M-V4-RULES-1", "kind": "narrative_vs_ledger_split", "narrative": "Scaffold c20 remains only ledger event; c21+ substantive extraction on disk unregistered."},
+    {"milestone": "_manager/M-V4-METRIC-SEMANTICS-c16", "kind": "operator_authority_required", "narrative": "Two named paths (A distance-inverted-thresholds, B similarity-numeric-fix); not auto-resolvable via agent-picks invariants."},
+    {"milestone": "_manager/M-V4-SHOWCASE-1-cg-bass-acceptance-policy", "kind": "operator_authority_required", "narrative": "c7 acceptance-policy fork open; c9 accepted bass_v2 as WINNER but standing manager escalation not closed in ledger."},
+    {"milestone": "audits/final/stages/c31_audit_artifact", "kind": "provenance_completeness_gap", "narrative": "c31 closure narrates independent audit COMPLETE with a session ID; no on-disk audit-findings artifact discoverable for that verdict. See F2."}
   ],
   "future_work": [
-    {"anchored_to": "_manager/M-V4-METRIC-SEMANTICS-c16", "proposal": "Operator selects Path A or Path B. Path A rewrites threshold interpretations and re-evaluates verdicts on inverted floors. Path B applies 1 - distance in one location (objective.py or embedding_panel.py), re-runs the FD-16(a) determinism certificate, and re-evaluates all five CG arcs on the intended similarity scale."},
-    {"anchored_to": "M-V4-RULES-1/scaffold-c20", "proposal": "c21+ author emits M-V4-RULES-1/substantive milestone row; _plan/register-* row for the six substantive artifacts; supersedes-c20 event with supersedes_path as str per c14 lemma; anchor-preservation snapshot confirming c20 smoke-test SHA unchanged; explicit LANDS/PARTIAL/FAILS verdict against M-V4-RULES-1 success criteria."},
-    {"anchored_to": "M-V4-PROFILES-1/{wig,rome,disco-a,peach-dream}-opened", "proposal": "After metric-semantics resolution, run stage-1 and stage-2 sweeps under the sweep-storage hygiene protocol validated on Chicken Grease (score-and-delete; ≤500 MB working audio; df check before each stage; disk ≤90%)."},
-    {"anchored_to": "M-V4-EAR-1", "proposal": "Lightweight exemplar ear (CG + Molasses + Essence + Desire + Peach Dream) with CLAP + VGGish ensemble and top-k window similarity; no corpus calibration; leave-one-out ≥4 of 5 ≥ 6, none < 5.5."},
-    {"anchored_to": "M-V4-GEN-1", "proposal": "Seeded generator program from the rules artifact; 5 novel instrumental songs + 1 interpolation-hybrid demo; stall rule after 8 iterations without 5 passers."},
-    {"anchored_to": "M-V4-CLOSE-1", "proposal": "Completion report, indexed deliverables, certificate status, gaps; update OPERATOR_DECISIONS + codebase guide; final sweep; end the run cleanly."},
-    {"anchored_to": "POR-transcription drift (5 rows)", "proposal": "One housekeeping cycle: canonicalize v3-rules spec path in POR narrative; refresh five POR-pinned SHAs against on-disk artifacts under FD-1; correct the malformed 62-hex drums-MIDI SHA to the 64-hex on-disk value."}
+    {"anchored_to": "M-V4-EAR-1", "proposal": "Append the four missing completion events (M-V4-EAR-1, M-V4-GEN-1, M-V4-CLOSE-1, substantive M-V4-RULES-1) with the on-disk artifact SHAs the c31 closure report already cites. Pure bookkeeping — closes F1 without content change."},
+    {"anchored_to": "audits/final/stages/c31_audit_artifact", "proposal": "Persist the c31 auditor's findings artifact on disk under audits/final/stages/ or a per-cycle sibling directory so the COMPLETE / Zero CRITICAL claim is independently re-auditable. Closes F2."},
+    {"anchored_to": "_manager/M-V4-METRIC-SEMANTICS-c16", "proposal": "Operator picks Path A or Path B; ledger acceptance event follows. Unblocks WIG/Rome/Peach Dream/Disco A profile arcs."},
+    {"anchored_to": "_manager/M-V4-SHOWCASE-1-cg-bass-acceptance-policy", "proposal": "Record post-hoc operator listening verdict on the c17 CG A/B mix; close the standing manager fork with a formal ledger acceptance event."},
+    {"anchored_to": "M-V4-SHOWCASE-1/cg-ab-full-render", "proposal": "Operator ear on the c17 CG A/B mix per FD-6 flips this from LANDS_pending_operator to validated."},
+    {"anchored_to": "M-V4-PROFILES-1", "proposal": "Once M-V4-METRIC-SEMANTICS-c16 resolves, resume stage-1 sweeps on WIG/Rome/Peach Dream/Disco A per-instrument."},
+    {"anchored_to": "M-V4-RULES-1", "proposal": "Formally reconcile M-V4-RULES-1 status by superseding the scaffold-c20 event with a substantive-extraction landing event; would collapse the narrative-vs-ledger split into a clean POR row."}
   ],
-  "findings": {"CRITICAL": 0, "MODERATE": 2, "MINOR": 5},
+  "findings": {
+    "CRITICAL": 0,
+    "MODERATE": 1,
+    "MINOR": 1
+  },
   "reconciliation_events_emitted": 0,
-  "lessons_emitted": ["por-narrative-transcription-drift-is-the-dominant-audit-trail-defect-class", "silent-supersession-without-ledger-registration-is-the-cover-up-anti-pattern-in-practice"],
-  "promise_check_status": "unknown",
+  "lessons_emitted": [
+    "recursive-delta-audit-over-unchanged-surface-is-a-first-class-outcome"
+  ],
+  "promise_check_status": "green",
   "wall_cap_exceeded": false,
   "figure_coverage": {
-    "figures_present": null,
-    "figures_in_ledger": null,
-    "milestones_with_figures": null,
-    "milestones_without_figures": null,
+    "figures_present": 0,
+    "figures_in_ledger": 0,
+    "milestones_with_figures": 0,
+    "milestones_without_figures": 0,
     "missing_figures": [],
     "orphan_figures": [],
-    "note": "Delta scope did not warrant new figures; final auditor did not synthesize a coverage report because the harness synthesizes a basic block when this field is null."
+    "note": "Delta scope (single closure report + no new campaign motion) does not warrant new figures; the closure report itself carries the tables it needs and no per-cycle figure obligation was open."
   }
 }

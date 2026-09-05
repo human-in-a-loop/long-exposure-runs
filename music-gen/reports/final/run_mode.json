@@ -4,8 +4,8 @@
   "detection_source": "marker",
   "canonical_path": "/home/user/long-exposure-runs/music-gen/reports/final/final_report.md",
   "commit_marker": "/home/user/long-exposure-runs/music-gen/reports/final/final_report.committed",
-  "baseline_boundary_ts": 1788327541.1653,
-  "total_report_tokens": 189797,
-  "budget_tokens": 114919,
-  "stages": 7
+  "baseline_boundary_ts": 1788567974.070935,
+  "total_report_tokens": 195056,
+  "budget_tokens": 5258,
+  "stages": 3
 }
