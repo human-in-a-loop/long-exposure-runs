@@ -221,7 +221,9 @@ def main():
         print(f"[A.1] SKIP: {v2_ldr} not present yet")
 
     # A.2 fine_fit_sf2_guitar vs c14 (180 cells, 5 programs x 3 x 3 x 4)
-    g_ldr = smoke / "guitar_fine_legacy" / "leaderboard.tsv"
+    # Prefer retry dir if present (initial guitar sweep hit SIGSTOP; retry succeeded)
+    g_ldr_retry = smoke / "guitar_fine_legacy_retry" / "leaderboard.tsv"
+    g_ldr = g_ldr_retry if g_ldr_retry.exists() else smoke / "guitar_fine_legacy" / "leaderboard.tsv"
     if g_ldr.exists():
         s = emit_sidecar(
             driver="fine_fit_sf2_guitar.py",

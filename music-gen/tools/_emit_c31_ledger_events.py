@@ -192,40 +192,13 @@ if g_data:
         })
 
 
-# --- Preserve carry-forward operator escalations (bump carried_from_cycle) ---
-EVENTS.append({
-    "ts": "2026-09-05T05:30:00Z",
-    "milestone_id": "_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy",
-    "status": "action_required",
-    "confidence": _confidence(
-        "Preserved unchanged per c31 Priority 0. SF2_CONFIRMED remains FORBIDDEN on non-CG bass. "
-        "blocked_on_operator=true; carried_from_cycle=31.",
-        level="medium"),
-    "narrative": "c31 carry-forward. No change to escalation contents.",
-    "artifacts": [],
-})
-
-EVENTS.append({
-    "ts": "2026-09-05T05:31:00Z",
-    "milestone_id": "_manager/M-V4-METRIC-SEMANTICS-c16",
-    "status": "action_required",
-    "confidence": _confidence(
-        "Preserved unchanged per c31 Priority 0. Embedding metric semantics escalation (Path A distance / "
-        "Path B similarity) awaits operator. blocked_on_operator=true; carried_from_cycle=31.", level="medium"),
-    "narrative": "c31 carry-forward. No change.",
-    "artifacts": [],
-})
-
-EVENTS.append({
-    "ts": "2026-09-05T05:32:00Z",
-    "milestone_id": "_manager/M-V4-CERT-fine-fit-sf2-drums-legacy-halt",
-    "status": "action_required",
-    "confidence": _confidence(
-        "Preserved unchanged per c31 Priority 0. Three paths A/B/C for c30 drums-fine composite FP-drift halt. "
-        "blocked_on_operator=true; carried_from_cycle=31.", level="medium"),
-    "narrative": "c31 carry-forward from c30. No agent-side adjudication per c30 auditor guidance.",
-    "artifacts": [],
-})
+# --- Carry-forward operator escalations mentioned in narratives only (per c30 pattern) ---
+# Cannot re-emit action_required → action_required (state-machine rule); they remain
+# authoritative from their most recent event and are preserved by mention in this cycle's
+# events. Three escalations preserved unchanged with carried_from_cycle=31:
+#   _manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy (from c17+)
+#   _manager/M-V4-METRIC-SEMANTICS-c16 (from c16+)
+#   _manager/M-V4-CERT-fine-fit-sf2-drums-legacy-halt (from c30)
 
 
 # --- Track B / C / D outcomes (gated on Track A.1 outcome) ---
@@ -439,8 +412,20 @@ EVENTS.append({
 })
 
 
+ALREADY_EMITTED_THIS_SESSION = {
+    "_infra/c31-anchor-substitution-table-amendment",
+    "_infra/c31-cg-anchor-regression-fine-fit-sf2-v2",
+    "_manager/M-V4-CERT-fine-fit-sf2-v2-legacy-halt",
+    "_infra/c31-cg-anchor-regression-fine-fit-sf2-guitar",
+    "_manager/M-V4-CERT-fine-fit-sf2-guitar-legacy-halt",
+}
+
 if __name__ == "__main__":
     for ev in EVENTS:
+        mid = ev["milestone_id"]
+        if mid in ALREADY_EMITTED_THIS_SESSION:
+            print(f"SKIP (already emitted): {mid}")
+            continue
         eid = _emit(ev)
-        print(f"emitted {ev['milestone_id']}: {eid}")
-    print(f"\nTotal events emitted this cycle: {len(EVENTS)}")
+        print(f"emitted {mid}: {eid}")
+    print(f"\nTotal events processed this cycle: {len(EVENTS)}")
