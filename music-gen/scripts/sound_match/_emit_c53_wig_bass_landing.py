@@ -1,23 +1,29 @@
 #!/usr/bin/python3
-"""c51 EXECUTE: Disco A bass sf2 landing under distance semantics.
+"""c53 EXECUTE: WIG (What If I Go) bass sf2 landing under distance semantics.
 
-Disco A bass stage-2 fine-fit completed this cycle. Emits bass.json
-(pinned profile), bass.replay_proof.json (per FD-16(c): Disco A's
-first sf2 render, so per-song-per-family proof required), and
-bass_family_verdict.json under c50 enum extension (SF2_CONFIRMED_provisional
-if best-of-search winner AND top-1 emb_cos_dist <= 0.40; else SF2_RULED_OUT).
+WIG bass stage-2 fine-fit completed this cycle under c53-fixed OP-1
+SerialLock (driver --cycle 53 CLI arg; sentinel writes cycle:53 not
+stale c32 literal). Emits bass.json (pinned profile), bass.replay_proof.json
+(per FD-16(c): WIG's first sf2 render, so per-song-per-family proof
+required), and bass_family_verdict.json.
+
+Per brief P1.c + c47 OPT1 extension + c51 any-preset promotion criterion:
+if top-1 emb_cos_dist <= 0.40 AND trio (Rome/PD/Disco A all
+SF2_CONFIRMED at c52) satisfies sibling-cell replication -> emit
+SF2_CONFIRMED directly (same-cycle 4-of-4 pattern per c52 O-1).
+Else SF2_CONFIRMED_provisional or SF2_RULED_OUT.
+
 Advances stem_manifest.json. Supersedes c23 predecessor per c14 str-lemma.
 
-Adapted from c50 Peach Dream template. Disco A uses the STANDARD stem
-path (`operator_section/rc9_6stem/bass.wav`), unlike Peach Dream. c26
-stage-2 sweep was interrupted mid-run (no leaderboard on disk); c50
-handoff moved partial output to tools/stale/; c51 c27-hygiene fresh
-launch runs the 216-cell grid under OP-1 SerialLock.
+Adapted from c51 Disco A template. WIG uses STANDARD stem path
+(`operator_section/rc9_6stem/bass.wav`). c52 stage-2 sweep was
+interrupted mid-run (17 renders, no leaderboard); c53 relaunched
+fresh under corrected OP-1 lock (writer honestly serializes cycle=53).
 
 Discipline (v4 relaxed): /usr/bin/python3 guard; no PRNG; no
 sidecar_nonfactor; no VST3 state APIs; canonical 7-key env pins set
-BEFORE any observed import. NO per-cycle preservation-spin ledger events
--- one milestone-level event under M-V4-PROFILES-1.
+BEFORE any observed import. Two milestone-level events under
+M-V4-PROFILES-1 (landed + promoted-same-cycle if applicable).
 """
 from __future__ import annotations
 
@@ -125,7 +131,7 @@ def main() -> None:
             "weights_frozen": {"mel_l1": 0.5, "centroid_rmse": 0.25, "embedding_cos": 0.25},
         },
         search_metadata={
-            "cycle": 51, "stage": "stage_2_fine_fit",
+            "cycle": 53, "stage": "stage_2_fine_fit",
             "config_hash": config_hash,
             "render_sha256_in_sweep": render_sha_sweep,
             "rank_stage2": 1, "n_configs_stage2": len(rows),
@@ -175,7 +181,7 @@ def main() -> None:
         wav_b = Path(tb) / "run2.wav"
         sha_b = _replay(row, MIDI, wav_b)
     proof = {
-        "cycle": 51,
+        "cycle": 53,
         "song_sha16": SONG_SHA16, "instrument": "bass", "family": "sf2",
         "profile_id": profile_id, "profile_sha256": profile_sha,
         "midi_sha256": midi_sha,
@@ -213,7 +219,7 @@ def main() -> None:
         )
 
     v_doc = {
-        "cycle": 51,
+        "cycle": 53,
         "song_sha16": SONG_SHA16, "slug": SLUG, "family": "sf2",
         "verdict": verdict, "rationale": rationale,
         "top1_embedding_cos_vggish": emb,
@@ -250,7 +256,7 @@ def main() -> None:
     # discipline (no cycle-closed / scratch / adopt-tests preservation-spin).
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     ev = {
-        "cycle": 51,
+        "cycle": 53,
         "run_id": "run-2026-09-05T133000Z",
         "milestone_id": "M-V4-PROFILES-1/disco-a-bass-landed",
         "status": "validated",
