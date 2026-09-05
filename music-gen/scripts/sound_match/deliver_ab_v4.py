@@ -194,6 +194,51 @@ def _sum_stereo_tracks(tracks: list[tuple[list[int], list[int]]], target_len: in
     return outL, outR
 
 
+_SILENCE_FLOOR_DBFS = -60.0
+_UNPROFILED_STEMS = ("guitar", "piano", "other")
+
+
+def _absent_stem_dispatch(stem_name: str, stems_dir: Path, root: Path) -> dict:
+    """c71: gate absent (no pinned profile) stems on htdemucs audibility.
+
+    Returns a dispatch dict with a `kind` field ∈
+    {'absent_no_audible_signal', 'htdemucs_stem_substitution'}.
+    When audible (rms_dbfs > -60 dB), also carries the loaded stereo int16
+    samples so the caller can splice into the mix.
+    """
+    from scripts.sound_match.measure_stem_audibility import (  # type: ignore
+        measure, SILENCE_FLOOR_DB,
+    )
+    ref_stem = stems_dir / (stem_name + ".wav")
+    if not ref_stem.exists():
+        return {"kind": "absent_no_audible_signal",
+                "audibility_verdict": False, "reason": "stem_wav_missing"}
+    m = measure(ref_stem)
+    if not m["verdict_audible"]:
+        return {
+            "kind": "absent_no_audible_signal",
+            "audibility_verdict": False,
+            "rms_dbfs": m["rms_dbfs"],
+            "peak_dbfs": m["peak_dbfs"],
+            "silence_floor_dbfs": SILENCE_FLOOR_DB,
+            "ref_stem_relpath": str(ref_stem.relative_to(root)),
+            "ref_stem_sha256": m["wav_sha256"],
+        }
+    left, right, sr = _read_stereo_int16(ref_stem)
+    return {
+        "kind": "htdemucs_stem_substitution",
+        "audibility_verdict": True,
+        "rms_dbfs": m["rms_dbfs"],
+        "peak_dbfs": m["peak_dbfs"],
+        "silence_floor_dbfs": SILENCE_FLOOR_DB,
+        "ref_stem_relpath": str(ref_stem.relative_to(root)),
+        "ref_stem_sha256": m["wav_sha256"],
+        "samples_left": left,
+        "samples_right": right,
+        "sample_rate": sr,
+    }
+
+
 def _resolve_stems_root(root: Path, song: str) -> Path:
     """Return the operator-section rc9_6stem/ dir for the song, honouring
     the Peach Dream non-standard path per invariant (d)."""
@@ -278,31 +323,82 @@ def _render_ab_mix(root: Path, song: str, out_wav: Path) -> dict:
         "source_sha256": _sha(vocals_stem),
     }
 
-    # Absent stems (honest per operator directive)
-    for absent in ("guitar", "piano", "other"):
-        provenance[absent] = {
-            "render_family": "absent_no_pinned_profile",
-            "showcase_dispatch": "silent per-track (honest render per operator directive 2026-09-05)",
-        }
+    # Unprofiled stems: c71 audibility-gated htdemucs stem substitution
+    # (per operator directive 2026-09-05 + c63 skip-close policy).
+    # For each unprofiled stem, if the reference htdemucs stem is audible
+    # (rms_dbfs > -60 dB per c14 canonical floor), include the stem in the
+    # mix RMS-matched to itself (no-op gain=1.0 for the substituted branch;
+    # the reference stem IS the source). Silent stems retain c69 semantics.
+    audible_tracks: list[tuple[list[int], list[int]]] = []
+    audible_lens: list[int] = []
+    audible_srs: set[int] = set()
+    import hashlib as _hl
+    from scripts.sound_match.measure_stem_audibility import (  # type: ignore
+        _env_pin_sha256 as _audibility_env_pin_sha,
+    )
+    for absent in _UNPROFILED_STEMS:
+        dispatch = _absent_stem_dispatch(absent, stems_dir, root)
+        if dispatch["kind"] == "htdemucs_stem_substitution":
+            L = dispatch["samples_left"]; R = dispatch["samples_right"]
+            sr_s = dispatch["sample_rate"]
+            # RMS-match to reference: reference IS the source, so gain = 1.0
+            audible_tracks.append((L, R))
+            audible_lens.append(len(L))
+            audible_srs.add(sr_s)
+            provenance[absent] = {
+                "render_family": "htdemucs_stem_substitution",
+                "source_relpath": dispatch["ref_stem_relpath"],
+                "source_sha256": dispatch["ref_stem_sha256"],
+                "rms_dbfs": dispatch["rms_dbfs"],
+                "audibility_verdict": True,
+                "audibility_probe_module_sha256": _hl.sha256(
+                    Path(__file__).parent.joinpath("measure_stem_audibility.py").read_bytes()
+                ).hexdigest(),
+                "audibility_env_pin_sha256": _audibility_env_pin_sha(),
+                "silence_floor_dbfs": dispatch["silence_floor_dbfs"],
+                "rms_normalize_gain": 1.0,
+            }
+        else:
+            provenance[absent] = {
+                "render_family": "absent_no_audible_signal",
+                "audibility_verdict": False,
+                "rms_dbfs": dispatch.get("rms_dbfs"),
+                "silence_floor_dbfs": dispatch.get("silence_floor_dbfs"),
+                "ref_stem_relpath": dispatch.get("ref_stem_relpath"),
+                "ref_stem_sha256": dispatch.get("ref_stem_sha256"),
+                "showcase_dispatch": "silent per-track (audibility-gated per c71 fix; c63 skip-close policy)",
+            }
 
-    srs = {sr_b, sr_rb, sr_d, sr_rd, sr_v}
+    srs = {sr_b, sr_rb, sr_d, sr_rd, sr_v} | audible_srs
     if len(srs) != 1:
         raise RuntimeError(f"sample-rate mismatch across cells: {srs}")
     sr = sr_b
 
-    target_len = min(len(bass_L), len(drums_L), len(vocals_L))
-    outL, outR = _sum_stereo_tracks(
-        [(bass_L, bass_R), (drums_L, drums_R), (vocals_L, vocals_R)],
-        target_len,
-    )
+    # c71 fix: max-truncation policy (was min-truncation at c69). Shorter
+    # cells zero-pad to the longest cell. Fixes WIG partial-mix issue as
+    # a side effect: sparse canonical bass/drums MIDI (~9 s) zero-pad to
+    # full section length (~30 s) driven by vocals + audible stems.
+    tracks = [(bass_L, bass_R), (drums_L, drums_R), (vocals_L, vocals_R)] + audible_tracks
+    lens = [len(bass_L), len(drums_L), len(vocals_L)] + audible_lens
+    target_len = max(lens)
+    outL, outR = _sum_stereo_tracks(tracks, target_len)
     _write_stereo_int16(out_wav, outL, outR, sr)
     provenance["_mix"] = {
         "sample_rate": sr,
         "n_frames": target_len,
         "duration_s": round(target_len / sr, 6),
         "n_channels": 2,
-        "sum_method": "float_accumulate_peaklimit_099",
+        "sum_method": "float_accumulate_peaklimit_099_max_len_zero_pad",
         "mix_wav_sha256": _sha(out_wav),
+        "cell_lens": {
+            "bass": len(bass_L),
+            "drums": len(drums_L),
+            "vocals": len(vocals_L),
+            **{stem: alen for stem, alen in zip(
+                [s for s in _UNPROFILED_STEMS if provenance[s]["render_family"] == "htdemucs_stem_substitution"],
+                audible_lens
+            )},
+        },
     }
     return provenance
 
@@ -312,6 +408,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--song-sha16", required=True)
     ap.add_argument("--delivery-root", default="data/v4/deliveries")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--out-suffix", default="",
+                    help="c71: filename suffix so v2 outputs land as siblings "
+                         "to c69 v1 anchors (e.g. --out-suffix v2 -> ab_mix_v2.wav)")
     ap.add_argument("--prove-replay", action="store_true",
                     help="Second render into fresh tempfile.mkdtemp -> ab_mix.replay_proof.json")
     args = ap.parse_args(argv)
@@ -326,15 +425,18 @@ def main(argv: list[str] | None = None) -> int:
         if os.environ.get(k) != v:
             raise RuntimeError(f"env pin drift {k}={os.environ.get(k)!r} expected {v!r}")
 
-    out_wav = out_dir / "ab_mix.wav"
+    _suffix = ("_" + args.out_suffix) if args.out_suffix else ""
+    out_wav = out_dir / ("ab_mix" + _suffix + ".wav")
     provenance = _render_ab_mix(root, song, out_wav)
 
+    _is_v2 = bool(args.out_suffix)
     manifest = {
         "kind": "ab_v4_full_render_manifest",
         "song_sha16": song,
-        "cycle": 69,
-        "run_id": "run-2026-09-05T180000Z",
-        "created": "2026-09-05T18:00:00Z",
+        "cycle": 71 if _is_v2 else 69,
+        "run_id": "run-2026-09-05T190000Z" if _is_v2 else "run-2026-09-05T180000Z",
+        "created": "2026-09-05T19:00:00Z" if _is_v2 else "2026-09-05T18:00:00Z",
+        "out_suffix": args.out_suffix,
         "output_relpath": str(out_wav.relative_to(root)),
         "output_sha256": _sha(out_wav),
         "env_pin": {k: os.environ.get(k) for k in _PINS},
@@ -348,7 +450,7 @@ def main(argv: list[str] | None = None) -> int:
             "post-hoc per FD-6."
         ),
     }
-    manifest_path = out_dir / "ab_mix.manifest.json"
+    manifest_path = out_dir / ("ab_mix" + _suffix + ".manifest.json")
     manifest_path.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
     print(f"RENDERED {out_wav} sha256={manifest['output_sha256']}")
     print(f"MANIFEST_WRITTEN {manifest_path}")
@@ -356,7 +458,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.prove_replay:
         tmp = Path(tempfile.mkdtemp(prefix=f"ab_replay_{song}_"))
         try:
-            tmp_wav = tmp / "ab_mix.wav"
+            tmp_wav = tmp / ("ab_mix" + _suffix + ".wav")
             _render_ab_mix(root, song, tmp_wav)
             run2_sha = _sha(tmp_wav)
         finally:
@@ -364,18 +466,20 @@ def main(argv: list[str] | None = None) -> int:
         proof = {
             "kind": "ab_v4_full_render_replay_proof",
             "song_sha16": song,
-            "cycle": 69,
-            "run_id": "run-2026-09-05T180000Z",
-            "created": "2026-09-05T18:00:00Z",
+            "cycle": 71 if _is_v2 else 69,
+            "run_id": "run-2026-09-05T190000Z" if _is_v2 else "run-2026-09-05T180000Z",
+            "created": "2026-09-05T19:00:00Z" if _is_v2 else "2026-09-05T18:00:00Z",
+            "out_suffix": args.out_suffix,
             "run1_sha256": manifest["output_sha256"],
             "run2_sha256": run2_sha,
             "run2_tempdir": str(tmp),
             "verdict": "REPLAY_PROOF_HOLDS" if manifest["output_sha256"] == run2_sha else "REPLAY_PROOF_FAILS",
             "env_pin_sha256": _ENV_PIN_SHA256,
             "scoping_note": ("per FD-16(c) + operator relaxation 2026-09-03: proof x2 once per "
-                             "NEW code path (deliver_ab_v4 per-song sf2 replay + RMS-match + vocals overlay)."),
+                             "NEW code path (c71 audibility-gated htdemucs stem substitution + "
+                             "max-truncation policy in deliver_ab_v4)."),
         }
-        proof_path = out_dir / "ab_mix.replay_proof.json"
+        proof_path = out_dir / ("ab_mix" + _suffix + ".replay_proof.json")
         proof_path.write_text(json.dumps(proof, sort_keys=True, indent=2) + "\n")
         print(f"REPLAY_PROOF {proof['verdict']} run2_sha256={run2_sha} -> {proof_path}")
     return 0
