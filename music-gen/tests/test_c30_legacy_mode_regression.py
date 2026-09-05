@@ -1400,6 +1400,124 @@ def test_34_c42_por_drift_preservation_stand_pat():
     print("test_34 OK - c42 POR stand-pat; chain-length=9; c41/c40/c39/c38/c37/c36 + c35 blocker + c34 diagnostic byte-identical")
 
 
+def test_35_c43_emitter_writer_boundary_preservation():
+    """c43 P1: long_exposure/ ABSENT re-probe; canonical M-1 naming continuity; supersedes c42."""
+    import subprocess
+    import hashlib
+
+    result = subprocess.run(
+        ["bash", "-lc", "test -d long_exposure && echo PRESENT || echo ABSENT"],
+        capture_output=True, text=True, check=True,
+    )
+    assert result.stdout.strip() == "ABSENT", (
+        f"c43 P1 probe expected ABSENT, got: {result.stdout!r}"
+    )
+
+    ev_path = SELECTION / "c43-emitter-writer-boundary-preservation.json"
+    assert ev_path.exists(), f"c43 preservation event missing at {ev_path.relative_to(ROOT)}"
+    ev = _load(ev_path)
+
+    # supersedes_path str per c14 lemma
+    assert isinstance(ev["supersedes_path"], str), "supersedes_path must be str per c14 lemma"
+    # c43 continues canonical M-1 naming (c42 already adopted)
+    assert ev["supersedes_path"].endswith(
+        "c42-emitter-writer-boundary-preservation.json"
+    ), "supersedes_path must point at c42 canonical predecessor"
+
+    # Chain length = 9 (c35..c43)
+    assert ev["chain_length_cycles"] == 9
+    assert ev["first_probed_cycle"] == 35
+    assert ev["re_probe_result"] == "ABSENT"
+    assert ev["carried_from_cycle"] == 34
+
+    # c42 predecessor byte-identical
+    c42_pres = SELECTION / "c42-emitter-writer-boundary-preservation.json"
+    assert c42_pres.exists(), "c42 canonical predecessor must remain"
+    c42_sha = hashlib.sha256(c42_pres.read_bytes()).hexdigest()
+    assert c42_sha == ev["predecessor_c42_sha256"], (
+        f"c42 predecessor drifted: got {c42_sha}, expected {ev['predecessor_c42_sha256']}"
+    )
+
+    # Full chain-integrity: c41..c34 predecessors still on disk
+    for name in (
+        "c42-emitter-writer-boundary-preservation.json",
+        "c41-long-exposure-absent-preservation.json",
+        "c40-emitter-writer-boundary-preservation.json",
+        "c39-emitter-writer-boundary-preservation.json",
+        "c38-emitter-writer-boundary-preservation.json",
+        "c37-emitter-writer-boundary-preservation.json",
+        "c36-emitter-writer-boundary-preservation.json",
+        "c35-emitter-writer-boundary-preservation.json",
+        "c34-emitter-writer-boundary.json",
+    ):
+        assert (SELECTION / name).exists(), f"{name} must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    # Policy anchor byte-identical
+    policy_doc = ROOT / "docs" / "emitter_exemption_policy.md"
+    policy_sha = hashlib.sha256(policy_doc.read_bytes()).hexdigest()
+    assert policy_sha == ev["opt_b_exemption_policy_sha256"], (
+        f"policy doc drifted: got {policy_sha}"
+    )
+    print("test_35 OK - c43 long_exposure/ ABSENT re-probe; chain-length=9; canonical M-1 naming continuity")
+
+
+def test_36_c43_por_drift_preservation_stand_pat():
+    """c43 P2 stand-pat + full chain-integrity through c42/c41/c40/c39/c38/c37/c36 + c35 blocker + c34 diagnostic."""
+    import hashlib
+
+    ev_path = SELECTION / "c43-por-drift-preservation.json"
+    assert ev_path.exists(), f"c43 stand-pat event missing at {ev_path.relative_to(ROOT)}"
+    ev = _load(ev_path)
+
+    assert isinstance(ev["supersedes_path"], str)
+    assert ev["supersedes_path"].endswith(
+        "c42-por-drift-preservation.json"
+    ), "supersedes_path must point at c42 stand-pat"
+    assert ev["chain_length_cycles"] == 10
+    assert ev["carried_from_cycle"] == 34
+
+    # c42 predecessor byte-identical
+    c42_pres = SELECTION / "c42-por-drift-preservation.json"
+    assert c42_pres.exists()
+    c42_sha = hashlib.sha256(c42_pres.read_bytes()).hexdigest()
+    assert c42_sha == ev["predecessor_c42_sha256"], (
+        f"c42 stand-pat drifted: got {c42_sha}"
+    )
+
+    # c34 diagnostic byte-identical
+    diag = DIAG / "c34_por_delta_proof.json"
+    assert diag.exists()
+    diag_sha = hashlib.sha256(diag.read_bytes()).hexdigest()
+    assert diag_sha == ev["origin_diagnostic_sha256"], (
+        f"c34 diagnostic drifted: got {diag_sha}"
+    )
+
+    # c35 blocker byte-identical
+    c35_blocker = SELECTION / "c35-por-drift-proof-strengthening-blocker.json"
+    assert c35_blocker.exists()
+    c35_sha = hashlib.sha256(c35_blocker.read_bytes()).hexdigest()
+    assert c35_sha == ev["strengthening_blocker_sha256"]
+
+    # E-4 operator snapshot absent
+    e4_result = ev["e4_operator_snapshot_check_result"]
+    assert "ABSENT" in e4_result, f"E-4 check should be ABSENT: {e4_result}"
+
+    # Chain-integrity: c41/c40/c39/c38/c37/c36 stand-pats also on disk
+    for name in (
+        "c42-por-drift-preservation.json",
+        "c41-por-drift-preservation.json",
+        "c40-por-drift-preservation.json",
+        "c39-por-drift-preservation.json",
+        "c38-por-drift-preservation.json",
+        "c37-por-drift-preservation.json",
+        "c36-por-drift-preservation.json",
+    ):
+        assert (SELECTION / name).exists(), f"{name} predecessor must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_36 OK - c43 POR stand-pat; chain-length=10; c42/c41/c40/c39/c38/c37/c36 + c35 blocker + c34 diagnostic byte-identical")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1435,8 +1553,10 @@ def main():
     test_32_c41_por_drift_preservation_stand_pat()
     test_33_c42_emitter_writer_boundary_preservation()
     test_34_c42_por_drift_preservation_stand_pat()
+    test_35_c43_emitter_writer_boundary_preservation()
+    test_36_c43_por_drift_preservation_stand_pat()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 = 34/34)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 = 36/36)")
 
 
 if __name__ == "__main__":
