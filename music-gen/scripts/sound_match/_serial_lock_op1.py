@@ -28,13 +28,24 @@ Payload (canonical JSON):
       "pid": int,
       "driver": str,
       "cycle": int,
-      "started_at": ISO-8601 UTC string derived from SOURCE_DATE_EPOCH,
-      "op1_helper_sha256": str (self-anchor, computed lazily)
+      "started_at": ISO-8601 UTC string, freshly stamped per acquire
+                    (datetime.now(timezone.utc).isoformat()) — c55 fix
+                    per _infra/op1-writer-full-fix-c55.
     }
+
+    Rationale for wall-clock on started_at (c55): the sentinel is
+    operational infrastructure whose purpose is to help operators
+    identify stale/dead sentinels. A SOURCE_DATE_EPOCH-derived
+    timestamp (c52/c53/c54 partial-fix chain) does not refresh on
+    re-acquire and can carry stale wall-time from a prior release,
+    defeating the diagnostic value of the field. Discipline preserved
+    elsewhere: no PRNG; kernel-level O_CREAT|O_EXCL exclusion is
+    unchanged; sentinel content is not a determinism-tracked artifact.
 
 Discipline:
     - No PRNG.
-    - No wall-clock (SOURCE_DATE_EPOCH honored).
+    - started_at is wall-clock (see rationale above); no other field
+      uses wall-clock time.
     - /usr/bin/python3 interpreter guard on any callable script; this
       module is import-only.
     - Failure mode: incumbent-owner refusal returns non-zero exit AND
@@ -102,16 +113,18 @@ class SerialLock:
         self._entered = False
 
     def _payload(self) -> bytes:
-        # SOURCE_DATE_EPOCH honored: falls back to 0 if unset (deterministic).
-        try:
-            sde = int(os.environ.get("SOURCE_DATE_EPOCH", "0"))
-        except ValueError:
-            sde = 0
+        # c55 fix (_infra/op1-writer-full-fix-c55): started_at is freshly
+        # stamped per acquire using datetime.now(timezone.utc). Prior
+        # c52/c53/c54 partial-fix chain used SOURCE_DATE_EPOCH, which
+        # never refreshed across re-acquires and produced misleading
+        # incumbent diagnostics. pid + cycle + driver already refresh
+        # correctly (pid via os.getpid(); cycle + driver via constructor
+        # args passed by the driver at each launch).
         payload = {
             "pid": os.getpid(),
             "driver": self.driver,
             "cycle": self.cycle,
-            "started_at": _iso_epoch(sde),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "sentinel_path": str(self.sentinel),
         }
         return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()

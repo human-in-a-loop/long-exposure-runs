@@ -9,13 +9,15 @@
 """c32 Priority 1: standalone OP-1 serial-launch lock regression suite.
 
 Covers per brief:
-    (i)   sentinel created on entry,
-    (ii)  second driver refuses with clear error while sentinel present,
-    (iii) sentinel removed on normal exit,
-    (iv)  sentinel removed on halt/exception exit,
-    (v)   idempotent release when acquire never succeeded,
-    (vi)  refuse_if_held CLI-shape helper — 0 when free, non-zero when held,
-    (vii) payload contains {pid, driver, cycle, started_at, sentinel_path}.
+    (i)    sentinel created on entry,
+    (ii)   second driver refuses with clear error while sentinel present,
+    (iii)  sentinel removed on normal exit,
+    (iv)   sentinel removed on halt/exception exit,
+    (v)    idempotent release when acquire never succeeded,
+    (vi)   refuse_if_held CLI-shape helper — 0 when free, non-zero when held,
+    (vii)  payload contains {pid, driver, cycle, started_at, sentinel_path}.
+    (viii) c55 _infra/op1-writer-full-fix-c55: started_at refreshes on
+           re-acquire (test_09) — closes c52/c53/c54 partial-fix chain.
 
 Plain-assert (no pytest). Invocation:
     PYTHONPATH=. /usr/bin/python3 tests/test_fine_fit_serial_lock_c32.py
@@ -166,6 +168,47 @@ def test_08_sentinel_path_helper_default():
     print("test_08 OK — default sentinel path is data/v4/_run/fine_fit_serial_lock")
 
 
+def test_09_started_at_refreshes_on_reacquire():
+    """c55 _infra/op1-writer-full-fix-c55: started_at must be freshly
+    stamped on every successful acquire. Closes c52/c53/c54 partial-fix
+    chain where SOURCE_DATE_EPOCH-derived timestamp did not refresh.
+    """
+    import time
+    with tempfile.TemporaryDirectory() as td:
+        s = Path(td) / "sent"
+        # Acquire 1 -> capture started_at_1
+        lock1 = SerialLock(driver="fine_fit_sf2_v2", cycle=55, sentinel=s)
+        lock1.acquire()
+        raw1 = s.read_text()
+        p1 = json.loads(raw1)
+        started_at_1 = p1["started_at"]
+        lock1.release()
+        assert not s.exists(), "sentinel not released between acquires"
+        # Sleep to ensure wall-clock advances at least 1 ms.
+        time.sleep(0.005)
+        # Acquire 2 -> capture started_at_2
+        lock2 = SerialLock(driver="fine_fit_sf2_v2", cycle=55, sentinel=s)
+        lock2.acquire()
+        raw2 = s.read_text()
+        p2 = json.loads(raw2)
+        started_at_2 = p2["started_at"]
+        lock2.release()
+        # Assertions: fresh + monotonic (UTC ISO-8601 with 'Z' or +00:00
+        # suffix is lex-comparable within the same TZ; datetime.now(UTC)
+        # emits +00:00 form).
+        assert started_at_2 != started_at_1, (
+            f"started_at did not refresh on re-acquire: "
+            f"{started_at_1!r} == {started_at_2!r} — c52/c53/c54 "
+            f"partial-fix chain regression"
+        )
+        assert started_at_2 > started_at_1, (
+            f"started_at not monotonic on re-acquire: "
+            f"{started_at_1!r} !< {started_at_2!r}"
+        )
+    print("test_09 OK — started_at refreshes on re-acquire "
+          "(c55 op1-writer-full-fix)")
+
+
 def main():
     test_01_sentinel_created_on_entry()
     test_02_second_driver_refuses_with_clear_error()
@@ -175,7 +218,8 @@ def main():
     test_06_refuse_if_held_cli_shape()
     test_07_sentinel_payload_shape()
     test_08_sentinel_path_helper_default()
-    print("\nALL OP-1 serial-launch lock tests PASSED (8/8)")
+    test_09_started_at_refreshes_on_reacquire()
+    print("\nALL OP-1 serial-launch lock tests PASSED (9/9)")
 
 
 if __name__ == "__main__":
