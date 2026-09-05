@@ -1649,6 +1649,147 @@ def test_38_c44_escalation_memo_counter_monotonicity():
           "invariant (d) brief-counter-offset disclosed")
 
 
+def test_39_c45_chain_supersede_invariant_string_not_list():
+    """c45 P7 (a): chain-supersede invariant across all c45 preservation records.
+
+    Verify supersedes_path is `str` (never list) on every c45 preservation
+    sidecar that carries one, per c14 lemma. Also assert the target of each
+    supersedes_path is the corresponding c44 predecessor filename, and each
+    c45 sidecar is well-formed JSON on disk. Extended per c45 brief P7 to
+    cover 6 sidecars (P1 preservation, P2 stand-pat, P5 rollup, P0 preservation,
+    P8 hold + P6 shadow-zone-hold null case).
+    """
+    import hashlib
+
+    # (name, expected_supersedes_target_basename, expected_predecessor_sha)
+    supersede_targets = [
+        ("c45-emitter-writer-boundary-preservation.json",
+         "c44-emitter-writer-boundary-preservation.json",
+         "predecessor_c44_sha256",
+         "53faa9a2aa6a1b7fd4f93b21fe6728b9cc9b2d02606023af21fe06619ef56bbd"),
+        ("c45-por-drift-preservation.json",
+         "c44-por-drift-preservation.json",
+         "predecessor_c44_sha256",
+         "98e01b206932da2b8d771165556dfa66aaf8d6c7a1d13f3ae59ffe22f466364a"),
+        ("c45-track-bcd-deferral-preservation.json",
+         "c44-track-bcd-deferral-preservation.json",
+         "predecessor_c44_sha256",
+         "db8bfed70b0a344b6bbe9cf07d347c4c5f2d0ca69c01307ef63c2d4be9c3bae2"),
+        ("c45-consolidation-proposal-hold.json",
+         "c44-consolidation-proposal-hold.json",
+         "predecessor_c44_sha256",
+         "f70b8ab1af9cd1e022fdc8a04d2e0f6c3dcf2d9143ec64e6ee529f29965e63a9"),
+        ("c45-escalation-preservation.json",
+         "c44-escalation-preservation.json",
+         "predecessor_c44_sha256",
+         "608e81386b6859b6c5f32236cb2fb8a52f7d819f16508f35103817b350812c72"),
+    ]
+
+    for name, expect_target, sha_field, expect_pred_sha in supersede_targets:
+        ev_path = SELECTION / name
+        assert ev_path.exists(), f"c45 sidecar missing: {ev_path.relative_to(ROOT)}"
+        ev = _load(ev_path)
+        sp = ev["supersedes_path"]
+        assert isinstance(sp, str), (
+            f"{name}: supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+        )
+        assert sp.endswith(expect_target), (
+            f"{name}: supersedes_path must point at {expect_target}, got {sp}"
+        )
+        pred_path = SELECTION / expect_target
+        assert pred_path.exists(), f"c44 predecessor {expect_target} must remain on disk"
+        pred_sha = hashlib.sha256(pred_path.read_bytes()).hexdigest()
+        assert pred_sha == ev[sha_field], (
+            f"{name}: c44 predecessor sha drifted; got {pred_sha}, expected {ev[sha_field]}"
+        )
+        assert pred_sha == expect_pred_sha, (
+            f"c44 predecessor {expect_target} drifted from test-pinned value; "
+            f"got {pred_sha}, expected {expect_pred_sha}"
+        )
+        assert ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    # POR shadow-zone hold sidecar carries supersedes_path=null (new-attestation)
+    shadow_ev = _load(SELECTION / "c45-por-shadow-zone-hold.json")
+    assert shadow_ev["supersedes_path"] is None, (
+        "c45-por-shadow-zone-hold supersedes_path must be null (new-attestation-per-cycle)"
+    )
+    print("test_39 OK - c45 chain-supersede invariant: all 5 chain sidecars use str supersedes_path per c14 lemma; "
+          "1 new-attestation sidecar uses null; predecessors byte-identical")
+
+
+def test_40_c45_p0_sidecar_shape_i2_canonical_adoption():
+    """c45 P7 (b): P0 sidecar shape assertion (I-2 canonical adoption from c44).
+
+    Assert data/v4/_selection/c45-escalation-preservation.json:
+      (i) exists and contains before/after SHA table for all 6 memos
+      (ii) supersedes_path is a STRING pointing at c44 sidecar
+      (iii) before == after for every memo (no mutation per FD-1)
+      (iv) monotonicity: c45_counter == c44_counter + 1
+      (v) memo files themselves byte-identical on-disk vs recorded before_sha
+    """
+    import hashlib
+
+    esc_ev = _load(SELECTION / "c45-escalation-preservation.json")
+
+    # (ii) supersedes_path str pointing at c44
+    sp = esc_ev["supersedes_path"]
+    assert isinstance(sp, str), (
+        f"c45-escalation-preservation supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+    )
+    assert sp.endswith("c44-escalation-preservation.json"), (
+        f"c45 escalation preservation supersedes_path must point at c44 sidecar, got {sp}"
+    )
+
+    # (i) 6 memos preserved
+    assert esc_ev["all_byte_identical_pre_post"] is True
+    assert esc_ev["count_preserved"] == 6, (
+        f"expected 6 escalations preserved, got {esc_ev['count_preserved']}"
+    )
+
+    expected_escalation_files = {
+        "M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json",
+        "M-V4-METRIC-SEMANTICS-c16.json",
+        "M-V4-CERT-fine-fit-sf2-drums-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-v2-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-guitar-legacy-halt.json",
+        "M-V4-CERT-composite-fp-drift-adjudication-c32.json",
+    }
+    seen_files = set()
+    for row in esc_ev["escalations_preserved"]:
+        # (iii) before == after
+        assert row["before_sha256"] == row["after_sha256"], (
+            f"{row['file']} before != after (should be byte-identical pre==post per FD-1 no-mutation)"
+        )
+        assert row["byte_identical"] is True
+        # (v) memo file on-disk byte-identical vs recorded before_sha
+        p = ROOT / row["file"]
+        assert p.exists(), f"escalation memo missing: {row['file']}"
+        sha_now = hashlib.sha256(p.read_bytes()).hexdigest()
+        assert sha_now == row["before_sha256"], (
+            f"{row['file']} drifted vs before_sha: got {sha_now}"
+        )
+        # (iv) monotonicity
+        assert row["c45_counter"] == row["c44_counter"] + 1, (
+            f"{row['file']} counter not monotonic: c44={row['c44_counter']} c45={row['c45_counter']}"
+        )
+        seen_files.add(p.name)
+
+    assert seen_files == expected_escalation_files, (
+        f"missing/extra escalation files: got {seen_files}, expected {expected_escalation_files}"
+    )
+    assert esc_ev["env_pin_sha256"] == CANON_ENV_PIN
+    # I-2 canonical shape claim carried
+    assert "i2_canonical_shape_adopted_from_c44" in esc_ev, (
+        "I-2 canonical shape adoption claim from c44 must be present"
+    )
+    # I-1 counter projection alignment (from c44 auditor)
+    assert "i1_counter_projection_alignment_c44_auditor_endorsement" in esc_ev, (
+        "I-1 counter projection alignment claim (c44 auditor endorsement) must be present"
+    )
+    print("test_40 OK - c45 P0 sidecar shape (I-2 canonical adoption): 6/6 byte-identical pre==post; "
+          "supersedes_path str -> c44 sidecar; counters {16,16,16,15,15,14} = c44 {15,15,15,14,14,13} + 1")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1688,8 +1829,10 @@ def main():
     test_36_c43_por_drift_preservation_stand_pat()
     test_37_c44_chain_supersede_invariant_string_not_list()
     test_38_c44_escalation_memo_counter_monotonicity()
+    test_39_c45_chain_supersede_invariant_string_not_list()
+    test_40_c45_p0_sidecar_shape_i2_canonical_adoption()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 = 38/38)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 + c45 2 = 40/40)")
 
 
 if __name__ == "__main__":
