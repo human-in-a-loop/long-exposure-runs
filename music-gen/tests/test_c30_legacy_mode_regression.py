@@ -640,6 +640,100 @@ def test_20_c35_por_drift_proof_strengthening_blocker():
     print("test_20 OK — c35 POR strengthening blocker landed; c34 proof preserved")
 
 
+def test_21_c36_emitter_writer_boundary_preservation():
+    """c36 Priority 1: long_exposure/ ABSENT re-probe; preservation stacks on c35."""
+    import subprocess
+    import hashlib
+
+    # On-disk re-probe must return ABSENT this cycle
+    result = subprocess.run(
+        ["bash", "-lc", "test -d long_exposure && echo PRESENT || echo ABSENT"],
+        capture_output=True, text=True, check=True,
+    )
+    assert result.stdout.strip() == "ABSENT", (
+        f"c36 Priority 1 probe expected ABSENT, got: {result.stdout!r}"
+    )
+
+    ev_path = SELECTION / "c36-emitter-writer-boundary-preservation.json"
+    assert ev_path.exists(), (
+        f"c36 preservation event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c36-emitter-writer-boundary-preservation"
+    # supersedes_path must be str per c14 lemma, pointing at c35 preservation event
+    assert isinstance(ev["supersedes_path"], str), (
+        "supersedes_path must be str per c14 lemma, not list or null"
+    )
+    assert ev["supersedes_path"].endswith(
+        "c35-emitter-writer-boundary-preservation.json"
+    ), "supersedes_path must point at c35 preservation event"
+    # Workspace disclosure confirms ABSENT
+    wd = ev["workspace_disclosure"]
+    assert wd["long_exposure_present_in_workspace"] is False
+    assert wd["probe_result"] == "ABSENT"
+    # Policy status must record OPT_B active + OPT_A unreachable
+    ps = ev["policy_status"]
+    assert ps["opt_b_exemption_active"] is True
+    assert ps["opt_a_route_available"] is False
+    assert ps["opt_b_policy_doc_sha256"] == (
+        "fd2c33a78d147341ebfa8df84e80002ff6337779bb3e58e1305de9e936e4eb6b"
+    )
+    # c35 predecessor event must remain byte-identical (invariant (e))
+    c35_ev = SELECTION / "c35-emitter-writer-boundary-preservation.json"
+    assert c35_ev.exists(), "c35 predecessor event must remain on disk"
+    c35_sha = hashlib.sha256(c35_ev.read_bytes()).hexdigest()
+    ct = ev["chain_traceability"]
+    assert c35_sha == ct["c35_preservation_sha256"], (
+        f"c35 preservation event drifted: got {c35_sha}, expected {ct['c35_preservation_sha256']}"
+    )
+    # c34 fork ancestor also on disk (chain traceability)
+    c34_ev = SELECTION / "c34-emitter-writer-boundary.json"
+    assert c34_ev.exists(), "c34 fork ancestor must remain on disk"
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_21 OK — c36 long_exposure/ ABSENT re-probe + preservation chain intact")
+
+
+def test_22_c36_por_drift_preservation_stand_pat():
+    """c36 Priority 2 stand-pat: no operator snapshot in live_guidance; c35 blocker preserved."""
+    import hashlib
+
+    ev_path = SELECTION / "c36-por-drift-preservation.json"
+    assert ev_path.exists(), (
+        f"c36 stand-pat event missing at {ev_path.relative_to(ROOT)}"
+    )
+    ev = _load(ev_path)
+    assert ev["milestone_id"] == "_selection/c36-por-drift-preservation"
+    # supersedes_path must be str per c14 lemma, pointing at c35 blocker
+    assert isinstance(ev["supersedes_path"], str)
+    assert ev["supersedes_path"].endswith(
+        "c35-por-drift-proof-strengthening-blocker.json"
+    ), "supersedes_path must point at c35 blocker"
+    # live_guidance scan must record NONE PRESENT
+    lgs = ev["live_guidance_scan"]
+    assert lgs["result"] == "NONE PRESENT"
+    assert lgs["operator_directive_c31_c32_snapshot"] is None
+    # Preservation verification — c35 blocker + c34 diagnostic byte-identical
+    pv = ev["preservation_verification"]
+    c35_blocker = SELECTION / "c35-por-drift-proof-strengthening-blocker.json"
+    assert c35_blocker.exists()
+    c35_sha = hashlib.sha256(c35_blocker.read_bytes()).hexdigest()
+    assert c35_sha == pv["c35_blocker_expected_sha256"], (
+        f"c35 blocker drifted: got {c35_sha}, expected {pv['c35_blocker_expected_sha256']}"
+    )
+    diag = DIAG / "c34_por_delta_proof.json"
+    assert diag.exists()
+    diag_sha = hashlib.sha256(diag.read_bytes()).hexdigest()
+    assert diag_sha == pv["c34_diagnostic_expected_sha256"], (
+        f"c34 diagnostic sha drifted: got {diag_sha}"
+    )
+    # Invariant compliance block enforces c14 lemma + FD-1
+    ic = ev["invariant_compliance"]
+    assert ic["c14_supersedes_path_type"].startswith("str")
+    assert "fd_1_halt_honest" in ic
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_22 OK — c36 POR stand-pat landed; c35 blocker + c34 diagnostic preserved")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -661,8 +755,10 @@ def main():
     test_18_c34_por_delta_empirical_proof_landed()
     test_19_c35_emitter_writer_boundary_preservation()
     test_20_c35_por_drift_proof_strengthening_blocker()
+    test_21_c36_emitter_writer_boundary_preservation()
+    test_22_c36_por_drift_preservation_stand_pat()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 = 20/20)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 = 22/22)")
 
 
 if __name__ == "__main__":
