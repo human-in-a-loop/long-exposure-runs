@@ -112,10 +112,28 @@ integration) are exempt; they may run concurrently. If a future driver
 adds VGGish, it MUST adopt OP-1 sentinel behaviour before its first
 detached launch.
 
+## Invariant (f) — legacy-mode regression bar (composite FP-drift adjudication)
+
+Per operator omnibus adjudication 2026-09-05 (PATH_A adopted on
+`_manager/M-V4-CERT-composite-fp-drift-adjudication-c32`):
+
+> legacy-mode regression bar = bit-identical audio output, not
+> bit-identical composite scalar; composite tolerance |delta| <= 1e-5
+> with matching render SHAs.
+
+This is the same class as the c25 1-LSB finding already closed as a
+non-factor (summation-order FP noise; renders 216/216 and 180/180
+byte-identical). Under invariant (f) the three fine-fit legacy-mode
+HALTs (drums c30, bass v2 c31, guitar c31) are CLOSED with
+`adjudication_outcome=PATH_A`; PATH_B (block forever) and PATH_C
+(touch a READ-ONLY anchor `scripts/sound_match/objective.py`,
+invalidate history) are disproportionate and were REJECTED.
+
 ## Version
 
 - c14 (2026-09-04): initial codification (invariants a/b/c).
 - c15 (2026-09-04): extended with invariant (d) — on-disk-vs-brief disclosure norm.
 - c16 (2026-09-04): extended with invariant (e) — cross-cycle pinned-profile shape stability.
 - c32 (2026-09-05): extended with operational invariant OP-1 — fine-fit-driver serial-launch lock.
+- c47 (2026-09-05): extended with invariant (f) — legacy-mode regression bar (per operator omnibus adjudication).
 
