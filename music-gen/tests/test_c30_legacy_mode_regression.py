@@ -340,6 +340,103 @@ def test_14_op1_sentinel_behavior_contract():
     print("test_14 OK — OP-1 sentinel: create + refuse + release (normal + exc)")
 
 
+# ============================================================================
+# c33 EXTENSION (per c18 additive-in-place pattern):
+# Priority 1 JSON sidecar backfill shape-parity (v2 + guitar mirror drums-halt)
+# Priority 2 _selection/ POR shadow-drift retroactive event on disk
+# ============================================================================
+
+
+MANAGER = ROOT / "data" / "v4" / "_manager"
+SELECTION = ROOT / "data" / "v4" / "_selection"
+
+
+def _check_halt_memo_shape(memo: dict, name: str, expected_carried_cycle: int,
+                            expected_render_pass_key: str) -> None:
+    """Halt memos MUST mirror the c30 drums-halt shape verbatim."""
+    required_top_level = {
+        "milestone_id", "cycle_opened", "status", "authority",
+        "blocked_on_operator", "supersedes_path", "class", "trigger",
+        "diagnostic_finding", "invariants_analysis", "named_paths",
+        "carried_from_cycle", "recommendation_neutral", "env_pin_sha256",
+    }
+    missing = required_top_level - set(memo.keys())
+    assert not missing, f"{name}: missing top-level keys {missing}"
+    assert memo["status"] == "action_required"
+    assert memo["authority"] == "OPERATOR"
+    assert memo["blocked_on_operator"] is True
+    assert memo["supersedes_path"] is None
+    assert memo["carried_from_cycle"] == expected_carried_cycle
+    assert memo["env_pin_sha256"] == CANON_ENV_PIN
+    # diagnostic_finding shape parity
+    df = memo["diagnostic_finding"]
+    for k in ("render_pipeline_determinism", "composite_scoring_layer",
+              "delta_magnitude_samples", "attribution"):
+        assert k in df, f"{name}: diagnostic_finding missing {k}"
+    assert df["render_pipeline_determinism"] == expected_render_pass_key
+    # named_paths shape parity (must contain the 3 canonical resolution paths)
+    np = memo["named_paths"]
+    for k in ("PATH_A_ACCEPT_RENDER_LEVEL", "PATH_B_HOLD_STRICT_EQUALITY",
+              "PATH_C_OBJECTIVE_HARDENING"):
+        assert k in np, f"{name}: named_paths missing {k}"
+        assert "description" in np[k] and "trade" in np[k]
+    # invariants_analysis 5-key shape (a..e)
+    ia = memo["invariants_analysis"]
+    for k in ("a_no_operator_scope_extension", "b_prefer_above_floor",
+              "c_no_reject_on_misread", "d_disclose_divergence",
+              "e_pinned_profile_shape_stability"):
+        assert k in ia, f"{name}: invariants_analysis missing {k}"
+
+
+def test_15_json_sidecar_backfill_shape_parity():
+    """c33 Priority 1: v2 + guitar halt JSON sidecars mirror drums-halt shape."""
+    drums = _load(MANAGER / "M-V4-CERT-fine-fit-sf2-drums-legacy-halt.json")
+    v2 = _load(MANAGER / "M-V4-CERT-fine-fit-sf2-v2-legacy-halt.json")
+    guitar = _load(MANAGER / "M-V4-CERT-fine-fit-sf2-guitar-legacy-halt.json")
+    # Reference: drums-halt already passed shape-check historically.
+    _check_halt_memo_shape(drums, "drums", 30,
+                            "PASS_216_OF_216_RENDER_SHA_BYTE_IDENTICAL")
+    _check_halt_memo_shape(v2, "bass-v2", 31,
+                            "PASS_216_OF_216_RENDER_SHA_BYTE_IDENTICAL")
+    _check_halt_memo_shape(guitar, "guitar", 31,
+                            "PASS_180_OF_180_RENDER_SHA_BYTE_IDENTICAL")
+    # milestone_id matches filename
+    assert v2["milestone_id"] == "_manager/M-V4-CERT-fine-fit-sf2-v2-legacy-halt"
+    assert guitar["milestone_id"] == "_manager/M-V4-CERT-fine-fit-sf2-guitar-legacy-halt"
+    print("test_15 OK — v2 + guitar sidecars mirror drums-halt shape verbatim")
+
+
+def test_16_c33_por_shadow_drift_selection_event():
+    """c33 Priority 2: retroactive _selection/ event with 4-row diff on disk."""
+    p = SELECTION / "c33-por-shadow-drift-disclosure-retroactive-for-c32.json"
+    assert p.exists(), (
+        "c33 Priority 2 _selection/ event missing "
+        f"(expected at {p.relative_to(ROOT)})"
+    )
+    ev = _load(p)
+    assert ev["milestone_id"] == (
+        "_selection/c33-por-shadow-drift-disclosure-retroactive-for-c32"
+    )
+    assert ev["cycle_opened"] == 33
+    assert ev["carried_from_cycle"] == 32
+    dm = ev["delta_measurement"]
+    assert dm["c31_close_parseable_milestones"] == 728
+    assert dm["c32_open_parseable_milestones"] == 732
+    assert dm["delta_count"] == 4
+    rows = ev["row_level_diff"]["attributed_rows_c31_to_c32"]
+    assert isinstance(rows, list) and len(rows) == 4, (
+        "row_level_diff must enumerate exactly 4 rows"
+    )
+    # honest hypothesis + non-empty evidence
+    assert ev["hypothesis"], "hypothesis field must be non-empty"
+    ev_list = ev["hypothesis_evidence"]
+    assert isinstance(ev_list, list) and len(ev_list) >= 3, (
+        "hypothesis_evidence must supply concrete evidence entries"
+    )
+    assert ev["env_pin_sha256"] == CANON_ENV_PIN
+    print("test_16 OK — c33 _selection/ POR drift event landed with 4-row diff")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -355,8 +452,10 @@ def main():
     test_12_invariants_doc_op1_section_present()
     test_13_c32_anchor_amendment_shape()
     test_14_op1_sentinel_behavior_contract()
+    test_15_json_sidecar_backfill_shape_parity()
+    test_16_c33_por_shadow_drift_selection_event()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 = 14/14)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 = 16/16)")
 
 
 if __name__ == "__main__":
