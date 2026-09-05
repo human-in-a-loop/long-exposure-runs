@@ -1790,6 +1790,162 @@ def test_40_c45_p0_sidecar_shape_i2_canonical_adoption():
           "supersedes_path str -> c44 sidecar; counters {16,16,16,15,15,14} = c44 {15,15,15,14,14,13} + 1")
 
 
+def test_41_c46_chain_supersede_invariant_string_not_list():
+    """c46 P7 (a): chain-supersede invariant across all c46 preservation records.
+
+    Verify supersedes_path is `str` (never list) on every c46 preservation
+    sidecar that carries one, per c14 lemma. c46 introduces two new patterns:
+    (1) P0 escalation-preservation now includes a supersedes_path chain to
+        c45 (c44/c45 canonical shape via I-2 codification);
+    (2) P4 Peach Dream stem-manifest preservation is a NEW event class with
+        supersedes_path=null (no c45 predecessor event; c19-c45 carried the
+        divergence on peach-dream deferral row narrative).
+    Extended per c46 brief P7 to cover 7 sidecars (P0, P1, P2, P5, P8 chain;
+    P4 + P6 shadow-zone-hold null cases).
+    """
+    import hashlib
+
+    # (name, expected_supersedes_target_basename, expected_predecessor_sha)
+    supersede_targets = [
+        ("c46-emitter-writer-boundary-preservation.json",
+         "c45-emitter-writer-boundary-preservation.json",
+         "predecessor_c45_sha256",
+         "39181cdef7456f9a3bf547e35beef89eb3544592d87f31d686508e4a314a8ca7"),
+        ("c46-por-drift-preservation.json",
+         "c45-por-drift-preservation.json",
+         "predecessor_c45_sha256",
+         "4d9a95d69295ef76842a18d38abc3dac0b43d4ff5e011e9c2956acd92801a2f0"),
+        ("c46-track-bcd-deferral-preservation.json",
+         "c45-track-bcd-deferral-preservation.json",
+         "predecessor_c45_sha256",
+         "e510838d0f59c818ebc2e35948b325e973387ef3c7c7357475b880983b26db05"),
+        ("c46-consolidation-proposal-hold.json",
+         "c45-consolidation-proposal-hold.json",
+         "predecessor_c45_sha256",
+         "c5b9fc19478a4a0ecd01d279212674c1980a9bbce78c4e89683555b9de920d34"),
+        ("c46-escalation-preservation.json",
+         "c45-escalation-preservation.json",
+         "predecessor_c45_sha256",
+         "a08acbb5ba041fc3ea29c822fbfe73bb34ce26b61afc49987a9b0cfb927674e7"),
+    ]
+
+    for name, expect_target, sha_field, expect_pred_sha in supersede_targets:
+        ev_path = SELECTION / name
+        assert ev_path.exists(), f"c46 sidecar missing: {ev_path.relative_to(ROOT)}"
+        ev = _load(ev_path)
+        sp = ev["supersedes_path"]
+        assert isinstance(sp, str), (
+            f"{name}: supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+        )
+        assert sp.endswith(expect_target), (
+            f"{name}: supersedes_path must point at {expect_target}, got {sp}"
+        )
+        pred_path = SELECTION / expect_target
+        assert pred_path.exists(), f"c45 predecessor {expect_target} must remain on disk"
+        pred_sha = hashlib.sha256(pred_path.read_bytes()).hexdigest()
+        assert pred_sha == ev[sha_field], (
+            f"{name}: c45 predecessor sha drifted; got {pred_sha}, expected {ev[sha_field]}"
+        )
+        assert pred_sha == expect_pred_sha, (
+            f"c45 predecessor {expect_target} drifted from test-pinned value; "
+            f"got {pred_sha}, expected {expect_pred_sha}"
+        )
+        assert ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    # Two c46 sidecars carry supersedes_path=null:
+    # (a) POR shadow-zone-hold (new-attestation-per-cycle, matches c45 pattern)
+    # (b) Peach Dream stem-manifest preservation (new event class this cycle)
+    for null_name in ("c46-por-shadow-zone-hold.json",
+                      "c46-peach-dream-stem-manifest-preservation.json"):
+        ev = _load(SELECTION / null_name)
+        assert ev["supersedes_path"] is None, (
+            f"{null_name}: supersedes_path must be null (no predecessor event this cycle)"
+        )
+        assert ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    print("test_41 OK - c46 chain-supersede invariant: 5 chain sidecars use str supersedes_path per c14 lemma; "
+          "2 null-supersede sidecars (POR shadow-hold + P4 Peach Dream new event class); predecessors byte-identical")
+
+
+def test_42_c46_p0_sidecar_shape_i2_canonical_adoption():
+    """c46 P7 (b): P0 sidecar shape assertion (I-2 canonical shape from c44/c45).
+
+    Assert data/v4/_selection/c46-escalation-preservation.json:
+      (i) exists and contains before/after SHA table for all 6 memos
+      (ii) supersedes_path is a STRING pointing at c45 sidecar
+      (iii) before == after for every memo (no mutation per FD-1)
+      (iv) monotonicity: c46_counter == c45_counter + 1
+      (v) memo files themselves byte-identical on-disk vs recorded before_sha
+      (vi) c46 chain values {17,17,17,16,16,15} matches c45 {16,16,16,15,15,14} + 1
+    """
+    import hashlib
+
+    esc_ev = _load(SELECTION / "c46-escalation-preservation.json")
+
+    # (ii) supersedes_path str pointing at c45
+    sp = esc_ev["supersedes_path"]
+    assert isinstance(sp, str), (
+        f"c46-escalation-preservation supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+    )
+    assert sp.endswith("c45-escalation-preservation.json"), (
+        f"c46 escalation preservation supersedes_path must point at c45 sidecar, got {sp}"
+    )
+
+    # (i) 6 memos preserved
+    assert esc_ev["all_byte_identical_pre_post"] is True
+    assert esc_ev["count_preserved"] == 6, (
+        f"expected 6 escalations preserved, got {esc_ev['count_preserved']}"
+    )
+
+    expected_escalation_files = {
+        "M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json",
+        "M-V4-METRIC-SEMANTICS-c16.json",
+        "M-V4-CERT-fine-fit-sf2-drums-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-v2-legacy-halt.json",
+        "M-V4-CERT-fine-fit-sf2-guitar-legacy-halt.json",
+        "M-V4-CERT-composite-fp-drift-adjudication-c32.json",
+    }
+    seen_files = set()
+    c46_counters = []
+    c45_counters = []
+    for row in esc_ev["escalations_preserved"]:
+        # (iii) before == after
+        assert row["before_sha256"] == row["after_sha256"], (
+            f"{row['file']} before != after (should be byte-identical pre==post per FD-1 no-mutation)"
+        )
+        assert row["byte_identical"] is True
+        # (v) memo file on-disk byte-identical vs recorded before_sha
+        p = ROOT / row["file"]
+        assert p.exists(), f"escalation memo missing: {row['file']}"
+        sha_now = hashlib.sha256(p.read_bytes()).hexdigest()
+        assert sha_now == row["before_sha256"], (
+            f"{row['file']} drifted vs before_sha: got {sha_now}"
+        )
+        # (iv) monotonicity
+        assert row["c46_counter"] == row["c45_counter"] + 1, (
+            f"{row['file']} counter not monotonic: c45={row['c45_counter']} c46={row['c46_counter']}"
+        )
+        c46_counters.append(row["c46_counter"])
+        c45_counters.append(row["c45_counter"])
+        seen_files.add(p.name)
+
+    assert seen_files == expected_escalation_files, (
+        f"missing/extra escalation files: got {seen_files}, expected {expected_escalation_files}"
+    )
+    assert esc_ev["env_pin_sha256"] == CANON_ENV_PIN
+
+    # (vi) c46 chain values {17,17,17,16,16,15} matches c45 chain {16,16,16,15,15,14} + 1
+    assert sorted(c46_counters) == [15, 16, 16, 17, 17, 17], (
+        f"c46 chain values wrong: got sorted {sorted(c46_counters)}, expected [15,16,16,17,17,17]"
+    )
+    assert sorted(c45_counters) == [14, 15, 15, 16, 16, 16], (
+        f"c45 chain values wrong: got sorted {sorted(c45_counters)}, expected [14,15,15,16,16,16]"
+    )
+
+    print("test_42 OK - c46 P0 sidecar I-2 canonical shape adopted: 6 memos before==after; "
+          "supersedes_path str -> c45 sidecar; counters {17,17,17,16,16,15} = c45 {16,16,16,15,15,14} + 1")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1831,8 +1987,10 @@ def main():
     test_38_c44_escalation_memo_counter_monotonicity()
     test_39_c45_chain_supersede_invariant_string_not_list()
     test_40_c45_p0_sidecar_shape_i2_canonical_adoption()
+    test_41_c46_chain_supersede_invariant_string_not_list()
+    test_42_c46_p0_sidecar_shape_i2_canonical_adoption()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 + c45 2 = 40/40)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 + c45 2 + c46 2 = 42/42)")
 
 
 if __name__ == "__main__":
