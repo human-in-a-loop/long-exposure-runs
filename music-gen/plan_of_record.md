@@ -801,6 +801,7 @@ milestones tables are mutable, but every edit must emit a ledger event with
 complete.
 
 PROC 2026-09-03 SWEEP-STORAGE HYGIENE: score-and-delete per candidate; ≤500 MB working audio per instrument; df check before each stage; disk ≤90%.
+PROC 2026-09-05 SWEEP-HYGIENE FIX: render→score→delete per candidate; running top-5 audio only; delete all remaining sweep audio after each pin; df ≥85% → prune first; batch-render-full-grid BANNED.
 
 c5 opens M-V4-PROFILES-1/cg-bass-family2-stem-sampled (spec + spike); sf2 arc STILL_INDETERMINATE, blocked on replay-program-invariance CRITICAL.
 
