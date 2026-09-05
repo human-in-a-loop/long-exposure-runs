@@ -130,6 +130,13 @@ def test_06_driver_shas_from_anchor_table():
         c32 = _load(c32_amend_path)
         for k, v in c32["amendments"].items():
             c32_overlay[k] = v["post_c32_sha256_fresh_disk_read"]
+    # c48 amendment overlay for coarse_sweep_sf2_drums.py (--song-sha16 alias).
+    c48_amend_path = REG / "c48_anchor_substitution_table_amendment.json"
+    c48_overlay: dict = {}
+    if c48_amend_path.exists():
+        c48 = _load(c48_amend_path)
+        for k, v in c48["amendments"].items():
+            c48_overlay[k] = v["post_c48_sha256_fresh_disk_read"]
     for driver_name, entry in per.items():
         p = ROOT / "scripts/sound_match" / driver_name
         h = hashlib.sha256()
@@ -137,12 +144,21 @@ def test_06_driver_shas_from_anchor_table():
             for c in iter(lambda: f.read(1 << 20), b""):
                 h.update(c)
         actual = h.hexdigest()
-        expected = c32_overlay.get(driver_name, entry["driver_sha256"])
+        # Overlay precedence: c48 (latest) → c32 → c30 table baseline.
+        if driver_name in c48_overlay:
+            expected = c48_overlay[driver_name]
+            overlay_source = "c48"
+        elif driver_name in c32_overlay:
+            expected = c32_overlay[driver_name]
+            overlay_source = "c32"
+        else:
+            expected = entry["driver_sha256"]
+            overlay_source = "c30"
         assert actual == expected, (
             f"{driver_name}: on-disk sha {actual} != expected {expected} "
-            f"(c32 overlay: {driver_name in c32_overlay})"
+            f"(overlay: {overlay_source})"
         )
-    print("test_06 OK — 6 driver SHAs match (3 c30 + 3 c32 OP-1 amendment)")
+    print("test_06 OK — 6 driver SHAs match (c30 + c32 OP-1 + c48 --song-sha16 alias)")
 
 
 # ============================================================================
@@ -1946,6 +1962,85 @@ def test_42_c46_p0_sidecar_shape_i2_canonical_adoption():
           "supersedes_path str -> c45 sidecar; counters {17,17,17,16,16,15} = c45 {16,16,16,15,15,14} + 1")
 
 
+# ============================================================================
+# c48 EXECUTE-cycle Track F tests (per operator omnibus 2026-09-05):
+# test_43 = --song-sha16 alias regression on coarse_sweep_sf2_drums.py
+# test_44 = c48 anchor-substitution amendment shape + supersede chain
+# ============================================================================
+
+
+def test_43_c48_drums_coarse_song_sha16_alias():
+    """c48 P0.2: coarse_sweep_sf2_drums.py accepts BOTH --song and --song-sha16.
+
+    Invokes the driver with --help and asserts both flag forms appear
+    together with a shared dest, so runbook `--song-sha16 <sha16>` commands
+    work while pre-c48 `--song <sha16>` invocations remain byte-identical.
+    """
+    import subprocess
+
+    p = ROOT / "scripts/sound_match/coarse_sweep_sf2_drums.py"
+    assert p.exists(), f"drums driver missing at {p}"
+    r = subprocess.run(
+        ["/usr/bin/python3", str(p), "--help"],
+        capture_output=True, text=True, timeout=30,
+    )
+    assert r.returncode == 0, f"--help exit {r.returncode}: {r.stderr}"
+    out = r.stdout
+    # Both flag forms must appear; argparse renders shared-dest siblings as
+    # `--song SONG, --song-sha16 SONG` on one line.
+    assert "--song SONG" in out, f"--song not in --help output:\n{out}"
+    assert "--song-sha16 SONG" in out, f"--song-sha16 not in --help output:\n{out}"
+    print("test_43 OK - coarse_sweep_sf2_drums.py accepts both --song and --song-sha16 (c48 P0.2)")
+
+
+def test_44_c48_anchor_substitution_amendment_shape():
+    """c48 P0.2: sibling amendment records SHA drift for drums coarse driver.
+
+    Asserts data/v4/regression/c48_anchor_substitution_table_amendment.json:
+      (i) exists and parses as JSON
+      (ii) supersedes_path is a STRING pointing at c32 sidecar (str per c14 lemma)
+      (iii) amendments block covers coarse_sweep_sf2_drums.py
+      (iv) post_c48 SHA matches on-disk driver SHA
+      (v) env_pin_sha256 == canonical 7-key subset
+    """
+    import hashlib
+
+    amend_path = REG / "c48_anchor_substitution_table_amendment.json"
+    assert amend_path.exists(), "c48 amendment sidecar missing"
+    a = _load(amend_path)
+
+    # (ii) supersedes_path str pointing at c32
+    sp = a["supersedes_path"]
+    assert isinstance(sp, str), (
+        f"c48 amendment supersedes_path must be str per c14 lemma, got {type(sp).__name__}"
+    )
+    assert sp.endswith("c32_anchor_substitution_table_amendment.json"), (
+        f"c48 amendment supersedes_path must point at c32 sidecar, got {sp}"
+    )
+
+    # (iii) coarse drums driver amendment present
+    assert "coarse_sweep_sf2_drums.py" in a["amendments"], (
+        "amendments block missing coarse_sweep_sf2_drums.py"
+    )
+    entry = a["amendments"]["coarse_sweep_sf2_drums.py"]
+    expected_post = entry["post_c48_sha256_fresh_disk_read"]
+
+    # (iv) post_c48 SHA matches on-disk
+    p = ROOT / "scripts/sound_match/coarse_sweep_sf2_drums.py"
+    on_disk = hashlib.sha256(p.read_bytes()).hexdigest()
+    assert on_disk == expected_post, (
+        f"drums driver on-disk sha {on_disk} != c48 amendment post_c48 {expected_post}"
+    )
+
+    # (v) canonical env pin
+    assert a["env_pin_sha256"] == CANON_ENV_PIN, (
+        f"c48 amendment env_pin drift: {a['env_pin_sha256']}"
+    )
+
+    print("test_44 OK - c48 anchor amendment: supersedes_path str -> c32; drums driver "
+          f"post_c48 sha {on_disk[:16]}... matches on-disk; env_pin canonical")
+
+
 def main():
     test_01_anchor_substitution_table_present()
     test_02_coarse_bass_full_15()
@@ -1989,8 +2084,10 @@ def main():
     test_40_c45_p0_sidecar_shape_i2_canonical_adoption()
     test_41_c46_chain_supersede_invariant_string_not_list()
     test_42_c46_p0_sidecar_shape_i2_canonical_adoption()
+    test_43_c48_drums_coarse_song_sha16_alias()
+    test_44_c48_anchor_substitution_amendment_shape()
     print("\nALL legacy-mode regression tests PASSED "
-          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 + c45 2 + c46 2 = 42/42)")
+          "(c30 6 + c31 4 + c32 4 + c33 2 + c34 2 + c35 2 + c36 2 + c37 2 + c38 2 + c39 2 + c40 2 + c41 2 + c42 2 + c43 2 + c44 2 + c45 2 + c46 2 + c48 2 = 44/44)")
 
 
 if __name__ == "__main__":

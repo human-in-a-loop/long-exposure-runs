@@ -214,7 +214,8 @@ def _disk_ok(path: Path, budget_bytes: int, safety_factor: float = 2.0) -> bool:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Family-1 coarse SF2 preset sweep (drums).")
-    ap.add_argument("--song", required=True)
+    ap.add_argument("--song", "--song-sha16", required=True, dest="song",
+                    help="Song sha16 (--song-sha16 alias per c48 runbook naming).")
     ap.add_argument("--instrument", required=True)
     ap.add_argument("--reference-stem", required=True, type=Path)
     ap.add_argument("--midi-source", type=Path, default=None,
