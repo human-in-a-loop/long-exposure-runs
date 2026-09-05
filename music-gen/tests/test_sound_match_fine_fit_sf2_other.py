@@ -30,6 +30,21 @@ Discipline gates asserted:
     07 env_pin canonical 7-key subset present in module _PINS dict
     08 both sweep_driver_family_policy shas cited (parent + other-c60)
        AND OP-1 SerialLock wrap present on main()
+
+c63 P2 OPTION A ADOPTED (docstring-only): the c14 READ-ONLY anchor
+``fine_fit_sf2_guitar.py`` contains a latent ``%``-in-argparse-help bug
+on ``--disk-abort-pct`` that manifests as
+``TypeError: must be real number, not dict`` on ``--help`` (never fires
+in production; wrappers do not call --help). The c62 driver
+``fine_fit_sf2_other.py`` escapes the same argparse help text to ``%%``
+locally (one-char difference), disclosed per invariant (d) in the c62
+P1-B ledger narrative + §5 SHA drifts section. Test 02/05/06 exercise
+the c62 driver's ``%%``-escaped ``--help`` and are correct on-disk;
+they intentionally do NOT touch the c14 anchor (READ-ONLY per FD-1 +
+invariant (d) DO-NOT-TOUCH; c62 P2 auditor explicit BAN on unilateral
+READ-ONLY lift). Option B (refactor to AST-scan of argparse rather
+than subprocess ``--help``) remains available under operator authority
+per the c63 fork event ``_selection/c63-test-04-subprocess-vs-ast-refactor-decision``.
 """
 from __future__ import annotations
 
