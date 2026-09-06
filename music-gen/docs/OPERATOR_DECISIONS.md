@@ -169,6 +169,90 @@ one, the earlier entry says so.
     NOT authored (c78+ if operator requests). Run ends cleanly per
     campaign L151-152; operator verifies everything post-close.
 
+20. **v5 REOPENING — rules/ear/generation only** (2026-09-06, consumed
+    at c79; the operator's note says the run "was hard-stopped at c87
+    during close-out" — the on-disk ledger's last cycle is 78, so the
+    reopening cycle is numbered c79 per on-disk reality; the counter
+    discrepancy is disclosed, not reconciled). Operator evaluated the
+    15 v4 generated candidates: **QUALITY VERDICT POOR** ("sound very
+    strange"). Binding root-cause diagnosis (verbatim): rules extracted
+    from only ~66 bars (one 30 s section per song); harmony modeled as
+    raw per-bar pitch-class dumps (near-unique states = random-walk
+    dissonance); groove modeled as per-slot histograms averaged over
+    bars (backbeat and kick/snare/bass-lock structure erased; drums
+    merged into one stream); other/piano stems absent from rules inputs
+    (transcribed to zero notes); WIG bpm 50.17 is a half-time
+    mis-estimate; no repetition/motif structure; no working ear filter.
+    The campaign REOPENS ONLY M-V4-RULES, M-V4-EAR, M-V4-GEN as v5
+    iterations (M-V5-RULES-1, M-V5-EAR-1, M-V5-GEN-1, plus the new
+    M-V5-CORPUS-1 foundation and M-V5-CLOSE-1). Profiles, recreations,
+    showcase, and certificates remain CLOSED and FROZEN (c77/c78
+    verdicts stand; `data/v4/deliveries/**`, `data/v4/profiles/**`,
+    `data/v3/deliveries/**`, `docs/v3_determinism_certificate.md`,
+    `scripts/gen/iterate_v4.py`, `scripts/gen/interpolate_v4.py`,
+    `scripts/ear/v4_ear*.py` are READ-ONLY).
+
+    OPERATOR DECISIONS (binding, 2026-09-06, verbatim):
+    1. CORPUS: extract v5 rules from the FIVE FOCUS SONGS FULL-LENGTH
+       plus the remaining band-6/7 corpus songs full-length (per corpus
+       receipts, ~7 songs total). All transcription through the
+       checkpointed driver (cached, parallel); fix tempo estimation
+       (validate BPM against onset autocorrelation; flag half/double-time
+       candidates and resolve; WIG must not extract at ~50 BPM).
+    2. HARMONY: reduce each bar to ROOT + QUALITY via template matching
+       (maj, min, 7, min7, maj7, 9, sus as the template set) over
+       beat-weighted pitch-class profiles; transpose all songs to a
+       common reference for pooling; model progressions as a Markov
+       chain over functional chords (transposed back at generation).
+       Raw pitch-set states are retired.
+    3. GROOVE: build a JOINT CONDITIONAL MODEL with drums separated by
+       class (kick/snare/hat via GM pitch classes): slot-to-slot
+       conditionals within a bar and cross-stem conditionals
+       (snare|kick, hat|kick+snare, bass onsets|kick). Train on the
+       enlarged corpus; validate by sampling bars and checking
+       backbeat/lock statistics against corpus bars (reject degenerate
+       models honestly).
+    4. STRUCTURE: keep the bar-transition sequence models but add a
+       SECTION FORM PLAN (e.g. intro/A/A'/B/A/outro) with FORCED LITERAL
+       REPETITION at form boundaries (a section repeats its generated
+       bars; variation only via controlled ornament drops/adds). No
+       unbroken bar-to-bar wandering.
+    5. EAR: build an ISOLATED EAR VENV (dedicated venv with its own
+       numpy/tensorflow/torch pins solely for CLAP/VGGish inference,
+       invoked as a subprocess; receipts + env pin manifest for it; the
+       main venv's pins untouched). Restore the exemplar-anchored ear
+       and the >=6 gate. If the isolated venv also fails after honest
+       attempts, fall back to the band-4-vs-band-7 discrimination check
+       and report.
+    6. GENERATION ORDER: GROOVE-FIRST per song — sample drums+bass from
+       the joint groove model, then chords from the harmony chain onto
+       the form plan, then melody/keys on top (register profiles + chord
+       tones). Donor-song profiles and mix match unchanged from v4.
+    7. TARGET: 5 novel instrumental songs at ear >=6 plus the
+       interpolation demo (REQUIRED this time), stall budget 12
+       generator iterations; on stall deliver honest best-of and close.
+       Deliver every iteration's best samples to
+       data/v4/generated/v5_iter_NN/ for operator listening.
+    8. All standing v4 doctrine remains in force: driver-only audio,
+       determinism-where-possible (rules extractor deterministic,
+       generator seeded), FAST default, sweep/storage hygiene,
+       preservation-spin ban, anti-heartbeat rule, honest verdicts.
+       Amend the completion report and re-close cleanly when done.
+
+    c79 first-cycle disclosures against decision #1: (a) corpus receipts
+    enumerate 13 band-6 + 10 band-7 songs (23), and three focus songs
+    (WIG, Rome, Disco A) are band 5 — 26 songs enumerated in
+    `data/v5/corpus/corpus_manifest.json` with `in_v5_corpus=true` and a
+    deterministic priority order (focus → v4 ear exemplars → band-7 →
+    band-6; SHA-256 tiebreak), nothing truncated; (b) no full-song
+    htdemucs stems exist on disk (all prior 6-stem dirs are 30 s
+    sections) so separation is recomputed full-length; (c) the WIG 50.17
+    value was a DRUMS-STEM 30 s-section artifact — on the full-length mix
+    librosa already returns 99.38 — and the pre-registered flat-band
+    autocorrelation criterion FAILED its own falsification test on Peach
+    Dream and Disco A (see `data/v5/corpus/tempo_v5_falsification.json`);
+    per FD-1 it was recorded, not retuned.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.
