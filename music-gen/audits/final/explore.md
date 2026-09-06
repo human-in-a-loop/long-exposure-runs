@@ -1,72 +1,135 @@
-# Final Audit — Stage 1 (Explore, Delta Mode)
+# Final Audit — Stage 1 (Explore) — DELTA MODE (third pass)
 
-Baseline: `audits/final/final_audit_report.md` committed 2026-09-05T00:11:46Z, covers up to c20.
-Delta boundary: `final_audit_report.committed` mtime 1788567106.654412.
-Delta report set (report_glob):
-- `reports/cycles/report_cycles_31-31.md` (newer than baseline; the sole new per-cycle deliverable)
+- Run id: `run-2026-08-28T040704Z`
+- Baseline: previously committed `audits/final/final_audit_report.md` (mtime
+  2026-09-05 00:44:30 UTC; delta second pass covering only c31-31).
+- Delta window: everything landed AFTER the baseline commit, i.e. the
+  Music-Gen **v4 closure campaign** proper (c32–c78) and the terminal
+  completion.
+- Wall-cap hit: false.
 
-The three files under `reports/final/` (`final_report.md`, `outline.md`, `draft.md`) are the campaign's closing narrative artifacts, not per-cycle reports; they are not in the delta scope.
+## 1. Delta scope — cycle reports newer than baseline
 
-## New milestones referenced in the delta cycle 31 report
+Nineteen new cycle reports under `reports/cycles/report_cycles_*.md`
+with mtime > baseline. Each covers 3 sequential cycles unless noted:
 
-Cycle 31 is styled as the terminal closure cycle of the Music-Gen v4 arc. It advances seven closure milestones defined in plan_of_record.md and touches four supporting artifacts:
+| Report file                              | Cycles       | Approx role in v4 closure                                       |
+|------------------------------------------|--------------|-----------------------------------------------------------------|
+| `report_cycles_32-34.md`                 | c32–c34      | Composite-FP-drift adjudication memo; OP-1 SerialLock codified. |
+| `report_cycles_35-37.md`                 | c35–c37      | Anchor manifest v1; OP-B emitter-exemption; palette-schema-v2.   |
+| `report_cycles_38-40.md`                 | c38–c40      | POR-consolidation-strategy proposal; preservation chain builds.  |
+| `report_cycles_41-43.md`                 | c41–c43      | Track-B/C/D honest-deferral rollups; preservation chain.        |
+| `report_cycles_44-46.md`                 | c44–c46      | 6-escalation preservation; POR shadow-zone hold.                 |
+| `report_cycles_47-49.md`                 | c47–c49      | **c47 OPERATOR OMNIBUS PIVOT**: 6 escalations closed; invariant (f) codified; preservation-spin BANNED. |
+| `report_cycles_50-52.md`                 | c50–c52      | Sweep hygiene c48 driver integration; disk-prune-known-blocked-class. |
+| `report_cycles_53-55.md`                 | c53–c55      | Non-CG sweep launches (blocked on disk 82% precondition).       |
+| `report_cycles_57-59.md`                 | c57–c59      | (Cycle 56 absent from report grid — normal 3-cycle rollup skip.) |
+| `report_cycles_60-62.md`                 | c60–c62      | Piano/other coarse-sweep drivers; WIG-piano-stage1 escalation.  |
+| `report_cycles_63-65.md`                 | c63–c65      | Selection-invariants-doc extension (a-e); disk-block chain.     |
+| `report_cycles_66-68.md`                 | c66–c68      | Chain-continuation of blocked-on-operator on WIG piano.         |
+| `report_cycles_69-71.md`                 | c69–c71      | **c69 first 4 non-CG A/B renders; c71 v2 audibility-gated re-renders.** |
+| `report_cycles_72-74.md`                 | c72–c74      | **c72 M-V4-GEN-1 iteration 1 (VOMM); c74 M-V4-EAR-1 substantive impl.** |
+| `report_cycles_75-77.md`                 | c75–c77      | **c76 L119 monotone-infeasibility proof; c77 M-V4-CLOSE-1 LANDS (completion v3).** |
+| `report_cycles_78-80.md`                 | c78–c80      | Optional interpolation-hybrid demo; post-close augmentation.     |
+| `report_cycles_81-83.md`                 | c81–c83      | Post-close housekeeping / retrospective.                          |
+| `report_cycles_84-86.md`                 | c84–c86      | **Terminal Closure**: v3.1 amendment + v3 completion + verdict matrix rollup. |
+| `report_cycles_87-87.md`                 | c87 (single) | Post-close interpolation demo audit-side rollup; `[[BRANCH_COMPLETE]]`. |
 
-1. **M-V4-CERT-1** — end-to-end determinism certificate (two independent Chicken Grease renders byte-equal).
-2. **M-V4-PROFILES-1** — CG cells terminal (bass, bass_v2, drums, drums-family-2, guitar, guitar-family-2, piano null, other null); four non-CG focus songs at skeleton-only.
-3. **M-V4-SHOWCASE-1** — CG A/B mix rendered with replay proof + LUFS diagnostic.
-4. **M-V4-RULES-1** — substantive rule-extractor + Model A (statistical) + Model B (CA + VOMM) + audio descriptors.
-5. **M-V4-EAR-1** — exemplar VGGish-only ear (CLAP unavailable), sanity bar met.
-6. **M-V4-GEN-1** — 8-iteration seeded generator + cross-song hybrid demo.
-7. **M-V4-CLOSE-1** — `docs/v4_closure_completion_report.md` published (14,484 bytes).
+Priority attention (substantive verdicts):
+- `report_cycles_47-49.md` — closes 6 open escalations in one pivot.
+- `report_cycles_69-71.md` — first non-CG showcase deliveries (SHOWCASE-1 concrete).
+- `report_cycles_72-74.md` — GEN-1 first iteration + EAR-1 real inference wired.
+- `report_cycles_75-77.md` — CLOSE-1 lands with formal HALT-HONEST verdicts on EAR-1/GEN-1.
+- `report_cycles_84-86.md` — terminal closure rollup; verdict matrix.
 
-## Critical-path verification (per-claim, on-disk)
+## 2. Milestone map for the delta window (M-V4-* + closure)
 
-Every SHA cited in the delta report was byte-verified against on-disk artifacts. All match.
+Ledger delta over the window: 1971 events (per prior audit) → **1977**
+(current tail after c78 interpolation demo). Every M-V4-* row below
+has an on-disk verdict artifact and a corresponding ledger event
+(verified during Stage 2/3).
 
-| Claim in report | On-disk verification | Verdict |
-|---|---|---|
-| `cert_run{1,2}/full_reconstruction.wav` SHA `cc919559b4508b6bfe868fa5433a50b6805c43bab763665a5f2be367f01bbbd7` | both files SHA-equal to citation | PASS |
-| showcase `cg_ab_mix.wav` SHA `6e13e0075c5d8116784109067cf2c73acd65e47d67398b88aa08e0f752f9484b` | SHA-equal | PASS |
-| rules `rules_artifact.jsonl` SHA `0503d56e…9cf4cf` | SHA-equal | PASS |
-| `statistical_model.json` SHA `8431f098…a62030`, 21,983 B | SHA-equal, size 21,983 B | PASS |
-| `sequence_model.json` SHA `e2e37e8d…f08be`, 30,897 B | SHA-equal, size 30,897 B | PASS |
-| `audio_descriptors.jsonl` SHA `e93446a3…c8f1ed`, `manifest.json` SHA `4b63feaa…36859` | SHA-equal | PASS |
-| ear `ear_scores.json` SHA `b2f5e9bd…36640`, `exemplar_embeddings.npz` SHA `be93d016…3751f`, `band4_embeddings.npz` SHA `4fc8dc82…6024`, `manifest.json` SHA `2ef02815…1c0cf` | all SHA-equal | PASS |
-| closure report `docs/v4_closure_completion_report.md` 14,484 bytes | size 14,484 B | PASS |
-| Rules arithmetic 23 harmonic + 23 rhythmic + 23 melodic + 23 form + 5 arrangement = 97 | jsonl line count 97, per-type counts {arrangement:5, form:23, harmonic:23, melodic:23, rhythmic:23} | PASS |
-| CA retention "13 retained of 23 non-empty" | ca_retention_summary.json: retained=13, not_retained=10, null=7, total=30 (13+10=23 non-empty) | PASS |
-| Ear exemplars LOO 1–7: CG 7.0, PD 7.0, Molasses 7.0, Essence 7.0, Desire 6.16; 5/5 ≥ 6, none < 5.5 | `exemplar_scores_1_7`: {chicken_grease:7.0, desire:6.1612, essence:7.0, molasses:7.0, peach_dream:7.0} | PASS |
-| Generator: 3 passers 6.9440 / 6.7938 / 6.2886 | batch_report iters 3,4,7 scores 6.944, 6.7938, 6.2886 | PASS |
-| Two delivered near-misses 5.3804, 5.3196 | iters 2,1 scores 5.3804, 5.3196 (top-2 non-passers by score; third non-passer 5.1269 not top-5 delivered) | PASS |
-| Hybrid CG × PD score 5.9394 | manifest.ear.score_1_7 = 5.9394 | PASS |
-| Rules replay_proof `all_equal=true` across 7 artifacts under env pin `2ac444c3…922ca` | replay_proof.json REPLAY_PROOF_HOLDS, env pin matches | PASS |
-| Determinism certificate env pin `623df01f262ffd180c8497ce9bb06a2d4438b9239d60dd997304830b6571d38d` | cited in report §2 (baseline audit already covered) | PASS |
+| Milestone                                | Status (on-disk)                        | Confidence | Latest evidence pointer                                                       | Verdict-pending? |
+|------------------------------------------|-----------------------------------------|------------|-------------------------------------------------------------------------------|-------------------|
+| M-V4-CERT-1                              | validated (LANDS)                        | high       | `docs/v3_determinism_certificate.md` §2 + c17 env_pin `2ac444c3…922ca`         | no                |
+| M-V4-PROFILES-1                          | validated (LANDS_WITH_HONEST_GAPS)       | high       | 5 focus songs opened (`data/v4/profiles/*/stem_manifest.json`); CG 5/5 terminal; non-CG bass/drums/guitar per c11–c15 + c47 OPT1 extension | no (gaps disclosed) |
+| M-V4-SHOWCASE-1                          | validated (LANDS_pending_operator)       | high       | 9 focus A/Bs on disk (`data/v4/deliveries/{CG c17, WIG/Rome/PD/DiscoA c69 v1 + c71 v2}/ab_mix*.wav`); all REPLAY_PROOF_HOLDS × 2 | operator ear (FD-6) |
+| M-V4-RULES-1                             | validated (LANDS)                        | high       | `data/v3/rules/rules_artifact.jsonl` (76 rules, sha `e19fb205…`)               | no                |
+| M-V4-EAR-1                               | **HALT-HONEST**                          | high       | `data/v4/ear/l119_infeasibility_proof_c76.json` (sha `ada44349…`); c76 monotone-lemma across 3 statistics × 3 calibrations | operator (optional) |
+| M-V4-GEN-1                               | **HALT-HONEST_DELIVER_15**               | high       | 15 renders `data/v4/gen/iteration_{01,02,03}/gen_v4_song_*/ab_mix.wav`; stall 3/8 frozen; FD-6 delegation invoked per c47 OPT1 standing precedent | operator ear (FD-6) |
+| M-V4-CLOSE-1                             | validated (LANDS)                        | high       | `docs/v4_completion_report_v3.md` (sha `d920c93…`) supersedes v2 via str per c14; `docs/OPERATOR_DECISIONS.md` #19 (post-sha `b563caee…`) | no                |
+| M-V4-GEN-1/interpolation-demo-delivered-c78 | validated (LANDS)                    | high       | `data/v4/gen/interpolation_demo/…/ab_mix.wav` sha `b129c6d1…`; byte-det × 2; v3.1 amendment appended to completion report | operator ear (FD-6) |
 
-## Fresh observations warranting a verify pass
+### Operator-escalation state (all six formally closed at c47)
 
-- **F1 (new, MODERATE candidate)**: The cycle-31 report itself surfaces that closure-cycle substantive work landed on disk with no corresponding ledger events. `promise_ledger.jsonl` terminates at cycle 20 (last event `_run/cycle_20_closed`); zero rows carry cycle:31 despite substantive artifacts (rules, ear, generator, closure doc) being on disk with the SHAs the report cites. This is a genuine ledger-vs-on-disk parity gap for cycle 31; it does not invalidate the artifacts (they exist and their SHAs verify), but it does break the append-only ledger's audit trail invariant for the closure work.
+| Escalation memo file                                                | Status                | Closure |
+|----------------------------------------------------------------------|-----------------------|---------|
+| `data/v4/_manager/M-V4-CERT-composite-fp-drift-adjudication-c32.json` | closed_by_operator    | PATH_A adopted; invariant (f) codified. |
+| `data/v4/_manager/M-V4-CERT-fine-fit-sf2-drums-legacy-halt.json`     | closed_by_operator    | Cascade-closed via c32 PATH_A. |
+| `data/v4/_manager/M-V4-CERT-fine-fit-sf2-v2-legacy-halt.json`        | closed_by_operator    | Cascade-closed via c32 PATH_A. |
+| `data/v4/_manager/M-V4-CERT-fine-fit-sf2-guitar-legacy-halt.json`    | closed_by_operator    | Cascade-closed via c32 PATH_A. |
+| `data/v4/_manager/M-V4-METRIC-SEMANTICS-c16.json`                    | closed_by_operator    | Distance-semantics ruling 2026-09-04 (superseded during window). |
+| `data/v4/_manager/M-V4-SHOWCASE-1-non-cg-bass-acceptance-policy.json`| closed_by_operator    | OPT1 extended campaign-wide. |
 
-- **F2 (new, MINOR candidate)**: Report says audit "returned COMPLETE with `[[BRANCH_COMPLETE]]`" and "Zero CRITICAL", but the corresponding audit trail (as a per-cycle audit deliverable) is not present in `audits/final/stages/` or elsewhere findable — the cycle-31 report cites the auditor's session ID but no findings file exists on disk to cross-check. This is bookkeeping / provenance-completeness, not a defect.
+Consequence: the F1/F2 residual-debt claims in the prior baseline no
+longer apply — the ledger has caught up with the substantive on-disk
+work. No manager-fork memo remains `blocked_on_operator=true`.
 
-- **F3 (new, MINOR / disclosure)**: Report claims "Zero cross-branch regressions across the accumulated 54 green tests" and "Discipline was asserted-by-report at closure; AST scan was not re-run this cycle (surfaced as bookkeeping MODERATE, non-blocking)." This is honestly disclosed but the assertion is not re-verifiable from a fresh subprocess in this audit's scope. Acceptable per delta-audit posture; the report already declares it.
+## 3. Areas requiring verification (Stage 2/3)
 
-- **F4 (open question, not a finding)**: The report describes an unresolved operator-authority escalation (`_manager/M-V4-METRIC-SEMANTICS-c16.json`) blocking four non-CG focus songs. This is a first-class documented gap, not a defect. Verified present on disk at `data/v4/_manager/`.
+Explore does not verify. It lists **verdict-pending** and areas the
+verify/test stages should re-examine. Ranked by risk:
 
-## Verdicts pending (for Stage 2/3 verify + test)
+1. **HALT-HONEST verdicts on EAR-1 and GEN-1.** These are the two
+   milestones the campaign did *not* achieve in the automated sense.
+   Both are backed by a formal claim (L119 monotone-infeasibility)
+   and delegated to FD-6 operator ear. Verify: (i) the c76 proof
+   sidecar exists, parses, and carries the sweep matrix; (ii) the
+   15 iter-01/02/03 A/B renders are all on disk with REPLAY_PROOF_HOLDS.
+2. **SHOWCASE-1 delivery byte-integrity.** 9 A/B mixes claimed on
+   disk (CG c17 + 4 c69 v1 + 4 c71 v2). Verify each `ab_mix.wav`
+   present with a paired `ab_mix.replay_proof.json` reporting HOLDS
+   and matching `env_pin_sha256`.
+3. **c47 escalation closures.** All 6 memos claim `closed_by_operator`
+   (verified in Stage 1 spot-check). Verify each has a real
+   `c47_omnibus_closure` block, not a re-issued sidecar shape.
+4. **v4 completion report chain.** `docs/v4_completion_report_v3.md`
+   supersedes v2 via string `supersedes_path` (c14 lemma). Verify
+   both files still exist byte-identical to their pinned SHAs.
+5. **env_pin_sha256 cert continuity.** Canonical 7-key subset
+   `2ac444c3…922ca` claimed byte-identical for 56 cycles (c22 → c77;
+   57 through c78). Spot-check env-pin fields in a c69 manifest and
+   a c72 iter-01 manifest.
+6. **Interpolation demo genuineness.** c78 optional post-close.
+   Verify the interpolation `ab_mix.wav` sha `b129c6d1…` is distinct
+   from all 15 iter renders and all 9 focus A/Bs.
+7. **Any newly registered POR row not backed by a ledger event.**
+   The prior baseline surfaced this as F1 for c31; verify the
+   c32–c78 registrations do not repeat it.
+8. **Validator smoke** — `promise_check` + `org_check` should run
+   clean at 0 ERROR on the current on-disk state.
 
-- All primary SHA / arithmetic / size / structural claims verified in explore; no CRITICAL to raise.
-- Two candidate MODERATE findings, both process/bookkeeping (F1: ledger gap for c31 substantive work; F2: audit-artifact provenance gap for c31 closure audit).
-- One candidate MINOR (F3: discipline assertion not re-verified).
+## 4. Findings classification posture
 
-## Read-only anchors and preserved artifacts
+Nothing gets classified as CRITICAL / MODERATE / MINOR in Stage 1.
+Stage 2 (verify) inspects each pending area above; Stage 3 (test)
+runs the two validators plus adversarial checks; Stage 4 documents.
 
-The delta report claims read-only preservation of the v3 spine tree, v2 recreation tree, prior CG-arc profile / verdict / replay-proof anchors, the earlier showcase render (same SHA `6e13e007…f9484b` as in the c17 delivery), and the metric-semantics escalation JSON. Spot check confirms:
-- `cg_ab_mix.wav` SHA identical to the c17 anchor baseline audit recorded.
-- `data/v4/_manager/M-V4-METRIC-SEMANTICS-c16.json` present.
-- `docs/OPERATOR_DECISIONS.md`, `docs/CODEBASE_GUIDE.md` present (edited per closure directive; not re-diffed here).
+Two carry-forwards from the prior committed audit are re-examined:
+- F1 (ledger-vs-disk parity gap for v4 substantive milestones) —
+  expected **CLOSED** in this delta window; ledger events with
+  `M-V4-{EAR-1,GEN-1,CLOSE-1}` milestone ids are present (e.g. c72
+  iteration-01 rollup, c73/c74 EAR-1 substantive, c77 CLOSE-1).
+- F2 (c31 audit-findings artifact absent on disk) — orthogonal to
+  the delta window; will not re-verify unless verify stage finds it
+  materially connected to a new claim.
 
-## Gate check (explore stage)
+## 5. Stage 1 exit gates
 
-- Critical path examined? **Yes** — all seven closure milestones and their cited artifacts SHA-verified.
-- Findings classified by severity? **Yes** — 2 candidate MODERATE + 1 candidate MINOR. Zero CRITICAL.
-- CRITICAL or MODERATE findings to act on? **Yes** — F1 and F2 warrant Verify-stage sanity check + Test-stage adversarial confirmation.
+- Critical path (v4 closure end-to-end) examined: **yes**.
+- All findings classified? None emitted at Stage 1 by design.
+- CRITICAL/MODERATE candidates to carry into Stage 2: **enumerated
+  in §3** as verdict-pending items.
+
+Proceeding to Stage 2 (verify) on the enumerated verdict-pending
+items, one pass per §3 row where cost permits.
