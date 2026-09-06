@@ -2,7 +2,7 @@
 
 # === Model ===
 llm_provider: claude                  # claude | codex | gemini | local (local is an unsupported extension point)
-model: claude-opus-4-7               # set verbatim per operator instruction (2026-08-28)
+model: claude-fable-5-1              # set verbatim per operator instruction (2026-09-06; was claude-opus-4-7 through c87)
 codex_model: gpt-5.5                  # used when llm_provider: codex unless agent overrides model
 gemini_model: gemini-3-flash-preview  # used when llm_provider: gemini unless agent overrides model
 local_model: custom-local-model        # operator-supplied OpenAI-compatible model alias
