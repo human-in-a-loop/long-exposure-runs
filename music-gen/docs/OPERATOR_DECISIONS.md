@@ -149,6 +149,26 @@ one, the earlier entry says so.
     `docs/v4_closure_completion_report.md`;
     original preserved as `_c21_original.md`.
 
+19. **v4 CLEAN CLOSE at c77** (2026-09-06): campaign concluded per
+    M-V4-CLOSE-1 with completion report v3
+    (`docs/v4_completion_report_v3.md`, supersedes v2 via c14 str
+    lemma). Verdict matrix: M-V4-CERT LANDS (E2E_DETERMINISM_HOLDS);
+    M-V4-PROFILES LANDS_WITH_HONEST_GAPS; M-V4-SHOWCASE LANDS_pending_operator
+    (9 A/Bs delivered, byte-det ×2); M-V4-RULES LANDS (76-rule artifact
+    + VOMM CA-substitute); M-V4-EAR HALT-HONEST (c76 formal proof: L119
+    empirically infeasible under VGGish-only backbone via monotone-
+    calibration lemma; CLAP torchvision::nms blocked); M-V4-GEN
+    HALT-HONEST_DELIVER_15 (3 iterations × 5 songs × byte-det ×2 = 15
+    gen renders; batch-scoring delegated to FD-6 operator ear per c47
+    OPT1 extension); M-V4-CLOSE LANDS. 24 A/Bs (9 focus + 15 gen) sit
+    `pending_operator` per FD-6 for post-hoc ear verdict. env_pin
+    `2ac444c3…922ca` held 56 cycles unchanged. c47 preservation-spin
+    BAN honored from c69 onward. Stall rule pre-empted at 3 iterations
+    since additional iterations cannot resolve the ear blocker
+    (preservation-spin pattern BANNED). Interpolation demo optional,
+    NOT authored (c78+ if operator requests). Run ends cleanly per
+    campaign L151-152; operator verifies everything post-close.
+
 ## Standing constraints (never expired)
 - Model config verbatim (`claude-opus-4-7`); never changed by the run.
 - Corpus audio never committed, never released; experimental use only.
