@@ -67,7 +67,7 @@ def main() -> int:
            "loo_cached_v2": {k: round(v, 4) for k, v in loo_cached.items()}, "raw_stats_fresh": {k: round(v, 6) for k, v in raw.items()},
            "sanity_gate_fresh": gate_fresh, "sanity_gate_cached": gate_cached, "band4_spot_check_fresh_v2": band4, "l119_check": l119,
            "gate_rule": "campaign L115-117: >= 4 of 5 exemplar LOO scores >= 6 and none < 5.5 (scripts/ear/v4_ear.sanity_gate READ-ONLY)",
-           "restores_ge6_gate": bool(gate_fresh.get("pass", gate_fresh.get("passes", False)))}
+           "restores_ge6_gate": bool(gate_fresh.get("gate_passes", False))}
     OUT.write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
     print(json.dumps({k: rec[k] for k in ("loo_fresh_v2", "loo_cached_v2", "sanity_gate_fresh", "band4_spot_check_fresh_v2", "l119_check")}, indent=1))
     return 0

@@ -58,7 +58,10 @@ def test_03_probe_record_enum_and_venv_absent_branch() -> None:
         r = subprocess.run(["/usr/bin/python3", "scripts/v5/ear_probe_v5.py"], env=env, capture_output=True, text=True)
         assert r.returncode == 3 and "EAR_VENV_ABSENT" in r.stdout
     else:
-        assert d["status"] != "EAR_VENV_ABSENT" and "rows" in d
+        # c82: the c81 record stays ABSENT as history; the live probe record is the newest ear_probe_c<N>.json (c82+)
+        newest = sorted(_ROOT.glob("data/v5/ear/ear_probe_c*.json"))[-1]
+        d = json.loads(newest.read_text())
+        assert d["status"] != "EAR_VENV_ABSENT" and "rows" in d, (newest, d["status"])
     print(f"test_03 PASS: probe status {d['status']} (venv present={venv})")
 
 

@@ -103,14 +103,6 @@ def main() -> int:
          + (f"RESTART: old driver stopped at the Essence boundary {launch['pause_window_start']} (os.killpg SIGTERM — children + parent; /proc + pgrep approval-gated), "
             f"venv built inside the stopped window (see M-V5-EAR-1), relaunched {launch['launched_utc']} PID {launch['new_pid']} running_after_8s={launch['running_after_8s']} "
             f"driver sha {launch['driver_sha256_at_launch'][:12]}… hook live at birth; record data/v5/logs/transcribe_full_c82.launch.json." if launch else
-            "RESTART: NOT performed at emit time (Essence had not landed) — see the closing summary for the honest state."),
-         supersedes_path=f"{P}/transcription-liveness-c81") if False else
-        (f"P0.3: {live[1]}; {live[2]}. At c82 open the OLD image (PID 5201, no hook) was on Essence ({ESSENCE}) muscriptor:guitar (518.8 s wall). Landed at c82 open: "
-         f"{done[:5]} (Disco A landed 17:25:30Z lossy under the old image). Catch-up: PYTHONPATH=. /usr/bin/python3 scripts/v5/reindex_hook.py -> Disco A 'reindexed+sidecar', "
-         f"the other four 'present' (idempotent; test_02). Sidecars on disk at emit: {sided}. "
-         + (f"RESTART: old driver stopped at the Essence boundary {launch['pause_window_start']} (os.killpg SIGTERM — children + parent; /proc + pgrep approval-gated), "
-            f"venv built inside the stopped window (see M-V5-EAR-1), relaunched {launch['launched_utc']} PID {launch['new_pid']} running_after_8s={launch['running_after_8s']} "
-            f"driver sha {launch['driver_sha256_at_launch'][:12]}… hook live at birth; record data/v5/logs/transcribe_full_c82.launch.json." if launch else
             "RESTART: NOT performed at emit time (Essence had not landed) — see the closing summary for the honest state.")),
         ["data/v5/logs/c82_p0_liveness.txt"] + (["data/v5/logs/transcribe_full_c82.launch.json"] if launch else []),
         supersedes_path=f"{P}/transcription-liveness-c81"))
