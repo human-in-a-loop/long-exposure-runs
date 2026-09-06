@@ -5,7 +5,7 @@
   "canonical_path": "/home/user/long-exposure-runs/music-gen/audits/final/final_audit_report.md",
   "commit_marker": "/home/user/long-exposure-runs/music-gen/audits/final/final_audit_report.committed",
   "baseline_boundary_ts": 1788569075.357903,
-  "total_input_tokens": 1104254,
-  "budget_tokens": 134803,
-  "stages": 14
+  "total_input_tokens": 1110687,
+  "budget_tokens": 141236,
+  "stages": 16
 }
