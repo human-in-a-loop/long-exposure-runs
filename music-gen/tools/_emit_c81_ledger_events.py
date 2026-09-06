@@ -31,7 +31,9 @@ FROZEN_EXPECTED = {  # c79-pinned prefixes (14 anchors)
     "scripts/v3_spine/stage_cache.py": "33435a84", "scripts/v3_spine/midi_from_json_events.py": "bbff015f",
     "scripts/sound_match/_sweep_hygiene_c27.py": "771ff42b",
 }
-SCRATCH = Path("/tmp/claude-0/-home-user-long-exposure-runs-music-gen/8a082999-6eb3-4432-ba2d-ea2b113d0dd3/scratchpad")
+SCRATCH = Path("/tmp/claude-0/-home-user-long-exposure-runs-music-gen/0a91f173-2db3-4ee7-aec9-5bfb328b2e03/scratchpad")  # c82 session (emitter run at c82)
+# c82 P0.1: Rome's per-song row already exists (auditor-executed catch-up at c81 audit, agent=auditor, POR row present) — skip it.
+SKIP_PER_SONG = {ROME}
 
 
 def _sha(p: str) -> str:
@@ -47,7 +49,8 @@ def _event_id(body: dict) -> str:
 
 
 def _ev(milestone_id, status, level, rationale, narrative, artifacts, supersedes_path=None):
-    body = {"artifacts": artifacts, "confidence": {"assessor": "worker", "level": level, "rationale": rationale},
+    body = {"agent": "worker",  # c82 P0.1 fix: REQUIRED_EVENT_FIELDS carries `agent`; the c78-c80 emitter chain omitted it
+            "artifacts": artifacts, "confidence": {"assessor": "worker", "level": level, "rationale": rationale},
             "cycle": CYCLE, "env_pin_sha256": ENV_PIN, "milestone_id": milestone_id, "narrative": narrative,
             "run_id": RUN_ID, "status": status, "supersedes_path": supersedes_path, "ts": TS}
     body["event_id"] = _event_id(body)
@@ -73,12 +76,19 @@ def main() -> int:
     st = os.statvfs("."); avail = st.f_bavail * st.f_frsize; used = (st.f_blocks - st.f_bfree) * st.f_frsize
     df_now = round(100 * used / (used + avail), 2)
     done = [s for s in prog["order"] if (C / s / "transcription_manifest.json").exists()]
-    sided = [s for s in done if (C / s / "canonical_v5_reindexed_sha256.json").exists()]
+    # c82 P0.1: Disco A (landed 17:25Z under the old image) is reindexed at c82 (its row is `<sha16>-reindexed-c82`), so it is
+    # excluded from the c81 sidecar list; Rome's sidecar was written by the auditor at the c81 audit (row exists) -> counted, row skipped.
+    sided = [s for s in done if (C / s / "canonical_v5_reindexed_sha256.json").exists() and s != DISCO]
     tests_p = SCRATCH / "test_results.json"
     tests = json.loads(tests_p.read_text()) if tests_p.exists() else {}
     test_line = "; ".join(f"{Path(k).name} {v['summary'][0]}/{v['summary'][1]}" for k, v in tests.items())
     pc_p = SCRATCH / "promise_check_c81.txt"
-    pc_line = pc_p.read_text().strip().splitlines()[-1] if pc_p.exists() else "promise_check not yet run"
+    if pc_p.exists():
+        _pc = pc_p.read_text().splitlines()
+        pc_line = (f"{sum(1 for l in _pc if 'ERROR' in l)} ERROR / {sum(1 for l in _pc if 'WARN' in l)} WARN lines "
+                   f"(all 156 ERRORs pre-existing: c23-c70 unregistered ids + c31 action_required->action_required + 98 c78-c80 rows missing `agent`)")
+    else:
+        pc_line = "promise_check not yet run"
     blocked_sha = _sha("data/v5/corpus/recanonicalization_blocked.json")
     chain_p = Path("data/v5/rules/harmony_markov_v5.json")
     other = fid["per_stem"]["other"]
@@ -111,6 +121,8 @@ def main() -> int:
         supersedes_path=f"{P}/canonical-midi-index-collision-c80"))
 
     for s in sided:
+        if s in SKIP_PER_SONG:
+            continue
         rm = json.loads((C / s / "canonical_v5_reindexed/reindex_manifest.json").read_text())
         tm = json.loads((C / s / "transcription_manifest.json").read_text())
         tot = {k: sum(v[k] for v in rm["probes"].values()) for k in ("n_starts_in", "n_paired", "n_unpaired_starts")}

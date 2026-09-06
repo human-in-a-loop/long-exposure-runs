@@ -32,7 +32,10 @@ if sys.executable != "/usr/bin/python3" and "SUPPRESS_INTERPRETER_GUARD" not in 
 
 _WS = Path(__file__).resolve().parent.parent.parent
 VENV_PY = _WS / "workspace/ear_venv/bin/python"
-OUT = _WS / "data/v5/ear/ear_probe_c81.json"
+# c82: output name + cycle are CLI-selectable (default c82); the c81 record data/v5/ear/ear_probe_c81.json is left untouched.
+CYCLE = int(os.environ.get("EAR_PROBE_CYCLE", "82"))
+OUT = _WS / f"data/v5/ear/ear_probe_c{CYCLE}.json"
+SAVE_NPZ = os.environ.get("EAR_PROBE_SAVE_NPZ")  # optional: persist run-1 fresh embeddings (npz) for the c76 v2 LOO gate
 TOL = 1e-5
 _PINS = {"PYTHONHASHSEED": "0", "SOURCE_DATE_EPOCH": "1756463424", "TZ": "UTC", "LC_ALL": "C.UTF-8",
          "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "TF_ENABLE_ONEDNN_OPTS": "0",
@@ -54,7 +57,7 @@ np.savez(sys.argv[2], **out)
 def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     if not VENV_PY.exists():
-        rec = {"schema_version": 1, "cycle": 81, "status": "EAR_VENV_ABSENT", "venv_python": str(VENV_PY),
+        rec = {"schema_version": 1, "cycle": CYCLE, "status": "EAR_VENV_ABSENT", "venv_python": str(VENV_PY),
                "reason": "workspace/ear_venv not built (see data/v5/ear/venv_build_c81.json)", "env_pins": _PINS}
         OUT.write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
         print("EAR_VENV_ABSENT")
@@ -66,7 +69,7 @@ def main() -> int:
         td = Path(tempfile.mkdtemp(prefix=f"ear_probe_run{k}_"))
         r = subprocess.run([str(VENV_PY), "-c", WORKER, str(_WS), str(td / "emb.npz")], env=env, capture_output=True, text=True)
         if r.returncode != 0:
-            rec = {"schema_version": 1, "cycle": 81, "status": "EAR_VENV_PROBE_FAILED", "stderr_tail": r.stderr[-2000:]}
+            rec = {"schema_version": 1, "cycle": CYCLE, "status": "EAR_VENV_PROBE_FAILED", "stderr_tail": r.stderr[-2000:]}
             OUT.write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
             print("EAR_VENV_PROBE_FAILED", r.stderr[-500:])
             return 4
@@ -89,9 +92,12 @@ def main() -> int:
         status = "EAR_VENV_REPRODUCES_CACHE"
     else:
         status = "EAR_VENV_DIFFERS_FROM_CACHE"
-    rec = {"schema_version": 1, "cycle": 81, "status": status, "run1_sha256": hashlib.sha256(runs[0].read_bytes()).hexdigest(),
+    rec = {"schema_version": 1, "cycle": CYCLE, "status": status, "run1_sha256": hashlib.sha256(runs[0].read_bytes()).hexdigest(),
            "run2_sha256": hashlib.sha256(runs[1].read_bytes()).hexdigest(), "run1_eq_run2": same, "tolerance": TOL, "rows": rows,
-           "env_pins": _PINS, "venv_python": str(VENV_PY)}
+           "env_pins": _PINS, "venv_python": str(VENV_PY), "run_dirs": [str(r.parent) for r in runs]}
+    if SAVE_NPZ:
+        Path(SAVE_NPZ).write_bytes(runs[0].read_bytes())
+        rec["fresh_embeddings_npz"] = SAVE_NPZ
     OUT.write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
     print(status, rows)
     return 0

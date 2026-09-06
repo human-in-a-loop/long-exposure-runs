@@ -73,7 +73,12 @@ KK_MAJOR = (6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.
 KK_MINOR = (6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
 DEGENERACY = {"max_stationary_mass_lt": 0.60, "min_distinct_qualities": 4, "min_quality_segment_count": 8}
 MIN_SONGS = 3
-CYCLE = 81  # c81 P0.4 patch: lossless-only preference tuple + MISSING_REINDEX
+CYCLE = 82  # c82 P3: input-artifact exclusion (pre-declared) on top of the c81 lossless-only patch
+# c82 P3.1 PRE-DECLARED input-artifact exclusion: a beat is EXCLUDED from the chord stream (never enters a PCP,
+# a state, or a transition) when a single stem contributes >= EXCLUDE_MAX_SIMULTANEOUS_STARTS note starts on
+# that beat (the Rome bass 215.08 s tail chord: 122 starts in one chunk-tail event). Excluded-beat counts are
+# disclosed per song and per stem. No other behaviour change.
+EXCLUDE_MAX_SIMULTANEOUS_STARTS = 12
 # c81 P0.4: lossless dirs only; "canonical_midi_full" (c79, lossy) removed from the preference tuple.
 MIDI_DIR_PREFERENCE = ("canonical_v5c_reindexed", "canonical_v5_reindexed")
 
@@ -179,17 +184,30 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
     tm = json.loads((d / "transcription_manifest.json").read_text())
     per_stem = {}
     all_notes = []
+    excluded: dict[int, dict[str, int]] = {}  # c82 P3.1: beat -> {stem: n_starts} for beats hit by the exclusion rule
     for stem in HARMONY_STEMS:
         p = mid_dir / f"{stem}.mid"
         notes = read_notes(p) if p.exists() else []
+        starts_per_beat: dict[int, int] = {}
+        for s, _e, _p, _v in notes:
+            starts_per_beat[int(np.floor(s))] = starts_per_beat.get(int(np.floor(s)), 0) + 1
+        stem_excl = {b: n for b, n in starts_per_beat.items() if n >= EXCLUDE_MAX_SIMULTANEOUS_STARTS}
+        for b, n in stem_excl.items():
+            excluded.setdefault(b, {})[stem] = n
         per_stem[stem] = {"n_notes_midi": len(notes),
-                          "n_note_on_muscriptor_json": tm["note_counts"].get(stem, {}).get("n_note_on")}
+                          "n_note_on_muscriptor_json": tm["note_counts"].get(stem, {}).get("n_note_on"),
+                          "excluded_beats": sorted(stem_excl), "n_excluded_beats": len(stem_excl)}
         all_notes.extend(notes)
     pcp = beat_pcps(all_notes)
+    excluded_beats = sorted(b for b in excluded if b < len(pcp))
+    if excluded_beats:
+        pcp[excluded_beats, :] = 0.0  # excluded beats never enter the key estimate either
     vels = sorted({v for _s, _e, _p, v in all_notes})
     key = estimate_key(pcp.sum(axis=0)) if len(pcp) else {"tonic": 0, "tonic_name": "C", "mode": "major", "corr": 0.0, "method": "empty"}
     stream = []
     for b in range(len(pcp)):
+        if b in excluded:
+            continue  # c82 P3.1: dropped from the stream -> no state, no transition
         m = match_beat(sha16, b, pcp[b])
         state = "N" if m["root"] is None else f"{(m['root'] - key['tonic']) % 12}:{m['quality']}"
         stream.append({"beat": b, "root": m["root"], "quality": m["quality"], "sim": m["sim"], "state": state,
@@ -205,6 +223,9 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
             "velocity_values_seen": vels, "velocity_uniform": len(vels) <= 1,
             "weighting": "note overlap (beats) x velocity; velocity is uniform in canonical MIDI so effectively duration-only",
             "key": key, "n_beats": len(pcp), "n_segments": len(segments),
+            "exclusion_rule": {"max_simultaneous_starts_per_stem": EXCLUDE_MAX_SIMULTANEOUS_STARTS,
+                               "excluded_beats": {str(b): excluded[b] for b in excluded_beats}, "n_excluded_beats": len(excluded_beats),
+                               "n_beats_in_stream": len(stream)},
             "chord_stream": stream, "segments": segments}
 
 
@@ -248,13 +269,21 @@ def markov(streams: dict[str, list[str]], segs: dict[str, list[str]]) -> dict:
 
 
 def main() -> int:
+    global EXCLUDE_MAX_SIMULTANEOUS_STARTS
     ap = argparse.ArgumentParser(description="v5 harmony root+quality template matching + functional Markov chain")
     ap.add_argument("--manifest", default="data/v5/corpus/corpus_manifest.json")
     ap.add_argument("--corpus-dir", default="data/v5/corpus")
     ap.add_argument("--out-dir", default="data/v5/rules")
     ap.add_argument("--min-songs", type=int, default=MIN_SONGS)
+    ap.add_argument("--exclude-max-starts", type=int, default=EXCLUDE_MAX_SIMULTANEOUS_STARTS,
+                    help="c82 P3.1 exclusion threshold; the official run uses the pre-declared default (12). Any other value is a LABELLED "
+                         "sensitivity diagnostic and must be written to a non-default --out-dir.")
     args = ap.parse_args()
     os.chdir(_WS)
+    if args.exclude_max_starts != EXCLUDE_MAX_SIMULTANEOUS_STARTS:
+        if args.out_dir == "data/v5/rules":
+            raise SystemExit("sensitivity runs must not overwrite the official artifacts: pass --out-dir <diagnostic dir>")
+        EXCLUDE_MAX_SIMULTANEOUS_STARTS = args.exclude_max_starts
     corpus = Path(args.corpus_dir)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
