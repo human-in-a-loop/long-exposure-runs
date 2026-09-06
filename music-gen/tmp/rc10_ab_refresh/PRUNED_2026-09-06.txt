@@ -1,0 +1,1 @@
+Pruned 40 files >512KB (~102MB of audio/binary scratch) from tmp/rc10_ab_refresh on 2026-09-06T17:11:59Z — operator disk hygiene to restore headroom for v5 full-length transcription + isolated ear venv. Small metadata/scripts retained; dir was untouched for >35h and referenced by no running process. Regenerable scratch per campaign doctrine.
