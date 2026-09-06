@@ -238,3 +238,126 @@ A/Bs; the ear model gap is documented; the report closes cleanly.
 **M-V4-CLOSE-1 LANDS at c77.** Run ends here per campaign L151-152:
 "declare the topic complete and stop cleanly. The operator verifies
 everything after close."
+
+---
+
+## Section: c78 Interpolation-hybrid demo (optional post-close deliverable)
+
+Appended v3.1 amendment per c78 research brief. This section is **additive**:
+the c77 clean-close verdicts above (v3 §1-§7) stand unchanged; the 76-rule
+artifact and the 24 pending_operator A/Bs are unchanged; the six binding-spec
+lands (CERT, PROFILES, SHOWCASE, RULES, EAR, GEN, CLOSE) hold.
+
+### Deliverable
+
+The M-V4-GEN-1 interpolation-hybrid demo (originally deferred from c74 P6
+through c75/c76/c77) lands as a **single additional optional artifact**
+alongside the 15 iter-01/02/03 gen renders. It does NOT re-open the campaign.
+
+Path: `data/v4/gen/interpolation_demo/interpolation_demo_donor_a_31a164f845f8e27e_donor_b_88d247468cb6d49f_t_0.5/`
+
+| Artifact                 | SHA-256                                                                   |
+|--------------------------|---------------------------------------------------------------------------|
+| `ab_mix.wav`             | `b129c6d1bac8be90fa32249a012a47e5c9e7b369b0707ca6b2f652de478e690a`        |
+| `ab_mix.manifest.json`   | `10b298c387a67de8ef78c362bac5849a8f72e7226d2d9e3d8ec1c92fa8c82689`        |
+| `ab_mix.replay_proof.json` | `ac85dbe915218da56b5b1476ce31de65fc0f6d861cdb32e936d8a77dff89c99c`       |
+| `scripts/gen/interpolate_v4.py` | `2359f35d2355647d7b4a692d9b0d303e8bf040671d4ab28cadfa25a0277f6653`   |
+
+REPLAY_PROOF_HOLDS byte-deterministic ×2 in fresh `tempfile.mkdtemp()`
+under 7-key `env_pin_sha256=2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca`
+(unchanged c22→c78 = 57 cycles).
+
+### Interpolation semantics (pre-registered in c78 brief §P1)
+
+VOMM samples 24 rules for donor A (CG, sha16 `31a164f845f8e27e`) under seed
+string `interp_demo|donor=31a164f845f8e27e|seed=0`, then 24 rules for donor
+B (Peach Dream, sha16 `88d247468cb6d49f`) under `interp_demo|donor=88d247468cb6d49f|seed=0`.
+
+Rules are corpus-selected instances (content-hashed `rule_id`), not
+parameter-tunable per position. Arithmetic mean on rule-parameter vectors
+would fabricate new rules absent from the corpus, violating FD-1 (no
+fabrication). Per the pre-registered fallback (c78 brief §P1 step 2), the
+driver falls back to per-position SHA-256 tiebreak at threshold t=0.5:
+
+    r = int.from_bytes(sha256(f'{donor_a}|{donor_b}|pos{i:03d}|seed{seed}').digest()[:8], 'big') / (1<<64)
+    pick rules_A[i] if r < (1 - t) else rules_B[i]
+
+At t=0.5 the observed mix on this run is: **6 positions from donor A only,
+10 positions from donor B only, 8 positions from rules present in both
+donor pools (ambiguous)** — total 24. All picked `rule_id`s are subset of
+`union(rules_A, rules_B)`; test_02 asserts this by grep as an anti-
+fabrication guard.
+
+### Rendering pipeline
+
+Same VOMM→canonical MIDI→SF2 replay pipeline as iter-01/02/03. Donor A (CG)
+supplies the bass profile at `data/v4/profiles/31a164f845f8e27e/bass_v2.json`
+(sha `2a1cb340bffd11016c566467b0d313fb002c5949ce881968702846867e090462`).
+Drums use the c14 OPT3 GM Standard Kit shim (CG lacks pinned drums profile).
+Sum via float accumulate + 0.99 peak-limit + max-length zero-pad per c71
+policy. No PRNG, no sidecar_nonfactor, no VST3 state APIs (AST-verified in
+test_03).
+
+### Anchor preservation
+
+All 23 v4 audio anchors + 6 c77 anchors + rules artifact + SF2 verified
+byte-identical pre==post via `sha256sum`:
+
+- `docs/v4_completion_report_v3.md` pre-append sha `d920c93328930556…`
+  (this v3.1 amendment is an additive append below the horizontal rule
+  above; header 8-KB region unchanged)
+- `docs/OPERATOR_DECISIONS.md` sha `b563caee0f81db96…`
+- `scripts/ear/v4_ear.py` sha `e775621bff1c9560…`
+- `data/v4/ear/exemplar_set.json` sha `31c10dfb80355181…`
+- `data/v3/rules/rules_artifact.jsonl` sha `e19fb205b282dabb…`
+- `data/v4/deliveries/31a164f845f8e27e/cg_ab_mix.wav` sha `6e13e0075c5d8116…`
+- 8 focus A/B mixes (v1+v2 for WIG/Rome/PD/Disco A) — SHAs unchanged
+- 15 gen renders (iter-01/02/03 × 5 songs) — 15/15 anchors byte-identical
+  under `test_05_c72_c73_c74_iteration_anchors_byte_identical`
+- Peach Dream `stem_manifest.json` sha `d483f2bf0b09389b…` (P0 Branch C
+  canonical, 20th-cycle stable per invariant (d))
+
+### Test suite
+
+`tests/test_gen_interpolate_v4.py` lands with 6 named cases per c78
+brief §P3:
+
+1. **test_01** — interpolation deterministic under identical (donor, t, seed)
+   via fresh subprocess into fresh tempdir. PASS.
+2. **test_02** — at t=0.5, sampled mix contains rules only-in-A and
+   only-in-B; anti-fabrication guard (mix rule_ids ⊆ union(A, B)). PASS.
+3. **test_03** — AST scan of `scripts/gen/interpolate_v4.py`: no PRNG, no
+   sidecar_nonfactor, no VST3 state APIs. PASS.
+4. **test_04** — env_pin_sha256 in manifest matches campaign anchor. PASS.
+5. **test_05** — regression pin on 15 iter-01/02/03 A/B SHAs byte-identical.
+   PASS.
+6. **test_06** — on-disk replay_proof.json is HOLDS + shape valid + SHA
+   matches anchor. PASS.
+
+**6/6 PASS** via `PYTHONPATH=. /usr/bin/python3 tests/test_gen_interpolate_v4.py`.
+Regression: 9/9 c76 v2 calibration + 8/8 c75 batch scoring + 5/5 c74 ear
+scaffold + 7/7 c72-c74 gen iterate = 29/29 pre-c78 tests still green.
+Cross-cycle total: **35/35** green.
+
+### Verdict
+
+**INTERPOLATION_DEMO_DELIVERED_pending_operator**. Per FD-6, operator ear on
+the demo audio is the only LANDS authority; the automated gate produces the
+byte-deterministic delivery + replay proof, not an ear verdict. This
+augments the c77 close with one additional `pending_operator` A/B (24 → 25
+delivered candidates awaiting operator ear); the campaign remains cleanly
+closed at all seven M-V4-* verdicts. Ledger cross-link:
+`M-V4-GEN-1/interpolation-demo-delivered-c78`.
+
+### What this demo demonstrates
+
+The generator produces a novel rule sequence `r_mix = f(rules_A, rules_B,
+t=0.5)` distinct from both `rules_A` and `rules_B`: 8 positions carry rules
+present in both donor pools (ambiguous), 6 draw exclusively from A, and 10
+draw exclusively from B. The rendered mix is neither `iter-01/song_1`
+(CG-only donor) nor a Peach Dream render — it is a per-position hybrid at
+t=0.5 that lands byte-deterministically through the same pipeline the 15
+accepted iter renders use. The mechanism claim in the c78 brief holds under
+the SHA-tiebreak fallback: **the rule-set representation is composable at
+position granularity**, even though the corpus-content constraint blocks
+arithmetic-mean-on-parameters composition.
