@@ -1,0 +1,8 @@
+OPERATOR NOTE (2026-09-06 17:20Z) — DISK HEADROOM RESTORED; REBUILD THE ISOLATED EAR VENV NOW.
+
+The operator pruned ~2.7 GB of stale scratch outside the frozen v4 artifacts (tools/stale, tools/tmp_batch_v5_run2, stale/breadth_determinism, tmp/rc10_*, stale /tmp render dirs — all >35 h idle, tombstoned with PRUNED_2026-09-06.txt; no corpus, deliveries, weights, model caches, profiles, or the MuScriptor venv were touched). Disk is now 81% with ~7.4 GB available.
+
+Consequences for the v5 plan:
+1. Decision 5 (isolated ear venv, ~2.36 GB per your c81 arithmetic) is now FEASIBLE: build it this cycle (target ~84-85% after build), record env pin + receipts as planned, and run the ear probe. Keep the c80/c81 headroom arithmetic artifacts as history; supersede EAR_VENV_ABSENT once the build lands.
+2. The 26-song full-length transcription job continues; keep the driver's transient cleanup and df guard as they are (85% WARN / 90% abort). If headroom tightens again, prune your own regenerable scratch first (scored sweep renders, transient stems) — never the frozen v4 profiles/deliveries — and say so in the plan of record.
+3. No other change to the v5 decisions or their order.
