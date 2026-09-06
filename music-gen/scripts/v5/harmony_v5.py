@@ -9,8 +9,11 @@ milestone: M-V5-RULES-1/harmony_v5-first-data-c80
 
 Per song (landed = transcription_manifest.json present; NOT listed in
 data/v5/corpus/recanonicalization_blocked.json):
-  1. Read canonical MIDI (canonical_v5b/ if present, else canonical_midi_full/) for
+  1. Read canonical MIDI (canonical_v5c_reindexed/ if a SUPPORTED tempo revision
+     exists, else canonical_v5_reindexed/ — the c80 lossless re-index) for
      bass + guitar + piano + other. PPQ=480 and tempo=bpm_v5 make beat = tick/480.
+     c81: the LOSSY c79 canonical_midi_full/ is NEVER read; an unblocked song
+     without a reindexed dir raises MISSING_REINDEX (no silent fallback).
   2. Beat-weighted pitch-class profile: for every note, its overlap (in beats) with
      each beat x velocity is added to pcp[beat][pitch % 12]. DISCLOSURE: the c4
      canonical serializer writes a uniform velocity (100) because MuScriptor events
@@ -70,6 +73,13 @@ KK_MAJOR = (6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.
 KK_MINOR = (6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
 DEGENERACY = {"max_stationary_mass_lt": 0.60, "min_distinct_qualities": 4, "min_quality_segment_count": 8}
 MIN_SONGS = 3
+CYCLE = 81  # c81 P0.4 patch: lossless-only preference tuple + MISSING_REINDEX
+# c81 P0.4: lossless dirs only; "canonical_midi_full" (c79, lossy) removed from the preference tuple.
+MIDI_DIR_PREFERENCE = ("canonical_v5c_reindexed", "canonical_v5_reindexed")
+
+
+class MissingReindexError(RuntimeError):
+    """Raised when an unblocked landed song has no lossless re-indexed canonical MIDI (c81 P0.4)."""
 
 
 def sha_str(s: str) -> str:
@@ -155,12 +165,17 @@ def estimate_key(pcp_sum: np.ndarray) -> dict:
 
 def analyse_song(sha16: str, corpus: Path) -> dict:
     d = corpus / sha16
-    # Preference: canonical_v5b (tempo-revised, only if P1 had been SUPPORTED) > canonical_v5_reindexed
-    # (c80 index-collision fix, lossless) > canonical_midi_full (c79, LOSSY — see reindex_canonical_v5.py docstring)
-    for sub in ("canonical_v5b", "canonical_v5_reindexed", "canonical_midi_full"):
-        if (d / sub).exists():
+    # c81: preference tuple contains ONLY lossless re-indexed dirs. canonical_v5c_reindexed/ exists only if a
+    # SUPPORTED tempo criterion re-canonicalized the song; canonical_v5_reindexed/ is the c80 fix. The c79
+    # canonical_midi_full/ (LOSSY, see reindex_canonical_v5.py) is deliberately NOT a fallback.
+    mid_dir = None
+    for sub in MIDI_DIR_PREFERENCE:
+        if (d / sub / "reindex_manifest.json").exists():  # a lossless dir always carries its reindex manifest
             mid_dir = d / sub
             break
+    if mid_dir is None:
+        raise MissingReindexError(f"MISSING_REINDEX: {sha16} has no {'/'.join(MIDI_DIR_PREFERENCE)} directory; "
+                                  f"run scripts/v5/reindex_canonical_v5.py --songs {sha16} (the c79 canonical_midi_full/ is lossy and is never read)")
     tm = json.loads((d / "transcription_manifest.json").read_text())
     per_stem = {}
     all_notes = []
@@ -185,7 +200,7 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
             segments[-1]["n_beats"] += 1
         else:
             segments.append({"state": e["state"], "start_beat": e["beat"], "n_beats": 1})
-    return {"schema_version": 1, "cycle": 80, "sha16": sha16, "title": tm.get("title"), "bpm_v5": tm["bpm_v5"],
+    return {"schema_version": 1, "cycle": CYCLE, "sha16": sha16, "title": tm.get("title"), "bpm_v5": tm["bpm_v5"],
             "midi_dir": str(mid_dir), "env_pin_sha256": ENV_PIN_SHA256, "stems": HARMONY_STEMS, "per_stem": per_stem,
             "velocity_values_seen": vels, "velocity_uniform": len(vels) <= 1,
             "weighting": "note overlap (beats) x velocity; velocity is uniform in canonical MIDI so effectively duration-only",
@@ -250,7 +265,7 @@ def main() -> int:
     landed = [s for s in order if (corpus / s / "transcription_manifest.json").exists()]
     used = [s for s in landed if s not in blocked]
     skipped_blocked = [s for s in landed if s in blocked]
-    gate = {"cycle": 80, "n_landed": len(landed), "landed": landed, "n_blocked_skipped": len(skipped_blocked),
+    gate = {"cycle": CYCLE, "n_landed": len(landed), "landed": landed, "n_blocked_skipped": len(skipped_blocked),
             "blocked_skipped": skipped_blocked, "n_used": len(used), "used": used, "min_songs": args.min_songs}
     if len(used) < args.min_songs:
         gate["verdict"] = "GATED_INSUFFICIENT_UNBLOCKED_SONGS"
@@ -270,7 +285,7 @@ def main() -> int:
         print(f"{s} {str(r['title'])[:26]:26s} key={r['key']['tonic_name']} {r['key']['mode']} beats={r['n_beats']} "
               f"segs={r['n_segments']} top={per_song_summary[s]['top_states'][:3]}")
     mk = markov(streams, segs)
-    mk.update({"schema_version": 1, "cycle": 80, "env_pin_sha256": ENV_PIN_SHA256, "gate": gate,
+    mk.update({"schema_version": 1, "cycle": CYCLE, "env_pin_sha256": ENV_PIN_SHA256, "gate": gate,
                "per_song": per_song_summary, "qualities": list(QUALITY_ORDER),
                "notes": ["first data only; NOT fed to any generator this cycle",
                          "velocity uniform in canonical MIDI -> duration-only weighting (disclosed)"]})

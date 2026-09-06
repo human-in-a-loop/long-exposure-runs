@@ -67,6 +67,7 @@ from scripts.v3_spine import stage_cache as _sc  # noqa: E402  READ-ONLY
 from scripts.v3_spine.midi_from_json_events import serialize as canonical_midi_serialize  # noqa: E402
 from scripts.v3_spine.v3_pipeline.env_pin import build_env_pin_manifest  # noqa: E402
 from scripts.sound_match._sweep_hygiene_c27 import _disk_used_pct_user  # noqa: E402  READ-ONLY (no prune)
+from scripts.v5 import reindex_hook as _reindex_hook  # noqa: E402  c81 P0.5: lossless re-index at birth
 
 CANONICAL_ENV_PIN_SHA256 = "2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca"
 STEMS = ["drums", "bass", "guitar", "other", "piano", "vocals"]
@@ -270,7 +271,11 @@ def process_song(song: dict, tempo_dir: Path, env_pin_sha: str, keep_audio: bool
         rec["stages"]["canonicalize"] = {"cache_hit": False, "wall_s": round(time.time() - t0, 1)}
     rec["cache_keys"]["canonicalize"] = _sc.compute_key("v5_canonicalize", inputs, env_pin_sha)
     rec["canonical_midi_sha256"] = {p: sha(canon_dir / f"{p}.mid") for p in PROBES}
+    rec["canonical_midi_full_is_lossy"] = True  # c80 finding: index collision in the READ-ONLY merge x serializer
     rec["muscriptor_json_sha256"] = {p: sha(ms_dir / f"{p}.json") for p in PROBES}
+
+    # stage 4b (c81 P0.5) — the lossless re-index hook fires right after transcription_manifest.json is
+    # written below (so the sidecar's transcription_manifest_sha256 refers to the on-disk file).
 
     # --- per-stem note counts (honest, incl. other/piano) ---------------------
     counts = {}
@@ -301,6 +306,8 @@ def process_song(song: dict, tempo_dir: Path, env_pin_sha: str, keep_audio: bool
     rec["env_pin_sha256_cache_key"] = env_pin_sha
     rec["env_pin_sha256_canonical_7key"] = CANONICAL_ENV_PIN_SHA256
     (work / "transcription_manifest.json").write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
+    hook_rec = _reindex_hook.post_canonicalize(sha16, Path("data/v5/corpus"))
+    log(f"{sha16} reindex_hook {hook_rec['reindex']} sidecar={_reindex_hook.SIDECAR_NAME}")
     log(f"{sha16} DONE notes={ {p: counts[p]['n_note_on'] for p in PROBES} } bars={rec['bar_count_at_bpm_v5']} df_max={_MAX_DF['pct']:.1f}%")
     return rec
 
