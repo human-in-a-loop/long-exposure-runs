@@ -66,9 +66,13 @@ def _sha(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def render_list() -> list:
+def render_list(globs: list | None = None) -> list:
     rows = []
-    for w in sorted(Path("data/v4/gen").glob("iteration_0*/*/ab_mix.wav")) + sorted(Path("data/v4/gen/interpolation_demo").glob("*/ab_mix.wav")):
+    if globs:  # c84 additive: score an arbitrary render set (e.g. data/v5/gen/iteration_01/*/ab_mix.wav)
+        wavs = sorted(w for g in globs for w in Path(".").glob(g))
+    else:
+        wavs = sorted(Path("data/v4/gen").glob("iteration_0*/*/ab_mix.wav")) + sorted(Path("data/v4/gen/interpolation_demo").glob("*/ab_mix.wav"))
+    for w in wavs:
         rows.append({"key": w.parent.parent.name + "/" + w.parent.name, "wav": str(w), "manifest": str(w.with_name("ab_mix.manifest.json"))})
     return rows
 
@@ -77,11 +81,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--table-out", type=Path, default=TABLE_DEFAULT)
     ap.add_argument("--no-siblings", action="store_true", help="do not write per-render ear_score_v5.json (byte-det second run)")
+    ap.add_argument("--renders-glob", action="append", default=None, help="c84 additive: glob(s) of ab_mix.wav to score instead of the c83 v4 set")
     a = ap.parse_args(argv)
     assert RECEIPT.exists(), "SCORING_BLOCKED_ON_RECEIPT: amended receipt absent"
     assert json.loads(PROBE.read_text())["status"] == "EAR_VENV_REPRODUCES_CACHE", "SCORING_BLOCKED_ON_RECEIPT: c83 probe not REPRODUCES_CACHE"
     assert VENV_PY.exists()
-    rows = render_list()
+    rows = render_list(a.renders_glob)
+    assert rows, "no renders matched"
     pre = {r["wav"]: _sha(Path(r["wav"])) for r in rows}
     pre.update({r["manifest"]: _sha(Path(r["manifest"])) for r in rows})
     td = Path(tempfile.mkdtemp(prefix="score_gen_v5_"))

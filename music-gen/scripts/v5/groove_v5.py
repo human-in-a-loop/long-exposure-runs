@@ -158,6 +158,10 @@ def main() -> int:
     refused = [s for s in args.songs if s in blocked]
     if refused:
         raise SystemExit(f"REFUSED: blocked songs must not be consumed by the groove model: {refused}")
+    if str(_WS) not in sys.path:
+        sys.path.insert(0, str(_WS))
+    from scripts.v5.content_blocked import refuse_if_content_blocked  # c84 P0.2: additive content-gate refusal
+    refuse_if_content_blocked(args.songs, corpus, who="groove_v5")
     per_song, all_bars = {}, []
     for s in args.songs:
         d = corpus / s / "canonical_v5_reindexed"

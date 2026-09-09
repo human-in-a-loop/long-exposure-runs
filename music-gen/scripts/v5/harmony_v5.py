@@ -87,6 +87,13 @@ class MissingReindexError(RuntimeError):
     """Raised when an unblocked landed song has no lossless re-indexed canonical MIDI (c81 P0.4)."""
 
 
+# c84 P0.2: additive content-gate refusal (NON-MUSIC songs in data/v5/corpus/content_blocked.json are refused exactly like
+# tempo-blocked songs: skipped in main(), and analyse_song() raises ContentBlockedError before reading any MIDI).
+if str(_WS) not in sys.path:
+    sys.path.insert(0, str(_WS))
+from scripts.v5.content_blocked import ContentBlockedError, load_content_blocked, refuse_if_content_blocked  # noqa: E402,F401
+
+
 def sha_str(s: str) -> str:
     return hashlib.sha256(s.encode()).hexdigest()
 
@@ -169,6 +176,7 @@ def estimate_key(pcp_sum: np.ndarray) -> dict:
 
 
 def analyse_song(sha16: str, corpus: Path) -> dict:
+    refuse_if_content_blocked([sha16], corpus, who="harmony_v5")  # c84: refuse-before-read
     d = corpus / sha16
     # c81: preference tuple contains ONLY lossless re-indexed dirs. canonical_v5c_reindexed/ exists only if a
     # SUPPORTED tempo criterion re-canonicalized the song; canonical_v5_reindexed/ is the c80 fix. The c79
@@ -269,7 +277,7 @@ def markov(streams: dict[str, list[str]], segs: dict[str, list[str]]) -> dict:
 
 
 def main() -> int:
-    global EXCLUDE_MAX_SIMULTANEOUS_STARTS
+    global EXCLUDE_MAX_SIMULTANEOUS_STARTS, CYCLE
     ap = argparse.ArgumentParser(description="v5 harmony root+quality template matching + functional Markov chain")
     ap.add_argument("--manifest", default="data/v5/corpus/corpus_manifest.json")
     ap.add_argument("--corpus-dir", default="data/v5/corpus")
@@ -278,7 +286,12 @@ def main() -> int:
     ap.add_argument("--exclude-max-starts", type=int, default=EXCLUDE_MAX_SIMULTANEOUS_STARTS,
                     help="c82 P3.1 exclusion threshold; the official run uses the pre-declared default (12). Any other value is a LABELLED "
                          "sensitivity diagnostic and must be written to a non-default --out-dir.")
+    # c84 additive CLI: name the chain file, put per-song outputs under a sub-directory, stamp the cycle (defaults reproduce c82 layout).
+    ap.add_argument("--out-name", default="harmony_markov_v5.json")
+    ap.add_argument("--per-song-subdir", default="", help="per-song outputs go to <out-dir>/<subdir>/<sha16>/ (default: <out-dir>/<sha16>/)")
+    ap.add_argument("--cycle", type=int, default=CYCLE)
     args = ap.parse_args()
+    CYCLE = args.cycle
     os.chdir(_WS)
     if args.exclude_max_starts != EXCLUDE_MAX_SIMULTANEOUS_STARTS:
         if args.out_dir == "data/v5/rules":
@@ -292,24 +305,31 @@ def main() -> int:
     blocked_p = corpus / "recanonicalization_blocked.json"
     blocked = set(json.loads(blocked_p.read_text())["blocked_songs"]) if blocked_p.exists() else set()
     landed = [s for s in order if (corpus / s / "transcription_manifest.json").exists()]
-    used = [s for s in landed if s not in blocked]
+    content_blocked = load_content_blocked(corpus)  # c84 P0.2: NON-MUSIC songs (separate file from the tempo block)
+    used = [s for s in landed if s not in blocked and s not in content_blocked]
     skipped_blocked = [s for s in landed if s in blocked]
+    skipped_content = [s for s in landed if s in content_blocked]
     gate = {"cycle": CYCLE, "n_landed": len(landed), "landed": landed, "n_blocked_skipped": len(skipped_blocked),
-            "blocked_skipped": skipped_blocked, "n_used": len(used), "used": used, "min_songs": args.min_songs}
+            "blocked_skipped": skipped_blocked, "n_content_blocked_skipped": len(skipped_content), "content_blocked_skipped": skipped_content,
+            "content_gate_present": bool(content_blocked), "n_used": len(used), "used": used, "min_songs": args.min_songs}
     if len(used) < args.min_songs:
         gate["verdict"] = "GATED_INSUFFICIENT_UNBLOCKED_SONGS"
         (out_dir / "harmony_v5_gated.json").write_text(json.dumps(gate, sort_keys=True, indent=2) + "\n")
         print(f"GATED: {len(used)} unblocked landed songs < {args.min_songs}: {gate}")
         return 0
     streams, segs, per_song_summary = {}, {}, {}
+    per_song_root = out_dir / args.per_song_subdir if args.per_song_subdir else out_dir
     for s in used:
         r = analyse_song(s, corpus)
-        (out_dir / s).mkdir(parents=True, exist_ok=True)
-        (out_dir / s / "harmony_v5.json").write_text(json.dumps(r, sort_keys=True, indent=2) + "\n")
+        (per_song_root / s).mkdir(parents=True, exist_ok=True)
+        (per_song_root / s / "harmony_v5.json").write_text(json.dumps(r, sort_keys=True, indent=2) + "\n")
         streams[s] = [e["state"] for e in r["chord_stream"]]
         segs[s] = [g["state"] for g in r["segments"]]
+        n_ex = r["exclusion_rule"]["n_excluded_beats"]
         per_song_summary[s] = {"title": r["title"], "key": r["key"], "n_beats": r["n_beats"], "n_segments": r["n_segments"],
-                               "per_stem": r["per_stem"], "top_states": sorted(
+                               "per_stem": r["per_stem"], "n_excluded_beats": n_ex,
+                               "excluded_beat_fraction": round(n_ex / r["n_beats"], 6) if r["n_beats"] else None,
+                               "top_states": sorted(
                                    ((streams[s].count(st), st) for st in set(streams[s])), reverse=True)[:5]}
         print(f"{s} {str(r['title'])[:26]:26s} key={r['key']['tonic_name']} {r['key']['mode']} beats={r['n_beats']} "
               f"segs={r['n_segments']} top={per_song_summary[s]['top_states'][:3]}")
@@ -318,7 +338,7 @@ def main() -> int:
                "per_song": per_song_summary, "qualities": list(QUALITY_ORDER),
                "notes": ["first data only; NOT fed to any generator this cycle",
                          "velocity uniform in canonical MIDI -> duration-only weighting (disclosed)"]})
-    (out_dir / "harmony_markov_v5.json").write_text(json.dumps(mk, sort_keys=True, indent=2) + "\n")
+    (out_dir / args.out_name).write_text(json.dumps(mk, sort_keys=True, indent=2) + "\n")
     print(f"corpus chain: {len(mk['states'])} states; max stationary {mk['max_stationary_state']}={mk['max_stationary_mass']}; "
           f"qualities>=8 segs {mk['qualities_with_count_ge_threshold']}; verdict {mk['degeneracy_verdict']}")
     return 0

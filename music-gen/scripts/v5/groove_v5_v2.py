@@ -221,6 +221,10 @@ def main() -> int:
     refused = [s for s in list(args.train) + [args.heldout] if s in blocked]
     if refused:
         raise SystemExit(f"REFUSED: blocked songs must not be consumed: {refused}")
+    if str(_WS) not in sys.path:
+        sys.path.insert(0, str(_WS))
+    from scripts.v5.content_blocked import refuse_if_content_blocked  # c84 P0.2: additive content-gate refusal
+    refuse_if_content_blocked(list(args.train) + [args.heldout], corpus, who="groove_v5_v2")
     songs = {s: load_song(corpus, s) for s in list(args.train) + [args.heldout]}
     train_bars = [b for s in args.train for b in songs[s]["bars"]]
     model = {
