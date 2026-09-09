@@ -290,6 +290,12 @@ def main() -> int:
     ap.add_argument("--out-name", default="harmony_markov_v5.json")
     ap.add_argument("--per-song-subdir", default="", help="per-song outputs go to <out-dir>/<subdir>/<sha16>/ (default: <out-dir>/<sha16>/)")
     ap.add_argument("--cycle", type=int, default=CYCLE)
+    # c85 M5 additive (mirrors groove_v5_full_c84.py): take `used` AND the whole gate block VERBATIM from a prior harmony
+    # output's gate (e.g. data/v5/rules/eligible_c84.json = the c84 gate) instead of re-deriving from disk, so the chain
+    # bytes reproduce the source run even after more songs land. Disk-derived lists are printed to stdout (provenance)
+    # and never enter the chain. Content refusal still runs on `used`. Absent flag -> byte-identical behaviour.
+    ap.add_argument("--eligible-from", default=None,
+                    help="JSON with a gate block (prior harmony output): use its gate['used'] as the song list and its gate verbatim")
     args = ap.parse_args()
     CYCLE = args.cycle
     os.chdir(_WS)
@@ -312,6 +318,15 @@ def main() -> int:
     gate = {"cycle": CYCLE, "n_landed": len(landed), "landed": landed, "n_blocked_skipped": len(skipped_blocked),
             "blocked_skipped": skipped_blocked, "n_content_blocked_skipped": len(skipped_content), "content_blocked_skipped": skipped_content,
             "content_gate_present": bool(content_blocked), "n_used": len(used), "used": used, "min_songs": args.min_songs}
+    if args.eligible_from:
+        disk_gate = gate
+        gate = json.loads(Path(args.eligible_from).read_text())["gate"]
+        used = list(gate["used"])
+        refuse_if_content_blocked(used, corpus, who="harmony_v5")  # c84 refusal still runs on the supplied list
+        print(f"eligible_from={args.eligible_from}: n_used={len(used)} (gate block copied verbatim, cycle={gate.get('cycle')}); "
+              f"disk-derived now: n_landed={disk_gate['n_landed']} n_used={disk_gate['n_used']} "
+              f"landed_extra={sorted(set(disk_gate['landed']) - set(gate['landed']))} "
+              f"used_extra={sorted(set(disk_gate['used']) - set(used))} used_missing={sorted(set(used) - set(disk_gate['used']))}")
     if len(used) < args.min_songs:
         gate["verdict"] = "GATED_INSUFFICIENT_UNBLOCKED_SONGS"
         (out_dir / "harmony_v5_gated.json").write_text(json.dumps(gate, sort_keys=True, indent=2) + "\n")

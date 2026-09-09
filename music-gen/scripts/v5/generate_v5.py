@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 """c84 P3 — groove-first v5 generator, iteration 1 (OPERATOR #6: drums+bass from the joint groove model -> chords from the
 harmony chain on a fixed form plan -> keys/melody as chord tones on the grid; donor profiles + mix as v4).
+c85 P1 (F1 LENGTH + FORM + ARRANGEMENT): additive `--form-plan <json>` (DEFAULT OFF — the iteration-1 path is byte-identical
+in audio), `--cycle`, M4 (no groove-model copy into the iteration dir), F6 stall-history schema.
 
 created: 2026-09-09T21:30:00Z
-cycle: 84
+cycle: 84 (c85 additive extension 2026-09-09T22:10:00Z)
 run_id: run-2026-09-06T000000Z
 agent: worker
-milestone: M-V5-GEN-1/iteration-01-c84
+milestone: M-V5-GEN-1/iteration-01-c84 (c85: M-V5-GEN-1/F1-form-arrangement)
 
 Inputs (READ-ONLY): data/v5/rules/groove_v5_v2_full.json (c84 P2 model: kick8 marginal + snare16|kick8 + hat16|kick8,snare16 +
 bass16|kick8, alpha-smoothed), data/v5/rules/harmony_markov_v5_full.json (c84 P1 chain: functional states "rel_root:quality",
@@ -14,6 +16,14 @@ segment-level change matrix + stationary distribution), data/v4/gen/donor_profil
 tempo: donor bpm_v5 (tempo-blocked donors use their frozen anchor_bpm from recanonicalization_blocked.json).
 Per song (seed_str = f"gen_v5_song_{N}|donor={sha16}|seed={seed}"), all draws by SHA-256 inverse-CDF (no PRNG):
   1. form plan A A B A, 4 bars per section (16 bars); section A generated ONCE and repeated literally (forced repetition).
+     c85 --form-plan: n_sections drawn from the corpus length distribution (8 bars each, 32..64 bars); labels from the
+     corpus label Markov chain if R1 passed, else the pre-declared fixed template A A B A B C A A truncated to n_sections
+     (data/v5/gen/form_prereg_c85.json); every label generated once and repeated literally; non-A labels obey the
+     contrast rule (first chord root != A's dominant root, restricted to states with >= 8 segments; drum-density tercile
+     != A's realized tercile via an 8-candidate deterministic filter); arrangement = intro (keys+melody muted; drums
+     too when intro_density_quantile < 0.33), outro (melody muted, final bar held), breakdown (first non-A section in
+     the middle half: drums muted for 4 bars), fills (last bar of every section: snare16+hat16 from the corpus boundary
+     pool by SHA-256 inverse-CDF). Per-section CORE MIDI is serialized for the literal-repeat byte-equality claim.
   2. groove: per bar sample kick8 -> snare16|kick8 -> hat16|kick8,snare16 -> bass16|kick8 (scripts.v5.groove_v5_v2 row_for/draw).
   3. chords: one functional state per bar; first from the stationary distribution, then the segment-level (change-only) matrix
      (unseen rows -> uniform); 'N' = no chord (keys/melody rest; bass plays the tonic). Tonic = donor's KK key when the donor is
@@ -34,10 +44,10 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
 import struct
 import sys
 import tempfile
+import time
 import wave
 from pathlib import Path
 
@@ -71,6 +81,15 @@ SHIMS = {"keys": {"program": 4, "name": "GM Electric Piano 1 (shim, not profiled
          "melody": {"program": 11, "name": "GM Vibraphone (shim, not profiled)"},
          "drums_cg": {"program": 0, "name": "GM Standard Kit (c72 CG shim; CG drums are htdemucs OPT3, no pinned profile)"}}
 MELODY_PLAY_P = 0.6
+# c85 F1 constants (pre-registered in data/v5/gen/form_prereg_c85.json)
+F1_BARS_PER_SECTION = 8
+F1_MIN_SEGMENTS = 8
+F1_N_CANDIDATES = 8
+F1_INTRO_BASS_ONLY_Q = 0.33
+F1_MIN_DURATION_S = 90.0
+F1_MIN_BARS = 32
+F1_MIN_LABELS = 3
+F1_ENUM = ("FORM_PLAN_LANDS", "FORM_PLAN_PARTIAL", "FORM_PLAN_FAILS")
 
 
 def _sha(p: Path) -> str:
@@ -113,20 +132,21 @@ def seg_matrix(chain: dict) -> tuple[list, dict]:
     return states, P
 
 
+def sample_bar(model: dict, tag: str, i: int, cand: str = "") -> dict:
+    k = draw_row(G.row_for(model["kick_marginal"], "*"), f"{tag}|bar{i}{cand}|kick|*")
+    s = draw_row(G.row_for(model["snare_given_kick"], str(k)), f"{tag}|bar{i}{cand}|snare|{k}")
+    h = draw_row(G.row_for(model["hat_given_kick_snare"], f"{k}|{s}"), f"{tag}|bar{i}{cand}|hat|{k}|{s}")
+    b = draw_row(G.row_for(model["bass_given_kick"], str(k)), f"{tag}|bar{i}{cand}|bass|{k}")
+    return {"kick": k, "snare": s, "hat": h, "bass": b}
+
+
 def sample_groove_bars(model: dict, tag: str, n: int) -> list:
-    out = []
-    for i in range(n):
-        k = draw_row(G.row_for(model["kick_marginal"], "*"), f"{tag}|bar{i}|kick|*")
-        s = draw_row(G.row_for(model["snare_given_kick"], str(k)), f"{tag}|bar{i}|snare|{k}")
-        h = draw_row(G.row_for(model["hat_given_kick_snare"], f"{k}|{s}"), f"{tag}|bar{i}|hat|{k}|{s}")
-        b = draw_row(G.row_for(model["bass_given_kick"], str(k)), f"{tag}|bar{i}|bass|{k}")
-        out.append({"kick": k, "snare": s, "hat": h, "bass": b})
-    return out
+    return [sample_bar(model, tag, i) for i in range(n)]
 
 
-def sample_chords(chain: dict, tag: str, n: int) -> list:
+def sample_chords(chain: dict, tag: str, n: int, first_weights: dict | None = None) -> list:
     states, P = seg_matrix(chain)
-    first = draw_from(chain["stationary_distribution"], f"{tag}|chord0|stationary")
+    first = draw_from(first_weights if first_weights is not None else chain["stationary_distribution"], f"{tag}|chord0|stationary")
     seq = [first]
     for i in range(1, n):
         seq.append(draw_from(P[seq[-1]], f"{tag}|chord{i}|from={seq[-1]}"))
@@ -141,7 +161,20 @@ def state_pcs(state: str, tonic: int) -> list | None:
     return [(root + iv) % 12 for iv in QUALITIES[q]]
 
 
-def build_events(bars: list, chords: list, tonic: int, bpm: float) -> dict:
+def popcount(x: int) -> int:
+    return bin(int(x)).count("1")
+
+
+def bar_density(g: dict) -> int:
+    return popcount(g["kick"]) + popcount(g["snare"]) + popcount(g["hat"])
+
+
+def state_root(state: str) -> int | None:
+    return int(state.split(":")[0]) if state != "N" and ":" in state else None
+
+
+def build_events(bars: list, chords: list, tonic: int, bpm: float, arr: list | None = None) -> dict:
+    """arr (c85, optional): per-bar dicts {"mute": [stems], "fill": {"snare","hat"} | None, "hold": bool}; None = c84 behaviour."""
     beat = 60.0 / bpm
     bar_len = 4 * beat
     s16 = beat / 4
@@ -154,33 +187,49 @@ def build_events(bars: list, chords: list, tonic: int, bpm: float) -> dict:
         ev[stem].append({"start_event_index": i, "end_time": round(max(t1, t0 + 0.02), 6), "type": "end"})
         idx[stem] = i + 1
 
-    for b, (g, st) in enumerate(zip(bars, chords)):
+    for b, (g0, st) in enumerate(zip(bars, chords)):
+        a = arr[b] if arr is not None else None
+        g = dict(g0)
+        mute = set(a["mute"]) if a else set()
+        hold = bool(a and a.get("hold"))
+        if a and a.get("fill"):
+            g["snare"], g["hat"] = int(a["fill"]["snare"]), int(a["fill"]["hat"])
         t_bar = b * bar_len
-        for j in G.bits(g["kick"], 8):
-            note("drums", "drums", KICK_PITCH, t_bar + 2 * j * s16, t_bar + 2 * j * s16 + DRUM_HIT_S)
-        for p in G.bits(g["snare"]):
-            note("drums", "drums", SNARE_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
-        for p in G.bits(g["hat"]):
-            note("drums", "drums", HAT_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
+        if "drums" not in mute:
+            if hold:
+                note("drums", "drums", KICK_PITCH, t_bar, t_bar + DRUM_HIT_S)
+            else:
+                for j in G.bits(g["kick"], 8):
+                    note("drums", "drums", KICK_PITCH, t_bar + 2 * j * s16, t_bar + 2 * j * s16 + DRUM_HIT_S)
+                for p in G.bits(g["snare"]):
+                    note("drums", "drums", SNARE_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
+                for p in G.bits(g["hat"]):
+                    note("drums", "drums", HAT_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
         pcs = state_pcs(st, tonic)
         root_pc = pcs[0] if pcs else tonic
         fifth_pc = pcs[2] if pcs and len(pcs) > 2 else (root_pc + 7) % 12
-        bpos = G.bits(g["bass"])
-        for k, p in enumerate(bpos):
-            pc = fifth_pc if k % 4 == 3 else root_pc
-            pitch = 40 + ((pc - 4) % 12)  # E2..D#3
-            t0 = t_bar + p * s16
-            t1 = t_bar + (bpos[k + 1] * s16 if k + 1 < len(bpos) else 4 * beat)
-            note("bass", "electric_bass", pitch, t0, t1)
+        if "bass" not in mute:
+            if hold:
+                note("bass", "electric_bass", 40 + ((root_pc - 4) % 12), t_bar, t_bar + 4 * beat)
+            else:
+                bpos = G.bits(g["bass"])
+                for k, p in enumerate(bpos):
+                    pc = fifth_pc if k % 4 == 3 else root_pc
+                    pitch = 40 + ((pc - 4) % 12)  # E2..D#3
+                    t0 = t_bar + p * s16
+                    t1 = t_bar + (bpos[k + 1] * s16 if k + 1 < len(bpos) else 4 * beat)
+                    note("bass", "electric_bass", pitch, t0, t1)
         if pcs:
-            for n, pc in enumerate(pcs):
-                pitch = 60 + ((pc - 0) % 12) + (12 if n and pc < pcs[0] else 0)
-                note("keys", "electric_piano", pitch, t_bar, t_bar + 4 * beat - 0.02)
-            for e8 in range(8):
-                tag = f"melody|bar{b}|e{e8}|{st}"
-                if u(tag) < MELODY_PLAY_P:
-                    pc = pcs[int(u(tag + "|tone") * len(pcs)) % len(pcs)]
-                    note("melody", "synth_lead", 72 + (pc % 12), t_bar + e8 * 2 * s16, t_bar + (e8 + 1) * 2 * s16 - 0.01)
+            if "keys" not in mute:
+                for n, pc in enumerate(pcs):
+                    pitch = 60 + ((pc - 0) % 12) + (12 if n and pc < pcs[0] else 0)
+                    note("keys", "electric_piano", pitch, t_bar, t_bar + 4 * beat - 0.02)
+            if "melody" not in mute:
+                for e8 in range(8):
+                    tag = f"melody|bar{b}|e{e8}|{st}"
+                    if u(tag) < MELODY_PLAY_P:
+                        pc = pcs[int(u(tag + "|tone") * len(pcs)) % len(pcs)]
+                        note("melody", "synth_lead", 72 + (pc % 12), t_bar + e8 * 2 * s16, t_bar + (e8 + 1) * 2 * s16 - 0.01)
     return ev
 
 
@@ -213,8 +262,123 @@ def donor_tempo(donor: str, corpus: Path) -> tuple[float, str]:
     return float(json.loads((corpus / donor / "tempo_v5.json").read_text())["bpm_v5"]), "tempo_v5.bpm_v5"
 
 
+# ---------------------------------------------------------------- c85 F1: form plan + contrast rule + arrangement ----
+def combine_events(ev: dict) -> list:
+    """One event array over the four stems (drums, bass, keys, melody) with globally re-indexed start/end pairs."""
+    out, off = [], 0
+    for stem in ("drums", "bass", "keys", "melody"):
+        n = 0
+        for e in ev[stem]:
+            e2 = dict(e)
+            if e2["type"] == "start":
+                e2["index"] = int(e2["index"]) + off
+                n += 1
+            else:
+                e2["start_event_index"] = int(e2["start_event_index"]) + off
+            out.append(e2)
+        off += n
+    return out
+
+
+def canonicalize_labels(seq: list) -> list:
+    seen: dict[str, str] = {}
+    out = []
+    for lab in seq:
+        if lab not in seen:
+            seen[lab] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[len(seen)]
+        out.append(seen[lab])
+    return out
+
+
+def plan_form(fp: dict, tag: str) -> dict:
+    n_sec = int(draw_from({k: float(v) for k, v in fp["length_distribution"].items()}, f"{tag}|form|n_sections"))
+    if fp["R1"]["pass"]:
+        labs = [draw_from(fp["start_distribution"], f"{tag}|form|label0")]
+        for i in range(1, n_sec):
+            labs.append(draw_from(fp["transition_probs"][labs[-1]], f"{tag}|form|label{i}|from={labs[-1]}"))
+        raw, source = labs, "corpus_label_markov"
+    else:
+        raw, source = list(fp["R1"]["fallback_template"][:n_sec]), "R1_FAILED_fixed_template_AABABCAA"
+    return {"n_sections": n_sec, "labels_raw": raw, "labels": canonicalize_labels(raw), "label_source": source}
+
+
+def tercile_of(x: float, bounds: list) -> int:
+    return 0 if x < bounds[0] else (1 if x < bounds[1] else 2)
+
+
+def dominant_root(chords: list) -> int | None:
+    cnt: dict[int, int] = {}
+    for st in chords:
+        r = state_root(st)
+        if r is not None:
+            cnt[r] = cnt.get(r, 0) + 1
+    return min(cnt, key=lambda r: (-cnt[r], r)) if cnt else None
+
+
+def contrast_section(groove: dict, chain: dict, fp: dict, tag: str, label: str, a_root: int | None, a_terc: int) -> dict:
+    """Non-A section under the pre-registered contrast rule."""
+    states = chain["states"]
+    rows = [sum(r) for r in chain["segment_level_counts"]]
+    allowed = {s: p for s, p in chain["stationary_distribution"].items()
+               if state_root(s) is not None and state_root(s) != a_root and rows[states.index(s)] >= F1_MIN_SEGMENTS}
+    if allowed:
+        chords = sample_chords(chain, f"{tag}|section={label}", F1_BARS_PER_SECTION, first_weights=allowed)
+        harmony_ok = state_root(chords[0]) != a_root
+    else:
+        chords = sample_chords(chain, f"{tag}|section={label}", F1_BARS_PER_SECTION)
+        harmony_ok = False
+    probs = fp["per_label"].get(label, {}).get("density_tercile_probs", [1 / 3, 1 / 3, 1 / 3])
+    cands = [t for t in range(3) if t != a_terc]
+    target = min(cands, key=lambda t: (-probs[t], t))
+    b = fp["density_tercile_bounds"]
+    mid = {0: b[0] / 2.0, 1: (b[0] + b[1]) / 2.0, 2: b[1] + (b[1] - b[0]) / 2.0}[target]
+    bars, cand_used = [], []
+    for i in range(F1_BARS_PER_SECTION):
+        cs = [sample_bar(groove["model"], f"{tag}|section={label}", i, f"|cand{c}") for c in range(F1_N_CANDIDATES)]
+        pick = next((c for c, g in enumerate(cs) if tercile_of(bar_density(g), b) == target), None)
+        if pick is None:
+            pick = min(range(F1_N_CANDIDATES), key=lambda c: (abs(bar_density(cs[c]) - mid), c))
+        bars.append(cs[pick])
+        cand_used.append(pick)
+    dens = float(np.mean([bar_density(g) for g in bars]))
+    terc = tercile_of(dens, b)
+    return {"chords": chords, "bars": bars, "first_chord_root": state_root(chords[0]), "a_dominant_root": a_root,
+            "harmony_contrast_ok": harmony_ok, "n_allowed_start_states": len(allowed), "target_tercile": target,
+            "realized_density": round(dens, 6), "realized_tercile": terc, "a_realized_tercile": a_terc,
+            "density_contrast_ok": terc != a_terc, "candidate_index_per_bar": cand_used,
+            "contrast_rule_true": bool(harmony_ok and terc != a_terc)}
+
+
+def arrangement(plan: dict, fp: dict, tag: str) -> tuple[list, dict]:
+    labels, n = plan["labels"], plan["n_sections"]
+    nb = F1_BARS_PER_SECTION
+    arr = [{"mute": [], "fill": None, "hold": False} for _ in range(n * nb)]
+    intro_bass_only = fp["intro_density_quantile"] is not None and fp["intro_density_quantile"] < F1_INTRO_BASS_ONLY_Q
+    for k in range(nb):
+        arr[k]["mute"] = ["keys", "melody"] + (["drums"] if intro_bass_only else [])
+    for k in range((n - 1) * nb, n * nb):
+        arr[k]["mute"] = sorted(set(arr[k]["mute"]) | {"melody"})
+    arr[n * nb - 1]["hold"] = True
+    lo, hi = n // 4, -(-3 * n // 4)
+    breakdown = next((i for i in range(n) if lo <= i < hi and labels[i] != "A"), None)
+    if breakdown is not None:
+        for k in range(breakdown * nb, breakdown * nb + 4):
+            arr[k]["mute"] = sorted(set(arr[k]["mute"]) | {"drums"})
+    pool = fp["boundary_fill_pool"]
+    fills = []
+    for i in range(n):
+        w = {str(j): float(e["count"]) for j, e in enumerate(pool)}
+        e = pool[int(draw_from(w, f"{tag}|fill|section{i}"))]
+        arr[i * nb + nb - 1]["fill"] = {"snare": e["snare"], "hat": e["hat"]}
+        fills.append({"section": i, "snare": e["snare"], "hat": e["hat"]})
+    return arr, {"intro": {"section": 0, "mode": "bass_only" if intro_bass_only else "drums_and_bass", "intro_density_quantile": fp["intro_density_quantile"]},
+                 "outro": {"section": n - 1, "melody_muted": True, "final_bar_held": True},
+                 "breakdown": {"section": breakdown, "drums_muted_bars": 4 if breakdown is not None else 0, "middle_half": [lo, hi]},
+                 "fills": fills, "fill_pool_size": len(pool)}
+
+
 def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict, corpus: Path, keep_per_track: bool,
-                rules_sha: dict) -> dict:
+                rules_sha: dict, cycle: int = 84, form_plan: dict | None = None, form_plan_sha: str | None = None) -> dict:
     donor = spec["donor_song_sha16"]
     gen_id = spec["generated_song_id"].replace("gen_v4_", "gen_v5_")
     tag = f"{gen_id}|donor={donor}|seed={seed}"
@@ -225,15 +389,45 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         tonic, tonic_src = int(chain["per_song"][donor]["key"]["tonic"]), "donor_kk_key_from_chain"
     else:
         tonic, tonic_src = int(u(f"{tag}|tonic") * 12) % 12, "sha256_derived_(donor not in chain)"
-    n_sec = len(FORM_PLAN)
-    sec_bars = {s: sample_groove_bars(groove["model"], f"{tag}|section={s}", BARS_PER_SECTION) for s in sorted(set(FORM_PLAN))}
-    sec_chords = {s: sample_chords(chain, f"{tag}|section={s}", BARS_PER_SECTION) for s in sorted(set(FORM_PLAN))}
-    bars = [b for s in FORM_PLAN for b in sec_bars[s]]
-    chords = [c for s in FORM_PLAN for c in sec_chords[s]]
-    events = build_events(bars, chords, tonic, bpm)
     jd, md, rd = song_dir / "generated_json", song_dir / "generated_midi", song_dir / "per_track"
     for d in (jd, md, rd):
         d.mkdir(exist_ok=True)
+    f1 = None
+    if form_plan is None:
+        form_seq, bars_per_section = list(FORM_PLAN), BARS_PER_SECTION
+        sec_bars = {s: sample_groove_bars(groove["model"], f"{tag}|section={s}", bars_per_section) for s in sorted(set(form_seq))}
+        sec_chords = {s: sample_chords(chain, f"{tag}|section={s}", bars_per_section) for s in sorted(set(form_seq))}
+        arr = None
+    else:
+        plan = plan_form(form_plan, tag)
+        form_seq, bars_per_section = plan["labels"], F1_BARS_PER_SECTION
+        sec_bars = {"A": sample_groove_bars(groove["model"], f"{tag}|section=A", bars_per_section)}
+        sec_chords = {"A": sample_chords(chain, f"{tag}|section=A", bars_per_section)}
+        a_root = dominant_root(sec_chords["A"])
+        a_dens = float(np.mean([bar_density(g) for g in sec_bars["A"]]))
+        a_terc = tercile_of(a_dens, form_plan["density_tercile_bounds"])
+        contrast = {}
+        for lab in sorted(set(form_seq) - {"A"}):
+            c = contrast_section(groove, chain, form_plan, tag, lab, a_root, a_terc)
+            sec_bars[lab], sec_chords[lab] = c["bars"], c["chords"]
+            contrast[lab] = {k: v for k, v in c.items() if k not in ("bars", "chords")}
+        arr, arr_info = arrangement(plan, form_plan, tag)
+        (md / "sections").mkdir(exist_ok=True)
+        core_sha = {}
+        for i, lab in enumerate(form_seq):  # literal-repeat measure: core (pre-arrangement) section MIDI
+            ev = build_events(sec_bars[lab], sec_chords[lab], tonic, bpm)
+            cj = jd / f"section_{i}_{lab}.json"
+            cj.write_text(json.dumps(ev, sort_keys=True, separators=(",", ":")))
+            cm = md / "sections" / f"section_{i}_{lab}.mid"
+            canonical_midi_serialize(str(cj), str(cm), float(bpm), (4, 4))
+            core_sha[f"{i}_{lab}"] = _sha(cm)
+        a_shas = {v for k, v in core_sha.items() if k.endswith("_A")}
+        f1 = {"plan": plan, "a_dominant_root": a_root, "a_realized_density": round(a_dens, 6), "a_realized_tercile": a_terc,
+              "contrast": contrast, "arrangement": arr_info, "section_core_midi_sha256": core_sha, "a_repeats_byte_equal": len(a_shas) == 1,
+              "n_a_sections": sum(1 for s in form_seq if s == "A")}
+    bars = [b for s in form_seq for b in sec_bars[s]]
+    chords = [c for s in form_seq for c in sec_chords[s]]
+    events = build_events(bars, chords, tonic, bpm, arr)
     midi_sha, wav_sha, gains, profiles_used = {}, {}, {}, {}
     bass_profile = json.loads((_WS / spec["donor_bass_profile_relpath"]).read_text())
     sf2_path, sf2_sha = bass_profile["identity"]["sf2_path"], bass_profile["identity"].get("sf2_sha256", "")
@@ -258,9 +452,9 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         else:
             prof, profiles_used[stem] = shim(SHIMS[stem]["program"], SHIMS[stem]["name"]), "shim:" + SHIMS[stem]["name"]
         wav = rd / f"{stem}.wav"
-        if not events[stem]:  # empty stem (e.g. all-N chords): silent 16 bars, no render
+        if not events[stem]:  # empty stem (e.g. all-N chords): silent song length, no render
             sr0 = 44100
-            write_wav_int16(wav, np.zeros((int(sr0 * 16 * 4 * 60.0 / bpm), 2), dtype=np.float32), sr0)
+            write_wav_int16(wav, np.zeros((int(sr0 * len(bars) * 4 * 60.0 / bpm), 2), dtype=np.float32), sr0)
         else:
             sf2_replay(prof, str(md / f"{stem}.mid"), str(wav))
         wav_sha[stem] = _sha(wav)
@@ -282,19 +476,32 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         for p in sorted(rd.glob("*.wav")):
             deleted.append(p.name)
             p.unlink()
-    man = {"schema_version": 1, "cycle": 84, "run_id": "run-2026-09-06T000000Z", "agent": "worker", "milestone": "M-V5-GEN-1/iteration-01-c84",
+    duration = round(len(mix) / sr, 4)
+    man = {"schema_version": 1, "cycle": cycle, "run_id": "run-2026-09-06T000000Z", "agent": "worker",
+           "milestone": "M-V5-GEN-1/iteration-01-c84" if form_plan is None else "M-V5-GEN-1/F1-form-arrangement",
            "generated_song_id": gen_id, "donor_song_sha16": donor, "donor_song_name": spec.get("donor_song_name"), "seed": seed, "seed_str": tag,
            "generator": "groove_first_v5", "generator_hash": _sha(Path(__file__)), "rules_sha256": rules_sha,
            "tempo_bpm": bpm, "tempo_source": tempo_src, "tonic": tonic, "tonic_source": tonic_src,
-           "form_plan": list(FORM_PLAN), "bars_per_section": BARS_PER_SECTION, "n_bars": len(bars),
+           "form_plan": list(form_seq), "bars_per_section": bars_per_section, "n_bars": len(bars),
            "section_chords": sec_chords, "chord_sequence": chords, "section_grooves": sec_bars,
            "midi_sha256": midi_sha, "per_track_wav_sha256": wav_sha, "per_track_deleted_after_mix": deleted, "gains": gains,
            "target_rms_dbfs": TARGET_RMS_DB, "profiles_used": profiles_used, "shims_disclosed": SHIMS,
            "donor_bass_profile_relpath": spec["donor_bass_profile_relpath"], "donor_drums_profile_relpath": spec.get("donor_drums_profile_relpath"),
-           "ab_mix_sha256": _sha(out_wav), "ab_mix_duration_s": round(len(mix) / sr, 4), "sample_rate": sr,
+           "ab_mix_sha256": _sha(out_wav), "ab_mix_duration_s": duration, "sample_rate": sr,
            "sum_method": "float_accumulate_peaklimit_099_max_len_zero_pad", "env_pin_sha256": ENV_PIN_SHA256, "env_pins": dict(_PINS),
            "ear_score": None, "ear_score_reason": "scored separately by scripts/v5/score_gen_batch_v5.py (informational, FD-6)",
-           "sampling": "SHA-256 inverse-CDF on seed_str-derived tags (no PRNG)", "form_repetition": "section A generated once, repeated literally at positions 1, 2, 4"}
+           "sampling": "SHA-256 inverse-CDF on seed_str-derived tags (no PRNG)",
+           "form_repetition": "section A generated once, repeated literally at positions 1, 2, 4" if form_plan is None
+           else "every label generated once and repeated literally wherever it recurs (core MIDI byte-equality per section under section_core_midi_sha256)"}
+    if f1 is not None:
+        f1["clauses"] = {"n_bars_ge_32": len(bars) >= F1_MIN_BARS, "duration_ge_90s": duration >= F1_MIN_DURATION_S,
+                         "distinct_labels_ge_3": len(set(form_seq)) >= F1_MIN_LABELS,
+                         "contrast_rule_all_non_a": all(c["contrast_rule_true"] for c in f1["contrast"].values()) and bool(f1["contrast"]),
+                         "a_repeats_byte_equal": f1["a_repeats_byte_equal"]}
+        f1["all_clauses"] = all(f1["clauses"].values())
+        man["form_plan_sha256"] = form_plan_sha
+        man["form_prereg_sha256"] = _sha(Path("data/v5/gen/form_prereg_c85.json"))
+        man["f1"] = f1
     (song_dir / "ab_mix.manifest.json").write_text(json.dumps(man, sort_keys=True, indent=2) + "\n")
     return man
 
@@ -312,6 +519,9 @@ def main(argv=None) -> int:
     ap.add_argument("--prove-replay", action="store_true")
     ap.add_argument("--keep-per-track", action="store_true")
     ap.add_argument("--no-stall-update", action="store_true")
+    ap.add_argument("--form-plan", default=None, help="c85 F1: data/v5/rules/form_plan_v5.json (default OFF = c84 iteration-1 path)")
+    ap.add_argument("--cycle", type=int, default=84)
+    ap.add_argument("--feature", default=None, help="c85 F6: feature label recorded in the stall history (default: F1 when --form-plan, else none)")
     args = ap.parse_args(argv)
     out = Path(args.out or f"data/v5/gen/iteration_{args.iteration:02d}")
     out.mkdir(parents=True, exist_ok=True)
@@ -322,37 +532,61 @@ def main(argv=None) -> int:
     rules_sha = {"harmony_chain": _sha(Path(args.harmony)), "groove_model": _sha(Path(args.groove)),
                  "harmony_prereg": _sha(Path("data/v5/rules/harmony_prereg_c84.json")), "groove_prereg": _sha(Path("data/v5/rules/groove_prereg_c84.json")),
                  "donor_map": _sha(Path(args.donor_map))}
+    form_plan, fp_sha = None, None
+    if args.form_plan:
+        form_plan = json.loads(Path(args.form_plan).read_text())
+        fp_sha = _sha(Path(args.form_plan))
+        rules_sha["form_plan"] = fp_sha
     specs = json.loads(Path(args.donor_map).read_text())["songs"][: args.songs]
     corpus = Path(args.corpus_dir)
-    rollup = {"schema_version": 1, "cycle": 84, "agent": "worker", "run_id": "run-2026-09-06T000000Z", "iteration": args.iteration, "seed": args.seed,
+    rollup = {"schema_version": 1, "cycle": args.cycle, "agent": "worker", "run_id": "run-2026-09-06T000000Z", "iteration": args.iteration, "seed": args.seed,
               "generator": "groove_first_v5", "generator_hash": _sha(Path(__file__)), "rules_sha256": rules_sha, "env_pin_sha256": ENV_PIN_SHA256,
               "harmony_verdict": chain["degeneracy_verdict"], "groove_verdict": groove["verdict"],
               "groove_overfits_disclosed": groove["verdict"] == "GROOVE_V2_OVERFITS", "songs": []}
+    if form_plan is not None:
+        rollup["form_plan"] = {"path": args.form_plan, "sha256": fp_sha, "R1_pass": form_plan["R1"]["pass"],
+                               "label_source": "corpus_label_markov" if form_plan["R1"]["pass"] else "R1_FAILED_fixed_template_AABABCAA"}
     for spec in specs:
-        man = render_song(spec, args.seed, out, groove, chain, corpus, args.keep_per_track, rules_sha)
+        man = render_song(spec, args.seed, out, groove, chain, corpus, args.keep_per_track, rules_sha, args.cycle, form_plan, fp_sha)
         entry = {"generated_song_id": man["generated_song_id"], "donor": man["donor_song_sha16"], "ab_mix_sha256": man["ab_mix_sha256"],
                  "duration_s": man["ab_mix_duration_s"], "chords": man["chord_sequence"]}
-        print(f"{man['generated_song_id']} donor={man['donor_song_sha16']} bpm={man['tempo_bpm']:.2f} tonic={man['tonic']} sha={man['ab_mix_sha256'][:12]} dur={man['ab_mix_duration_s']}s")
+        if "f1" in man:
+            entry.update({"form": man["form_plan"], "n_bars": man["n_bars"], "clauses": man["f1"]["clauses"], "all_clauses": man["f1"]["all_clauses"],
+                          "contrast": {k: {kk: v[kk] for kk in ("harmony_contrast_ok", "density_contrast_ok", "contrast_rule_true", "n_allowed_start_states")} for k, v in man["f1"]["contrast"].items()},
+                          "breakdown_section": man["f1"]["arrangement"]["breakdown"]["section"], "intro_mode": man["f1"]["arrangement"]["intro"]["mode"]})
+        print(f"{man['generated_song_id']} donor={man['donor_song_sha16']} bpm={man['tempo_bpm']:.2f} tonic={man['tonic']} sha={man['ab_mix_sha256'][:12]} dur={man['ab_mix_duration_s']}s"
+              + (f" form={''.join(man['form_plan'])} bars={man['n_bars']} clauses={man['f1']['clauses']}" if "f1" in man else ""))
         if args.prove_replay:
             with tempfile.TemporaryDirectory(prefix="gen_v5_replay_") as td:
-                man2 = render_song(spec, args.seed, Path(td), groove, chain, corpus, False, rules_sha)
+                man2 = render_song(spec, args.seed, Path(td), groove, chain, corpus, False, rules_sha, args.cycle, form_plan, fp_sha)
+                td_used = td
             proof = {"verdict": "REPLAY_PROOF_HOLDS" if man2["ab_mix_sha256"] == man["ab_mix_sha256"] else "REPLAY_PROOF_FAILS",
                      "run1_sha256": man["ab_mix_sha256"], "run2_sha256": man2["ab_mix_sha256"], "run2_midi_equal": man2["midi_sha256"] == man["midi_sha256"],
-                     "run2_per_track_equal": man2["per_track_wav_sha256"] == man["per_track_wav_sha256"], "env_pin_sha256": ENV_PIN_SHA256, "cycle": 84, "agent": "worker"}
+                     "run2_per_track_equal": man2["per_track_wav_sha256"] == man["per_track_wav_sha256"], "run2_tempdir": td_used,
+                     "env_pin_sha256": ENV_PIN_SHA256, "cycle": args.cycle, "agent": "worker"}
             (out / f"{man['generated_song_id']}_donor_{man['donor_song_sha16']}" / "ab_mix.replay_proof.json").write_text(json.dumps(proof, sort_keys=True, indent=2) + "\n")
             entry["replay_proof"] = proof["verdict"]
             print(f"  {proof['verdict']}")
         rollup["songs"].append(entry)
+    if form_plan is not None:
+        n_ok = sum(1 for s in rollup["songs"] if s.get("all_clauses"))
+        rollup["f1_enum"] = "FORM_PLAN_LANDS" if n_ok == len(rollup["songs"]) == 5 else ("FORM_PLAN_PARTIAL" if n_ok >= 3 else "FORM_PLAN_FAILS")
+        rollup["f1_songs_all_clauses"] = n_ok
+        print(f"F1 enum {rollup['f1_enum']} ({n_ok}/5 songs satisfy all clauses)")
     (out / "iteration_rollup.json").write_text(json.dumps(rollup, sort_keys=True, indent=2) + "\n")
     if not args.no_stall_update:
         sc_p = Path("data/v5/gen/stall_counter.json")
         sc = json.loads(sc_p.read_text())
         sc["iterations"] = max(int(sc.get("iterations", 0)), args.iteration)
-        sc.setdefault("history", []).append({"iteration": args.iteration, "cycle": 84, "seed": args.seed, "n_songs": len(specs),
-                                             "passers_declared": 0, "note": "ear scores informational under FD-6 (c76 L119 proof); no passer declared"})
+        sc["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # c85 F6
+        feature = args.feature or ("F1 length+form+arrangement" if form_plan is not None else "none (seed only)")
+        sc.setdefault("history", []).append({"iteration": args.iteration, "cycle": args.cycle, "seed": args.seed, "n_songs": len(specs),
+                                             "passers_declared": 0, "feature": feature, "donor_map_sha256": rules_sha["donor_map"],
+                                             "form_plan_sha256": fp_sha, "rules_sha256": {k: rules_sha[k] for k in ("harmony_chain", "groove_model")},
+                                             "note": "ear scores informational under FD-6 (c76 L119 proof); no passer declared"})
         sc_p.write_text(json.dumps(sc, indent=2) + "\n")
         print(f"stall counter {sc['iterations']}/{sc['budget']}")
-    shutil.copy(Path(args.groove), out / "groove_model_used.json")
+    # c85 M4: the groove model is NOT copied into the iteration dir any more (rules_sha256.groove_model pins it).
     return 0
 
 

@@ -82,6 +82,9 @@ def main(argv=None) -> int:
     ap.add_argument("--table-out", type=Path, default=TABLE_DEFAULT)
     ap.add_argument("--no-siblings", action="store_true", help="do not write per-render ear_score_v5.json (byte-det second run)")
     ap.add_argument("--renders-glob", action="append", default=None, help="c84 additive: glob(s) of ab_mix.wav to score instead of the c83 v4 set")
+    # c85 additive: stamp the cycle / milestone written into the sibling ear_score_v5.json and the table (defaults reproduce c83).
+    ap.add_argument("--cycle", type=int, default=83, help="cycle stamped into sibling + table records (default 83)")
+    ap.add_argument("--milestone", default="M-V5-GEN-1/gen-renders-ear-scored-informational-c83", help="milestone stamped into sibling + table records")
     a = ap.parse_args(argv)
     assert RECEIPT.exists(), "SCORING_BLOCKED_ON_RECEIPT: amended receipt absent"
     assert json.loads(PROBE.read_text())["status"] == "EAR_VENV_REPRODUCES_CACHE", "SCORING_BLOCKED_ON_RECEIPT: c83 probe not REPRODUCES_CACHE"
@@ -95,7 +98,7 @@ def main(argv=None) -> int:
     env = dict(os.environ); env.update(_PINS)
     r = subprocess.run([str(VENV_PY), "-c", WORKER, str(_WS), str(td / "paths.json"), str(td / "emb.npz")], env=env, capture_output=True, text=True)
     if r.returncode != 0:
-        rec = {"schema_version": 1, "agent": "worker", "cycle": 83, "status": "SCORING_EXTRACTOR_FAILED", "stderr_tail": r.stderr[-2000:]}
+        rec = {"schema_version": 1, "agent": "worker", "cycle": a.cycle, "status": "SCORING_EXTRACTOR_FAILED", "stderr_tail": r.stderr[-2000:]}
         a.table_out.parent.mkdir(parents=True, exist_ok=True)
         a.table_out.write_text(json.dumps(rec, sort_keys=True, indent=2) + "\n")
         print("SCORING_EXTRACTOR_FAILED", r.stderr[-600:])
@@ -120,8 +123,8 @@ def main(argv=None) -> int:
         scores[rw["key"]] = {"ear_score_v2": round(sc, 4), "raw_statistic": round(float(stat), 6), "n_windows": int(emb.shape[0]),
                              "wav_sha256": pre[rw["wav"]], "manifest_sha256": pre[rw["manifest"]], "ge_6": bool(sc >= 6.0)}
         if not a.no_siblings:
-            sib = {"schema_version": 1, "agent": "worker", "cycle": 83, "run_id": "run-2026-09-06T000000Z",
-                   "milestone": "M-V5-GEN-1/gen-renders-ear-scored-informational-c83", "informational_only": True,
+            sib = {"schema_version": 1, "agent": "worker", "cycle": a.cycle, "run_id": "run-2026-09-06T000000Z",
+                   "milestone": a.milestone, "informational_only": True,
                    "framing": "INFORMATIONAL: L119 infeasible under VGGish (c76); FD-6 operator ear governs LANDS; not an M-V5-GEN-1 passer declaration",
                    "calibration": V2.module_env_manifest_v2(), "exemplar_signatures": "data/v5/ear/ear_probe_c82_fresh_embeddings.npz (fresh, venv)",
                    "shared_raw_ceiling": round(raw_max, 6), "venv_receipt": str(RECEIPT), "env_pins": _PINS, **scores[rw["key"]]}
@@ -129,8 +132,8 @@ def main(argv=None) -> int:
     post = {p: _sha(Path(p)) for p in pre}
     assert post == pre, "ab_mix.wav / manifest bytes changed — must be byte-identical"
     gen15 = [k for k in scores if not k.startswith("interpolation_demo")]
-    table = {"schema_version": 1, "agent": "worker", "cycle": 83, "run_id": "run-2026-09-06T000000Z",
-             "milestone": "M-V5-GEN-1/gen-renders-ear-scored-informational-c83", "status": "GEN_RENDERS_SCORED_INFORMATIONAL",
+    table = {"schema_version": 1, "agent": "worker", "cycle": a.cycle, "run_id": "run-2026-09-06T000000Z",
+             "milestone": a.milestone, "status": "GEN_RENDERS_SCORED_INFORMATIONAL",
              "informational_only": True, "env_pin_sha256": ENV_PIN, "env_pins_subprocess": _PINS,
              "framing": "INFORMATIONAL: L119 infeasible under VGGish (c76 proof); FD-6 operator ear governs LANDS; M-V5-GEN-1 stays gated on M-V5-RULES-1; no passer declared",
              "venv_receipt": str(RECEIPT), "venv_receipt_sha256": _sha(RECEIPT), "probe_c83_status": "EAR_VENV_REPRODUCES_CACHE",
