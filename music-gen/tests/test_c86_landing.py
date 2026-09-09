@@ -93,7 +93,8 @@ def test_03_velocity_mapping_p5_p95_and_degenerate_guard() -> None:
     from scripts.v5.velocity_v5 import midrank_velocities, sample_velocity, ladder
     vals = [float(i) for i in range(100)]  # 100 distinct RMS values
     v, st = midrank_velocities(vals)
-    assert st["degenerate"] is False and st["spread_db"] == 90.0
+    # c86 AUDIT FIX: p5/p95 are np.percentile (linear interpolation) → 4.95 / 94.05 on 0..99, spread 89.1 (not 90.0)
+    assert st["degenerate"] is False and abs(st["spread_db"] - 89.1) < 1e-6, st["spread_db"]
     assert min(v) == 1 + 0 or min(v) >= 1 and max(v) <= 127
     # rank fraction 0.05 -> 40, 0.95 -> 110 (midrank of the 5th value = 4.5/100 = 0.045 -> 39.6 -> 40)
     assert v[4] in (39, 40) and v[94] in (110, 111), (v[4], v[94])
@@ -187,7 +188,9 @@ def test_07_cycle_required_on_score_and_deliver() -> None:
 
 
 def test_08_discipline_ast_guards_and_created_stamps() -> None:
-    bad = re.compile(r"\b(random\.|np\.random|numpy\.random|sidecar_nonfactor|get_state\(|save_state\(|save_preset\(|load_state\(|set_state\()")
+    # c86 AUDIT FIX: match `sidecar_nonfactor` only in import context (the scripts' docstrings legitimately say "no sidecar_nonfactor")
+    bad = re.compile(r"\b(random\.|np\.random|numpy\.random|get_state\(|save_state\(|save_preset\(|load_state\(|set_state\()"
+                     r"|^\s*(?:from|import)\s+[\w.]*sidecar_nonfactor", re.M)
     for s in NEW_SCRIPTS:
         src = Path(s).read_text()
         ast.parse(src)

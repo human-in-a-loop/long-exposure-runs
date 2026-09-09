@@ -297,10 +297,15 @@ def main() -> int:
     _le = os.environ.get("LONG_EXPOSURE_PKG_PATH", "/home/user/human-in-a-loop/long-exposure")
     if _le not in sys.path:
         sys.path.append(_le)
+    # c86 AUDIT FIX (CRITICAL): idempotency key is (milestone_id, cycle), NOT milestone_id alone —
+    # `M-V5-GEN-1/F4-tempo-fix` already has a c85 `in-progress` event, so a milestone_id-only dedupe would
+    # silently drop the c86 `validated` F4-CLOSED event (multi-event ids are the ledger norm).
     existing_ids = set()
     for line in LEDGER.read_text(encoding="utf-8").splitlines():
         if line.strip():
-            existing_ids.add(json.loads(line).get("milestone_id"))
+            _row = json.loads(line)
+            if _row.get("cycle") == CYCLE:
+                existing_ids.add(_row.get("milestone_id"))
     try:
         from long_exposure.tools._ledger_schema import validate_event, REQUIRED_EVENT_FIELDS
         for e in events:
