@@ -38,7 +38,7 @@ def main(argv=None) -> int:
     ap.add_argument("--iteration", type=int, default=1)
     ap.add_argument("--scores", default=None)
     ap.add_argument("--keep-top", type=int, default=5)
-    ap.add_argument("--cycle", type=int, default=84)  # c85 additive: stamp the listening manifest
+    ap.add_argument("--cycle", type=int, required=True)  # c85 additive: stamp the listening manifest; c86: REQUIRED (no 84 default)
     ap.add_argument("--milestone", default="M-V5-GEN-1/iteration-01-c84")
     args = ap.parse_args(argv)
     it = f"iteration_{args.iteration:02d}"

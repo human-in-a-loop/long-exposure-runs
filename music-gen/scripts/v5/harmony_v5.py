@@ -37,6 +37,9 @@ Nothing here feeds a generator this cycle.
 
 Discipline: /usr/bin/python3 guard; no PRNG; no sidecar_nonfactor; no VST3 state APIs;
 READ-ONLY inputs.
+c86 F4 CLOSE (additive, cycle 86, run-2026-09-06T000000Z, worker): a song in the blocked file's `unblocked_c86`
+block is NOT blocked (operator adjudication); `--tempo-overrides <json>` overrides bpm_v5 for listed songs and
+asserts canonical_v5c_reindexed/ served them. Absent flag + no unblocked block -> byte-identical behaviour.
 """
 from __future__ import annotations
 
@@ -92,6 +95,32 @@ class MissingReindexError(RuntimeError):
 if str(_WS) not in sys.path:
     sys.path.insert(0, str(_WS))
 from scripts.v5.content_blocked import ContentBlockedError, load_content_blocked, refuse_if_content_blocked  # noqa: E402,F401
+
+# c86 F4 CLOSE (additive): the tempo block file keeps `blocked_songs` as the historical record (generate_v5.donor_tempo
+# still reads it for the frozen anchor tempo), and gains `unblocked_c86` (operator adjudication, docs/guidance/
+# guidance_2026-09-09_F2_velocity_decision.txt addendum). A song listed in `unblocked_c86` is NOT blocked here.
+UNBLOCKED_KEY = "unblocked_c86"
+TEMPO_OVERRIDE_DIR = "canonical_v5c_reindexed"
+
+
+class TempoOverrideDirError(RuntimeError):
+    """Raised when a --tempo-overrides song was not served from canonical_v5c_reindexed/ (c86)."""
+
+
+def tempo_blocked_effective(corpus: Path) -> set:
+    """Effective tempo block = blocked_songs minus unblocked_c86 (absent file -> empty)."""
+    p = Path(corpus) / "recanonicalization_blocked.json"
+    if not p.exists():
+        return set()
+    d = json.loads(p.read_text())
+    return set(d.get("blocked_songs", {})) - set(d.get(UNBLOCKED_KEY, {}))
+
+
+def load_tempo_overrides(path) -> dict:
+    """c86: sha16 -> bpm; None/absent -> {} (byte-identical behaviour to pre-c86)."""
+    if not path:
+        return {}
+    return {str(k): float(v) for k, v in json.loads(Path(path).read_text()).items()}
 
 
 def sha_str(s: str) -> str:
@@ -175,8 +204,9 @@ def estimate_key(pcp_sum: np.ndarray) -> dict:
     return {"tonic": best[1], "tonic_name": PC_NAMES[best[1]], "mode": best[2], "corr": best[3], "method": "krumhansl_kessler_argmax"}
 
 
-def analyse_song(sha16: str, corpus: Path) -> dict:
+def analyse_song(sha16: str, corpus: Path, tempo_overrides: dict | None = None) -> dict:
     refuse_if_content_blocked([sha16], corpus, who="harmony_v5")  # c84: refuse-before-read
+    tempo_overrides = tempo_overrides or {}
     d = corpus / sha16
     # c81: preference tuple contains ONLY lossless re-indexed dirs. canonical_v5c_reindexed/ exists only if a
     # SUPPORTED tempo criterion re-canonicalized the song; canonical_v5_reindexed/ is the c80 fix. The c79
@@ -190,6 +220,14 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
         raise MissingReindexError(f"MISSING_REINDEX: {sha16} has no {'/'.join(MIDI_DIR_PREFERENCE)} directory; "
                                   f"run scripts/v5/reindex_canonical_v5.py --songs {sha16} (the c79 canonical_midi_full/ is lossy and is never read)")
     tm = json.loads((d / "transcription_manifest.json").read_text())
+    bpm_v5 = tm["bpm_v5"]
+    override = None
+    if sha16 in tempo_overrides:  # c86: an overridden song MUST have been served from canonical_v5c_reindexed/
+        if mid_dir.name != TEMPO_OVERRIDE_DIR:
+            raise TempoOverrideDirError(f"TEMPO_OVERRIDE_DIR: {sha16} has a --tempo-overrides entry but MIDI came from {mid_dir} "
+                                        f"(expected {d / TEMPO_OVERRIDE_DIR}); run scripts/v5/recanonicalize_tempo_v5.py")
+        override = {"bpm_v5_manifest": bpm_v5, "bpm_override": float(tempo_overrides[sha16]), "midi_dir_asserted": TEMPO_OVERRIDE_DIR}
+        bpm_v5 = float(tempo_overrides[sha16])
     per_stem = {}
     all_notes = []
     excluded: dict[int, dict[str, int]] = {}  # c82 P3.1: beat -> {stem: n_starts} for beats hit by the exclusion rule
@@ -226,7 +264,7 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
             segments[-1]["n_beats"] += 1
         else:
             segments.append({"state": e["state"], "start_beat": e["beat"], "n_beats": 1})
-    return {"schema_version": 1, "cycle": CYCLE, "sha16": sha16, "title": tm.get("title"), "bpm_v5": tm["bpm_v5"],
+    rec = {"schema_version": 1, "cycle": CYCLE, "sha16": sha16, "title": tm.get("title"), "bpm_v5": bpm_v5,
             "midi_dir": str(mid_dir), "env_pin_sha256": ENV_PIN_SHA256, "stems": HARMONY_STEMS, "per_stem": per_stem,
             "velocity_values_seen": vels, "velocity_uniform": len(vels) <= 1,
             "weighting": "note overlap (beats) x velocity; velocity is uniform in canonical MIDI so effectively duration-only",
@@ -235,6 +273,9 @@ def analyse_song(sha16: str, corpus: Path) -> dict:
                                "excluded_beats": {str(b): excluded[b] for b in excluded_beats}, "n_excluded_beats": len(excluded_beats),
                                "n_beats_in_stream": len(stream)},
             "chord_stream": stream, "segments": segments}
+    if override is not None:  # c86: key added ONLY for overridden songs (all other per-song records byte-identical)
+        rec["tempo_override_c86"] = override
+    return rec
 
 
 def markov(streams: dict[str, list[str]], segs: dict[str, list[str]]) -> dict:
@@ -296,7 +337,11 @@ def main() -> int:
     # and never enter the chain. Content refusal still runs on `used`. Absent flag -> byte-identical behaviour.
     ap.add_argument("--eligible-from", default=None,
                     help="JSON with a gate block (prior harmony output): use its gate['used'] as the song list and its gate verbatim")
+    # c86 F4 CLOSE additive: sha16 -> bpm; overrides the transcription-manifest bpm_v5 for listed songs and ASSERTS that their
+    # MIDI was served from canonical_v5c_reindexed/ (the operator-adopted tempo). Absent flag -> byte-identical behaviour.
+    ap.add_argument("--tempo-overrides", default=None, help="JSON {sha16: bpm} (e.g. data/v5/corpus/tempo_overrides_c86.json)")
     args = ap.parse_args()
+    tempo_overrides = load_tempo_overrides(args.tempo_overrides)
     CYCLE = args.cycle
     os.chdir(_WS)
     if args.exclude_max_starts != EXCLUDE_MAX_SIMULTANEOUS_STARTS:
@@ -308,8 +353,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     man = json.loads(Path(args.manifest).read_text())
     order = [s["sha16"] for s in sorted(man["songs"], key=lambda s: s["v5_priority_rank"]) if s.get("in_v5_corpus")]
-    blocked_p = corpus / "recanonicalization_blocked.json"
-    blocked = set(json.loads(blocked_p.read_text())["blocked_songs"]) if blocked_p.exists() else set()
+    blocked = tempo_blocked_effective(corpus)  # c86: blocked_songs minus unblocked_c86 (additive rule)
     landed = [s for s in order if (corpus / s / "transcription_manifest.json").exists()]
     content_blocked = load_content_blocked(corpus)  # c84 P0.2: NON-MUSIC songs (separate file from the tempo block)
     used = [s for s in landed if s not in blocked and s not in content_blocked]
@@ -335,7 +379,7 @@ def main() -> int:
     streams, segs, per_song_summary = {}, {}, {}
     per_song_root = out_dir / args.per_song_subdir if args.per_song_subdir else out_dir
     for s in used:
-        r = analyse_song(s, corpus)
+        r = analyse_song(s, corpus, tempo_overrides)
         (per_song_root / s).mkdir(parents=True, exist_ok=True)
         (per_song_root / s / "harmony_v5.json").write_text(json.dumps(r, sort_keys=True, indent=2) + "\n")
         streams[s] = [e["state"] for e in r["chord_stream"]]
@@ -353,6 +397,10 @@ def main() -> int:
                "per_song": per_song_summary, "qualities": list(QUALITY_ORDER),
                "notes": ["first data only; NOT fed to any generator this cycle",
                          "velocity uniform in canonical MIDI -> duration-only weighting (disclosed)"]})
+    if args.tempo_overrides:  # c86: recorded ONLY when the flag is given (flag-off output byte-identical)
+        mk["tempo_overrides_c86"] = {"path": args.tempo_overrides, "sha256": hashlib.sha256(Path(args.tempo_overrides).read_bytes()).hexdigest(),
+                                     "overrides": tempo_overrides, "applied_to": [s for s in used if s in tempo_overrides],
+                                     "midi_dir_asserted": TEMPO_OVERRIDE_DIR}
     (out_dir / args.out_name).write_text(json.dumps(mk, sort_keys=True, indent=2) + "\n")
     print(f"corpus chain: {len(mk['states'])} states; max stationary {mk['max_stationary_state']}={mk['max_stationary_mass']}; "
           f"qualities>=8 segs {mk['qualities_with_count_ge_threshold']}; verdict {mk['degeneracy_verdict']}")

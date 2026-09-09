@@ -31,6 +31,9 @@ Pre-declared held-out verdict (train WIG + CG, evaluate ROME held out):
   GROOVE_V2_OVERFITS otherwise.
 Also reports the c81 in-sample (WIG + CG) statistics under the new alignment for comparison.
 Discipline: /usr/bin/python3 guard; no PRNG; no sidecar_nonfactor; no VST3 state APIs; READ-ONLY inputs; c81 untouched.
+c86 F4 CLOSE (additive, cycle 86, run-2026-09-06T000000Z, worker): load_song prefers canonical_v5c_reindexed/ over
+canonical_v5_reindexed/ (same tuple as harmony_v5.py); a song in the blocked file's `unblocked_c86` block is NOT blocked;
+`--tempo-overrides <json>` overrides bpm_v5 for listed songs and asserts the v5c dir served them.
 """
 from __future__ import annotations
 
@@ -194,18 +197,63 @@ def sample(model: dict, n: int) -> list[dict]:
     return out
 
 
-def load_song(corpus: Path, s: str) -> dict:
-    d = corpus / s / "canonical_v5_reindexed"
-    if not (d / "reindex_manifest.json").exists():
+# c86 F4 CLOSE (additive): same lossless preference tuple as harmony_v5.py. canonical_v5c_reindexed/ exists only for songs
+# re-canonicalized at an operator-adopted tempo (scripts/v5/recanonicalize_tempo_v5.py); every previously consumed song has
+# only canonical_v5_reindexed/, so behaviour without overrides is unchanged.
+MIDI_DIR_PREFERENCE = ("canonical_v5c_reindexed", "canonical_v5_reindexed")
+TEMPO_OVERRIDE_DIR = MIDI_DIR_PREFERENCE[0]
+UNBLOCKED_KEY = "unblocked_c86"
+
+
+class TempoOverrideDirError(RuntimeError):
+    """Raised when a --tempo-overrides song was not served from canonical_v5c_reindexed/ (c86)."""
+
+
+def tempo_blocked_effective(corpus: Path) -> set:
+    """c86: effective tempo block = blocked_songs minus unblocked_c86 (operator adjudication); absent file -> empty."""
+    p = Path(corpus) / "recanonicalization_blocked.json"
+    if not p.exists():
+        return set()
+    d = json.loads(p.read_text())
+    return set(d.get("blocked_songs", {})) - set(d.get(UNBLOCKED_KEY, {}))
+
+
+def load_tempo_overrides(path) -> dict:
+    """c86: sha16 -> bpm; None/absent -> {}."""
+    if not path:
+        return {}
+    return {str(k): float(v) for k, v in json.loads(Path(path).read_text()).items()}
+
+
+def load_song(corpus: Path, s: str, tempo_overrides: dict | None = None) -> dict:
+    tempo_overrides = tempo_overrides or {}
+    d = None
+    for sub in MIDI_DIR_PREFERENCE:
+        if (corpus / s / sub / "reindex_manifest.json").exists():
+            d = corpus / s / sub
+            break
+    if d is None:
         raise SystemExit(f"MISSING_REINDEX: {s}")
     tm = json.loads((corpus / s / "transcription_manifest.json").read_text())
+    bpm_v5 = tm["bpm_v5"]
+    override = None
+    if s in tempo_overrides:  # c86: an overridden song MUST have been served from canonical_v5c_reindexed/
+        if d.name != TEMPO_OVERRIDE_DIR:
+            raise TempoOverrideDirError(f"TEMPO_OVERRIDE_DIR: {s} has a --tempo-overrides entry but MIDI came from {d} "
+                                        f"(expected {corpus / s / TEMPO_OVERRIDE_DIR}); run scripts/v5/recanonicalize_tempo_v5.py")
+        override = {"bpm_v5_manifest": bpm_v5, "bpm_override": float(tempo_overrides[s]), "midi_dir_asserted": TEMPO_OVERRIDE_DIR}
+        bpm_v5 = float(tempo_overrides[s])
     drums = onsets_slots(d / "drums.mid")
     bass = onsets_slots(d / "bass.mid")
     ph = phase_offset(s, drums)
     bars = bar_patterns(drums, bass, ph["offset"])
     bars_unaligned = bar_patterns(drums, bass, 0)
-    return {"title": tm.get("title"), "bpm_v5": tm["bpm_v5"], "phase": ph, "bars": bars,
-            "stats": stats(bars), "stats_unaligned_offset0": stats(bars_unaligned)}
+    rec = {"title": tm.get("title"), "bpm_v5": bpm_v5, "phase": ph, "bars": bars,
+           "stats": stats(bars), "stats_unaligned_offset0": stats(bars_unaligned)}
+    if override is not None:  # c86: keys added ONLY for overridden songs
+        rec["midi_dir"] = str(d)
+        rec["tempo_override_c86"] = override
+    return rec
 
 
 def main() -> int:
@@ -214,10 +262,13 @@ def main() -> int:
     ap.add_argument("--train", nargs="*", default=list(TRAIN_DEFAULT))
     ap.add_argument("--heldout", default=HELDOUT_DEFAULT)
     ap.add_argument("--out", default="data/v5/rules/groove_v5_v2.json")
+    # c86 F4 CLOSE additive: sha16 -> bpm overrides (asserts canonical_v5c_reindexed/ served the song). Absent -> unchanged.
+    ap.add_argument("--tempo-overrides", default=None, help="JSON {sha16: bpm} (e.g. data/v5/corpus/tempo_overrides_c86.json)")
     args = ap.parse_args()
     os.chdir(_WS)
     corpus = Path(args.corpus_dir)
-    blocked = set(json.loads((corpus / "recanonicalization_blocked.json").read_text())["blocked_songs"])
+    tempo_overrides = load_tempo_overrides(args.tempo_overrides)
+    blocked = tempo_blocked_effective(corpus)  # c86: blocked_songs minus unblocked_c86 (additive rule)
     refused = [s for s in list(args.train) + [args.heldout] if s in blocked]
     if refused:
         raise SystemExit(f"REFUSED: blocked songs must not be consumed: {refused}")
@@ -225,7 +276,7 @@ def main() -> int:
         sys.path.insert(0, str(_WS))
     from scripts.v5.content_blocked import refuse_if_content_blocked  # c84 P0.2: additive content-gate refusal
     refuse_if_content_blocked(list(args.train) + [args.heldout], corpus, who="groove_v5_v2")
-    songs = {s: load_song(corpus, s) for s in list(args.train) + [args.heldout]}
+    songs = {s: load_song(corpus, s, tempo_overrides) for s in list(args.train) + [args.heldout]}
     train_bars = [b for s in args.train for b in songs[s]["bars"]]
     model = {
         "kick_marginal": table([("*", b["kick"]) for b in train_bars]),
@@ -269,6 +320,9 @@ def main() -> int:
            "sampled_bars": sampled, "sample_stats": sample_stats, "heldout_stats": held, "validation": checks,
            "degenerate": degenerate, "verdict": verdict,
            "note": "data-existence only; NOT fed to any generator this cycle; c81 groove_v5.py untouched"}
+    if args.tempo_overrides:  # c86: recorded ONLY when the flag is given
+        out["tempo_overrides_c86"] = {"path": args.tempo_overrides, "sha256": hashlib.sha256(Path(args.tempo_overrides).read_bytes()).hexdigest(),
+                                      "overrides": tempo_overrides, "midi_dir_asserted": TEMPO_OVERRIDE_DIR}
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(out, sort_keys=True, indent=2) + "\n")
     print(f"VERDICT {verdict}; heldout {args.heldout} {held}; sampled {sample_stats}; singleton_fraction {singleton_fraction}; contexts {out['table_context_counts']}")

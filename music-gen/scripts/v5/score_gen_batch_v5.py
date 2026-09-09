@@ -83,7 +83,7 @@ def main(argv=None) -> int:
     ap.add_argument("--no-siblings", action="store_true", help="do not write per-render ear_score_v5.json (byte-det second run)")
     ap.add_argument("--renders-glob", action="append", default=None, help="c84 additive: glob(s) of ab_mix.wav to score instead of the c83 v4 set")
     # c85 additive: stamp the cycle / milestone written into the sibling ear_score_v5.json and the table (defaults reproduce c83).
-    ap.add_argument("--cycle", type=int, default=83, help="cycle stamped into sibling + table records (default 83)")
+    ap.add_argument("--cycle", type=int, required=True, help="cycle stamped into sibling + table records (c86: REQUIRED, no 83/84 default)")
     ap.add_argument("--milestone", default="M-V5-GEN-1/gen-renders-ear-scored-informational-c83", help="milestone stamped into sibling + table records")
     a = ap.parse_args(argv)
     assert RECEIPT.exists(), "SCORING_BLOCKED_ON_RECEIPT: amended receipt absent"

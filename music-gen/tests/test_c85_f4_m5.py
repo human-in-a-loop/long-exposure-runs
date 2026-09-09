@@ -41,8 +41,15 @@ def test_01_f4_prereg_gate_enum_and_blocked_file_untouched() -> None:
     assert v["verdict"] in p["verdict_enum"] == ["F4_RESOLVED", "F4_HALF_DOUBLE_AMBIGUOUS", "F4_FAILS"]
     assert v["prereg_sha256"] == _sha(pre) and v["authority"]["sha256"] == p["authority"]["sha256"] == _sha(p["authority"]["path"])
     assert sorted(v["per_song"]) == ["88d247468cb6d49f", "cdd2717e52820ff6"] and v["blocked_file_touched"] is False
-    assert _sha("data/v5/corpus/recanonicalization_blocked.json").startswith(TEMPO_BLOCKED_C80_SHA_PREFIX)
-    assert v["recanonicalization_blocked_sha256"] == _sha("data/v5/corpus/recanonicalization_blocked.json")
+    # c86 F4 CLOSE: the c80-c85 bytes live on as the stale copy (2fbabc07…); the live file was amended IN PLACE by the operator
+    # adjudication (unblocked_c86 for both songs; blocked_songs kept as the historical record for generate_v5.donor_tempo).
+    stale = _ROOT / "data/v5/corpus/stale/recanonicalization_blocked.c80_c85.json"
+    assert _sha(stale).startswith(TEMPO_BLOCKED_C80_SHA_PREFIX) and v["recanonicalization_blocked_sha256"] == _sha(stale)
+    live = json.loads((_ROOT / "data/v5/corpus/recanonicalization_blocked.json").read_text())
+    assert sorted(live["unblocked_c86"]) == ["88d247468cb6d49f", "cdd2717e52820ff6"] and live["blocked_songs_effective"] == []
+    assert sorted(live["blocked_songs"]) == ["88d247468cb6d49f", "cdd2717e52820ff6"] and live["blocked_songs"]["88d247468cb6d49f"]["anchor_bpm"] == 123.046875
+    assert live["amended_c86"]["pre_amend_sha256"] == _sha(stale) and live["unblocked_c86"]["88d247468cb6d49f"]["adopted_bpm"] == 122.197271
+    assert json.loads(stale.read_text()) == {k: live[k] for k in json.loads(stale.read_text())}  # amendment is purely additive
     # not resolved -> nothing else written; resolved -> unblocked record exists
     unblocked = (_ROOT / "data/v5/corpus/recanonicalization_unblocked_c85.json").exists()
     assert unblocked == (v["verdict"] == "F4_RESOLVED")
@@ -50,7 +57,8 @@ def test_01_f4_prereg_gate_enum_and_blocked_file_untouched() -> None:
         assert s["all_three_pass"] == (s["half_double"]["passes"] and s["onsets_per_beat"]["passes"] and s["anchor"]["passes"])
     bd = json.loads((_ROOT / "data/v5/corpus/byte_determinism_c85.json").read_text())["tempo_f4_verdict_c85"]
     assert bd["equal"] and bd["real_equals_runs"] and bd["run1_sha256"] == _sha(out)
-    print(f"test_01 PASS: F4 verdict {v['verdict']}; prereg predates verdict; blocked file {TEMPO_BLOCKED_C80_SHA_PREFIX}… unchanged; byte-det x2 equal")
+    print(f"test_01 PASS: F4 verdict {v['verdict']}; prereg predates verdict; c80-c85 blocked bytes {TEMPO_BLOCKED_C80_SHA_PREFIX}… preserved as stale copy; "
+          "live file amended additively (unblocked_c86 x2, blocked_songs historical); byte-det x2 equal")
 
 
 def test_02_synthetic_half_double_check() -> None:

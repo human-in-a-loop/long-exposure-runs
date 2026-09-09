@@ -3,6 +3,16 @@
 harmony chain on a fixed form plan -> keys/melody as chord tones on the grid; donor profiles + mix as v4).
 c85 P1 (F1 LENGTH + FORM + ARRANGEMENT): additive `--form-plan <json>` (DEFAULT OFF — the iteration-1 path is byte-identical
 in audio), `--cycle`, M4 (no groove-model copy into the iteration dir), F6 stall-history schema.
+c86 (F2 BASS + MELODY + DYNAMICS, 2026-09-09T23:30:00Z, pre-registered in data/v5/gen/f2_prereg_c86.json): additive `--f2`
+(DEFAULT OFF — the --form-plan path stays byte-identical to iteration 2) + `--velocity-mode {uniform,f2}` + `--rms-variance-test`.
+With --f2: bass pitches from data/v5/rules/bass_pitch_v5.json (chord-conditioned interval classes, donor register), melody from
+data/v5/rules/melody_vomm_v5.json (order-3 VOMM over scale-degree|IOI tokens, per section run so literal repeats reproduce, muted
+per the F1 arrangement), velocities for ALL stems (drums per GM class x 16th slot, bass by kick-coincidence x slot, keys by slot,
+melody by phrase position) drawn by SHA-256 inverse-CDF from data/v5/rules/velocity_profiles_v5.json (Route 1 stem-audio
+profiles); MIDI via the sibling serializer scripts/v5/midi_from_json_events_v5.py (velocity field). `--velocity-mode uniform`
+renders the same notes at velocity 100 everywhere (the exact null); `--rms-variance-test` renders that twin into a tempdir and
+records the per-stem 50 ms frame-RMS variance ratio (>= 1.5 on every stem with notes = operator clause (c)). F2 enum in the
+rollup: F2_LANDS iff velocities present 5/5 AND RMS test 5/5 AND replay x2 5/5; else F2_PARTIAL.
 
 created: 2026-09-09T21:30:00Z
 cycle: 84 (c85 additive extension 2026-09-09T22:10:00Z)
@@ -69,6 +79,8 @@ from scripts.v5 import groove_v5_v2 as G  # noqa: E402  READ-ONLY (row_for / dra
 from scripts.v5.harmony_v5 import QUALITIES  # noqa: E402  READ-ONLY template intervals
 from scripts.v3_spine.midi_from_json_events import serialize as canonical_midi_serialize  # noqa: E402  READ-ONLY c4 serializer
 from scripts.sound_match.replay import replay as sf2_replay  # noqa: E402  READ-ONLY
+from scripts.v5.midi_from_json_events_v5 import serialize as serialize_v5  # noqa: E402  c86 F2 sibling serializer (velocity field)
+from scripts.v5.velocity_v5 import sample_velocity, DRUM_CLASSES as VEL_DRUM_CLASSES  # noqa: E402  c86 F2 (ladder sampler)
 
 ENV_PIN_SHA256 = "2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca"
 FORM_PLAN = ("A", "A", "B", "A")
@@ -90,6 +102,15 @@ F1_MIN_DURATION_S = 90.0
 F1_MIN_BARS = 32
 F1_MIN_LABELS = 3
 F1_ENUM = ("FORM_PLAN_LANDS", "FORM_PLAN_PARTIAL", "FORM_PLAN_FAILS")
+# c86 F2 constants (pre-registered in data/v5/gen/f2_prereg_c86.json)
+F2_ENUM = ("F2_LANDS", "F2_PARTIAL", "F2_FAILS")
+F2_MELODY_REGISTER = (67, 84)
+F2_VOMM_ORDER = 3
+F2_PHRASE_GAP_BEATS = 2.0
+F2_RMS_FRAME_S = 0.050
+F2_RMS_ACTIVE_DB = -60.0
+F2_RMS_RATIO_MIN = 1.5
+F2_IOI_BUCKETS = (1, 2, 3, 4, 6, 8, 12)
 
 
 def _sha(p: Path) -> str:
@@ -173,20 +194,80 @@ def state_root(state: str) -> int | None:
     return int(state.split(":")[0]) if state != "N" and ":" in state else None
 
 
-def build_events(bars: list, chords: list, tonic: int, bpm: float, arr: list | None = None) -> dict:
-    """arr (c85, optional): per-bar dicts {"mute": [stems], "fill": {"snare","hat"} | None, "hold": bool}; None = c84 behaviour."""
+def _f2_velocity(f2: dict, ladder: dict, tag: str) -> int:
+    """F2 velocity draw (SHA-256 inverse-CDF on the empirical quantile ladder); uniform mode = the exact null (100)."""
+    if f2["velocity_mode"] == "uniform":
+        return 100
+    return sample_velocity(ladder, u(tag))
+
+
+def _f2_bass_register(model: dict, donor: str) -> dict:
+    """Donor register {median, iqr_lo, iqr_hi} from bass_pitch_v5.json per_song; PD / Disco A (not in the n=21 corpus) use the
+    corpus register (disclosed in the manifest via register['source'])."""
+    ps = model.get("per_song", {}).get(donor, {}).get("register")
+    if ps:
+        return {"median": ps["median"], "iqr_lo": ps["iqr_lo"], "iqr_hi": ps["iqr_hi"], "source": f"per_song[{donor}]"}
+    c = model["register"]["corpus"]
+    return {"median": c["median"], "iqr_lo": c["iqr_lo"], "iqr_hi": c["iqr_hi"], "source": "corpus (donor not in the n=21 bass corpus)"}
+
+
+def _f2_melody_run(f2: dict, label: str, n_bars: int, tonic: int, mode: str) -> list:
+    """VOMM melody for one contiguous run of `n_bars` bars of section `label` (tags key on label + step so literal repeats
+    of a section reproduce the same melody). Returns [(pos16, pitch, ioi16, phrase_pos)]."""
+    M = f2["melody_model"]
+    sample_next, token_pitch = f2["melody_fns"]
+    lo, hi = F2_MELODY_REGISTER
+    out, ctx, pos, prev, k = [], (), 0, None, 0
+    total = n_bars * 16
+    while pos < total:
+        tag = f"{f2['tag']}|F2|melody|{label}|{k}"
+        tok = sample_next(M, ctx, u(tag))
+        deg, ioi = tok.split("|")
+        ioi = int(ioi)
+        pitch = int(token_pitch(tok, tonic, mode, lo, hi, prev))
+        out.append([pos, pitch, ioi])
+        prev = pitch
+        ctx = (ctx + (tok,))[-F2_VOMM_ORDER:]
+        pos += max(1, ioi)
+        k += 1
+    # phrase position: gap >= 2 beats (8 sixteenths) opens a new phrase; peak = highest pitch inside the phrase
+    phrases, cur = [], []
+    for i, (p, pitch, ioi) in enumerate(out):
+        if cur and p - out[cur[-1]][0] >= int(F2_PHRASE_GAP_BEATS * 4):
+            phrases.append(cur)
+            cur = []
+        cur.append(i)
+    if cur:
+        phrases.append(cur)
+    posn = {}
+    for ph in phrases:
+        peak = max(ph, key=lambda i: (out[i][1], -i))
+        for j, i in enumerate(ph):
+            posn[i] = "first" if j == 0 else ("last" if j == len(ph) - 1 else ("peak" if i == peak else "other"))
+    return [(p, pitch, ioi, posn[i]) for i, (p, pitch, ioi) in enumerate(out)]
+
+
+def build_events(bars: list, chords: list, tonic: int, bpm: float, arr: list | None = None, f2: dict | None = None) -> dict:
+    """arr (c85, optional): per-bar dicts {"mute": [stems], "fill": {"snare","hat"} | None, "hold": bool}; None = c84 behaviour.
+    f2 (c86, optional): {"tag", "velocity_mode", "profiles", "bass_model", "bass_fns", "melody_model", "melody_fns", "register",
+    "mode", "sections": [(label, bar_in_section)] parallel to bars}; None = c84/c85 behaviour byte-for-byte."""
     beat = 60.0 / bpm
     bar_len = 4 * beat
     s16 = beat / 4
     ev = {"drums": [], "bass": [], "keys": [], "melody": []}
     idx = {k: 0 for k in ev}
 
-    def note(stem: str, inst: str, pitch: int, t0: float, t1: float) -> None:
+    def note(stem: str, inst: str, pitch: int, t0: float, t1: float, vel: int | None = None) -> None:
         i = idx[stem]
-        ev[stem].append({"index": i, "instrument": inst, "pitch": int(pitch), "start_time": round(t0, 6), "type": "start"})
+        s = {"index": i, "instrument": inst, "pitch": int(pitch), "start_time": round(t0, 6), "type": "start"}
+        if vel is not None:
+            s["velocity"] = int(vel)
+        ev[stem].append(s)
         ev[stem].append({"start_event_index": i, "end_time": round(max(t1, t0 + 0.02), 6), "type": "end"})
         idx[stem] = i + 1
 
+    P = f2["profiles"]["profiles"] if f2 else None
+    sec = f2["sections"] if f2 else None
     for b, (g0, st) in enumerate(zip(bars, chords)):
         a = arr[b] if arr is not None else None
         g = dict(g0)
@@ -195,41 +276,73 @@ def build_events(bars: list, chords: list, tonic: int, bpm: float, arr: list | N
         if a and a.get("fill"):
             g["snare"], g["hat"] = int(a["fill"]["snare"]), int(a["fill"]["hat"])
         t_bar = b * bar_len
+        vt = f"{f2['tag']}|F2|{sec[b][0]}|{sec[b][1]}" if f2 else ""
+        kick_slots = {2 * j for j in G.bits(g["kick"], 8)}
         if "drums" not in mute:
             if hold:
-                note("drums", "drums", KICK_PITCH, t_bar, t_bar + DRUM_HIT_S)
+                note("drums", "drums", KICK_PITCH, t_bar, t_bar + DRUM_HIT_S, _f2_velocity(f2, P["drums"]["kick"]["0"], f"{vt}|drums|kick|0") if f2 else None)
             else:
                 for j in G.bits(g["kick"], 8):
-                    note("drums", "drums", KICK_PITCH, t_bar + 2 * j * s16, t_bar + 2 * j * s16 + DRUM_HIT_S)
+                    note("drums", "drums", KICK_PITCH, t_bar + 2 * j * s16, t_bar + 2 * j * s16 + DRUM_HIT_S,
+                         _f2_velocity(f2, P["drums"]["kick"][str(2 * j)], f"{vt}|drums|kick|{2 * j}") if f2 else None)
                 for p in G.bits(g["snare"]):
-                    note("drums", "drums", SNARE_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
+                    note("drums", "drums", SNARE_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S,
+                         _f2_velocity(f2, P["drums"]["snare"][str(p)], f"{vt}|drums|snare|{p}") if f2 else None)
                 for p in G.bits(g["hat"]):
-                    note("drums", "drums", HAT_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S)
+                    note("drums", "drums", HAT_PITCH, t_bar + p * s16, t_bar + p * s16 + DRUM_HIT_S,
+                         _f2_velocity(f2, P["drums"]["hat"][str(p)], f"{vt}|drums|hat|{p}") if f2 else None)
         pcs = state_pcs(st, tonic)
         root_pc = pcs[0] if pcs else tonic
         fifth_pc = pcs[2] if pcs and len(pcs) > 2 else (root_pc + 7) % 12
+        nxt = state_pcs(chords[b + 1], tonic) if b + 1 < len(chords) else None
+        next_root_pc = nxt[0] if nxt else None
         if "bass" not in mute:
             if hold:
-                note("bass", "electric_bass", 40 + ((root_pc - 4) % 12), t_bar, t_bar + 4 * beat)
+                note("bass", "electric_bass", 40 + ((root_pc - 4) % 12), t_bar, t_bar + 4 * beat,
+                     _f2_velocity(f2, P["bass"]["coincident"]["0"], f"{vt}|bass|hold") if f2 else None)
             else:
                 bpos = G.bits(g["bass"])
                 for k, p in enumerate(bpos):
-                    pc = fifth_pc if k % 4 == 3 else root_pc
-                    pitch = 40 + ((pc - 4) % 12)  # E2..D#3
                     t0 = t_bar + p * s16
                     t1 = t_bar + (bpos[k + 1] * s16 if k + 1 < len(bpos) else 4 * beat)
-                    note("bass", "electric_bass", pitch, t0, t1)
-        if pcs:
-            if "keys" not in mute:
-                for n, pc in enumerate(pcs):
-                    pitch = 60 + ((pc - 0) % 12) + (12 if n and pc < pcs[0] else 0)
-                    note("keys", "electric_piano", pitch, t_bar, t_bar + 4 * beat - 0.02)
-            if "melody" not in mute:
-                for e8 in range(8):
-                    tag = f"melody|bar{b}|e{e8}|{st}"
-                    if u(tag) < MELODY_PLAY_P:
-                        pc = pcs[int(u(tag + "|tone") * len(pcs)) % len(pcs)]
-                        note("melody", "synth_lead", 72 + (pc % 12), t_bar + e8 * 2 * s16, t_bar + (e8 + 1) * 2 * s16 - 0.01)
+                    if f2:
+                        sample_cls, to_pitch = f2["bass_fns"]
+                        chg = bool(next_root_pc is not None and next_root_pc != root_pc and p >= 12)
+                        cls = sample_cls(f2["bass_model"], p % 4, chg, u(f"{vt}|bass|cls|{p}"))
+                        pitch = int(to_pitch(cls, root_pc, next_root_pc, f2["register"], u(f"{vt}|bass|pitch|{p}")))
+                        lad = P["bass"]["coincident" if p in kick_slots else "other"][str(p)]
+                        note("bass", "electric_bass", pitch, t0, t1, _f2_velocity(f2, lad, f"{vt}|bass|vel|{p}"))
+                    else:
+                        pc = fifth_pc if k % 4 == 3 else root_pc
+                        pitch = 40 + ((pc - 4) % 12)  # E2..D#3
+                        note("bass", "electric_bass", pitch, t0, t1)
+        if pcs and "keys" not in mute:
+            kv = _f2_velocity(f2, P["keys"]["0"], f"{vt}|keys") if f2 else None
+            for n, pc in enumerate(pcs):
+                pitch = 60 + ((pc - 0) % 12) + (12 if n and pc < pcs[0] else 0)
+                note("keys", "electric_piano", pitch, t_bar, t_bar + 4 * beat - 0.02, kv)
+        if pcs and not f2 and "melody" not in mute:
+            for e8 in range(8):
+                tag = f"melody|bar{b}|e{e8}|{st}"
+                if u(tag) < MELODY_PLAY_P:
+                    pc = pcs[int(u(tag + "|tone") * len(pcs)) % len(pcs)]
+                    note("melody", "synth_lead", 72 + (pc % 12), t_bar + e8 * 2 * s16, t_bar + (e8 + 1) * 2 * s16 - 0.01)
+    if f2:  # F2 melody: VOMM per contiguous section run (literal repeats reproduce), muted bars dropped, velocity by phrase position
+        b = 0
+        while b < len(bars):
+            label = sec[b][0]
+            e = b
+            while e + 1 < len(bars) and sec[e + 1][0] == label and sec[e + 1][1] == sec[e][1] + 1:
+                e += 1
+            run = _f2_melody_run(f2, label, e - b + 1, tonic, f2["mode"])
+            for pos, pitch, ioi, ppos in run:
+                bb = b + pos // 16
+                if arr is not None and "melody" in set(arr[bb]["mute"]):
+                    continue
+                t0 = b * bar_len + pos * s16
+                vel = _f2_velocity(f2, P["melody"][ppos], f"{f2['tag']}|F2|melody|{label}|vel|{pos}")
+                note("melody", "synth_lead", pitch, t0, t0 + max(1, ioi) * s16 - 0.01, vel)
+            b = e + 1
     return ev
 
 
@@ -378,10 +491,19 @@ def arrangement(plan: dict, fp: dict, tag: str) -> tuple[list, dict]:
 
 
 def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict, corpus: Path, keep_per_track: bool,
-                rules_sha: dict, cycle: int = 84, form_plan: dict | None = None, form_plan_sha: str | None = None) -> dict:
+                rules_sha: dict, cycle: int = 84, form_plan: dict | None = None, form_plan_sha: str | None = None,
+                f2_cfg: dict | None = None) -> dict:
     donor = spec["donor_song_sha16"]
     gen_id = spec["generated_song_id"].replace("gen_v4_", "gen_v5_")
     tag = f"{gen_id}|donor={donor}|seed={seed}"
+    f2 = None
+    if f2_cfg is not None:  # c86 F2: per-song config (models are shared; register + key mode are donor-specific)
+        key = chain["per_song"].get(donor, {}).get("key", {})
+        f2 = {"tag": tag, "velocity_mode": f2_cfg["velocity_mode"], "profiles": f2_cfg["profiles"], "bass_model": f2_cfg["bass_model"],
+              "bass_fns": f2_cfg["bass_fns"], "melody_model": f2_cfg["melody_model"], "melody_fns": f2_cfg["melody_fns"],
+              "register": _f2_bass_register(f2_cfg["bass_model"], donor), "mode": str(key.get("mode", "major")),
+              "mode_source": "donor_kk_key_from_chain" if key else "major_default_(donor not in chain)"}
+    ser = serialize_v5 if f2 is not None else canonical_midi_serialize
     song_dir = out_dir / f"{gen_id}_donor_{donor}"
     song_dir.mkdir(parents=True, exist_ok=True)
     bpm, tempo_src = donor_tempo(donor, corpus)
@@ -415,11 +537,12 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         (md / "sections").mkdir(exist_ok=True)
         core_sha = {}
         for i, lab in enumerate(form_seq):  # literal-repeat measure: core (pre-arrangement) section MIDI
-            ev = build_events(sec_bars[lab], sec_chords[lab], tonic, bpm)
+            f2s = dict(f2, sections=[(lab, k) for k in range(bars_per_section)]) if f2 else None
+            ev = build_events(sec_bars[lab], sec_chords[lab], tonic, bpm, None, f2s)
             cj = jd / f"section_{i}_{lab}.json"
             cj.write_text(json.dumps(combine_events(ev), sort_keys=True, separators=(",", ":")))
             cm = md / "sections" / f"section_{i}_{lab}.mid"
-            canonical_midi_serialize(str(cj), str(cm), float(bpm), (4, 4))
+            ser(str(cj), str(cm), float(bpm), (4, 4))
             core_sha[f"{i}_{lab}"] = _sha(cm)
         a_shas = {v for k, v in core_sha.items() if k.endswith("_A")}
         f1 = {"plan": plan, "a_dominant_root": a_root, "a_realized_density": round(a_dens, 6), "a_realized_tercile": a_terc,
@@ -427,7 +550,8 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
               "n_a_sections": sum(1 for s in form_seq if s == "A")}
     bars = [b for s in form_seq for b in sec_bars[s]]
     chords = [c for s in form_seq for c in sec_chords[s]]
-    events = build_events(bars, chords, tonic, bpm, arr)
+    f2f = dict(f2, sections=[(s, k) for s in form_seq for k in range(bars_per_section)]) if f2 else None
+    events = build_events(bars, chords, tonic, bpm, arr, f2f)
     midi_sha, wav_sha, gains, profiles_used = {}, {}, {}, {}
     bass_profile = json.loads((_WS / spec["donor_bass_profile_relpath"]).read_text())
     sf2_path, sf2_sha = bass_profile["identity"]["sf2_path"], bass_profile["identity"].get("sf2_sha256", "")
@@ -439,7 +563,7 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
     tracks = []
     for stem in ("drums", "bass", "keys", "melody"):
         (jd / f"{stem}.json").write_text(json.dumps(events[stem], sort_keys=True, separators=(",", ":")))
-        canonical_midi_serialize(str(jd / f"{stem}.json"), str(md / f"{stem}.mid"), float(bpm), (4, 4))
+        ser(str(jd / f"{stem}.json"), str(md / f"{stem}.mid"), float(bpm), (4, 4))
         midi_sha[stem] = _sha(md / f"{stem}.mid")
         if stem == "bass":
             prof, profiles_used[stem] = bass_profile, spec["donor_bass_profile_relpath"]
@@ -502,8 +626,52 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         man["form_plan_sha256"] = form_plan_sha
         man["form_prereg_sha256"] = _sha(Path("data/v5/gen/form_prereg_c85.json"))
         man["f1"] = f1
+    if f2 is not None:
+        per_stem = {}
+        for stem in ("drums", "bass", "keys", "melody"):
+            vels = [int(e["velocity"]) for e in events[stem] if e["type"] == "start"]
+            pitches = [int(e["pitch"]) for e in events[stem] if e["type"] == "start"]
+            per_stem[stem] = {"n_notes": len(vels), "n_distinct_velocities": len(set(vels)), "velocity_min": min(vels) if vels else None,
+                              "velocity_max": max(vels) if vels else None, "velocity_mean": round(sum(vels) / len(vels), 3) if vels else None,
+                              "velocities_present": bool(vels) and (len(set(vels)) >= 2 or len(vels) == 1),
+                              "pitch_min": min(pitches) if pitches else None, "pitch_max": max(pitches) if pitches else None}
+        man["milestone"] = "M-V5-GEN-1/F2-bass-melody-dynamics"
+        man["f2"] = {"route": f2_cfg["route"], "velocity_mode": f2["velocity_mode"], "serializer": "scripts/v5/midi_from_json_events_v5.py (velocity field; byte-equal to c4 without velocities)",
+                     "models_sha256": f2_cfg["models_sha256"], "prereg_sha256": f2_cfg["prereg_sha256"], "bass_register": f2["register"],
+                     "melody_key_mode": f2["mode"], "melody_key_mode_source": f2["mode_source"], "melody_register": list(F2_MELODY_REGISTER),
+                     "per_stem": per_stem, "velocities_present_all_stems_with_notes": all(v["velocities_present"] for v in per_stem.values() if v["n_notes"])}
+        man["f2_prereg_sha256"] = f2_cfg["prereg_sha256"]
     (song_dir / "ab_mix.manifest.json").write_text(json.dumps(man, sort_keys=True, indent=2) + "\n")
     return man
+
+
+def frame_rms_variance(wav: Path) -> dict:
+    """c86 F2 clause (c): variance of the 50 ms frame-RMS (dB) over ACTIVE frames (> -60 dBFS); gain-invariant."""
+    data, sr = sf.read(str(wav), dtype="float32", always_2d=True)
+    y = data.astype(np.float64).mean(axis=1)
+    n = int(round(F2_RMS_FRAME_S * sr))
+    nf = len(y) // n
+    if nf == 0:
+        return {"n_frames": 0, "n_active": 0, "variance_db2": None}
+    fr = y[: nf * n].reshape(nf, n)
+    rms = 20.0 * np.log10(np.sqrt((fr * fr).mean(axis=1)) + 1e-9)
+    act = rms[rms > F2_RMS_ACTIVE_DB]
+    return {"n_frames": int(nf), "n_active": int(act.size), "variance_db2": round(float(act.var()), 6) if act.size > 1 else None,
+            "mean_db": round(float(act.mean()), 4) if act.size else None}
+
+
+def f2_rms_variance_test(f2_dir: Path, uni_dir: Path, per_stem: dict) -> dict:
+    out, all_ok = {}, True
+    for stem, st in per_stem.items():
+        if not st["n_notes"]:
+            out[stem] = {"skipped": "no notes"}
+            continue
+        a, b = frame_rms_variance(f2_dir / f"{stem}.wav"), frame_rms_variance(uni_dir / f"{stem}.wav")
+        ratio = (a["variance_db2"] / b["variance_db2"]) if a["variance_db2"] and b["variance_db2"] else None
+        ok = ratio is not None and ratio >= F2_RMS_RATIO_MIN
+        all_ok = all_ok and ok
+        out[stem] = {"f2": a, "uniform": b, "ratio_f2_over_uniform": round(ratio, 4) if ratio is not None else None, "ge_1p5": ok}
+    return {"frame_s": F2_RMS_FRAME_S, "active_floor_dbfs": F2_RMS_ACTIVE_DB, "ratio_min": F2_RMS_RATIO_MIN, "per_stem": out, "passes_all_stems_with_notes": all_ok}
 
 
 def main(argv=None) -> int:
@@ -522,7 +690,27 @@ def main(argv=None) -> int:
     ap.add_argument("--form-plan", default=None, help="c85 F1: data/v5/rules/form_plan_v5.json (default OFF = c84 iteration-1 path)")
     ap.add_argument("--cycle", type=int, default=84)
     ap.add_argument("--feature", default=None, help="c85 F6: feature label recorded in the stall history (default: F1 when --form-plan, else none)")
+    # c86 F2 (default OFF: the --form-plan path stays byte-identical to iteration 2)
+    ap.add_argument("--f2", action="store_true", help="c86 F2: bass pitches from bass_pitch_v5, melody from melody_vomm_v5, velocities from velocity_profiles_v5")
+    ap.add_argument("--velocity-mode", choices=("uniform", "f2"), default="uniform", help="c86 F2: 'uniform' = velocity 100 everywhere (the exact null)")
+    ap.add_argument("--velocity-profiles", default="data/v5/rules/velocity_profiles_v5.json")
+    ap.add_argument("--bass-model", default="data/v5/rules/bass_pitch_v5.json")
+    ap.add_argument("--melody-model", default="data/v5/rules/melody_vomm_v5.json")
+    ap.add_argument("--rms-variance-test", action="store_true", help="c86 F2 clause (c): also render the uniform-velocity twin into a tempdir and compare per-stem frame-RMS variance")
     args = ap.parse_args(argv)
+    f2_cfg = None
+    if args.f2:
+        from scripts.v5.bass_pitch_v5 import sample_interval_class, interval_to_pitch  # noqa: E402  c86 T2 models (READ-ONLY use)
+        from scripts.v5.melody_vomm_v5 import sample_next, token_pitch  # noqa: E402
+        f2_cfg = {"velocity_mode": args.velocity_mode, "profiles": json.loads(Path(args.velocity_profiles).read_text()),
+                  "bass_model": json.loads(Path(args.bass_model).read_text()), "bass_fns": (sample_interval_class, interval_to_pitch),
+                  "melody_model": json.loads(Path(args.melody_model).read_text()), "melody_fns": (sample_next, token_pitch),
+                  "prereg_sha256": _sha(Path("data/v5/gen/f2_prereg_c86.json")),
+                  "models_sha256": {"velocity_profiles": _sha(Path(args.velocity_profiles)), "bass_pitch": _sha(Path(args.bass_model)),
+                                    "melody_vomm": _sha(Path(args.melody_model)), "velocity_v5_script": _sha(Path("scripts/v5/velocity_v5.py")),
+                                    "bass_pitch_script": _sha(Path("scripts/v5/bass_pitch_v5.py")), "melody_vomm_script": _sha(Path("scripts/v5/melody_vomm_v5.py")),
+                                    "serializer_v5_script": _sha(Path("scripts/v5/midi_from_json_events_v5.py"))}}
+        f2_cfg["route"] = f2_cfg["profiles"].get("route", "ROUTE_1_STEM_AUDIO")
     out = Path(args.out or f"data/v5/gen/iteration_{args.iteration:02d}")
     out.mkdir(parents=True, exist_ok=True)
     groove = json.loads(Path(args.groove).read_text())
@@ -546,10 +734,41 @@ def main(argv=None) -> int:
     if form_plan is not None:
         rollup["form_plan"] = {"path": args.form_plan, "sha256": fp_sha, "R1_pass": form_plan["R1"]["pass"],
                                "label_source": "corpus_label_markov" if form_plan["R1"]["pass"] else "R1_FAILED_fixed_template_AABABCAA"}
+    if f2_cfg is not None:
+        rules_sha.update({"velocity_profiles": f2_cfg["models_sha256"]["velocity_profiles"], "bass_pitch": f2_cfg["models_sha256"]["bass_pitch"],
+                          "melody_vomm": f2_cfg["models_sha256"]["melody_vomm"]})
+        rollup["f2"] = {"route": f2_cfg["route"], "velocity_mode": args.velocity_mode, "models_sha256": f2_cfg["models_sha256"],
+                        "prereg_sha256": f2_cfg["prereg_sha256"], "rms_variance_test_requested": bool(args.rms_variance_test)}
     for spec in specs:
-        man = render_song(spec, args.seed, out, groove, chain, corpus, args.keep_per_track, rules_sha, args.cycle, form_plan, fp_sha)
+        keep = args.keep_per_track or bool(f2_cfg is not None and args.rms_variance_test)
+        man = render_song(spec, args.seed, out, groove, chain, corpus, keep, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg)
         entry = {"generated_song_id": man["generated_song_id"], "donor": man["donor_song_sha16"], "ab_mix_sha256": man["ab_mix_sha256"],
                  "duration_s": man["ab_mix_duration_s"], "chords": man["chord_sequence"]}
+        song_dir = out / f"{man['generated_song_id']}_donor_{man['donor_song_sha16']}"
+        if f2_cfg is not None:
+            entry["f2_per_stem"] = {k: {kk: v[kk] for kk in ("n_notes", "n_distinct_velocities", "velocity_min", "velocity_max")} for k, v in man["f2"]["per_stem"].items()}
+            entry["velocities_present"] = man["f2"]["velocities_present_all_stems_with_notes"]
+            if args.rms_variance_test:
+                uni_cfg = dict(f2_cfg, velocity_mode="uniform")
+                with tempfile.TemporaryDirectory(prefix="gen_v5_uniform_") as td:
+                    man_u = render_song(spec, args.seed, Path(td), groove, chain, corpus, True, rules_sha, args.cycle, form_plan, fp_sha, uni_cfg)
+                    uni_dir = Path(td) / f"{man_u['generated_song_id']}_donor_{man_u['donor_song_sha16']}" / "per_track"
+                    test = f2_rms_variance_test(song_dir / "per_track", uni_dir, man["f2"]["per_stem"])
+                    test["uniform_twin"] = {"ab_mix_sha256": man_u["ab_mix_sha256"], "midi_sha256": man_u["midi_sha256"], "tempdir": td,
+                                            "per_stem_velocities": {k: (v["velocity_min"], v["velocity_max"]) for k, v in man_u["f2"]["per_stem"].items()},
+                                            "same_pitches_as_f2": all(man_u["f2"]["per_stem"][k]["pitch_min"] == man["f2"]["per_stem"][k]["pitch_min"]
+                                                                      and man_u["f2"]["per_stem"][k]["pitch_max"] == man["f2"]["per_stem"][k]["pitch_max"] for k in man["f2"]["per_stem"])}
+                if not args.keep_per_track:  # score-and-delete: the per-track WAVs were kept only for the test
+                    deleted = []
+                    for p in sorted((song_dir / "per_track").glob("*.wav")):
+                        deleted.append(p.name)
+                        p.unlink()
+                    man["per_track_deleted_after_mix"] = deleted
+                man["f2"]["rms_variance_test"] = test
+                (song_dir / "ab_mix.manifest.json").write_text(json.dumps(man, sort_keys=True, indent=2) + "\n")
+                entry["rms_variance_test"] = {k: v.get("ratio_f2_over_uniform") for k, v in test["per_stem"].items()}
+                entry["rms_variance_passes"] = test["passes_all_stems_with_notes"]
+                print(f"  RMS-variance ratios {entry['rms_variance_test']} -> {'PASS' if test['passes_all_stems_with_notes'] else 'FAIL'}")
         if "f1" in man:
             entry.update({"form": man["form_plan"], "n_bars": man["n_bars"], "clauses": man["f1"]["clauses"], "all_clauses": man["f1"]["all_clauses"],
                           "contrast": {k: {kk: v[kk] for kk in ("harmony_contrast_ok", "density_contrast_ok", "contrast_rule_true", "n_allowed_start_states")} for k, v in man["f1"]["contrast"].items()},
@@ -558,7 +777,7 @@ def main(argv=None) -> int:
               + (f" form={''.join(man['form_plan'])} bars={man['n_bars']} clauses={man['f1']['clauses']}" if "f1" in man else ""))
         if args.prove_replay:
             with tempfile.TemporaryDirectory(prefix="gen_v5_replay_") as td:
-                man2 = render_song(spec, args.seed, Path(td), groove, chain, corpus, False, rules_sha, args.cycle, form_plan, fp_sha)
+                man2 = render_song(spec, args.seed, Path(td), groove, chain, corpus, False, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg)
                 td_used = td
             proof = {"verdict": "REPLAY_PROOF_HOLDS" if man2["ab_mix_sha256"] == man["ab_mix_sha256"] else "REPLAY_PROOF_FAILS",
                      "run1_sha256": man["ab_mix_sha256"], "run2_sha256": man2["ab_mix_sha256"], "run2_midi_equal": man2["midi_sha256"] == man["midi_sha256"],
@@ -573,17 +792,30 @@ def main(argv=None) -> int:
         rollup["f1_enum"] = "FORM_PLAN_LANDS" if n_ok == len(rollup["songs"]) == 5 else ("FORM_PLAN_PARTIAL" if n_ok >= 3 else "FORM_PLAN_FAILS")
         rollup["f1_songs_all_clauses"] = n_ok
         print(f"F1 enum {rollup['f1_enum']} ({n_ok}/5 songs satisfy all clauses)")
+    if f2_cfg is not None:  # c86 F2 enum (pre-registered): LANDS iff velocities on every stem with notes 5/5 AND RMS test 5/5 AND replay x2 holds
+        songs_ = rollup["songs"]
+        vel_ok = sum(1 for s in songs_ if s.get("velocities_present"))
+        rms_ok = sum(1 for s in songs_ if s.get("rms_variance_passes")) if args.rms_variance_test else None
+        rep_ok = sum(1 for s in songs_ if s.get("replay_proof") == "REPLAY_PROOF_HOLDS") if args.prove_replay else None
+        clauses = {"velocities_present_5_of_5": vel_ok == len(songs_) == 5, "rms_variance_5_of_5": rms_ok == len(songs_) == 5 if rms_ok is not None else None,
+                   "replay_x2_5_of_5": rep_ok == len(songs_) == 5 if rep_ok is not None else None}
+        rollup["f2"].update({"clauses": clauses, "n_velocities_present": vel_ok, "n_rms_variance_pass": rms_ok, "n_replay_holds": rep_ok,
+                             "f2_enum": "F2_LANDS" if all(v is True for v in clauses.values()) else ("F2_PARTIAL" if args.velocity_mode == "f2" else "F2_PARTIAL(velocity_mode=uniform)")})
+        print(f"F2 enum {rollup['f2']['f2_enum']} clauses {clauses}")
     (out / "iteration_rollup.json").write_text(json.dumps(rollup, sort_keys=True, indent=2) + "\n")
     if not args.no_stall_update:
         sc_p = Path("data/v5/gen/stall_counter.json")
         sc = json.loads(sc_p.read_text())
         sc["iterations"] = max(int(sc.get("iterations", 0)), args.iteration)
         sc["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # c85 F6
-        feature = args.feature or ("F1 length+form+arrangement" if form_plan is not None else "none (seed only)")
-        sc.setdefault("history", []).append({"iteration": args.iteration, "cycle": args.cycle, "seed": args.seed, "n_songs": len(specs),
-                                             "passers_declared": 0, "feature": feature, "donor_map_sha256": rules_sha["donor_map"],
-                                             "form_plan_sha256": fp_sha, "rules_sha256": {k: rules_sha[k] for k in ("harmony_chain", "groove_model")},
-                                             "note": "ear scores informational under FD-6 (c76 L119 proof); no passer declared"})
+        feature = args.feature or ("F2 bass+melody+dynamics" if f2_cfg is not None else ("F1 length+form+arrangement" if form_plan is not None else "none (seed only)"))
+        hist = {"iteration": args.iteration, "cycle": args.cycle, "seed": args.seed, "n_songs": len(specs),
+                "passers_declared": 0, "feature": feature, "donor_map_sha256": rules_sha["donor_map"],
+                "form_plan_sha256": fp_sha, "rules_sha256": {k: rules_sha[k] for k in ("harmony_chain", "groove_model")},
+                "note": "ear scores informational under FD-6 (c76 L119 proof); no passer declared"}
+        if f2_cfg is not None:
+            hist["f2"] = {"route": f2_cfg["route"], "velocity_mode": args.velocity_mode, "models_sha256": f2_cfg["models_sha256"], "f2_enum": rollup["f2"].get("f2_enum")}
+        sc.setdefault("history", []).append(hist)
         sc_p.write_text(json.dumps(sc, indent=2) + "\n")
         print(f"stall counter {sc['iterations']}/{sc['budget']}")
     # c85 M4: the groove model is NOT copied into the iteration dir any more (rules_sha256.groove_model pins it).

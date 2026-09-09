@@ -333,6 +333,8 @@ def main(argv=None) -> int:
            "per_song": per_song}
     out_p.parent.mkdir(parents=True, exist_ok=True)
     out_p.write_text(json.dumps(out, sort_keys=True, indent=2) + "\n")
+    # c86 MINOR 2: the prereg gate is asserted on BOTH sides of the write (new output mtime must exceed the prereg mtime).
+    assert out_p.stat().st_mtime > prereg_mtime, "PREREG_GATE: output mtime does not exceed the prereg mtime"
     print(f"lengths {out['length_distribution']}; labels {labels_seen}; start {out['start_distribution']}; repeat_A {out['repeat_A_probability']}; "
           f"terciles {out['density_tercile_bounds']}; intro_q {out['intro_density_quantile']}; fill pool {len(fill_pool)} (fallback {fallback}); R1 pass {r1_pass}")
     for lab, e in per_label.items():
