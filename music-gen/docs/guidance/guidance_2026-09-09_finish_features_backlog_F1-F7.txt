@@ -1,0 +1,38 @@
+OPERATOR GUIDANCE 2026-09-09 (c129+) — PRIORITY: FINISH THE FEATURE SET; THE EAR DOES NOT NEED TO BE PERFECT YET
+
+Operator statement (verbatim intent): "The goal is to finish building features here, even if the music is
+still bad — the ear doesn't need to be perfect yet."
+
+Consequences, binding from the next cycle:
+A. The ear >=6 passer count is NOT the gate for progress. Iterations 2..12 are FEATURE iterations: each
+   iteration must add one of the features below, render 5 songs, score informationally, and move on.
+   Do not spend cycles re-calibrating the ear, re-proving venv receipts, or writing passer-policy memos.
+B. Every worker cycle lands at least one feature below (code + test + a rendered iteration using it).
+   Audits stay one-cycle and check the feature works deterministically; no anchor re-verification ceremony.
+C. Determinism, no-PRNG, env pins, replay proofs: unchanged. Frozen v4 assets: unchanged.
+
+Feature backlog, in priority order (F1 first):
+F1 LENGTH + FORM + ARRANGEMENT. Current output is 16 bars (28–44 s), fixed A A B A, B is just another sampled
+   4 bars. Build: a form-plan model from corpus section/bar counts (target 32–64 bars, >= 1:30), section
+   lengths 8 bars, section contrast rule (B drawn from a different harmony region / density than A),
+   intro/outro/breakdown arrangement (stems enter/leave), drum fills at section boundaries. Literal
+   repetition of A stays.
+F2 BASS LINE + MELODY MODELS WITH DYNAMICS. Bass currently plays roots; melody/keys are chord tones on a grid
+   with hash rests via GM shims. Build: bass pitch model conditioned on chord (root/5th/octave/approach)
+   learned from corpus bass MIDI; melody model = VOMM over scale degrees + onset rhythm learned from corpus
+   melodic stems (guitar/piano/other/vocals transcriptions), register profile per song; carry MuScriptor
+   velocities through canonical MIDI so drums/bass/melody have dynamics (velocity is uniform today).
+F3 GUITAR / PIANO / OTHER PARTS. The v4 pipeline supports guitar+piano end-to-end and pinned profiles exist
+   (Rome piano/other, Disco A guitar/piano, CG guitar). Generator must emit guitar and/or piano parts through
+   those donor profiles where present, else GM shim; comping rhythm from corpus guitar/piano onset stats.
+F4 TEMPO FIX FOR THE TWO BLOCKED FOCUS SONGS. Peach Dream and Disco A are still tempo-blocked and therefore
+   excluded from the harmony chain (21/24 songs used). Resolve their tempo (onset-autocorrelation with
+   half/double-time check, same mechanism as c82) so the harmony chain covers all 5 focus songs.
+F5 v5 INTERPOLATION DEMO (decision #7, still owed): two donors, t=0.5 blend of groove + harmony models,
+   rendered with the v5 generator, replay proof.
+F6 ITERATION SCHEDULE: define what varies per iteration beyond the seed (feature added, donor, form plan)
+   and record it in stall_counter.json history.
+F7 M-V5-CLOSE-1 docs (report amendment, OPERATOR_DECISIONS, codebase guide) only after F1–F5 have landed.
+
+Deliver each iteration's 5 renders to data/v4/generated/v5_iter_NN/ as before; the operator listens to
+every iteration. Disk discipline unchanged (85% WARN / 90% abort; score-and-delete).
