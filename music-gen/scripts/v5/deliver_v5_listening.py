@@ -38,6 +38,8 @@ def main(argv=None) -> int:
     ap.add_argument("--iteration", type=int, default=1)
     ap.add_argument("--scores", default=None)
     ap.add_argument("--keep-top", type=int, default=5)
+    ap.add_argument("--cycle", type=int, default=84)  # c85 additive: stamp the listening manifest
+    ap.add_argument("--milestone", default="M-V5-GEN-1/iteration-01-c84")
     args = ap.parse_args(argv)
     it = f"iteration_{args.iteration:02d}"
     scores_p = Path(args.scores or f"data/v5/gen/gen_v5_iter{args.iteration:02d}_ear_scores_c84.json")
@@ -56,7 +58,7 @@ def main(argv=None) -> int:
                 shutil.copyfile(src / name, d / name)
                 copied[name] = _sha(d / name)
         rows.append({"key": key, "ear_score_v2_informational": sc["ear_score_v2"], "ge_6_informational": sc["ge_6"], "dest": str(d), "copied_sha256": copied})
-    man = {"schema_version": 1, "cycle": 84, "agent": "worker", "run_id": "run-2026-09-06T000000Z", "milestone": "M-V5-GEN-1/iteration-01-c84",
+    man = {"schema_version": 1, "cycle": args.cycle, "agent": "worker", "run_id": "run-2026-09-06T000000Z", "milestone": args.milestone,
            "iteration": args.iteration, "source_dir": f"data/v5/gen/{it}", "scores_table": str(scores_p), "scores_table_sha256": _sha(scores_p),
            "keep_top": args.keep_top, "ranking": "informational ear score (c76 v2 wider-linear via the isolated venv); FD-6 operator ear is the LANDS authority; not a passer declaration",
            "samples": rows}
