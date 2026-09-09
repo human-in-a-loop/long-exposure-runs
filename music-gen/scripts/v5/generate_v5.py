@@ -417,7 +417,7 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         for i, lab in enumerate(form_seq):  # literal-repeat measure: core (pre-arrangement) section MIDI
             ev = build_events(sec_bars[lab], sec_chords[lab], tonic, bpm)
             cj = jd / f"section_{i}_{lab}.json"
-            cj.write_text(json.dumps(ev, sort_keys=True, separators=(",", ":")))
+            cj.write_text(json.dumps(combine_events(ev), sort_keys=True, separators=(",", ":")))
             cm = md / "sections" / f"section_{i}_{lab}.mid"
             canonical_midi_serialize(str(cj), str(cm), float(bpm), (4, 4))
             core_sha[f"{i}_{lab}"] = _sha(cm)
