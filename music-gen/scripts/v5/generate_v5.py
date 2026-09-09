@@ -660,6 +660,24 @@ def frame_rms_variance(wav: Path) -> dict:
             "mean_db": round(float(act.mean()), 4) if act.size else None}
 
 
+def onset_rms_variance(wav: Path, events_json: Path) -> dict:
+    """INFORMATIONAL diagnostic (not the pre-registered clause): variance of the 50 ms RMS (dB) measured at every note onset of the
+    stem — the quantity the F2 velocities modulate directly (mirrors the Route-1 extraction window)."""
+    data, sr = sf.read(str(wav), dtype="float32", always_2d=True)
+    y = data.astype(np.float64).mean(axis=1)
+    n = int(round(F2_RMS_FRAME_S * sr))
+    vals = []
+    for e in json.loads(events_json.read_text()):
+        if e.get("type") != "start":
+            continue
+        c = int(round(float(e["start_time"]) * sr))
+        seg = y[max(0, c): min(len(y), c + n)]
+        if seg.size:
+            vals.append(20.0 * np.log10(np.sqrt((seg * seg).mean()) + 1e-9))
+    a = np.asarray(vals)
+    return {"n_onsets": int(a.size), "variance_db2": round(float(a.var()), 6) if a.size > 1 else None, "mean_db": round(float(a.mean()), 4) if a.size else None}
+
+
 def f2_rms_variance_test(f2_dir: Path, uni_dir: Path, per_stem: dict) -> dict:
     out, all_ok = {}, True
     for stem, st in per_stem.items():
@@ -671,7 +689,13 @@ def f2_rms_variance_test(f2_dir: Path, uni_dir: Path, per_stem: dict) -> dict:
         ok = ratio is not None and ratio >= F2_RMS_RATIO_MIN
         all_ok = all_ok and ok
         out[stem] = {"f2": a, "uniform": b, "ratio_f2_over_uniform": round(ratio, 4) if ratio is not None else None, "ge_1p5": ok}
-    return {"frame_s": F2_RMS_FRAME_S, "active_floor_dbfs": F2_RMS_ACTIVE_DB, "ratio_min": F2_RMS_RATIO_MIN, "per_stem": out, "passes_all_stems_with_notes": all_ok}
+        ej = f2_dir.parent / "generated_json" / f"{stem}.json"
+        if ej.exists():  # informational onset-window diagnostic
+            oa, ob = onset_rms_variance(f2_dir / f"{stem}.wav", ej), onset_rms_variance(uni_dir / f"{stem}.wav", ej)
+            out[stem]["onset_rms_informational"] = {"f2": oa, "uniform": ob,
+                                                    "ratio_f2_over_uniform": round(oa["variance_db2"] / ob["variance_db2"], 4) if oa["variance_db2"] and ob["variance_db2"] else None}
+    return {"frame_s": F2_RMS_FRAME_S, "active_floor_dbfs": F2_RMS_ACTIVE_DB, "ratio_min": F2_RMS_RATIO_MIN, "per_stem": out, "passes_all_stems_with_notes": all_ok,
+            "clause": "pre-registered: variance of the 50 ms frame-RMS (dB) over active frames, F2 / uniform >= 1.5 on every stem with notes; the onset-window ratio is informational only"}
 
 
 def main(argv=None) -> int:

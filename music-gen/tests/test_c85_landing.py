@@ -58,8 +58,11 @@ def test_01_prereg_before_every_output() -> None:
     assert f4p.stat().st_mtime < f4v.stat().st_mtime and _j(f4v)["prereg_sha256"] == _sha(f4p)
     # F4 did not RESOLVE -> no c85 harmony/groove preregs, no v5c canonical dirs, blocked file byte-identical
     assert not (_ROOT / "data/v5/rules/harmony_prereg_c85.json").exists() and not (_ROOT / "data/v5/rules/groove_prereg_c85.json").exists()
-    assert not list((_ROOT / "data/v5/corpus").glob("*/canonical_v5c_reindexed"))
-    assert _sha("data/v5/corpus/recanonicalization_blocked.json").startswith("2fbabc07849dbe23")
+    # c86 re-pin (disclosed): the operator adjudication (c86) unblocked PD / Disco A AFTER this c85 verdict: v5c dirs exist for exactly those two
+    # songs and only alongside the c86 resolution record; the c80-c85 blocked bytes survive as the stale copy (2fbabc07…).
+    v5c = sorted(p.parent.name for p in (_ROOT / "data/v5/corpus").glob("*/canonical_v5c_reindexed"))
+    assert v5c == ["88d247468cb6d49f", "cdd2717e52820ff6"] and (_ROOT / "data/v5/corpus/tempo_f4_operator_resolution_c86.json").exists()
+    assert _sha("data/v5/corpus/stale/recanonicalization_blocked.c80_c85.json").startswith("2fbabc07849dbe23")
     print("test_01 PASS: form + F4 preregs precede every output; no c85 rules preregs (F4 not RESOLVED); blocked file untouched")
 
 
@@ -164,7 +167,9 @@ def test_07_form_model_r1_record_and_targets() -> None:
 def test_08_f4_ambiguous_recorded_and_listening_delivered() -> None:
     v = _j("data/v5/corpus/tempo_f4_verdict_c85.json")
     assert v["verdict"] == "F4_HALF_DOUBLE_AMBIGUOUS" and v["blocked_file_touched"] is False
-    assert v["recanonicalization_blocked_sha256"] == _sha("data/v5/corpus/recanonicalization_blocked.json")
+    # c86 re-pin (disclosed): the c85 verdict pinned the c80 blocked bytes; c86 amended the file in place under operator authority, so the
+    # c85 pin is checked against the stale copy of those bytes.
+    assert v["recanonicalization_blocked_sha256"] == _sha("data/v5/corpus/stale/recanonicalization_blocked.c80_c85.json")
     assert v["authority"]["sha256"] == _sha("docs/guidance/guidance_2026-09-09_finish_features_backlog_F1-F7.txt")
     lm = _j("data/v4/generated/v5_iter_02/listening_manifest.json")
     assert lm["cycle"] == 85 and len(lm["samples"]) == 5 and lm["milestone"] == "M-V5-GEN-1/F1-form-arrangement"

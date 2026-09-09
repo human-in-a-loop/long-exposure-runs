@@ -66,8 +66,12 @@ def test_02_content_gate_output_exactly_expected_and_tempo_file_untouched() -> N
     assert sorted(d["blocked_songs"]) == ["ae1b65eaf1560951"] and d["matches_expectation"] and d["prereg_sha256"] == _sha(pre)
     b = d["blocked_songs"]["ae1b65eaf1560951"]
     assert b["verdict"] == "NON_MUSIC_CONTENT_R1_AND_R2" and b["note_counts"]["vocals"] > 0 and b["sidecar_present"] and b["hook_at_birth"]
-    assert _sha("data/v5/corpus/recanonicalization_blocked.json").startswith(TEMPO_BLOCKED_C80_SHA_PREFIX)
-    print(f"test_02 PASS: content gate blocks exactly ae1b65eaf1560951; tempo-blocked file byte-identical ({TEMPO_BLOCKED_C80_SHA_PREFIX}…)")
+    # c86 re-pin (disclosed): the operator F4 adjudication amended the tempo-blocked file IN PLACE (additive unblocked_c86 block);
+    # the c80-c85 bytes live on as data/v5/corpus/stale/recanonicalization_blocked.c80_c85.json and must still carry the c80 sha.
+    assert _sha("data/v5/corpus/stale/recanonicalization_blocked.c80_c85.json").startswith(TEMPO_BLOCKED_C80_SHA_PREFIX)
+    tb = json.loads(Path("data/v5/corpus/recanonicalization_blocked.json").read_text())
+    assert sorted(tb["blocked_songs"]) == ["88d247468cb6d49f", "cdd2717e52820ff6"] and sorted(tb["unblocked_c86"]) == ["88d247468cb6d49f", "cdd2717e52820ff6"]
+    print(f"test_02 PASS: content gate blocks exactly ae1b65eaf1560951; c80-c85 tempo-blocked bytes preserved as stale copy ({TEMPO_BLOCKED_C80_SHA_PREFIX}…); c86 amended file carries unblocked_c86")
 
 
 def test_03_refusal_in_all_three_rules_scripts() -> None:
