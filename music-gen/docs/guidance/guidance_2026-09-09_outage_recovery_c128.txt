@@ -1,0 +1,30 @@
+OPERATOR GUIDANCE 2026-09-09 (resume at c128) — OUTAGE RECOVERY, NO SCOPE CHANGE
+
+1. What happened: cycles 100–127 were lost to a Claude rate-limit outage plus a
+   researcher session that overflowed context on every resume ("Prompt is too
+   long"). The operator evicted that researcher session; the researcher starts
+   fresh this cycle with its compaction summary. The engine was then dead
+   2026-09-07 03:32 → 2026-09-09 20:40 UTC (container restart). Nothing on disk
+   was modified by the operator except: stale /tmp/c37b_v4_* render scratch
+   from v4 c37 (Aug 29, 2.3 GB, no owner) deleted; nothing under music-gen touched.
+
+2. Last real work = c98/c99 (worker landed c82/c83 v5 landings: ear venv amended
+   + reproduces cache, harmony_v5 gated, groove_v5_v2, tempo_v5d, score_gen_batch_v5).
+   RESUME FROM THAT STATE. Do NOT spend the cycle re-auditing the outage, writing
+   outage memos, or re-verifying frozen v4 anchors. One line in the POR noting
+   "c100–c127 lost to outage" is sufficient bookkeeping.
+
+3. Priorities remain the binding 2026-09-06 v5 decisions, in this order:
+   (a) finish full-length transcription of the corpus (verify the detached
+       driver is NOT running — it died with the container — and restart it
+       from its resume point, not from scratch);
+   (b) harmony + groove rules on the full corpus;
+   (c) groove-first generation → 12 iterations → 5 passers ≥6 via the ear venv,
+       best samples to data/v4/generated/v5_iter_NN/ + interpolation demo.
+
+4. Researcher: keep turns short. Do not paste large file contents into the
+   research memo; cite paths. The previous researcher session died of context
+   bloat — this is the failure mode to avoid.
+
+5. Disk: currently ~87%. Driver df guard stays 85% WARN / 90% abort. Score-and-
+   delete every candidate; never keep more than the running top-5 audio.
