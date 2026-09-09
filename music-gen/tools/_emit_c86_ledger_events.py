@@ -239,8 +239,8 @@ def main() -> int:
 
     events.append(_ev("M-V5-RULES-1/harmony-n23-c86", "validated", "high", "prereg before the run; enum from the prereg; chain byte-det ×2 with the post-edit script sha; c84 chain reproduced byte-identically by the edited script.",
         f"c86 harmony re-run at n=23 (c84's 21 + unblocked PD/Disco A; `eligible_c86.json` {_sha('data/v5/rules/eligible_c86.json')[:16]}…; `harmony_prereg_c86.json` before the run; c84 rule + threshold 12 unchanged) "
-        f"with the additive `--tempo-overrides` (asserts canonical_v5c_reindexed served the song): **{h23['degeneracy_verdict']}** — {len(h23['states'])} states (n=21 {diff.get('n_states_n21', 81)}), "
-        f"max stationary {h23['max_stationary_state']} = {h23['max_stationary_mass']} (n=21 0.063915), top-10 transition mass {diff.get('top10_transition_mass_n23', 'see diff')} (n=21 {diff.get('top10_transition_mass_n21', 0.1991)}), "
+        f"with the additive `--tempo-overrides` (asserts canonical_v5c_reindexed served the song): **{h23['degeneracy_verdict']}** — {len(h23['states'])} states (n=21 {diff['n21']['n_states']}; union {diff['union_states']}), "
+        f"max stationary {h23['max_stationary_state']} = {h23['max_stationary_mass']} (n=21 {diff['n21']['max_stationary_mass']}; max |Δπ| {diff['max_abs_stationary_delta']}), top-10 transition mass {diff['n23']['top10_transition_mass']} (n=21 {diff['n21']['top10_transition_mass']}), "
         f"qualities ≥ 8 segs {h23['qualities_with_count_ge_threshold']}; PD key {h23['per_song']['88d247468cb6d49f']['key']['tonic_name']} {h23['per_song']['88d247468cb6d49f']['key']['mode']} {h23['per_song']['88d247468cb6d49f']['n_segments']} segments, "
         f"Disco A {h23['per_song']['cdd2717e52820ff6']['key']['tonic_name']} {h23['per_song']['cdd2717e52820ff6']['key']['mode']} {h23['per_song']['cdd2717e52820ff6']['n_segments']} segments. Chain `harmony_markov_v5_full_c86.json` "
         f"{_sha('data/v5/rules/harmony_markov_v5_full_c86.json')[:16]}… byte-det ×2 (post-edit harmony_v5.py {_sha('scripts/v5/harmony_v5.py')[:16]}…); the edited script still replays the c84 chain a984ee17… via --eligible-from eligible_c84.json; "

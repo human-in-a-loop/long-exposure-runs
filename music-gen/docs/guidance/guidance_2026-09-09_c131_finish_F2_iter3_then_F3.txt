@@ -1,0 +1,24 @@
+OPERATOR GUIDANCE 2026-09-09 (c131) — FINISH F2 ITERATION 3 FIRST, THEN F3. NO RESTARTS, NO CROSS-CYCLE STEM CEREMONY.
+
+The c130 worker turn ended with the F2 code landed (velocity_v5, bass_pitch_v5, melody_vomm_v5, route gate,
+F4 close, tests drafted) but iteration 3 NOT rendered. This cycle:
+
+1. FIRST 20 MINUTES: finish F2. If data/v5/corpus/<sha16>/velocity_v5/velocities.json exists for the 5 focus
+   songs, consume them as-is. If any are missing, finish extraction for those only. Then run the already-drafted
+   iteration-3 pipeline (generate_v5 --iteration 3 --f2 --velocity-mode f2 --rms-variance-test --prove-replay),
+   score, copy to data/v4/generated/v5_iter_03/, run tests/test_c86_landing.py, emit the ledger events. Do not
+   redesign anything. Do not re-derive the route decision.
+
+2. Cross-cycle htdemucs stem SHA mismatch vs the c79 cache: ACCEPTED by the operator. The artifact of record is
+   velocities.json (pinned by SHA, in-cycle x2 byte-identical). Do not chase cross-cycle bit-identity of
+   separated stems; one disclosure line, no memo, no regression bar.
+
+3. REMAINING TIME: start F3 (guitar/piano/other parts via donor profiles where present: Rome piano/other,
+   Disco A guitar/piano, CG guitar; GM shim elsewhere; comping rhythm from corpus guitar/piano onset stats).
+   If F3 does not finish this cycle, land the code with a flag default-off and finish it as iteration 4 next
+   cycle. Iteration 4 consumes the n=23 harmony chain.
+
+4. Turn budget: the worker turn ended at ~29 minutes last cycle with work in flight. Launch long-running
+   subprocesses detached (nohup, log to data/v5/logs/) at the START of the turn so they survive turn end, and
+   check their completion before writing the summary. Auditor: one cycle, check F2 renders x2 + RMS-variance
+   test + F4 unblock; nothing else.
