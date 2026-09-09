@@ -1,0 +1,19 @@
+OPERATOR GUIDANCE 2026-09-09 (for the F2 cycle) — VELOCITY / DYNAMICS DECISION, PRE-EMPTING THE INFEASIBILITY MEMO
+
+Acknowledged: MuScriptor start events carry no velocity, and full-length stem audio is not retained by the
+stage cache. Do NOT write an infeasibility memo. F2 dynamics are delivered by ONE of these two routes, worker's
+choice, decided in the first 10 minutes of the cycle and recorded in one ledger line:
+
+Route 1 (preferred if disk allows): derive per-note velocity from stem audio. For the 5 focus songs only,
+  re-run htdemucs on demand, measure RMS in a 50 ms window at each transcribed onset per stem, map to MIDI
+  velocity by per-stem rank-normalization (p5→40, p95→110), write velocities into canonical_v5_reindexed,
+  delete the stems immediately after (score-and-delete). Deterministic, no PRNG, df guard applies.
+
+Route 2 (fallback): rule-based accent model learned from onset statistics: kick/snare on downbeat/backbeat at
+  full velocity, off-grid hats at ghost velocity, bass accents following kick, melody phrase-peak accents;
+  parameters estimated from corpus onset-position histograms already in groove_v5_v2_full.json.
+
+Either route must land: (a) velocities present in generated MIDI for all stems, (b) a rendered iteration using
+them, (c) a test that a uniform-velocity render and the F2 render differ in per-stem RMS variance.
+Bass pitch model + melody VOMM (rest of F2) proceed as briefed. F1 and F4 outputs from the previous cycle are
+consumed as-is; do not re-audit them beyond the one-cycle audit.
