@@ -17,3 +17,16 @@ Either route must land: (a) velocities present in generated MIDI for all stems, 
 them, (c) a test that a uniform-velocity render and the F2 render differ in per-stem RMS variance.
 Bass pitch model + melody VOMM (rest of F2) proceed as briefed. F1 and F4 outputs from the previous cycle are
 consumed as-is; do not re-audit them beyond the one-cycle audit.
+
+--- ADDENDUM 2026-09-09 (same boundary) — F4 OPERATOR ADJUDICATION: RESOLVED, NOT AMBIGUOUS ---
+The c85 F4 verdict AMBIGUOUS is overruled by the operator on the recorded evidence:
+  * Peach Dream: refined-lag dominant 122.197 BPM; independent v4 anchor (c22 midi_bpm) 123.047; onsets/beat in range.
+  * Disco A:     refined-lag dominant 120.272 BPM; independent v4 anchor (c22 midi_bpm) 120.185; onsets/beat in range.
+  Two independent estimators agree within 1 BPM for both songs. The only failing clause was "T/2 must score lower
+  under s_ref", which cannot pass for a 4/4 groove with a strong 2-bar period because s_ref(2T) inherits ac(T) —
+  the auditor and researcher both identified this. That clause is a defect of the criterion, not evidence for
+  half-time. No autocorrelation-external criterion, no v5e, no further pre-registration on tempo.
+DECISION: adopt 122.197271 (PD) and 120.272335 (Disco A). Unblock both songs (record the operator adjudication
+as the unblock reason in the blocked file; do not delete it), re-run harmony at n=23 in the earliest cycle where
+it costs < 10 minutes (may be this F2 cycle or the F3 cycle), and consume the n=23 chain from the next iteration.
+F4 is then CLOSED. Tests: one test asserting the adopted BPMs and that both songs are eligible.
