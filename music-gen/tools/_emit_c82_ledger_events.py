@@ -31,7 +31,7 @@ FROZEN_EXPECTED = {  # c79-pinned prefixes (14 anchors)
     "scripts/v3_spine/stage_cache.py": "33435a84", "scripts/v3_spine/midi_from_json_events.py": "bbff015f",
     "scripts/sound_match/_sweep_hygiene_c27.py": "771ff42b",
 }
-SCRATCH = Path("/tmp/claude-0/-home-user-long-exposure-runs-music-gen/0a91f173-2db3-4ee7-aec9-5bfb328b2e03/scratchpad")
+SCRATCH = Path("/tmp/claude-0/-home-user-long-exposure-runs-music-gen/8614e53f-17eb-4fa4-b8cf-09a5a3934ece/scratchpad")  # c82 post-compaction session
 
 
 def _sha(p: str) -> str:
@@ -100,13 +100,19 @@ def main() -> int:
         (f"P0.3: {live[1]}; {live[2]}. At c82 open the OLD image (PID 5201, no hook) was on Essence ({ESSENCE}) muscriptor:guitar (518.8 s wall). Landed at c82 open: "
          f"{done[:5]} (Disco A landed 17:25:30Z lossy under the old image). Catch-up: PYTHONPATH=. /usr/bin/python3 scripts/v5/reindex_hook.py -> Disco A 'reindexed+sidecar', "
          f"the other four 'present' (idempotent; test_02). Sidecars on disk at emit: {sided}. "
-         + (f"RESTART: old driver stopped at the Essence boundary {launch['pause_window_start']} (os.killpg SIGTERM — children + parent; /proc + pgrep approval-gated), "
+         + (f"Essence (467fbeb2…, landed 18:13Z) and Desire (2b0370d9…, landed 18:58Z) also arrived lossy under the old image and were caught up by the same idempotent hook run at 19:44Z. "
+            f"RESTART: old driver stopped at the {launch['song_boundary']} boundary {launch['pause_window_start']} (os.killpg SIGTERM — children + parent; /proc + pgrep approval-gated; "
+            f"the old image had written Molasses' manifest and begun the next song's 1 s decode_full, whose transient the new driver reused as a cache hit), "
             f"venv built inside the stopped window (see M-V5-EAR-1), relaunched {launch['launched_utc']} PID {launch['new_pid']} running_after_8s={launch['running_after_8s']} "
             f"driver sha {launch['driver_sha256_at_launch'][:12]}… hook live at birth; record data/v5/logs/transcribe_full_c82.launch.json." if launch else
             "RESTART: NOT performed at emit time (Essence had not landed) — see the closing summary for the honest state.")),
         ["data/v5/logs/c82_p0_liveness.txt"] + (["data/v5/logs/transcribe_full_c82.launch.json"] if launch else []),
         supersedes_path=f"{P}/transcription-liveness-c81"))
 
+    _PROV = {DISCO: "OLD image (lossy) and re-indexed by the c82 catch-up loop (reindex_hook.reindex_landed, 17:4xZ)",
+             "467fbeb2e3b019a0": "OLD image (lossy, 18:13Z) and re-indexed by the c82 catch-up loop (idempotent reindex_hook run at 19:44Z)",
+             "2b0370d9d0162c98": "OLD image (lossy, 18:58Z) and re-indexed by the c82 catch-up loop (idempotent reindex_hook run at 19:44Z)",
+             "a9587ccde1b333f5": "OLD image (manifest written 19:58:30Z, the restart boundary); the restarted driver re-walked it from stage_cache (all hits) and its live hook wrote the sidecar at 19:59:33Z — no separate catch-up invocation"}
     for s in [DISCO] + [x for x in sided if x not in (WIG, CG, PD, ROME, DISCO)]:
         rm = _j(C / s / "canonical_v5_reindexed/reindex_manifest.json")
         tm = _j(C / s / "transcription_manifest.json")
@@ -119,7 +125,7 @@ def main() -> int:
         events.append(_ev(f"{P}/{s}-reindexed-c82", "validated", "high",
             "Sidecar SHAs match disk and reindexed MIDI note_on equals JSON starts per stem (test_reindex_hygiene_c81 test_02 re-run at c82); stage-cache outputs adopted.",
             (f"{tm.get('title')} ({s}, bpm_v5 {tm['bpm_v5']}, note_on {nc}, bars {tm.get('bar_count_at_bpm_v5')}): landed {tm.get('finished')} under the "
-             f"{'OLD image (lossy) and re-indexed by the c82 catch-up loop' if s == DISCO else 'restarted driver with the hook live'}; canonical_v5_reindexed/ starts "
+             f"{_PROV.get(s, 'restarted driver (PID from the launch JSON) with the reindex hook live at birth — no catch-up run')}; canonical_v5_reindexed/ starts "
              f"{tot['n_starts_in']} -> paired {tot['n_paired']} / unpaired {tot['n_unpaired_starts']}; sidecar reindex_manifest sha "
              f"{_j(C / s / 'canonical_v5_reindexed_sha256.json')['reindex_manifest_sha256'][:16]}…; {len(arts)} artifacts adopted. "
              + ("BLOCKED for rules (tempo: bpm_v5 80.75 vs anchor 120.19)." if s == DISCO else "")),
@@ -131,6 +137,11 @@ def main() -> int:
     if vb_p.exists() and _j(vb_p).get("status") == "EAR_VENV_BUILT":
         vb = _j(vb_p)
         probe = _j(probe_p) if probe_p.exists() else {"status": "NOT_RUN"}
+        amend_p, probe2_p = Path("data/v5/ear/venv_amend_c82.json"), Path("data/v5/ear/ear_probe_c82_amended.json")
+        amend = _j(amend_p) if amend_p.exists() else None
+        probe2 = _j(probe2_p) if probe2_p.exists() else None
+        if probe2:
+            probe = probe2  # rows/verdict reported from the amended-venv run; the pinned-command failure is disclosed verbatim below
         rows_ = probe.get("rows", {})
         maxd = max((v["max_abs_diff_vs_cache"] for v in rows_.values() if v.get("max_abs_diff_vs_cache") is not None), default=None)
         events.append(_ev("M-V5-EAR-1/ear-venv-built-c82", "validated", "high",
@@ -142,11 +153,17 @@ def main() -> int:
              f"pip wall {next((s_['wall_s'] for s_ in vb['steps'] if s_['step'] == 'pip_install'), None)} s; venv {vb['venv_size_bytes']/1e9:.2f} GB; versions {vb['versions']}; "
              f"pip-freeze sha {vb['pip_freeze_sha256'][:12]}… matches c79 receipt a4d23dea…: {vb['pip_freeze_matches_c79']}{'' if vb['pip_freeze_matches_c79'] else ' (DRIFT disclosed, not retried)'}; "
              f"main-env pip-freeze sha {vb['main_env_pip_freeze_sha256_post'][:12]}… == c79 90ed1d9f…: {vb['main_env_unchanged']}; df final {vb['df_final']['used_pct']} %. "
-             f"PROBE (scripts/v5/ear_probe_v5.py, READ-ONLY c74 extractor by subprocess x2 into fresh mkdtemp): status {probe['status']}; run1==run2 {probe.get('run1_eq_run2')}; "
-             f"max |diff| vs cache {maxd}; rows {({k: (v['n_windows_run'], v['max_abs_diff_vs_cache']) for k, v in rows_.items()})}. "
+             f"FIRST PROBE under the pinned-command venv (data/v5/ear/ear_probe_c82.json, kept byte-identical): status {_j(probe_p)['status'] if probe_p.exists() else 'NOT_RUN'} — "
+             "the READ-ONLY c74 extractor imports librosa at _load_mono_16k and the c79-pinned command omits it (c79 only import-probed tf/hub/numpy; receipt bug, not a falsified criterion). "
+             + (f"DISCLOSED AMENDMENT (scripts/v5/ear_venv_amend_c82.py -> data/v5/ear/venv_amend_c82.json): status {amend['status']}; `pip install librosa` added {len(amend['added_packages'])} packages "
+                f"({', '.join(p.split('==')[0] for p in amend['added_packages'])}); freeze sha {amend['pip_freeze_sha256_pre'][:12]}… -> {amend['pip_freeze_sha256_post'][:12]}… (c79 receipt no longer matches BY DESIGN); "
+                f"df {amend['df_pre']['used_pct']} -> {amend['df_final']['used_pct']} %; main-env unchanged {amend['main_env_unchanged']}. " if amend else "NO amendment on disk. ")
+             + f"PROBE under the {'amended' if probe2 else 'pinned'} venv (scripts/v5/ear_probe_v5.py, READ-ONLY c74 extractor by subprocess x2 into fresh mkdtemp; record {probe2_p if probe2 else probe_p}): "
+             f"status {probe['status']}; run1==run2 {probe.get('run1_eq_run2')}; max |diff| vs cache {maxd}; rows {({k: (v['n_windows_run'], v['max_abs_diff_vs_cache']) for k, v in rows_.items()})}. "
              "str-supersedes M-V5-EAR-1/ear-venv-blocked-disk-c81 (its arithmetic is history; the operator note restored the headroom)."),
             ["data/v5/ear/venv_build_c82_preregistration.json", "data/v5/ear/venv_build_c82.json", "data/v5/ear/ear_venv_pip_freeze_c82.txt", "data/v5/ear/env_pin_ear_venv_c82.json",
-             "data/v5/logs/ear_venv_build_c82.log", "scripts/v5/ear_venv_build_c82.py", "scripts/v5/ear_probe_v5.py"] + ([str(probe_p)] if probe_p.exists() else []),
+             "data/v5/logs/ear_venv_build_c82.log", "scripts/v5/ear_venv_build_c82.py", "scripts/v5/ear_probe_v5.py"] + ([str(probe_p)] if probe_p.exists() else [])
+            + ([str(amend_p), "scripts/v5/ear_venv_amend_c82.py", "data/v5/ear/ear_venv_pip_freeze_c82_amended.txt"] if amend else []) + ([str(probe2_p)] if probe2 else []),
             supersedes_path="M-V5-EAR-1/ear-venv-blocked-disk-c81"))
         if gate_p.exists() and _j(gate_p).get("status") == "EAR_GATE_RUN":
             g = _j(gate_p)
@@ -281,6 +298,9 @@ def main() -> int:
         ["promise_ledger.jsonl", "plan_of_record.md"], supersedes_path="_run/cycle_81_closed"))
 
     # validate every event against the SSoT schema before appending anything
+    _le = os.environ.get("LONG_EXPOSURE_PKG_PATH", "/home/user/human-in-a-loop/long-exposure")
+    if _le not in sys.path:
+        sys.path.append(_le)
     try:
         from long_exposure.tools._ledger_schema import validate_event, REQUIRED_EVENT_FIELDS
         for e in events:

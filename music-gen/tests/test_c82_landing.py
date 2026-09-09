@@ -26,6 +26,10 @@ import numpy as np
 _ROOT = Path(__file__).resolve().parent.parent
 os.chdir(_ROOT)
 sys.path.insert(0, str(_ROOT))
+# the orchestrator package (ledger schema SSoT) lives outside the workspace; `PYTHONPATH=.` alone drops it
+_LE = os.environ.get("LONG_EXPOSURE_PKG_PATH", "/home/user/human-in-a-loop/long-exposure")
+if _LE not in sys.path:
+    sys.path.append(_LE)
 os.environ.setdefault("SUPPRESS_INTERPRETER_GUARD", "1")
 from scripts.v5 import reindex_hook as RH  # noqa: E402
 from scripts.v5 import harmony_v5 as H  # noqa: E402
@@ -117,20 +121,26 @@ def test_04_parabolic_refinement_recovers_fractional_period_and_beats_3_2_lag() 
 
 
 def test_05_groove_v2_phase_alignment_recovers_known_offset() -> None:
-    # synthetic backbeat corpus: kick on 16th 0 + 8, snare on 4 + 12, shifted by a known offset of 5 slots
+    # synthetic backbeat corpus: kick on 16th 0 + 6 (syncopated), snare on 4 + 12, shifted by a known offset of 5 slots.
+    # NOTE (property of the pre-declared objective): a kick pattern symmetric under a half-bar shift (kick 0 + 8) makes
+    # offsets o and o+8 tie exactly — resolved by the SHA-256 tiebreak; the fixture breaks the symmetry so the offset is unique.
     off = 5
     drums = []
     for bar in range(24):
         base = bar * 16 + off
-        drums += [(base + 0, 36), (base + 8, 36), (base + 4, 38), (base + 12, 38), (base + 2, 42)]
+        drums += [(base + 0, 36), (base + 6, 36), (base + 4, 38), (base + 12, 38), (base + 2, 42)]
     ph = G2.phase_offset("deadbeefdeadbeef", drums)
     assert ph["offset"] == off and ph["tie"] is False, ph
+    assert ph["mass"][off] == 24 + 48 and ph["mass"][(off + 8) % 16] == 48, ph["mass"]
+    sym = [(bar * 16 + off + p, n) for bar in range(24) for p, n in ((0, 36), (8, 36), (4, 38), (12, 38))]
+    ph_sym = G2.phase_offset("deadbeefdeadbeef", sym)
+    assert ph_sym["tie"] is True and ph_sym["offset"] in (off, (off + 8) % 16), ph_sym
     bars = G2.bar_patterns(drums, [], ph["offset"])
     st = G2.stats(bars)
-    assert st["backbeat_ratio"] == 1.0 and bars[0]["kick"] == 0b10001, (st, bars[0])
+    assert st["backbeat_ratio"] == 1.0 and bars[0]["kick"] == 0b1001, (st, bars[0])
     st0 = G2.stats(G2.bar_patterns(drums, [], 0))
     assert st0["backbeat_ratio"] == 0.0
-    print(f"test_05 PASS: phase alignment recovers offset {off} (backbeat 1.0 aligned vs {st0['backbeat_ratio']} at offset 0); kick8 mask 0b10001")
+    print(f"test_05 PASS: phase alignment recovers offset {off} (backbeat 1.0 aligned vs {st0['backbeat_ratio']} at offset 0); kick8 mask 0b1001; half-bar-symmetric pattern ties (SHA tiebreak)")
 
 
 def test_06_harmony_exclusion_drops_synthetic_12_note_chord_beat() -> None:

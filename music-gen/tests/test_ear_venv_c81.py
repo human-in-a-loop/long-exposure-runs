@@ -65,6 +65,25 @@ def test_03_probe_record_enum_and_venv_absent_branch() -> None:
     print(f"test_03 PASS: probe status {d['status']} (venv present={venv})")
 
 
+def test_04_amended_receipt_c83() -> None:
+    """c83 S2 (closes c82 audit F2): the amended receipt exists, its freeze sha matches the on-disk freeze file,
+    the pinned command names the librosa amendment (via the amended freeze file), supersede is a str (c14 lemma),
+    and the main-env freeze sha is unchanged vs the c79 receipt. Additive; c81-c82 records untouched."""
+    p = _ROOT / "data/v5/ear/env_pin_ear_venv_c82_amended.json"
+    assert p.exists(), "amended receipt missing (c83 S2)"
+    d = json.loads(p.read_text())
+    freeze = _ROOT / d["pip_freeze_path"]
+    assert hashlib.sha256(freeze.read_bytes()).hexdigest() == d["pip_freeze_sha256"], "receipt freeze sha != on-disk freeze file"
+    assert "librosa==" in freeze.read_text() and d["librosa_pin"].startswith("librosa==")
+    assert d["pip_freeze_path"] in d["pinned_command"] and "pip install" in d["pinned_command"], "pinned command must install the amended freeze"
+    assert isinstance(d["supersedes_path"], str) and d["supersedes_path"] == "data/v5/ear/env_pin_ear_venv_c82.json"
+    assert d["main_env_pip_freeze_sha256"] == C79_MAIN_FREEZE and d["main_env_unchanged"] is True
+    assert d["versions_from_venv_subprocess"].get("librosa") == d["librosa_pin"].split("==")[1]
+    if (_ROOT / "data/v5/ear/ear_probe_c83.json").exists():
+        assert json.loads((_ROOT / "data/v5/ear/ear_probe_c83.json").read_text())["status"] in ENUM_PROBE
+    print(f"test_04 PASS: amended receipt freeze {d['pip_freeze_sha256'][:12]}… librosa {d['librosa_pin']} main-env unchanged")
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for t in tests:

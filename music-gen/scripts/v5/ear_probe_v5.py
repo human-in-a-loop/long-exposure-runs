@@ -34,7 +34,8 @@ _WS = Path(__file__).resolve().parent.parent.parent
 VENV_PY = _WS / "workspace/ear_venv/bin/python"
 # c82: output name + cycle are CLI-selectable (default c82); the c81 record data/v5/ear/ear_probe_c81.json is left untouched.
 CYCLE = int(os.environ.get("EAR_PROBE_CYCLE", "82"))
-OUT = _WS / f"data/v5/ear/ear_probe_c{CYCLE}.json"
+TAG = os.environ.get("EAR_PROBE_TAG", "")  # c82: optional suffix so an amended-venv re-run lands as a sibling file (pinned-command record untouched)
+OUT = _WS / f"data/v5/ear/ear_probe_c{CYCLE}{TAG}.json"
 SAVE_NPZ = os.environ.get("EAR_PROBE_SAVE_NPZ")  # optional: persist run-1 fresh embeddings (npz) for the c76 v2 LOO gate
 TOL = 1e-5
 _PINS = {"PYTHONHASHSEED": "0", "SOURCE_DATE_EPOCH": "1756463424", "TZ": "UTC", "LC_ALL": "C.UTF-8",
