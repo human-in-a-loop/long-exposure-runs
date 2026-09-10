@@ -13,6 +13,28 @@ profiles); MIDI via the sibling serializer scripts/v5/midi_from_json_events_v5.p
 renders the same notes at velocity 100 everywhere (the exact null); `--rms-variance-test` renders that twin into a tempdir and
 records the per-stem 50 ms frame-RMS variance ratio (>= 1.5 on every stem with notes = operator clause (c)). F2 enum in the
 rollup: F2_LANDS iff velocities present 5/5 AND RMS test 5/5 AND replay x2 5/5; else F2_PARTIAL.
+c88 (F3 GUITAR / PIANO / OTHER, pre-registered in data/v5/gen/f3_prereg_c88.json; = harness c132): additive `--f3` (DEFAULT OFF — the
+--f2 path stays byte-identical to iteration 3), sub-flag `--comping-model` (argparse error without --f3), independent `--tempo-overrides
+<json>` (F4 CLOSED c86: PD 122.197271 / Disco A 120.272335 replace the frozen anchor_bpm; not passed on flag-off runs) and pin-path args
+`--harmony-prereg` / `--groove-prereg` (default = the c84 preregs; iteration 4 pins the c86 n=23 preregs). With --f3: three comping parts
+(guitar / piano / other) are built by the READ-ONLY c87 builder scripts/v5/comping_gen_v5.build_comp_events (per-bar IOI walk sampled by
+SHA-256 inverse-CDF from the stem's corpus 16th-IOI histogram in data/v5/rules/comping_v5.json, round(chord_size_mean) chord tones capped
+at 6 from the part's register_low over the bar's chain state, duration min(sustain_ratio, ioi), 'N' bars rest); the parts follow the
+KEYS mute mask of the F1 arrangement (chords in keys-muted bars are replaced by 'N'); velocities via the F2 keys-by-slot ladder (uniform
+mode = 100); programs = donor pinned data/v4/profiles/<sha16>/<part>.json if present (only CG guitar.json exists) else the GM shims
+27 / 0 / 89 from comping_gen_v5.GM_PROGRAM (disclosed); RMS-normalise -22 dBFS; per-part audibility (RMS dBFS of the normalised track
+> -60) recorded before the per-track WAVs are deleted. F3 per-song clauses: parts_present (>= 32 note_on per part), parts_audible,
+replay x2; the F3-off clause (iteration-3 SHAs reproduced under this image) is recorded outside the generator in byte_determinism_c88.json.
+c89 (F5 INTERPOLATION DEMO, pre-registered in data/v5/gen/f5_prereg_c89.json; = harness c133): additive `--f5` (DEFAULT OFF — the --f3 path stays
+byte-identical to iteration 4) with sub-flags `--interp-a <donor> --interp-b <donor> --interp-t <t> --f5-prereg <json>` (argparse error without --f5).
+With --f5 the 5 regular songs render exactly as before and ONE extra spec (generated_song_id gen_v5_interp_<A>_<B>_t<ttt>, donor_song_sha16 = A)
+is appended whose groove tables and harmony chain are the t-weighted MODEL-PARAMETER mixture of the two donor-conditioned models built by the
+READ-ONLY scripts/v5/interpolate_v5.py (donor tables from each donor's own canonical MIDI via groove_v5_v2.load_song/table and harmony_v5.analyse_song;
+n=23 segment row as backoff; NO note-level mean of two outputs; sampling = the same SHA-256 inverse-CDF draws). Tempo / tonic / profiles = donor A.
+The manifest f5 block records the raw (pre-normalisation) render RMS of every stem, the groove-density and chord-Hamming statistics of the demo
+against the A-only (t=1) and B-only (t=0) compositions on the same tags (prereg audibility clauses), and the blend record (also written as
+f5_blend.json). F1/F2/F3 enums are computed over the 5 regular songs only; the F5-off regression (iteration-4 SHAs under this image) is recorded
+outside the generator in byte_determinism_c89.json.
 
 created: 2026-09-09T21:30:00Z
 cycle: 84 (c85 additive extension 2026-09-09T22:10:00Z)
@@ -81,6 +103,7 @@ from scripts.v3_spine.midi_from_json_events import serialize as canonical_midi_s
 from scripts.sound_match.replay import replay as sf2_replay  # noqa: E402  READ-ONLY
 from scripts.v5.midi_from_json_events_v5 import serialize as serialize_v5  # noqa: E402  c86 F2 sibling serializer (velocity field)
 from scripts.v5.velocity_v5 import sample_velocity, DRUM_CLASSES as VEL_DRUM_CLASSES  # noqa: E402  c86 F2 (ladder sampler)
+from scripts.v5.comping_gen_v5 import build_comp_events, GM_PROGRAM as F3_GM_PROGRAM, INSTRUMENT as F3_INSTRUMENT  # noqa: E402  c88 F3 READ-ONLY builder
 
 ENV_PIN_SHA256 = "2ac444c36298d6ada0579aba1a9160a5881703a4e628f5cccdd828b842a922ca"
 FORM_PLAN = ("A", "A", "B", "A")
@@ -111,6 +134,19 @@ F2_RMS_FRAME_S = 0.050
 F2_RMS_ACTIVE_DB = -60.0
 F2_RMS_RATIO_MIN = 1.5
 F2_IOI_BUCKETS = (1, 2, 3, 4, 6, 8, 12)
+# c88 F3 constants (pre-registered in data/v5/gen/f3_prereg_c88.json)
+F3_PARTS = ("guitar", "piano", "other")
+F3_REGISTER_LOW = {"guitar": 52, "piano": 60, "other": 48}
+F3_TARGET_RMS_DB = {"guitar": -22.0, "piano": -22.0, "other": -22.0}
+F3_N_NOTE_ON_MIN = 32
+F3_AUDIBILITY_FLOOR_DBFS = -60.0
+F3_ENUM = ("F3_LANDS", "F3_PARTIAL", "F3_FAILS")
+# c89 F5 constants (pre-registered in data/v5/gen/f5_prereg_c89.json audibility_clause_raw_render)
+F5_ENUM = ("F5_LANDS", "F5_PARTIAL", "F5_FAILS")
+F5_RAW_FLOOR_DBFS = -60.0
+F5_DENSITY_TOL = 2.0
+F5_HAMMING_BAND = 0.35
+F5_STEMS = ("drums", "bass", "keys", "melody", "guitar", "piano", "other")
 
 
 def _sha(p: Path) -> str:
@@ -368,7 +404,9 @@ def rms_norm(wav: Path, target_db: float) -> tuple[np.ndarray, int, float]:
     return data * gain, sr, gain
 
 
-def donor_tempo(donor: str, corpus: Path) -> tuple[float, str]:
+def donor_tempo(donor: str, corpus: Path, overrides: dict | None = None) -> tuple[float, str]:
+    if overrides and donor in overrides:  # c88: F4 adopted tempos (tempo_overrides_c86.json); None on every flag-off run
+        return float(overrides[donor]), "tempo_overrides_c86.json (F4 adopted, c86)"
     blocked = json.loads((corpus / "recanonicalization_blocked.json").read_text())["blocked_songs"]
     if donor in blocked:
         return float(blocked[donor]["anchor_bpm"]), "tempo_blocked_anchor_bpm"
@@ -490,9 +528,34 @@ def arrangement(plan: dict, fp: dict, tag: str) -> tuple[list, dict]:
                  "fills": fills, "fill_pool_size": len(pool)}
 
 
+def f5_compose(groove: dict, chain: dict, form_plan: dict, tag: str) -> dict:
+    """c89 F5: the section composition of render_song (form plan -> A -> contrast sections -> flattened bars/chords, PRE-arrangement)
+    for a given (groove, chain) pair on the same tags, so the demo can be compared with the A-only / B-only compositions
+    without rendering. render_song's own manifest section_grooves/chord_sequence must equal f5_compose at the demo's t
+    (asserted by tests/test_c89_landing.py)."""
+    plan = plan_form(form_plan, tag)
+    form_seq = plan["labels"]
+    sec_bars = {"A": sample_groove_bars(groove["model"], f"{tag}|section=A", F1_BARS_PER_SECTION)}
+    sec_chords = {"A": sample_chords(chain, f"{tag}|section=A", F1_BARS_PER_SECTION)}
+    a_root = dominant_root(sec_chords["A"])
+    a_terc = tercile_of(float(np.mean([bar_density(g) for g in sec_bars["A"]])), form_plan["density_tercile_bounds"])
+    for lab in sorted(set(form_seq) - {"A"}):
+        c = contrast_section(groove, chain, form_plan, tag, lab, a_root, a_terc)
+        sec_bars[lab], sec_chords[lab] = c["bars"], c["chords"]
+    bars = [b for s in form_seq for b in sec_bars[s]]
+    chords = [c for s in form_seq for c in sec_chords[s]]
+    kick16 = lambda g: {2 * j for j in G.bits(g["kick"], 8)} | {2 * j + 1 for j in G.bits(g["kick"], 8)}
+    n_bass = sum(len(G.bits(g["bass"])) for g in bars)
+    locked = sum(1 for g in bars for p in G.bits(g["bass"]) if any(abs(p - k) <= 1 for k in kick16(g)))
+    return {"form": form_seq, "bars": bars, "chords": chords, "mean_drum_onsets_per_bar": round(float(np.mean([bar_density(g) for g in bars])), 6),
+            "bass_kick_lock": round(locked / n_bass, 6) if n_bass else None, "n_bars": len(bars), "distinct_kick8": len({g["kick"] for g in bars}),
+            "distinct_chord_states": len(set(chords))}
+
+
 def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict, corpus: Path, keep_per_track: bool,
                 rules_sha: dict, cycle: int = 84, form_plan: dict | None = None, form_plan_sha: str | None = None,
-                f2_cfg: dict | None = None) -> dict:
+                f2_cfg: dict | None = None, f3_cfg: dict | None = None, tempo_overrides: dict | None = None,
+                f5_cfg: dict | None = None) -> dict:
     donor = spec["donor_song_sha16"]
     gen_id = spec["generated_song_id"].replace("gen_v4_", "gen_v5_")
     tag = f"{gen_id}|donor={donor}|seed={seed}"
@@ -506,7 +569,7 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
     ser = serialize_v5 if f2 is not None else canonical_midi_serialize
     song_dir = out_dir / f"{gen_id}_donor_{donor}"
     song_dir.mkdir(parents=True, exist_ok=True)
-    bpm, tempo_src = donor_tempo(donor, corpus)
+    bpm, tempo_src = donor_tempo(donor, corpus, tempo_overrides)
     if donor in chain["per_song"]:
         tonic, tonic_src = int(chain["per_song"][donor]["key"]["tonic"]), "donor_kk_key_from_chain"
     else:
@@ -552,6 +615,25 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
     chords = [c for s in form_seq for c in sec_chords[s]]
     f2f = dict(f2, sections=[(s, k) for s in form_seq for k in range(bars_per_section)]) if f2 else None
     events = build_events(bars, chords, tonic, bpm, arr, f2f)
+    stems = ["drums", "bass", "keys", "melody"]
+    f3 = None
+    if f3_cfg is not None:  # c88 F3: comping parts from the READ-ONLY c87 builder; keys mute mask -> 'N'; F2 keys-by-slot velocities
+        chords_f3 = ["N" if (arr is not None and "keys" in set(arr[b]["mute"])) else c for b, c in enumerate(chords)]
+        vmode = f2_cfg["velocity_mode"] if f2_cfg is not None else "uniform"
+        kp = f2_cfg["profiles"]["profiles"]["keys"] if f2_cfg is not None else None
+
+        def f3_vel(t: str) -> int:
+            if vmode == "uniform" or kp is None:
+                return 100
+            slot = int(t.rsplit("|pos", 1)[1]) % 16
+            return sample_velocity(kp[str(slot)], u(t))
+
+        f3 = {"parts": {}, "chords_after_keys_mute": chords_f3, "n_bars_rested_by_mute": sum(1 for a, c in zip(chords_f3, chords) if a != c),
+              "velocity_mode": vmode, "velocity_source": "F2 keys-by-slot ladder (velocity_profiles_v5.json profiles.keys[<slot>])" if vmode != "uniform" else "uniform 100"}
+        for part in F3_PARTS:
+            events[part] = build_comp_events(chords_f3, tonic, bpm, f3_cfg["comping_model"], tag, u, stem=part, velocity_fn=f3_vel,
+                                             register_low=F3_REGISTER_LOW[part])
+            stems.append(part)
     midi_sha, wav_sha, gains, profiles_used = {}, {}, {}, {}
     bass_profile = json.loads((_WS / spec["donor_bass_profile_relpath"]).read_text())
     sf2_path, sf2_sha = bass_profile["identity"]["sf2_path"], bass_profile["identity"].get("sf2_sha256", "")
@@ -561,7 +643,8 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
                 "params": {"sample_rate": 44100, "gain": 1.0}, "note": note_}
 
     tracks = []
-    for stem in ("drums", "bass", "keys", "melody"):
+    f5_raw = {}  # c89 F5: raw (pre-normalisation) render RMS per stem, prereg clause (i)
+    for stem in stems:
         (jd / f"{stem}.json").write_text(json.dumps(events[stem], sort_keys=True, separators=(",", ":")))
         ser(str(jd / f"{stem}.json"), str(md / f"{stem}.mid"), float(bpm), (4, 4))
         midi_sha[stem] = _sha(md / f"{stem}.mid")
@@ -573,6 +656,13 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
                 prof, profiles_used[stem] = json.loads((_WS / rel).read_text()), rel
             else:
                 prof, profiles_used[stem] = shim(SHIMS["drums_cg"]["program"], SHIMS["drums_cg"]["name"]), "shim:" + SHIMS["drums_cg"]["name"]
+        elif stem in F3_PARTS:  # c88 F3 program policy: donor pinned <part>.json if present, else the pre-declared GM shim
+            pinned = _WS / "data/v4/profiles" / donor / f"{stem}.json"
+            if pinned.exists():
+                prof, profiles_used[stem] = json.loads(pinned.read_text()), str(pinned.relative_to(_WS))
+            else:
+                prof = shim(F3_GM_PROGRAM[stem], f"GM program {F3_GM_PROGRAM[stem]} ({F3_INSTRUMENT[stem]} shim, not profiled)")
+                profiles_used[stem] = "shim:" + prof["note"]
         else:
             prof, profiles_used[stem] = shim(SHIMS[stem]["program"], SHIMS[stem]["name"]), "shim:" + SHIMS[stem]["name"]
         wav = rd / f"{stem}.wav"
@@ -582,8 +672,22 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
         else:
             sf2_replay(prof, str(md / f"{stem}.mid"), str(wav))
         wav_sha[stem] = _sha(wav)
-        data, sr, g = rms_norm(wav, TARGET_RMS_DB[stem])
+        data, sr, g = rms_norm(wav, F3_TARGET_RMS_DB[stem] if stem in F3_PARTS else TARGET_RMS_DB[stem])
         gains[stem] = round(g, 6)
+        if f5_cfg is not None:  # c89 F5 clause (i): raw render level of EVERY stem, measured before normalisation (c88 MINOR (a))
+            raw, _sr = sf.read(str(wav), dtype="float32", always_2d=True)
+            raw_rms_db = 20.0 * np.log10(float(np.sqrt((raw.astype(np.float64) ** 2).mean())) + 1e-12) if raw.size else -200.0
+            f5_raw[stem] = {"raw_render_rms_dbfs": round(float(raw_rms_db), 3), "above_floor": bool(raw_rms_db > F5_RAW_FLOOR_DBFS),
+                            "n_note_on": sum(1 for e in events[stem] if e["type"] == "start")}
+        if f3 is not None and stem in F3_PARTS:
+            n_on = sum(1 for e in events[stem] if e["type"] == "start")
+            rms_db = 20.0 * np.log10(float(np.sqrt((data.astype(np.float64) ** 2).mean())) + 1e-12) if data.size else -200.0
+            raw_db = rms_db - 20.0 * np.log10(g)  # pre-normalisation render level (informational; the prereg clause is on the normalised track)
+            f3["parts"][stem] = {"n_note_on": n_on, "parts_present": n_on >= F3_N_NOTE_ON_MIN, "normalised_track_rms_dbfs": round(float(rms_db), 3),
+                                 "raw_render_rms_dbfs": round(float(raw_db), 3), "raw_above_floor_informational": bool(raw_db > F3_AUDIBILITY_FLOOR_DBFS),
+                                 "audible": bool(rms_db > F3_AUDIBILITY_FLOOR_DBFS), "program_source": profiles_used[stem],
+                                 "program": int(prof["identity"]["program"]), "register_low": F3_REGISTER_LOW[stem], "instrument_label": F3_INSTRUMENT[stem],
+                                 "gain": round(g, 6), "target_rms_dbfs": F3_TARGET_RMS_DB[stem]}
         tracks.append(data)
     max_len = max(t.shape[0] for t in tracks)
     acc = np.zeros((max_len, 2), dtype=np.float64)
@@ -641,6 +745,49 @@ def render_song(spec: dict, seed: int, out_dir: Path, groove: dict, chain: dict,
                      "melody_key_mode": f2["mode"], "melody_key_mode_source": f2["mode_source"], "melody_register": list(F2_MELODY_REGISTER),
                      "per_stem": per_stem, "velocities_present_all_stems_with_notes": all(v["velocities_present"] for v in per_stem.values() if v["n_notes"])}
         man["f2_prereg_sha256"] = f2_cfg["prereg_sha256"]
+    if f3 is not None:
+        f3["clauses"] = {"parts_present_all": all(p["parts_present"] for p in f3["parts"].values()),
+                         "parts_audible_all": all(p["audible"] for p in f3["parts"].values())}
+        f3["per_song_ok"] = all(f3["clauses"].values())
+        man["milestone"] = "M-V5-GEN-1/F3-guitar-piano-other"
+        man["f3"] = {"comping_model_sha256": f3_cfg["comping_model_sha256"], "comping_builder_sha256": f3_cfg["builder_sha256"], "prereg_sha256": f3_cfg["prereg_sha256"],
+                     "n_note_on_min": F3_N_NOTE_ON_MIN, "audibility_floor_dbfs": F3_AUDIBILITY_FLOOR_DBFS, "target_rms_dbfs": F3_TARGET_RMS_DB, "gm_shims": F3_GM_PROGRAM,
+                     "keys_mute_mask_applied": True, **f3}
+        man["f3_prereg_sha256"] = f3_cfg["prereg_sha256"]
+    if tempo_overrides:
+        man["tempo_overrides"] = {"path": "data/v5/corpus/tempo_overrides_c86.json", "applied": donor in tempo_overrides, "adopted_bpm": tempo_overrides.get(donor),
+                                  "note": "F4 CLOSED (c86): PD / Disco A donor tempo switched from the frozen anchor_bpm to the adopted value from iteration 4"}
+    if f5_cfg is not None:  # c89 F5: blend record + prereg audibility clauses (raw render, groove density, chord Hamming)
+        assert form_plan is not None, "F5 demo requires --form-plan"
+        mix_c = f5_compose(groove, chain, form_plan, tag)
+        assert mix_c["chords"] == chords and mix_c["bars"] == bars, "f5_compose must mirror render_song's composition"
+        a_c = f5_compose(f5_cfg["blend_t1"]["groove"], f5_cfg["blend_t1"]["chain"], form_plan, tag)
+        b_c = f5_compose(f5_cfg["blend_t0"]["groove"], f5_cfg["blend_t0"]["chain"], form_plan, tag)
+        t = float(f5_cfg["t"])
+        d_mix, d_a, d_b = mix_c["mean_drum_onsets_per_bar"], a_c["mean_drum_onsets_per_bar"], b_c["mean_drum_onsets_per_bar"]
+        expected = t * d_a + (1.0 - t) * d_b
+        h_a, h_b = f5_cfg["hamming"](chords, a_c["chords"]), f5_cfg["hamming"](chords, b_c["chords"])
+        clauses = {"i_raw_rms_all_stems_above_floor": all(v["above_floor"] for v in f5_raw.values()) and set(f5_raw) >= set(F5_STEMS),
+                   "ii_groove_density_within_tol": abs(d_mix - expected) <= F5_DENSITY_TOL,
+                   "iii_harmony_hamming_band": (h_a is not None and h_b is not None and 0.0 < h_a < 1.0 and 0.0 < h_b < 1.0 and abs(h_a - h_b) <= F5_HAMMING_BAND)}
+        man["f5"] = {"donor_A": f5_cfg["donor_a"], "donor_B": f5_cfg["donor_b"], "t": t, "prereg_sha256": f5_cfg["prereg_sha256"],
+                     "interpolate_v5_sha256": f5_cfg["interpolate_v5_sha256"], "blend_record_sha256": f5_cfg["blend_record_sha256"],
+                     "blended_model_sha256": f5_cfg["blend"]["record"]["blended_model_sha256"],
+                     "raw_render_rms_dbfs": f5_raw, "raw_floor_dbfs": F5_RAW_FLOOR_DBFS,
+                     "audibility": {"groove": {"d_mix": d_mix, "d_A_only_t1": d_a, "d_B_only_t0": d_b, "expected_mixture": round(expected, 6),
+                                               "abs_dev": round(abs(d_mix - expected), 6), "tol": F5_DENSITY_TOL,
+                                               "bass_kick_lock_informational": {"mix": mix_c["bass_kick_lock"], "A_only": a_c["bass_kick_lock"], "B_only": b_c["bass_kick_lock"]},
+                                               "distinct_kick8": {"mix": mix_c["distinct_kick8"], "A_only": a_c["distinct_kick8"], "B_only": b_c["distinct_kick8"]}},
+                                    "harmony": {"h_A": h_a, "h_B": h_b, "abs_diff": round(abs(h_a - h_b), 6) if (h_a is not None and h_b is not None) else None, "band": F5_HAMMING_BAND,
+                                                "n_bars": len(chords), "distinct_states": {"mix": mix_c["distinct_chord_states"], "A_only": a_c["distinct_chord_states"], "B_only": b_c["distinct_chord_states"]},
+                                                "A_only_chords": a_c["chords"], "B_only_chords": b_c["chords"]},
+                                    "clauses": clauses, "all_clauses": all(clauses.values()),
+                                    "note": "pre-registered (f5_prereg_c89.json audibility_clause_raw_render); recorded, not retuned (FD-1)"},
+                     "tempo_policy": "donor A tempo (tempi are not averaged)", "tonic_policy": "donor A KK key (functional states are key-independent)",
+                     "sampling": "SHA-256 inverse-CDF on the blended model (no note-level mean)"}
+        man["milestone"] = "M-V5-GEN-1/F5-interpolation-demo"
+        man["f5_prereg_sha256"] = f5_cfg["prereg_sha256"]
+        (song_dir / "f5_blend.json").write_text(json.dumps(f5_cfg["blend"]["record"], sort_keys=True, indent=2) + "\n")
     (song_dir / "ab_mix.manifest.json").write_text(json.dumps(man, sort_keys=True, indent=2) + "\n")
     return man
 
@@ -721,7 +868,40 @@ def main(argv=None) -> int:
     ap.add_argument("--bass-model", default="data/v5/rules/bass_pitch_v5.json")
     ap.add_argument("--melody-model", default="data/v5/rules/melody_vomm_v5.json")
     ap.add_argument("--rms-variance-test", action="store_true", help="c86 F2 clause (c): also render the uniform-velocity twin into a tempdir and compare per-stem frame-RMS variance")
+    # c88 F3 (default OFF: the --f2 path stays byte-identical to iteration 3) + F4 tempo overrides + pin-path args
+    ap.add_argument("--f3", action="store_true", help="c88 F3: guitar / piano / other comping parts via the READ-ONLY c87 builder (scripts/v5/comping_gen_v5.py)")
+    ap.add_argument("--comping-model", default=None, help="c88 F3 sub-flag (requires --f3): comping statistics JSON (default data/v5/rules/comping_v5.json)")
+    ap.add_argument("--tempo-overrides", default=None, help="c88 (F4 CLOSED c86): {sha16: bpm} JSON replacing the frozen anchor_bpm for the listed donors")
+    ap.add_argument("--harmony-prereg", default="data/v5/rules/harmony_prereg_c84.json", help="c88: prereg path pinned in rules_sha256 (iteration 4: the c86 n=23 prereg)")
+    ap.add_argument("--groove-prereg", default="data/v5/rules/groove_prereg_c84.json", help="c88: prereg path pinned in rules_sha256 (iteration 4: the c86 n=23 prereg)")
+    # c89 F5 (default OFF: the --f3 path stays byte-identical to iteration 4)
+    ap.add_argument("--f5", action="store_true", help="c89 F5: append ONE interpolation-demo spec whose groove tables + harmony chain are the t-blend of two donor-conditioned models (scripts/v5/interpolate_v5.py)")
+    ap.add_argument("--interp-a", default=None, help="c89 F5 sub-flag (requires --f5): donor A (CG/WIG/Rome/PD/DiscoA or sha16); tempo / tonic / profiles of the demo")
+    ap.add_argument("--interp-b", default=None, help="c89 F5 sub-flag (requires --f5): donor B")
+    ap.add_argument("--interp-t", type=float, default=None, help="c89 F5 sub-flag (requires --f5): blend weight t in [0, 1] (weight of donor A)")
+    ap.add_argument("--f5-prereg", default=None, help="c89 F5 sub-flag (requires --f5): pre-registration JSON pinned into rules_sha256 + manifests")
     args = ap.parse_args(argv)
+    if not args.f2 and (args.velocity_mode != "uniform" or args.rms_variance_test):
+        ap.error("--velocity-mode f2 / --rms-variance-test require --f2 (c87 P0: flag-off output is unchanged)")
+    if not args.f3 and args.comping_model is not None:
+        ap.error("--comping-model requires --f3 (c88: flag-off output is unchanged)")
+    if not args.f5 and any(v is not None for v in (args.interp_a, args.interp_b, args.interp_t, args.f5_prereg)):
+        ap.error("--interp-a / --interp-b / --interp-t / --f5-prereg require --f5 (c89: flag-off output is unchanged)")
+    if args.f5 and (args.interp_a is None or args.interp_b is None or args.interp_t is None or args.f5_prereg is None):
+        ap.error("--f5 requires --interp-a, --interp-b, --interp-t and --f5-prereg (c89 prereg pins all four)")
+    if args.f5 and not (0.0 <= args.interp_t <= 1.0):
+        ap.error("--interp-t must lie in [0, 1]")
+    if args.f5 and not (args.f2 and args.f3 and args.form_plan):
+        ap.error("--f5 requires --f2, --f3 and --form-plan (the demo is a full iteration-5 render per the prereg)")
+    f3_cfg, tempo_overrides = None, None
+    if args.f3:
+        cm = Path(args.comping_model or "data/v5/rules/comping_v5.json")
+        comping_model = json.loads(cm.read_text())
+        assert comping_model["verdict"]["enum"] == "COMPING_NON_DEGENERATE", "comping statistics must be NON_DEGENERATE (c87 prereg gate)"
+        f3_cfg = {"comping_model": comping_model, "comping_model_path": str(cm), "comping_model_sha256": _sha(cm),
+                  "builder_sha256": _sha(Path("scripts/v5/comping_gen_v5.py")), "prereg_sha256": _sha(Path("data/v5/gen/f3_prereg_c88.json"))}
+    if args.tempo_overrides:
+        tempo_overrides = {k: float(v) for k, v in json.loads(Path(args.tempo_overrides).read_text()).items()}
     f2_cfg = None
     if args.f2:
         from scripts.v5.bass_pitch_v5 import sample_interval_class, interval_to_pitch  # noqa: E402  c86 T2 models (READ-ONLY use)
@@ -742,15 +922,39 @@ def main(argv=None) -> int:
     assert chain["degeneracy_verdict"] == "NON_DEGENERATE", "harmony chain must be NON_DEGENERATE (brief P3 gate)"
     assert groove["verdict"] != "GROOVE_V2_DEGENERATE", "groove model must not be DEGENERATE (brief P3 gate)"
     rules_sha = {"harmony_chain": _sha(Path(args.harmony)), "groove_model": _sha(Path(args.groove)),
-                 "harmony_prereg": _sha(Path("data/v5/rules/harmony_prereg_c84.json")), "groove_prereg": _sha(Path("data/v5/rules/groove_prereg_c84.json")),
+                 "harmony_prereg": _sha(Path(args.harmony_prereg)), "groove_prereg": _sha(Path(args.groove_prereg)),
                  "donor_map": _sha(Path(args.donor_map))}
+    if f3_cfg is not None:
+        rules_sha.update({"comping_model": f3_cfg["comping_model_sha256"], "comping_builder": f3_cfg["builder_sha256"]})
+    if tempo_overrides is not None:
+        rules_sha["tempo_overrides"] = _sha(Path(args.tempo_overrides))
     form_plan, fp_sha = None, None
     if args.form_plan:
         form_plan = json.loads(Path(args.form_plan).read_text())
         fp_sha = _sha(Path(args.form_plan))
         rules_sha["form_plan"] = fp_sha
-    specs = json.loads(Path(args.donor_map).read_text())["songs"][: args.songs]
+    all_specs = json.loads(Path(args.donor_map).read_text())["songs"]
+    specs = all_specs[: args.songs]
     corpus = Path(args.corpus_dir)
+    f5_cfg = None
+    if args.f5:  # c89 F5: blended models for the ONE demo spec (t), plus the A-only (t=1) / B-only (t=0) blends for the prereg statistics
+        from scripts.v5.interpolate_v5 import resolve_donor, donor_groove_tables, donor_harmony, build_blend_from, hamming_fraction  # noqa: E402  READ-ONLY, --f5 only
+        donor_a, donor_b, t = resolve_donor(args.interp_a), resolve_donor(args.interp_b), float(args.interp_t)
+        spec_a = next((s for s in all_specs if s["donor_song_sha16"] == donor_a), None)
+        assert spec_a is not None, f"donor A {donor_a} has no donor-map spec (profiles/tempo come from A)"
+        TA, TB = donor_groove_tables(corpus, donor_a, tempo_overrides), donor_groove_tables(corpus, donor_b, tempo_overrides)
+        HA, HB = donor_harmony(corpus, donor_a, tempo_overrides), donor_harmony(corpus, donor_b, tempo_overrides)
+        blend = build_blend_from(TA, TB, HA, HB, chain, groove, donor_a, donor_b, t)
+        rec_sha = hashlib.sha256(json.dumps(blend["record"], sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        ttag = f"{int(round(t * 100)):03d}"  # t=0.5 -> "050" (prereg demo_song_id gen_v5_interp_CG_PD_t050)
+        demo_spec = dict(spec_a, generated_song_id=f"gen_v5_interp_{args.interp_a}_{args.interp_b}_t{ttag}",
+                         donor_song_name=f"F5 blend t={t} of {spec_a.get('donor_song_name')} (A) and donor B {donor_b}")
+        f5_cfg = {"donor_a": donor_a, "donor_b": donor_b, "t": t, "names": {"A": args.interp_a, "B": args.interp_b}, "blend": blend,
+                  "blend_t1": build_blend_from(TA, TB, HA, HB, chain, groove, donor_a, donor_b, 1.0),
+                  "blend_t0": build_blend_from(TA, TB, HA, HB, chain, groove, donor_a, donor_b, 0.0),
+                  "hamming": hamming_fraction, "prereg_path": args.f5_prereg, "prereg_sha256": _sha(Path(args.f5_prereg)),
+                  "interpolate_v5_sha256": _sha(Path("scripts/v5/interpolate_v5.py")), "blend_record_sha256": rec_sha, "demo_spec": demo_spec}
+        rules_sha.update({"f5_prereg": f5_cfg["prereg_sha256"], "interpolate_v5": f5_cfg["interpolate_v5_sha256"], "f5_blend_record": rec_sha})
     rollup = {"schema_version": 1, "cycle": args.cycle, "agent": "worker", "run_id": "run-2026-09-06T000000Z", "iteration": args.iteration, "seed": args.seed,
               "generator": "groove_first_v5", "generator_hash": _sha(Path(__file__)), "rules_sha256": rules_sha, "env_pin_sha256": ENV_PIN_SHA256,
               "harmony_verdict": chain["degeneracy_verdict"], "groove_verdict": groove["verdict"],
@@ -763,9 +967,25 @@ def main(argv=None) -> int:
                           "melody_vomm": f2_cfg["models_sha256"]["melody_vomm"]})
         rollup["f2"] = {"route": f2_cfg["route"], "velocity_mode": args.velocity_mode, "models_sha256": f2_cfg["models_sha256"],
                         "prereg_sha256": f2_cfg["prereg_sha256"], "rms_variance_test_requested": bool(args.rms_variance_test)}
-    for spec in specs:
+    if f3_cfg is not None:
+        rollup["f3"] = {"comping_model": f3_cfg["comping_model_path"], "comping_model_sha256": f3_cfg["comping_model_sha256"], "comping_builder_sha256": f3_cfg["builder_sha256"],
+                        "prereg_sha256": f3_cfg["prereg_sha256"], "parts": list(F3_PARTS), "gm_shims": F3_GM_PROGRAM, "register_low": F3_REGISTER_LOW,
+                        "n_note_on_min": F3_N_NOTE_ON_MIN, "audibility_floor_dbfs": F3_AUDIBILITY_FLOOR_DBFS}
+    if tempo_overrides is not None:
+        rollup["tempo_overrides"] = {"path": args.tempo_overrides, "sha256": rules_sha["tempo_overrides"], "overrides": tempo_overrides}
+    if f5_cfg is not None:
+        rollup["f5"] = {"donor_A": f5_cfg["donor_a"], "donor_B": f5_cfg["donor_b"], "names": f5_cfg["names"], "t": f5_cfg["t"], "demo_song_id": f5_cfg["demo_spec"]["generated_song_id"],
+                        "prereg": f5_cfg["prereg_path"], "prereg_sha256": f5_cfg["prereg_sha256"], "interpolate_v5_sha256": f5_cfg["interpolate_v5_sha256"],
+                        "blend_record_sha256": f5_cfg["blend_record_sha256"], "blended_model_sha256": f5_cfg["blend"]["record"]["blended_model_sha256"],
+                        "groove_blend": f5_cfg["blend"]["record"]["groove_blend"], "harmony_blend": f5_cfg["blend"]["record"]["harmony_blend"],
+                        "raw_floor_dbfs": F5_RAW_FLOOR_DBFS, "density_tol": F5_DENSITY_TOL, "hamming_band": F5_HAMMING_BAND, "enum": list(F5_ENUM),
+                        "regular_songs_use_blend": False}
+    jobs = [(spec, groove, chain, None) for spec in specs]
+    if f5_cfg is not None:
+        jobs.append((f5_cfg["demo_spec"], f5_cfg["blend"]["groove"], f5_cfg["blend"]["chain"], f5_cfg))
+    for spec, groove_j, chain_j, f5_j in jobs:
         keep = args.keep_per_track or bool(f2_cfg is not None and args.rms_variance_test)
-        man = render_song(spec, args.seed, out, groove, chain, corpus, keep, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg)
+        man = render_song(spec, args.seed, out, groove_j, chain_j, corpus, keep, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg, f3_cfg, tempo_overrides, f5_j)
         entry = {"generated_song_id": man["generated_song_id"], "donor": man["donor_song_sha16"], "ab_mix_sha256": man["ab_mix_sha256"],
                  "duration_s": man["ab_mix_duration_s"], "chords": man["chord_sequence"]}
         song_dir = out / f"{man['generated_song_id']}_donor_{man['donor_song_sha16']}"
@@ -775,7 +995,7 @@ def main(argv=None) -> int:
             if args.rms_variance_test:
                 uni_cfg = dict(f2_cfg, velocity_mode="uniform")
                 with tempfile.TemporaryDirectory(prefix="gen_v5_uniform_") as td:
-                    man_u = render_song(spec, args.seed, Path(td), groove, chain, corpus, True, rules_sha, args.cycle, form_plan, fp_sha, uni_cfg)
+                    man_u = render_song(spec, args.seed, Path(td), groove_j, chain_j, corpus, True, rules_sha, args.cycle, form_plan, fp_sha, uni_cfg, f3_cfg, tempo_overrides, f5_j)
                     uni_dir = Path(td) / f"{man_u['generated_song_id']}_donor_{man_u['donor_song_sha16']}" / "per_track"
                     test = f2_rms_variance_test(song_dir / "per_track", uni_dir, man["f2"]["per_stem"])
                     test["uniform_twin"] = {"ab_mix_sha256": man_u["ab_mix_sha256"], "midi_sha256": man_u["midi_sha256"], "tempdir": td,
@@ -797,11 +1017,25 @@ def main(argv=None) -> int:
             entry.update({"form": man["form_plan"], "n_bars": man["n_bars"], "clauses": man["f1"]["clauses"], "all_clauses": man["f1"]["all_clauses"],
                           "contrast": {k: {kk: v[kk] for kk in ("harmony_contrast_ok", "density_contrast_ok", "contrast_rule_true", "n_allowed_start_states")} for k, v in man["f1"]["contrast"].items()},
                           "breakdown_section": man["f1"]["arrangement"]["breakdown"]["section"], "intro_mode": man["f1"]["arrangement"]["intro"]["mode"]})
+        if "f3" in man:
+            entry["f3"] = {"parts": {p: {k: man["f3"]["parts"][p][k] for k in ("n_note_on", "parts_present", "normalised_track_rms_dbfs", "audible", "program_source", "program")} for p in F3_PARTS},
+                           "clauses": man["f3"]["clauses"], "per_song_ok": man["f3"]["per_song_ok"], "n_bars_rested_by_mute": man["f3"]["n_bars_rested_by_mute"]}
+            entry["tempo_bpm"], entry["tempo_source"] = man["tempo_bpm"], man["tempo_source"]
+            parts_txt = ", ".join("%s: %d on / %.1f dBFS / prog %d" % (p, v["n_note_on"], v["normalised_track_rms_dbfs"], v["program"]) for p, v in entry["f3"]["parts"].items())
+            print(f"  F3 parts {{{parts_txt}}} -> {'OK' if entry['f3']['per_song_ok'] else 'FAIL'}")
+        if "f5" in man:  # c89 F5 demo entry
+            au = man["f5"]["audibility"]
+            entry["f5"] = {"t": man["f5"]["t"], "donor_A": man["f5"]["donor_A"], "donor_B": man["f5"]["donor_B"], "clauses": au["clauses"], "all_clauses": au["all_clauses"],
+                           "raw_render_rms_dbfs": {k: v["raw_render_rms_dbfs"] for k, v in man["f5"]["raw_render_rms_dbfs"].items()},
+                           "groove": {k: au["groove"][k] for k in ("d_mix", "d_A_only_t1", "d_B_only_t0", "expected_mixture", "abs_dev")},
+                           "harmony": {k: au["harmony"][k] for k in ("h_A", "h_B", "abs_diff")}, "tonic": man["tonic"], "tempo_bpm": man["tempo_bpm"]}
+            print(f"  F5 demo: raw dBFS {entry['f5']['raw_render_rms_dbfs']} density mix {au['groove']['d_mix']} vs A {au['groove']['d_A_only_t1']} / B {au['groove']['d_B_only_t0']}; "
+                  f"Hamming h_A {au['harmony']['h_A']} h_B {au['harmony']['h_B']} -> clauses {au['clauses']}")
         print(f"{man['generated_song_id']} donor={man['donor_song_sha16']} bpm={man['tempo_bpm']:.2f} tonic={man['tonic']} sha={man['ab_mix_sha256'][:12]} dur={man['ab_mix_duration_s']}s"
               + (f" form={''.join(man['form_plan'])} bars={man['n_bars']} clauses={man['f1']['clauses']}" if "f1" in man else ""))
         if args.prove_replay:
             with tempfile.TemporaryDirectory(prefix="gen_v5_replay_") as td:
-                man2 = render_song(spec, args.seed, Path(td), groove, chain, corpus, False, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg)
+                man2 = render_song(spec, args.seed, Path(td), groove_j, chain_j, corpus, False, rules_sha, args.cycle, form_plan, fp_sha, f2_cfg, f3_cfg, tempo_overrides, f5_j)
                 td_used = td
             proof = {"verdict": "REPLAY_PROOF_HOLDS" if man2["ab_mix_sha256"] == man["ab_mix_sha256"] else "REPLAY_PROOF_FAILS",
                      "run1_sha256": man["ab_mix_sha256"], "run2_sha256": man2["ab_mix_sha256"], "run2_midi_equal": man2["midi_sha256"] == man["midi_sha256"],
@@ -811,13 +1045,14 @@ def main(argv=None) -> int:
             entry["replay_proof"] = proof["verdict"]
             print(f"  {proof['verdict']}")
         rollup["songs"].append(entry)
+    regular = [s for s in rollup["songs"] if "f5" not in s]  # c89: F1/F2/F3 enums are over the 5 regular songs (identical list when --f5 is absent)
     if form_plan is not None:
-        n_ok = sum(1 for s in rollup["songs"] if s.get("all_clauses"))
-        rollup["f1_enum"] = "FORM_PLAN_LANDS" if n_ok == len(rollup["songs"]) == 5 else ("FORM_PLAN_PARTIAL" if n_ok >= 3 else "FORM_PLAN_FAILS")
+        n_ok = sum(1 for s in regular if s.get("all_clauses"))
+        rollup["f1_enum"] = "FORM_PLAN_LANDS" if n_ok == len(regular) == 5 else ("FORM_PLAN_PARTIAL" if n_ok >= 3 else "FORM_PLAN_FAILS")
         rollup["f1_songs_all_clauses"] = n_ok
         print(f"F1 enum {rollup['f1_enum']} ({n_ok}/5 songs satisfy all clauses)")
     if f2_cfg is not None:  # c86 F2 enum (pre-registered): LANDS iff velocities on every stem with notes 5/5 AND RMS test 5/5 AND replay x2 holds
-        songs_ = rollup["songs"]
+        songs_ = regular
         vel_ok = sum(1 for s in songs_ if s.get("velocities_present"))
         rms_ok = sum(1 for s in songs_ if s.get("rms_variance_passes")) if args.rms_variance_test else None
         rep_ok = sum(1 for s in songs_ if s.get("replay_proof") == "REPLAY_PROOF_HOLDS") if args.prove_replay else None
@@ -826,19 +1061,48 @@ def main(argv=None) -> int:
         rollup["f2"].update({"clauses": clauses, "n_velocities_present": vel_ok, "n_rms_variance_pass": rms_ok, "n_replay_holds": rep_ok,
                              "f2_enum": "F2_LANDS" if all(v is True for v in clauses.values()) else ("F2_PARTIAL" if args.velocity_mode == "f2" else "F2_PARTIAL(velocity_mode=uniform)")})
         print(f"F2 enum {rollup['f2']['f2_enum']} clauses {clauses}")
+    if f3_cfg is not None:  # c88 F3 per-song enum (pre-registered); the F3-off clause is folded in by byte_determinism_c88.json
+        songs_ = regular
+        ok = sum(1 for s in songs_ if s.get("f3", {}).get("per_song_ok"))
+        rep_ok = sum(1 for s in songs_ if s.get("replay_proof") == "REPLAY_PROOF_HOLDS") if args.prove_replay else None
+        both = sum(1 for s in songs_ if s.get("f3", {}).get("per_song_ok") and (not args.prove_replay or s.get("replay_proof") == "REPLAY_PROOF_HOLDS"))
+        rollup["f3"].update({"n_parts_present_and_audible": ok, "n_replay_holds": rep_ok, "n_songs_all_per_song_clauses": both,
+                             "f3_enum_per_song": "F3_LANDS_pending_flagoff" if both == len(songs_) == 5 else ("F3_PARTIAL" if both >= 3 else "F3_FAILS"),
+                             "flagoff_clause": "recorded in data/v5/gen/byte_determinism_c88.json (iteration-3 SHAs under this image)"})
+        print(f"F3 enum (per-song part) {rollup['f3']['f3_enum_per_song']} — parts+audible {ok}/5, replay {rep_ok}/5")
+    if f5_cfg is not None:  # c89 F5 per-render part of the enum; byte-det (independent process) + F5-off regression are folded in by byte_determinism_c89.json
+        demo = next(s for s in rollup["songs"] if "f5" in s)
+        rep = demo.get("replay_proof") if args.prove_replay else None
+        rollup["f5"].update({"demo_ab_mix_sha256": demo["ab_mix_sha256"], "demo_duration_s": demo["duration_s"], "demo_form": demo.get("form"), "replay_proof": rep,
+                             "audibility_clauses": demo["f5"]["clauses"], "audibility_all": demo["f5"]["all_clauses"],
+                             "f5_enum_pending_bytedet": ("F5_LANDS_pending_bytedet" if (rep == "REPLAY_PROOF_HOLDS" and demo["f5"]["all_clauses"]) else
+                                                         ("F5_PARTIAL" if rep == "REPLAY_PROOF_HOLDS" else "F5_FAILS")),
+                             "final_clause": "independent second-process byte-det + iteration-4 flag-off regression recorded in data/v5/gen/byte_determinism_c89.json (f5_enum_final)"})
+        print(f"F5 demo {rollup['f5']['f5_enum_pending_bytedet']} — replay {rep}, audibility {demo['f5']['clauses']}")
     (out / "iteration_rollup.json").write_text(json.dumps(rollup, sort_keys=True, indent=2) + "\n")
     if not args.no_stall_update:
         sc_p = Path("data/v5/gen/stall_counter.json")
         sc = json.loads(sc_p.read_text())
         sc["iterations"] = max(int(sc.get("iterations", 0)), args.iteration)
         sc["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # c85 F6
-        feature = args.feature or ("F2 bass+melody+dynamics" if f2_cfg is not None else ("F1 length+form+arrangement" if form_plan is not None else "none (seed only)"))
+        feature = args.feature or ("F5 interpolation demo" if f5_cfg is not None else ("F3 guitar+piano+other" if f3_cfg is not None else ("F2 bass+melody+dynamics" if f2_cfg is not None else ("F1 length+form+arrangement" if form_plan is not None else "none (seed only)"))))
         hist = {"iteration": args.iteration, "cycle": args.cycle, "seed": args.seed, "n_songs": len(specs),
                 "passers_declared": 0, "feature": feature, "donor_map_sha256": rules_sha["donor_map"],
                 "form_plan_sha256": fp_sha, "rules_sha256": {k: rules_sha[k] for k in ("harmony_chain", "groove_model")},
                 "note": "ear scores informational under FD-6 (c76 L119 proof); no passer declared"}
         if f2_cfg is not None:
             hist["f2"] = {"route": f2_cfg["route"], "velocity_mode": args.velocity_mode, "models_sha256": f2_cfg["models_sha256"], "f2_enum": rollup["f2"].get("f2_enum")}
+        if f3_cfg is not None:
+            hist["f3"] = {"comping_model_sha256": f3_cfg["comping_model_sha256"], "comping_builder_sha256": f3_cfg["builder_sha256"], "prereg_sha256": f3_cfg["prereg_sha256"],
+                          "f3_enum_per_song": rollup["f3"].get("f3_enum_per_song")}
+            hist["rules_sha256"].update({k: rules_sha[k] for k in ("harmony_prereg", "groove_prereg")})
+        if tempo_overrides is not None:
+            hist["tempo_overrides_sha256"] = rules_sha["tempo_overrides"]
+        if f5_cfg is not None:  # c89 F6 entry for F5 (verdict pending the byte-det + flag-off fold-in; bytedet_c89.py stamps f5_enum_final)
+            hist["f5"] = {"donors": {"A": f5_cfg["donor_a"], "B": f5_cfg["donor_b"], "names": f5_cfg["names"]}, "t": f5_cfg["t"], "prereg_sha256": f5_cfg["prereg_sha256"],
+                          "interpolate_v5_sha256": f5_cfg["interpolate_v5_sha256"], "blend_record_sha256": f5_cfg["blend_record_sha256"],
+                          "comping_model_sha256": f3_cfg["comping_model_sha256"] if f3_cfg else None, "f5_enum_pending_bytedet": rollup["f5"]["f5_enum_pending_bytedet"], "verdict": None}
+            hist["rules_sha256"].update({k: rules_sha[k] for k in ("harmony_prereg", "groove_prereg") if k in rules_sha})
         sc.setdefault("history", []).append(hist)
         sc_p.write_text(json.dumps(sc, indent=2) + "\n")
         print(f"stall counter {sc['iterations']}/{sc['budget']}")

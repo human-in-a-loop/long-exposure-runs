@@ -46,7 +46,7 @@ FROZEN_EXPECTED = {
     "data/v5/gen/iteration_02/gen_v5_song_3_donor_51e433ade2a845e1/ab_mix.wav": "ac01eb92", "data/v5/gen/iteration_02/gen_v5_song_4_donor_88d247468cb6d49f/ab_mix.wav": "940227fb",
     "data/v5/gen/iteration_02/gen_v5_song_5_donor_cdd2717e52820ff6/ab_mix.wav": "330916d5",
 }
-SCRATCH = Path("/tmp/claude-0/-home-user-long-exposure-runs-music-gen/91e08ad5-010d-493f-8731-a2fb2b572632/scratchpad")
+TEST_RESULTS = Path("data/v5/logs/test_results_c87.json")  # c87 P2: workspace path (was a session scratchpad path)
 FOCUS = ["252eb21ce7df7328", "31a164f845f8e27e", "51e433ade2a845e1", "88d247468cb6d49f", "cdd2717e52820ff6"]
 NAMES = {"252eb21ce7df7328": "WIG", "31a164f845f8e27e": "CG", "51e433ade2a845e1": "Rome", "88d247468cb6d49f": "PD", "cdd2717e52820ff6": "Disco A"}
 
@@ -64,6 +64,8 @@ def _event_id(body: dict) -> str:
 
 
 def _ev(milestone_id, status, level, rationale, narrative, artifacts, supersedes_path=None):
+    # c87 P2: the c86 milestone events are LEDGERED IN c87 (= harness c131) — every narrative says so; `cycle` stays 86 (the landing cycle).
+    narrative = f"{narrative} [ledgered c87 = harness c131, offset 44 disclosed]"
     body = {"agent": "worker", "artifacts": artifacts, "confidence": {"assessor": "worker", "level": level, "rationale": rationale},
             "cycle": CYCLE, "env_pin_sha256": ENV_PIN, "milestone_id": milestone_id, "narrative": narrative,
             "run_id": RUN_ID, "status": status, "supersedes_path": supersedes_path, "ts": TS}
@@ -71,15 +73,22 @@ def _ev(milestone_id, status, level, rationale, narrative, artifacts, supersedes
     return body
 
 
+class MissingArtifact(FileNotFoundError):
+    """c87 P2: the emitter FAILS CLOSED — every hard-read artifact must exist (no silent {} / None fallbacks)."""
+
+
 def _j(p):
-    return json.loads(Path(p).read_text())
+    p = Path(p)
+    if not p.exists():
+        raise MissingArtifact(str(p))
+    return json.loads(p.read_text())
 
 
 def _df():
-    st = os.statvfs(".")
-    avail = st.f_bavail * st.f_frsize
-    used = (st.f_blocks - st.f_bfree) * st.f_frsize
-    return round(100 * used / (used + avail), 2), round(avail / 1e9, 3)
+    """c87 P2: `df -P .` Use% (driver/df_check semantics); os.statvfs over-reports by the reserved blocks."""
+    import subprocess
+    row = subprocess.run(["df", "-P", "."], capture_output=True, text=True, check=True).stdout.splitlines()[-1].split()
+    return int(row[4].rstrip("%")), round(int(row[3]) * 1024 / 1e9, 3)
 
 
 def main() -> int:
@@ -104,7 +113,8 @@ def main() -> int:
     g23 = _j("data/v5/rules/groove_v5_v2_full_c86.json")
     diff = _j("data/v5/rules/harmony_n23_vs_n21_diff_c86.json")
     elig = _j("data/v5/rules/eligible_c86.json")
-    tests = _j(SCRATCH / "test_results.json") if (SCRATCH / "test_results.json").exists() else {}
+    # c87 P2: test results are read from a WORKSPACE path (written by the c87 test runner), never another session's scratchpad; fail closed.
+    tests = _j(TEST_RESULTS)
     n_tests_pass = sum(v["n_pass_lines"] for v in tests.values())
     g_f2_text = Path(G_F2).read_text()
     vel = {s: _j(f"data/v5/corpus/{s}/velocity_v5/velocities.json") for s in FOCUS}
@@ -134,7 +144,9 @@ def main() -> int:
         f"iteration 3 consumes the c84 n=21 rules by design (single-axis F2). No infeasibility memo written.",
         [G_F2, G_BL, "data/v5/gen/f2_prereg_c86.json"]))
 
-    events.append(_ev("M-V5-GEN-1/F2-velocity-route-decided-c86", "validated", "high", "one ledger line per the operator's 10-minute rule; gate readings from data/v5/gen/f2_route_gate_c86.json.",
+    # c87 P2: the route decision is ledgered ONCE — `M-V5-GEN-1/F2-route-decided-c86` (tools/_emit_c87_early_events.py, decided_at = the gate mtime,
+    # ledgered_at = c87). This duplicate is kept out of the ledger (not appended) but retained here for the narrative record.
+    _route_event_not_appended = (_ev("M-V5-GEN-1/F2-velocity-route-decided-c86", "validated", "high", "one ledger line per the operator's 10-minute rule; gate readings from data/v5/gen/f2_route_gate_c86.json.",
         f"ROUTE DECIDED = {gate['route']} (guidance sha16 8677bb0cd3f240a0): df {gate['df_used_pct_driver_semantics']} % ≤ 85 (driver semantics) ✓; htdemucs importable under "
         f"/usr/bin/python3 + sub_env (torch {gate['torch_version']}) ✓; full-song WIG separation {gate['separation_wall_s']} s ≤ 300 ✓ (decode {gate['decode_wall_s']} s, "
         f"full.wav sha == c79 {gate['full_wav_sha256'][:12]}…); stems deleted after hashing. Fresh stems did NOT match the c79 stage-cache SHAs (6/6 differ) → the pre-registered "
@@ -153,7 +165,7 @@ def main() -> int:
     events.append(_ev("M-V5-GEN-1/velocity-extraction-c86", "validated", "high",
         "Route 1 executed on all 5 focus songs; in-cycle ×2 holds on WIG (three independent runs incl. the gate); cross-cycle mismatch vs the c79 cache recorded as a first-class finding, not retuned.",
         f"c86 F2 Route 1 (`scripts/v5/velocity_v5.py` sha {_sha('scripts/v5/velocity_v5.py')[:16]}…; separation in a pinned subprocess of the READ-ONLY recreate_v3._run_htdemucs_once; "
-        f"score-and-delete; df peak {max(v['df_pct_peak'] for v in vel.values())} %). Separation walls {walls} s. CROSS-CYCLE ×2 vs the c79 stage-cache stem SHAs: "
+        f"score-and-delete; stems_deleted_after_measuring {all(v['stems_deleted_after_measuring'] for v in vel.values())}). Separation walls {walls} s. CROSS-CYCLE ×2 vs the c79 stage-cache stem SHAs: "
         f"{ {NAMES[s]: sep_x[s] for s in FOCUS} } (FIRST-CLASS FINDING: every song's fresh stems differ from the c79 cache while the decoded full.wav SHAs match; candidate cause is "
         f"process-level torch/BLAS state at the c79 driver's load time vs now — not retuned, not chased this cycle); IN-CYCLE ×2 on WIG: {wig_in} (gate run + extractor run1 + run2 "
         f"{'all equal' if bd_gen['route1_separation']['wig_gate_run_equals_extractor_runs'] else 'DIFFER'}). Per-(song, stem) onset-RMS spread p95−p5 (dB): {r1s}. R1 (≥ 6 dB on ≥ 4/5): "
@@ -207,11 +219,15 @@ def main() -> int:
         "per-stem frame-RMS variance and ratio with the 1.5 gate and the exact-null line).",
         it3_art + listening + ["data/v5/gen/iteration_03/iteration_rollup.json", "data/v5/gen/gen_v5_iter03_ear_scores_c86.json", "data/v5/gen/stall_counter.json",
                               "data/v5/gen/iteration_03/fig_iter03_velocity_c86.png", "data/v5/gen/iteration_03/plot_iter03_velocity_c86.py", "data/v5/gen/byte_determinism_c86.json",
-                              "data/v5/logs/generate_v5_iter03_c86.log", "data/v5/logs/score_gen_v5_iter03_c86_run1.log", "data/v5/logs/score_gen_v5_iter03_c86_run2.log"],
+                              "data/v5/logs/generate_v5_iter03_c87.log", "data/v5/logs/score_gen_v5_iter03_c87_run1.log", "data/v5/logs/score_gen_v5_iter03_c87_run2.log",
+                              "data/v5/logs/gen_iter03_c87.launch.json"],
         supersedes_path="M-V5-GEN-1/iteration-02-c85"))
 
-    events.append(_ev("M-V5-GEN-1/F2-bass-melody-dynamics", "validated", "high",
-        f"enum {f2['f2_enum']} recorded from the pre-registered clauses; operator clauses (a) velocities in generated MIDI for all stems, (b) rendered iteration, (c) RMS-variance test all executed.",
+    # c87 P4: status follows the recorded enum — validated/high only for F2_LANDS; F2_PARTIAL stays in-progress/medium (FD-1: recorded, not retuned)
+    _f2_lands = f2["f2_enum"] == "F2_LANDS"
+    events.append(_ev("M-V5-GEN-1/F2-bass-melody-dynamics", "validated" if _f2_lands else "in-progress", "high" if _f2_lands else "medium",
+        f"enum {f2['f2_enum']} recorded from the pre-registered clauses; operator clauses (a) velocities in generated MIDI for all stems, (b) rendered iteration, (c) RMS-variance test all executed"
+        + ("." if _f2_lands else f"; clause (c) fails ({f2['n_rms_variance_pass']}/5 songs pass the ≥ 1.5 frame-RMS variance ratio on every stem — drums < 1.0 on all 5) so the feature is NOT declared landed."),
         f"c86 F2 BASS + MELODY + DYNAMICS landed as iteration 3 — enum **{f2['f2_enum']}** (clauses {f2['clauses']}). Route 1 (stem audio) velocities for ALL stems incl. drums/keys; bass pitches "
         f"from the chord-conditioned interval model in the donor register; melody from the order-3 VOMM per section run (literal repeats reproduce; muted per the F1 arrangement); "
         f"sibling serializer with the velocity field (byte-equal to the READ-ONLY c4 serializer without velocities, 56/56 on the iteration-2 event JSON). Operator clause (a) velocities present "
@@ -253,7 +269,8 @@ def main() -> int:
          "data/v5/rules/plot_harmony_n23_vs_n21_c86.py", "data/v5/rules/harmony_n23_vs_n21_diff_c86.json", "scripts/v5/harmony_v5.py", "scripts/v5/groove_v5_v2.py",
          "data/v5/rules/per_song_c86/88d247468cb6d49f/harmony_v5.json", "data/v5/rules/per_song_c86/cdd2717e52820ff6/harmony_v5.json"]))
 
-    events.append(_ev("M-V5-GEN-1/F4-tempo-fix", "validated", "high", "F4 CLOSED by operator adjudication: unblock recorded, v5c recanonicalization ×2, n=23 chain NON_DEGENERATE ×2, operator-required test green.",
+    # c87 P2: `M-V5-GEN-1/F4-tempo-fix` was CLOSED by the c87 early trio (validated/high, supersedes tempo_f4_verdict_c85.json) — not appended twice.
+    _f4_event_not_appended = (_ev("M-V5-GEN-1/F4-tempo-fix", "validated", "high", "F4 CLOSED by operator adjudication: unblock recorded, v5c recanonicalization ×2, n=23 chain NON_DEGENERATE ×2, operator-required test green.",
         f"F4 TEMPO FIX CLOSED (c86): both tempo-blocked focus songs unblocked at 122.197271 / 120.272335 under operator authority (8677bb0cd3f240a0 addendum), re-canonicalized losslessly and "
         f"byte-deterministically into canonical_v5c_reindexed/, consumed by the rules layer at n=23 ({h23['degeneracy_verdict']}; groove re-measured {g23['verdict']}); harmony_v5.py / groove_v5_v2.py "
         f"honour the unblock additively and assert the v5c dir under --tempo-overrides. generate_v5.donor_tempo untouched (reads blocked_songs) so the flag-off replay of iteration 2 is byte-identical and "

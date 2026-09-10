@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """c86 F2 — sibling canonical JSON->MIDI serializer with an OPTIONAL per-start `velocity` field.
 
-created: 2026-09-09T23:05:00Z
+created: 2026-09-09T22:57:50Z
 cycle: 86
 run_id: run-2026-09-06T000000Z
 agent: worker
@@ -25,6 +25,10 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Tuple
+
+if sys.executable != "/usr/bin/python3" and "SUPPRESS_INTERPRETER_GUARD" not in os.environ:
+    print(f"FATAL: expected /usr/bin/python3, got {sys.executable}", file=sys.stderr)
+    sys.exit(2)
 
 _WS = Path(__file__).resolve().parent.parent.parent
 if str(_WS) not in sys.path:

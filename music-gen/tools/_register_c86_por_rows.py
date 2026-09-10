@@ -17,7 +17,13 @@ POR = Path("plan_of_record.md")
 NAMES = {"252eb21ce7df7328": "WIG", "31a164f845f8e27e": "CG", "51e433ade2a845e1": "Rome", "88d247468cb6d49f": "PD", "cdd2717e52820ff6": "Disco A"}
 
 
+class MissingArtifact(FileNotFoundError):
+    """c87 P2: fail closed — every hard-read artifact must exist."""
+
+
 def j(p):
+    if not Path(p).exists():
+        raise MissingArtifact(str(p))
     return json.loads(Path(p).read_text())
 
 
@@ -36,7 +42,7 @@ def main() -> int:
     rms = {NAMES[s["donor"]]: s.get("rms_variance_test") for s in roll["songs"]}
     rows = [
      ("_plan/adopt-operator-guidance-2026-09-09-F2-and-F4-addendum", "G1", "c86 adoption of OPERATOR GUIDANCE 2026-09-09 F2 VELOCITY DECISION + F4 ADDENDUM (`docs/guidance/guidance_2026-09-09_F2_velocity_decision.txt`, sha16 8677bb0cd3f240a0; both blocks quoted verbatim in the ledger event; the auditor-cited e9f67abb… is a commit-side sha, on-disk governs): F2 dynamics by Route 1 (stem audio) or Route 2 (rule accents), decided in the first 10 minutes, one ledger line; no infeasibility memo; F4 AMBIGUOUS overruled — adopt PD 122.197271 / Disco A 120.272335, unblock (adjudication recorded IN the blocked file), harmony at n=23 in the earliest cheap cycle, consume from the next iteration, F4 CLOSED.", "Guidance quoted verbatim in the ledger event; route + F4 rows below.", "—"),
-     ("M-V5-GEN-1/F2-velocity-route-decided-c86", "G5", f"c86 F2 route decision (one line): **{gate['route']}** — df {gate['df_used_pct_driver_semantics']} % ≤ 85, htdemucs importable (torch {gate['torch_version']}), WIG full-song separation {gate['separation_wall_s']} s ≤ 300; guidance sha16 8677bb0cd3f240a0. Fresh stems ≠ c79 cache (6/6) → pre-registered in-cycle ×2 fallback.", "Gate JSON on disk; route recorded.", "M-V5-GEN-1/F2-bass-melody-dynamics"),
+     ("M-V5-GEN-1/F2-route-decided-c86", "G5", f"c86 F2 route decision (one line; ledgered c87 with decided_at = the gate file mtime): **{gate['route']}** — df {gate['df_used_pct_driver_semantics']} % ≤ 85, htdemucs importable (torch {gate['torch_version']}), WIG full-song separation {gate['separation_wall_s']} s ≤ 300; guidance sha16 8677bb0cd3f240a0. Fresh stems ≠ c79 cache (6/6) → pre-registered in-cycle ×2 fallback; cross-cycle mismatch ACCEPTED (c131 guidance).", "Gate JSON on disk; route recorded.", "M-V5-GEN-1/F2-bass-melody-dynamics"),
      ("M-V5-GEN-1/f2-preregistered-c86", "G5", "c86 P2: `data/v5/gen/f2_prereg_c86.json` BEFORE any F2 output — route gate, 50 ms onset RMS, midrank p5→40/p95→110 + degenerate guard, profile definitions, bass/VOMM specs, generator flags, clause (c) render test, enum, ladder R1/R2/R3, held-constant list.", "Prereg mtime < every F2 output (test_01).", "M-V5-GEN-1/F2-bass-melody-dynamics"),
      ("M-V5-GEN-1/velocity-extraction-c86", "G5", f"c86 Route 1 (`scripts/v5/velocity_v5.py`): 5 focus songs separated in pinned subprocesses (READ-ONLY recreate_v3._run_htdemucs_once), 50 ms onset RMS at every MuScriptor start, per-(song, stem) midrank velocities, score-and-delete. In-cycle ×2 on WIG HOLDS; cross-cycle vs the c79 cache FAILS on every song (decoded full.wav SHAs match) — first-class finding, not retuned. R1 drums {r1['songs_passing_per_stem']['drums']}/5, bass {r1['songs_passing_per_stem']['bass']}/5 → {r1['drums_bass_pass_ge_4_of_5']}; Route-2 fallback stems {r1['route_2_fallback_stems']}. Outputs `velocity_v5/velocities.json` + sibling `canonical_v5_velocity/<stem>.mid` per song (canonical_v5_reindexed never written — disclosed reading).", "velocities.json + sibling MIDI for 5 songs; anchors untouched; in-cycle ×2 on WIG.", "M-V5-GEN-1/f2-preregistered-c86"),
      ("M-V5-RULES-1/velocity-profiles-c86", "G4", f"c86 `data/v5/rules/velocity_profiles_v5.json` (byte-det ×2): drums per GM class × 16th slot, bass by kick-coincidence × slot, melody by phrase position, keys by slot; quantile ladders sampled by SHA-256 inverse-CDF. R2: backbeat−odd {r2['backbeat_minus_odd']} (≥+10 {r2['backbeat_ge_plus_10']}), hat odd<even {r2['hat_odd_lower_than_even']}, bass coincident>non {r2['bass_coincident_gt_non']}, slot std {r2['drums_slot_profile_std']} (structureless {r2['structureless_std_lt_5']}). Figure `fig_velocity_profiles_c86.png` + `plot_velocity_profiles_c86.py --out`.", "Byte-det ×2; R2 recorded; figure on disk.", "M-V5-GEN-1/velocity-extraction-c86"),

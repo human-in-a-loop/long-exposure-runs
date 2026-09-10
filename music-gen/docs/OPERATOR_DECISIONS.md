@@ -259,3 +259,44 @@ one, the earlier entry says so.
 - The operator's ear is the final authority on audible quality; a verdict
   arriving via guidance outranks any internal gate.
 
+
+
+## 2026-09-10 — v5 re-close
+
+*Entries continue chronologically after the standing-constraints block; #1–#20 above are byte-identical (additive append at c90).*
+
+21. **v5 CLEAN RE-CLOSE at c90** (2026-09-10; on-disk c90 = harness c134): the v5 REOPENING
+    (entry #20) closes on the operator's F1–F7 rule of 2026-09-09 (feature landings are the
+    gate; the ear ≥ 6 count is not). Verdict matrix, every value from disk:
+
+    | Milestone | Verdict |
+    |---|---|
+    | M-V5-CORPUS-1 | `CORPUS_LANDED_TEMPO_AXIS_STOPPED` — 26/26 transcribed full-length + reindexed lossless with sidecars; 1 content-blocked; tempo criteria v5/v5b/v5c/v5d all RULES_OUT; PD 122.197271 / Disco A 120.272335 BPM by operator adoption (F4 addendum) |
+    | M-V5-RULES-1 | `RULES_LANDED_WITH_HONEST_GAPS` — harmony n=23 NON_DEGENERATE (max stationary 0.069317); groove GROOVE_V2_OVERFITS (0.637448); comping NON_DEGENERATE with a structureless slot histogram; melody VOMM MEMORIZES; form R1 failed → fixed template |
+    | M-V5-EAR-1 | `EAR_RESTORED_INFORMATIONAL_ONLY` — isolated venv + amendment; LOO gate 5/5 ≥ 6 (min 6.2095); band-4 FAIL (6.7199 > 5.7095); L119 monotone-infeasible; FD-6 governs |
+    | M-V5-GEN-1 | `FEATURES_F1_F5_LANDED_HONEST_BEST_OF_AT_STALL_5_OF_12` — stall 5/12, passers 0 (FD-6), 26 renders + demo pending operator ear |
+    | M-V5-CLOSE-1 | frozen enum `V5_CLOSE_LANDS / V5_CLOSE_PARTIAL / V5_CLOSE_FAILS`, value recorded in the ledger event `M-V5-CLOSE-1` (c90) |
+
+    Feature table (landing-cycle verdicts; later outcomes are data): F1 `FORM_PLAN_PARTIAL` c85 (iterations 3–5 LANDS
+    on their own draws); F2 `F2_PARTIAL` c87 (RMS-variance clause unmet; no retune); F3 `F3_LANDS` c88;
+    F4 `F4_HALF_DOUBLE_AMBIGUOUS` c85 → CLOSED by the 2026-09-09 addendum c86; F5 `F5_LANDS` c89 (demo
+    `947b348a10ab8c5c…`, byte-det ×2 + independent process, flag-off 5/5); F6 schedule entries since c85; F7 = this entry +
+    the completion-report v5 section + the codebase-guide v5 section (all additive, prefix byte-equality asserted).
+
+    F5 caveat (binding for any follow-up): the groove half of the blend is a union-vocabulary mixture — 1 shared
+    context per table (`kick_marginal` "*"), the conditional tables share 0 contexts (55/14, 73/29, 55/14 A-only/B-only),
+    so every conditional row is 0.5 × donor row + 0.5 × uniform over the other donor's vocabulary; harmony is a true
+    mixture on 53/81 states with 28 uniform. A t-sweep or second pair must pre-declare shared-context conditioning or the
+    c78 per-position SHA-256 fallback.
+
+    Ear rule: ear scores are informational only (FD-6, c76 L119); a score ≥ 6 on a generated song sits inside the band-4
+    range 5.70–6.72 and declares no passer. FD-6 delegation: the operator's ear decides the 26 v5 renders
+    (`data/v4/generated/v5_iter_01..05/`, `f5_interp_CG_PD_t050_c89/`) and the 25 v4 A/Bs (c77/c78 index) post-close.
+
+    Tempo axis: STOPPED. No fifth autocorrelation criterion; PD / Disco A rest on the operator adoption recorded inside
+    `data/v5/corpus/recanonicalization_blocked.json` (stale copy kept).
+
+    Re-close: the run re-closes cleanly at c90 (`_run/cycle_90_closed` str-supersedes `_run/cycle_89_closed`; the
+    c77/c78 close rows are not superseded). A later guidance file may reopen it exactly as entry #20 did — this entry
+    makes no finality claim beyond "run re-closes cleanly at c90; operator verifies post-close". Standing constraints
+    above remain in force.

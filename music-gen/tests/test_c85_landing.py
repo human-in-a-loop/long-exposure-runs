@@ -143,13 +143,15 @@ def test_05_iteration_01_flag_off_replay_and_m4() -> None:
 
 def test_06_stall_history_schema_f6() -> None:
     sc = _j("data/v5/gen/stall_counter.json")
-    assert sc["iterations"] == 2 and sc["budget"] == 12 and sc["passers"] == 0 and re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", sc["ts"])
-    h = sc["history"][-1]
+    # c87 re-pin (disclosed): the counter advanced to 3/12 when iteration 3 rendered (c87); the c85 iteration-2 entry is history[1]
+    # c88 re-pin (disclosed): the counter advances by design (4/12 at iteration 4); pin >= 3 and keep the history[1] anchor
+    assert sc["iterations"] >= 3 and sc["budget"] == 12 and sc["passers"] == 0 and re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", sc["ts"])
+    h = sc["history"][1]
     for k in ("iteration", "cycle", "seed", "feature", "donor_map_sha256", "form_plan_sha256", "rules_sha256"):
         assert k in h, k
     assert h["iteration"] == 2 and h["cycle"] == 85 and h["seed"] == 1 and h["feature"].startswith("F1")
     assert h["form_plan_sha256"] == _sha("data/v5/rules/form_plan_v5.json") and h["rules_sha256"]["harmony_chain"] == _sha("data/v5/rules/harmony_markov_v5_full.json")
-    print("test_06 PASS: stall counter 2/12 with F6 history schema (feature / donor_map / form_plan / rules / seed) + ts")
+    print("test_06 PASS: stall counter (now 3/12) carries the c85 iteration-2 F6 history entry (feature / donor_map / form_plan / rules / seed) + ts")
 
 
 def test_07_form_model_r1_record_and_targets() -> None:
