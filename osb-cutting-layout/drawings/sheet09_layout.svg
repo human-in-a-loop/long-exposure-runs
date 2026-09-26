@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Front walls C, D and B">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<style>
+.sheet{fill:#EFE3C8;stroke:#6B5B45;stroke-width:1.5}
+.waste{fill:url(#hatch)}
+.piece{stroke:#3A3128;stroke-width:1}
+.lab{font:600 12px 'IBM Plex Sans Condensed',Arial,sans-serif;fill:#1F1A14}
+.dim{font:11px 'IBM Plex Mono',monospace;fill:#1F1A14}
+.dimline{stroke:#6B5B45;stroke-width:.8;fill:none}
+.axis{font:11px 'IBM Plex Mono',monospace;fill:#6B5B45}
+.cut{stroke:#C0392B;stroke-width:2.2;stroke-dasharray:7 4}
+.cutdot{fill:#C0392B}
+.cutnum{font:700 11px 'IBM Plex Mono',monospace;fill:#fff}
+.hatchline{stroke:#B9A887;stroke-width:1}
+</style>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="600.00" height="204.00" fill="#D8B48E"/>
+<rect class="piece" x="657.00" y="44.00" width="94.00" height="204.00" fill="#9DB5D8"/>
+<rect class="piece" x="56.00" y="249.00" width="696.00" height="140.00" fill="#A7B98A"/>
+<text class="lab" x="356.0" y="143.0" text-anchor="middle">Front wall C</text>
+<text class="dim" x="356.0" y="158.0" text-anchor="middle">75″ × 25½″</text>
+<text class="lab" x="704.0" y="143.0" text-anchor="middle">Front wall D</text>
+<text class="dim" x="704.0" y="158.0" text-anchor="middle">11¾″ × 25½″</text>
+<text class="lab" x="404.0" y="316.0" text-anchor="middle">Front wall B</text>
+<text class="dim" x="404.0" y="331.0" text-anchor="middle">87″ × 17½″</text>
+<line class="dimline" x1="656.0" y1="40.0" x2="656.0" y2="44.0"/>
+<text class="dim" x="656.0" y="38.0" text-anchor="middle">75″</text>
+<line class="dimline" x1="751.0" y1="40.0" x2="751.0" y2="44.0"/>
+<text class="dim" x="751.0" y="38.0" text-anchor="middle">86⅞″</text>
+<line class="dimline" x1="752.0" y1="27.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="25.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="248.0" x2="56.0" y2="248.0"/>
+<text class="dim" x="48.0" y="252.0" text-anchor="end">25½″</text>
+<line class="dimline" x1="50.0" y1="389.0" x2="56.0" y2="389.0"/>
+<text class="dim" x="48.0" y="393.0" text-anchor="end">43⅛″</text>
+</svg>

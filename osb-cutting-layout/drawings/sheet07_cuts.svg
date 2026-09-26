@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Side wall A + Floor strips">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<style>
+.sheet{fill:#EFE3C8;stroke:#6B5B45;stroke-width:1.5}
+.waste{fill:url(#hatch)}
+.piece{stroke:#3A3128;stroke-width:1}
+.lab{font:600 12px 'IBM Plex Sans Condensed',Arial,sans-serif;fill:#1F1A14}
+.dim{font:11px 'IBM Plex Mono',monospace;fill:#1F1A14}
+.dimline{stroke:#6B5B45;stroke-width:.8;fill:none}
+.axis{font:11px 'IBM Plex Mono',monospace;fill:#6B5B45}
+.cut{stroke:#C0392B;stroke-width:2.2;stroke-dasharray:7 4}
+.cutdot{fill:#C0392B}
+.cutnum{font:700 11px 'IBM Plex Mono',monospace;fill:#fff}
+.hatchline{stroke:#B9A887;stroke-width:1}
+</style>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="720.00" height="272.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="720.00" height="272.00" fill="#D9A77E" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="317.00" width="656.00" height="104.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="317.00" width="656.00" height="104.00" fill="#9FB7C9" fill-opacity=".45"/>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="dimline" x1="776.0" y1="40.0" x2="776.0" y2="44.0"/>
+<text class="dim" x="776.0" y="38.0" text-anchor="middle">90″</text>
+<line class="dimline" x1="50.0" y1="316.0" x2="56.0" y2="316.0"/>
+<text class="dim" x="48.0" y="320.0" text-anchor="end">34″</text>
+<line class="dimline" x1="50.0" y1="421.0" x2="56.0" y2="421.0"/>
+<text class="dim" x="48.0" y="425.0" text-anchor="end">47⅛″</text>
+<line class="cut" x1="56.0" y1="316.0" x2="824.0" y2="316.0"/>
+<line class="cut" x1="776.0" y1="44.0" x2="776.0" y2="316.0"/>
+<line class="cut" x1="56.0" y1="421.0" x2="824.0" y2="421.0"/>
+<line class="cut" x1="712.0" y1="317.0" x2="712.0" y2="421.0"/>
+<circle class="cutdot" cx="108.0" cy="316.0" r="9"/>
+<text class="cutnum" x="108.0" y="320.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="776.0" cy="58.0" r="9"/>
+<text class="cutnum" x="776.0" y="62.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="108.0" cy="421.0" r="9"/>
+<text class="cutnum" x="108.0" y="425.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="712.0" cy="331.0" r="9"/>
+<text class="cutnum" x="712.0" y="335.0" text-anchor="middle">4</text>
+</svg>

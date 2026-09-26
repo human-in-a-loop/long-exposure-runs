@@ -1,0 +1,695 @@
+<title>OSB Sheet Cut Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=IBM+Plex+Mono:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--bg:#EDF0F1;--surface:#FFFFFF;--ink:#1C2427;--muted:#5B676C;--line:#CBD3D6;
+--sheet:#EAD9B4;--sheet-edge:#7A6647;--hatch:#C2AE84;--cut:#C0392B;--cut-ink:#FFFFFF;--panel-ink:#1F1A14;
+--accent:#C0392B;--tag:#E3E8EA}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#14191B;--surface:#1D2427;--ink:#E3E8EA;
+--muted:#9AA7AC;--line:#34403F;--sheet:#5B4E38;--sheet-edge:#B39A70;--hatch:#7D6B4C;--tag:#2A3336}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#14191B;--surface:#1D2427;--ink:#E3E8EA;--muted:#9AA7AC;--line:#34403F;
+--sheet:#5B4E38;--sheet-edge:#B39A70;--hatch:#7D6B4C;--tag:#2A3336}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "Source Sans 3",system-ui,sans-serif;padding-inline:16px;padding-block:28px 64px}
+main{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:44px;letter-spacing:.01em}
+h2{font-size:28px}
+h3{font-size:22px}
+p{margin:0;max-width:68ch}
+.mono,td.n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font:600 12px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:14px}
+.totals{display:flex;flex-wrap:wrap;gap:12px 36px;margin-top:6px}
+.totals div{display:flex;flex-direction:column}
+.totals b{font:600 40px/1 "Barlow Condensed",sans-serif}
+.totals span{color:var(--muted);font-size:14px}
+section{display:flex;flex-direction:column;gap:14px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.35)}
+ol.proof{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;max-width:72ch}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.sheet-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+.sheet-head .count{color:var(--muted);font-size:14px}
+.drawings{display:grid;grid-template-columns:1fr;gap:18px}
+figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+figcaption{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.svgbox{overflow-x:auto}
+.svgbox svg{width:100%;min-width:560px;height:auto;display:block}
+ol.cuts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;counter-reset:c}
+ol.cuts li{display:flex;gap:10px;align-items:baseline}
+ol.cuts li::before{counter-increment:c;content:counter(c);flex:none;width:22px;height:22px;border-radius:50%;background:var(--cut);color:var(--cut-ink);
+font:700 12px/22px "IBM Plex Mono",monospace;text-align:center}
+.pieces{display:flex;flex-wrap:wrap;gap:6px}
+.pieces span{background:var(--tag);border-radius:4px;padding:2px 8px;font-size:14px}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 14px;max-width:72ch}
+svg .sheet{fill:var(--sheet);stroke:var(--sheet-edge);stroke-width:1.5}
+svg .hatchbg{fill:var(--sheet)}
+svg .hatchline{stroke:var(--hatch);stroke-width:1}
+svg .waste{fill:url(#hatch)}
+svg .piece{stroke:#3A3128;stroke-width:1}
+svg .under{fill:var(--sheet)}
+svg .lab{font:600 12px "Source Sans 3",sans-serif;fill:var(--panel-ink)}
+svg .dim{font:11px "IBM Plex Mono",monospace;fill:var(--ink)}
+svg .piece + .lab, svg .lab + .dim{fill:var(--panel-ink)}
+svg .dimline{stroke:var(--muted);stroke-width:.8;fill:none}
+svg .axis{font:11px "IBM Plex Mono",monospace;fill:var(--muted)}
+svg .cut{stroke:var(--cut);stroke-width:2.2;stroke-dasharray:7 4}
+svg .cutdot{fill:var(--cut)}
+svg .cutnum{font:700 11px "IBM Plex Mono",monospace;fill:var(--cut-ink)}
+@media (max-width:760px){h1{font-size:36px}}
+</style>
+<main>
+<header>
+  <span class="eyebrow">4 × 8 OSB · inches · ⅛″ kerf</span>
+  <h1>OSB sheet cut plan</h1>
+  <p>Eleven 48″ × 96″ sheets make every rectangle on the list. Five sheets need a single crosscut. Every piece larger than a sheet is built from two panels with one seam. Front wall A is the only small piece that gets a seam.</p>
+  <div class="totals">
+    <div><b>11</b><span>sheets (proven minimum)</span></div>
+    <div><b>29</b><span>saw cuts</span></div>
+    <div><b>19</b><span>panels cut</span></div>
+    <div><b>8</b><span>seams (7 required + 1)</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>Pieces and how each is built</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Piece</th><th>Finished size</th><th>Panels</th></tr></thead>
+    <tbody><tr><td><span class="swatch" style="background:#9FB7C9"></span>Floor</td><td class="n">61″ × 82″</td><td>48 × 82 + 13 × 82 (seam runs the 82″ way)</td></tr><tr><td><span class="swatch" style="background:#A9C4A0"></span>Ceiling</td><td class="n">61″ × 82″</td><td>48 × 82 + 13 × 82 (seam runs the 82″ way)</td></tr><tr><td><span class="swatch" style="background:#D9A77E"></span>Side wall A</td><td class="n">90″ × 82″</td><td>90 × 48 + 90 × 34 (seam runs the 90″ way)</td></tr><tr><td><span class="swatch" style="background:#C9A0C0"></span>Side wall B</td><td class="n">87″ × 82″</td><td>87 × 48 + 87 × 34 (seam runs the 87″ way)</td></tr><tr><td><span class="swatch" style="background:#E39A94"></span>Front wall A</td><td class="n">87″ × 17″</td><td>48 × 17 + 39 × 17 (one short seam across the 17″ height)</td></tr><tr><td><span class="swatch" style="background:#A7B98A"></span>Front wall B</td><td class="n">87″ × 17½″</td><td>one piece</td></tr><tr><td><span class="swatch" style="background:#D8B48E"></span>Front wall C</td><td class="n">75″ × 25½″</td><td>one piece</td></tr><tr><td><span class="swatch" style="background:#9DB5D8"></span>Front wall D</td><td class="n">11¾″ × 25½″</td><td>one piece</td></tr><tr><td><span class="swatch" style="background:#E3C86F"></span>Back wall</td><td class="n">60″ × 87″</td><td>48 × 87 + 12 × 87 (seam runs the 87″ way)</td></tr><tr><td><span class="swatch" style="background:#8FC7BE"></span>Inside ceiling</td><td class="n">72½″ × 50½″</td><td>72.5 × 37.75 + 72.5 × 12.75 (seam runs the 72.5″ way)</td></tr><tr><td><span class="swatch" style="background:#B8A6DD"></span>Inside side wall</td><td class="n">77½″ × 71″</td><td>77.5 × 48 + 77.5 × 23 (seam runs the 77.5″ way)</td></tr></tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Why 11 sheets is the minimum</h2>
+  <ol class="proof">
+    <li><b>Area.</b> The pieces total 44,115 sq in. A sheet is 4,608 sq in, so no layout can use fewer than 10 sheets.</li>
+    <li><b>Seven pieces are bigger than a sheet.</b> Floor, ceiling, both side walls, back wall, inside ceiling and inside side wall each need at least one seam. Each of their panels keeps one full dimension of 50.5″ or more, so that dimension has to run down the 96″ length of the sheet.</li>
+    <li><b>Long panels cannot share length.</b> Two panels that are each longer than 48″ cannot sit end to end on a 96″ sheet. So every long panel uses its own slice of the 48″ width, and the widths of all long panels on a sheet must fit in 48″ with a ⅛″ kerf between neighbours.</li>
+    <li><b>With front walls A, B and C left whole</b>, the long panels need at least 527.5″ of sheet width plus 6 kerfs (17 long panels on 11 sheets), which is 528.25″. Eleven sheets give 528″. That fails by ¼″, so keeping every front wall in one piece takes <b>12 sheets</b>.</li>
+    <li><b>Cutting front wall A into 48″ + 39″</b> turns it into two short panels that fit into offcuts at the ends of sheets 6 and 11. That frees 17″ of width and makes 11 sheets work.</li>
+    <li><b>10 sheets would need 3-panel pieces.</b> With at most one seam per piece, 10 sheets leave only about 12″ of spare width, and front wall C (25.5″ wide) has no offcut deep enough to go into. A computer search found 10-sheet layouts only by cutting pieces into 3 or more panels (31 panels in total), which is a poor trade for one sheet.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Iterations</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Try</th><th>Rule</th><th>Sheets</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Random split + best-fit packing</td><td class="n">14 → 12</td><td>Too much waste at the ends of 82″–90″ panels.</td></tr>
+      <tr><td class="n">2</td><td>One seam per oversized piece, fronts whole</td><td class="n">12</td><td>Proven minimum for this rule (point 4 above).</td></tr>
+      <tr><td class="n">3</td><td>Adaptive splits, up to 2 panels per piece</td><td class="n">11</td><td>Search split three front walls; hand work reduced that to front wall A only.</td></tr>
+      <tr><td class="n">4</td><td>Adaptive splits, up to 3 panels per piece</td><td class="n">10</td><td>31 panels. Rejected: too many seams.</td></tr>
+      <tr><td class="n">5</td><td>Final, hand-tuned for fewest cuts</td><td class="n">11</td><td>29 cuts; full-width panels need one crosscut each.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Before you cut</h2>
+  <p class="note">Measure your sheets. This plan assumes full 48″ × 96″ and a ⅛″ blade. Some OSB is sold at 47⅞″ × 95⅞″; the plan still fits, but make the second panel of each seamed piece whatever the finished size minus the first panel actually measures. Cut sheet 10 before sheet 11: the inside-ceiling strip on sheet 10 is whatever is left after two rips, and sheet 11's inside-ceiling panel is cut to 50.5″ minus that strip.</p>
+  <p class="note">Want no seam in front wall A? Use 12 sheets instead: sheet 6 becomes inside side wall only (1 cut), sheet 11 becomes inside ceiling only (2 cuts), and a 12th sheet gives front wall A whole (rip 17″, crosscut 87″). That is 28 cuts.</p>
+</section>
+
+<section>
+  <h2>Sheets</h2>
+  <p>Drawing A of each sheet shows the finished pieces with positions measured from the top-left corner. Drawing B shows the cuts in order. Hatched areas are scrap.</p>
+  
+<article class="sheet" id="sheet1">
+  <div class="sheet-head"><h3>Sheet 1 · Floor, main panel</h3><span class="count">1 cut</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#9FB7C9"></span>Floor 1/2 · <span class="mono">82″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 1A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Floor, main panel">
+<defs><pattern id="hatch1" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="656.00" height="384.00" fill="#9FB7C9"/>
+<text class="lab" x="384.0" y="233.0" text-anchor="middle">Floor 1/2</text>
+<text class="dim" x="384.0" y="248.0" text-anchor="middle">82″ × 48″</text>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 1B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Floor, main panel">
+<defs><pattern id="hatch2" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="656.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="656.00" height="384.00" fill="#9FB7C9" fill-opacity=".45"/>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="cut" x1="712.0" y1="44.0" x2="712.0" y2="428.0"/>
+<circle class="cutdot" cx="712.0" cy="58.0" r="9"/>
+<text class="cutnum" x="712.0" y="62.0" text-anchor="middle">1</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 82″.</li></ol>
+</article>
+<article class="sheet" id="sheet2">
+  <div class="sheet-head"><h3>Sheet 2 · Ceiling, main panel</h3><span class="count">1 cut</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#A9C4A0"></span>Ceiling 1/2 · <span class="mono">82″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 2A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Ceiling, main panel">
+<defs><pattern id="hatch3" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="656.00" height="384.00" fill="#A9C4A0"/>
+<text class="lab" x="384.0" y="233.0" text-anchor="middle">Ceiling 1/2</text>
+<text class="dim" x="384.0" y="248.0" text-anchor="middle">82″ × 48″</text>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 2B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Ceiling, main panel">
+<defs><pattern id="hatch4" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="656.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="656.00" height="384.00" fill="#A9C4A0" fill-opacity=".45"/>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="cut" x1="712.0" y1="44.0" x2="712.0" y2="428.0"/>
+<circle class="cutdot" cx="712.0" cy="58.0" r="9"/>
+<text class="cutnum" x="712.0" y="62.0" text-anchor="middle">1</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 82″.</li></ol>
+</article>
+<article class="sheet" id="sheet3">
+  <div class="sheet-head"><h3>Sheet 3 · Side wall A, main panel</h3><span class="count">1 cut</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#D9A77E"></span>Side wall A 1/2 · <span class="mono">90″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 3A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Side wall A, main panel">
+<defs><pattern id="hatch5" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="720.00" height="384.00" fill="#D9A77E"/>
+<text class="lab" x="416.0" y="233.0" text-anchor="middle">Side wall A 1/2</text>
+<text class="dim" x="416.0" y="248.0" text-anchor="middle">90″ × 48″</text>
+<line class="dimline" x1="776.0" y1="40.0" x2="776.0" y2="44.0"/>
+<text class="dim" x="776.0" y="38.0" text-anchor="middle">90″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 3B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Side wall A, main panel">
+<defs><pattern id="hatch6" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="720.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="720.00" height="384.00" fill="#D9A77E" fill-opacity=".45"/>
+<line class="dimline" x1="776.0" y1="40.0" x2="776.0" y2="44.0"/>
+<text class="dim" x="776.0" y="38.0" text-anchor="middle">90″</text>
+<line class="cut" x1="776.0" y1="44.0" x2="776.0" y2="428.0"/>
+<circle class="cutdot" cx="776.0" cy="58.0" r="9"/>
+<text class="cutnum" x="776.0" y="62.0" text-anchor="middle">1</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 90″.</li></ol>
+</article>
+<article class="sheet" id="sheet4">
+  <div class="sheet-head"><h3>Sheet 4 · Side wall B, main panel</h3><span class="count">1 cut</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#C9A0C0"></span>Side wall B 1/2 · <span class="mono">87″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 4A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Side wall B, main panel">
+<defs><pattern id="hatch7" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="384.00" fill="#C9A0C0"/>
+<text class="lab" x="404.0" y="233.0" text-anchor="middle">Side wall B 1/2</text>
+<text class="dim" x="404.0" y="248.0" text-anchor="middle">87″ × 48″</text>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 4B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Side wall B, main panel">
+<defs><pattern id="hatch8" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="696.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="384.00" fill="#C9A0C0" fill-opacity=".45"/>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+<line class="cut" x1="752.0" y1="44.0" x2="752.0" y2="428.0"/>
+<circle class="cutdot" cx="752.0" cy="58.0" r="9"/>
+<text class="cutnum" x="752.0" y="62.0" text-anchor="middle">1</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 87″.</li></ol>
+</article>
+<article class="sheet" id="sheet5">
+  <div class="sheet-head"><h3>Sheet 5 · Back wall, main panel</h3><span class="count">1 cut</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#E3C86F"></span>Back wall 1/2 · <span class="mono">87″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 5A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Back wall, main panel">
+<defs><pattern id="hatch9" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="384.00" fill="#E3C86F"/>
+<text class="lab" x="404.0" y="233.0" text-anchor="middle">Back wall 1/2</text>
+<text class="dim" x="404.0" y="248.0" text-anchor="middle">87″ × 48″</text>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 5B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Back wall, main panel">
+<defs><pattern id="hatch10" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="696.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="384.00" fill="#E3C86F" fill-opacity=".45"/>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+<line class="cut" x1="752.0" y1="44.0" x2="752.0" y2="428.0"/>
+<circle class="cutdot" cx="752.0" cy="58.0" r="9"/>
+<text class="cutnum" x="752.0" y="62.0" text-anchor="middle">1</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 87″.</li></ol>
+</article>
+<article class="sheet" id="sheet6">
+  <div class="sheet-head"><h3>Sheet 6 · Inside side wall + Front wall A</h3><span class="count">2 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#B8A6DD"></span>Inside side wall 1/2 · <span class="mono">77½″ × 48″</span></span><span><span class="swatch" style="background:#E39A94"></span>Front wall A 1/2 · <span class="mono">17″ × 48″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 6A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Inside side wall + Front wall A">
+<defs><pattern id="hatch11" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="620.00" height="384.00" fill="#B8A6DD"/>
+<rect class="piece" x="677.00" y="44.00" width="136.00" height="384.00" fill="#E39A94"/>
+<text class="lab" x="366.0" y="233.0" text-anchor="middle">Inside side wall 1/2</text>
+<text class="dim" x="366.0" y="248.0" text-anchor="middle">77½″ × 48″</text>
+<text class="lab" x="745.0" y="233.0" text-anchor="middle">Front wall A 1/2</text>
+<text class="dim" x="745.0" y="248.0" text-anchor="middle">17″ × 48″</text>
+<line class="dimline" x1="676.0" y1="40.0" x2="676.0" y2="44.0"/>
+<text class="dim" x="676.0" y="38.0" text-anchor="middle">77½″</text>
+<line class="dimline" x1="813.0" y1="40.0" x2="813.0" y2="44.0"/>
+<text class="dim" x="813.0" y="38.0" text-anchor="middle">94⅝″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 6B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Inside side wall + Front wall A">
+<defs><pattern id="hatch12" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="620.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="620.00" height="384.00" fill="#B8A6DD" fill-opacity=".45"/>
+<rect class="under" x="677.00" y="44.00" width="136.00" height="384.00" fill="#FFFFFF"/>
+<rect class="piece" x="677.00" y="44.00" width="136.00" height="384.00" fill="#E39A94" fill-opacity=".45"/>
+<line class="dimline" x1="676.0" y1="40.0" x2="676.0" y2="44.0"/>
+<text class="dim" x="676.0" y="38.0" text-anchor="middle">77½″</text>
+<line class="dimline" x1="813.0" y1="40.0" x2="813.0" y2="44.0"/>
+<text class="dim" x="813.0" y="38.0" text-anchor="middle">94⅝″</text>
+<line class="cut" x1="676.0" y1="44.0" x2="676.0" y2="428.0"/>
+<line class="cut" x1="813.0" y1="44.0" x2="813.0" y2="428.0"/>
+<circle class="cutdot" cx="676.0" cy="58.0" r="9"/>
+<text class="cutnum" x="676.0" y="62.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="813.0" cy="58.0" r="9"/>
+<text class="cutnum" x="813.0" y="62.0" text-anchor="middle">2</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 77.5″.</li><li>Crosscut the 18⅜″ offcut at 17″ (1¼″ scrap).</li></ol>
+</article>
+<article class="sheet" id="sheet7">
+  <div class="sheet-head"><h3>Sheet 7 · Side wall A + Floor strips</h3><span class="count">4 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#D9A77E"></span>Side wall A 2/2 · <span class="mono">90″ × 34″</span></span><span><span class="swatch" style="background:#9FB7C9"></span>Floor 2/2 · <span class="mono">82″ × 13″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 7A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Side wall A + Floor strips">
+<defs><pattern id="hatch13" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="720.00" height="272.00" fill="#D9A77E"/>
+<rect class="piece" x="56.00" y="317.00" width="656.00" height="104.00" fill="#9FB7C9"/>
+<text class="lab" x="416.0" y="177.0" text-anchor="middle">Side wall A 2/2</text>
+<text class="dim" x="416.0" y="192.0" text-anchor="middle">90″ × 34″</text>
+<text class="lab" x="384.0" y="366.0" text-anchor="middle">Floor 2/2</text>
+<text class="dim" x="384.0" y="381.0" text-anchor="middle">82″ × 13″</text>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="dimline" x1="776.0" y1="40.0" x2="776.0" y2="44.0"/>
+<text class="dim" x="776.0" y="38.0" text-anchor="middle">90″</text>
+<line class="dimline" x1="50.0" y1="316.0" x2="56.0" y2="316.0"/>
+<text class="dim" x="48.0" y="320.0" text-anchor="end">34″</text>
+<line class="dimline" x1="50.0" y1="421.0" x2="56.0" y2="421.0"/>
+<text class="dim" x="48.0" y="425.0" text-anchor="end">47⅛″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 7B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Side wall A + Floor strips">
+<defs><pattern id="hatch14" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="720.00" height="272.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="720.00" height="272.00" fill="#D9A77E" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="317.00" width="656.00" height="104.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="317.00" width="656.00" height="104.00" fill="#9FB7C9" fill-opacity=".45"/>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="dimline" x1="776.0" y1="40.0" x2="776.0" y2="44.0"/>
+<text class="dim" x="776.0" y="38.0" text-anchor="middle">90″</text>
+<line class="dimline" x1="50.0" y1="316.0" x2="56.0" y2="316.0"/>
+<text class="dim" x="48.0" y="320.0" text-anchor="end">34″</text>
+<line class="dimline" x1="50.0" y1="421.0" x2="56.0" y2="421.0"/>
+<text class="dim" x="48.0" y="425.0" text-anchor="end">47⅛″</text>
+<line class="cut" x1="56.0" y1="316.0" x2="824.0" y2="316.0"/>
+<line class="cut" x1="776.0" y1="44.0" x2="776.0" y2="316.0"/>
+<line class="cut" x1="56.0" y1="421.0" x2="824.0" y2="421.0"/>
+<line class="cut" x1="712.0" y1="317.0" x2="712.0" y2="421.0"/>
+<circle class="cutdot" cx="108.0" cy="316.0" r="9"/>
+<text class="cutnum" x="108.0" y="320.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="776.0" cy="58.0" r="9"/>
+<text class="cutnum" x="776.0" y="62.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="108.0" cy="421.0" r="9"/>
+<text class="cutnum" x="108.0" y="425.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="712.0" cy="331.0" r="9"/>
+<text class="cutnum" x="712.0" y="335.0" text-anchor="middle">4</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Rip the full length at 34″.</li><li>Crosscut the 34″ strip at 90″.</li><li>Rip the 13⅞″ strip down to 13″.</li><li>Crosscut the 13″ strip at 82″.</li></ol>
+</article>
+<article class="sheet" id="sheet8">
+  <div class="sheet-head"><h3>Sheet 8 · Side wall B + Ceiling strips</h3><span class="count">4 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#C9A0C0"></span>Side wall B 2/2 · <span class="mono">87″ × 34″</span></span><span><span class="swatch" style="background:#A9C4A0"></span>Ceiling 2/2 · <span class="mono">82″ × 13″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 8A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Side wall B + Ceiling strips">
+<defs><pattern id="hatch15" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="272.00" fill="#C9A0C0"/>
+<rect class="piece" x="56.00" y="317.00" width="656.00" height="104.00" fill="#A9C4A0"/>
+<text class="lab" x="404.0" y="177.0" text-anchor="middle">Side wall B 2/2</text>
+<text class="dim" x="404.0" y="192.0" text-anchor="middle">87″ × 34″</text>
+<text class="lab" x="384.0" y="366.0" text-anchor="middle">Ceiling 2/2</text>
+<text class="dim" x="384.0" y="381.0" text-anchor="middle">82″ × 13″</text>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="dimline" x1="752.0" y1="27.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="25.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="316.0" x2="56.0" y2="316.0"/>
+<text class="dim" x="48.0" y="320.0" text-anchor="end">34″</text>
+<line class="dimline" x1="50.0" y1="421.0" x2="56.0" y2="421.0"/>
+<text class="dim" x="48.0" y="425.0" text-anchor="end">47⅛″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 8B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Side wall B + Ceiling strips">
+<defs><pattern id="hatch16" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="696.00" height="272.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="696.00" height="272.00" fill="#C9A0C0" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="317.00" width="656.00" height="104.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="317.00" width="656.00" height="104.00" fill="#A9C4A0" fill-opacity=".45"/>
+<line class="dimline" x1="712.0" y1="40.0" x2="712.0" y2="44.0"/>
+<text class="dim" x="712.0" y="38.0" text-anchor="middle">82″</text>
+<line class="dimline" x1="752.0" y1="27.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="25.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="316.0" x2="56.0" y2="316.0"/>
+<text class="dim" x="48.0" y="320.0" text-anchor="end">34″</text>
+<line class="dimline" x1="50.0" y1="421.0" x2="56.0" y2="421.0"/>
+<text class="dim" x="48.0" y="425.0" text-anchor="end">47⅛″</text>
+<line class="cut" x1="56.0" y1="316.0" x2="824.0" y2="316.0"/>
+<line class="cut" x1="752.0" y1="44.0" x2="752.0" y2="316.0"/>
+<line class="cut" x1="56.0" y1="421.0" x2="824.0" y2="421.0"/>
+<line class="cut" x1="712.0" y1="317.0" x2="712.0" y2="421.0"/>
+<circle class="cutdot" cx="108.0" cy="316.0" r="9"/>
+<text class="cutnum" x="108.0" y="320.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="752.0" cy="58.0" r="9"/>
+<text class="cutnum" x="752.0" y="62.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="108.0" cy="421.0" r="9"/>
+<text class="cutnum" x="108.0" y="425.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="712.0" cy="331.0" r="9"/>
+<text class="cutnum" x="712.0" y="335.0" text-anchor="middle">4</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Rip the full length at 34″.</li><li>Crosscut the 34″ strip at 87″.</li><li>Rip the 13⅞″ strip down to 13″.</li><li>Crosscut the 13″ strip at 82″.</li></ol>
+</article>
+<article class="sheet" id="sheet9">
+  <div class="sheet-head"><h3>Sheet 9 · Front walls C, D and B</h3><span class="count">5 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#D8B48E"></span>Front wall C · <span class="mono">75″ × 25½″</span></span><span><span class="swatch" style="background:#9DB5D8"></span>Front wall D · <span class="mono">11¾″ × 25½″</span></span><span><span class="swatch" style="background:#A7B98A"></span>Front wall B · <span class="mono">87″ × 17½″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 9A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Front walls C, D and B">
+<defs><pattern id="hatch17" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="600.00" height="204.00" fill="#D8B48E"/>
+<rect class="piece" x="657.00" y="44.00" width="94.00" height="204.00" fill="#9DB5D8"/>
+<rect class="piece" x="56.00" y="249.00" width="696.00" height="140.00" fill="#A7B98A"/>
+<text class="lab" x="356.0" y="143.0" text-anchor="middle">Front wall C</text>
+<text class="dim" x="356.0" y="158.0" text-anchor="middle">75″ × 25½″</text>
+<text class="lab" x="704.0" y="143.0" text-anchor="middle">Front wall D</text>
+<text class="dim" x="704.0" y="158.0" text-anchor="middle">11¾″ × 25½″</text>
+<text class="lab" x="404.0" y="316.0" text-anchor="middle">Front wall B</text>
+<text class="dim" x="404.0" y="331.0" text-anchor="middle">87″ × 17½″</text>
+<line class="dimline" x1="656.0" y1="40.0" x2="656.0" y2="44.0"/>
+<text class="dim" x="656.0" y="38.0" text-anchor="middle">75″</text>
+<line class="dimline" x1="751.0" y1="40.0" x2="751.0" y2="44.0"/>
+<text class="dim" x="751.0" y="38.0" text-anchor="middle">86⅞″</text>
+<line class="dimline" x1="752.0" y1="27.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="25.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="248.0" x2="56.0" y2="248.0"/>
+<text class="dim" x="48.0" y="252.0" text-anchor="end">25½″</text>
+<line class="dimline" x1="50.0" y1="389.0" x2="56.0" y2="389.0"/>
+<text class="dim" x="48.0" y="393.0" text-anchor="end">43⅛″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 9B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Front walls C, D and B">
+<defs><pattern id="hatch18" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="600.00" height="204.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="600.00" height="204.00" fill="#D8B48E" fill-opacity=".45"/>
+<rect class="under" x="657.00" y="44.00" width="94.00" height="204.00" fill="#FFFFFF"/>
+<rect class="piece" x="657.00" y="44.00" width="94.00" height="204.00" fill="#9DB5D8" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="249.00" width="696.00" height="140.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="249.00" width="696.00" height="140.00" fill="#A7B98A" fill-opacity=".45"/>
+<line class="dimline" x1="656.0" y1="40.0" x2="656.0" y2="44.0"/>
+<text class="dim" x="656.0" y="38.0" text-anchor="middle">75″</text>
+<line class="dimline" x1="751.0" y1="40.0" x2="751.0" y2="44.0"/>
+<text class="dim" x="751.0" y="38.0" text-anchor="middle">86⅞″</text>
+<line class="dimline" x1="752.0" y1="27.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="25.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="248.0" x2="56.0" y2="248.0"/>
+<text class="dim" x="48.0" y="252.0" text-anchor="end">25½″</text>
+<line class="dimline" x1="50.0" y1="389.0" x2="56.0" y2="389.0"/>
+<text class="dim" x="48.0" y="393.0" text-anchor="end">43⅛″</text>
+<line class="cut" x1="56.0" y1="248.0" x2="824.0" y2="248.0"/>
+<line class="cut" x1="56.0" y1="389.0" x2="824.0" y2="389.0"/>
+<line class="cut" x1="656.0" y1="44.0" x2="656.0" y2="248.0"/>
+<line class="cut" x1="751.0" y1="44.0" x2="751.0" y2="248.0"/>
+<line class="cut" x1="752.0" y1="249.0" x2="752.0" y2="389.0"/>
+<circle class="cutdot" cx="108.0" cy="248.0" r="9"/>
+<text class="cutnum" x="108.0" y="252.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="78.0" cy="389.0" r="9"/>
+<text class="cutnum" x="78.0" y="393.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="656.0" cy="58.0" r="9"/>
+<text class="cutnum" x="656.0" y="62.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="751.0" cy="58.0" r="9"/>
+<text class="cutnum" x="751.0" y="62.0" text-anchor="middle">4</text>
+<circle class="cutdot" cx="752.0" cy="263.0" r="9"/>
+<text class="cutnum" x="752.0" y="267.0" text-anchor="middle">5</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Rip the full length at 25.5″.</li><li>Rip the remaining 22⅜″ strip at 17.5″ (4¾″ scrap).</li><li>Crosscut the 25.5″ strip at 75″ → Front wall C.</li><li>Crosscut the 20⅞″ offcut at 11.75″ → Front wall D.</li><li>Crosscut the 17.5″ strip at 87″ → Front wall B.</li></ol>
+</article>
+<article class="sheet" id="sheet10">
+  <div class="sheet-head"><h3>Sheet 10 · Inside side wall, Back wall, Inside ceiling strips</h3><span class="count">5 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#B8A6DD"></span>Inside side wall 2/2 · <span class="mono">77½″ × 23″</span></span><span><span class="swatch" style="background:#E3C86F"></span>Back wall 2/2 · <span class="mono">87″ × 12″</span></span><span><span class="swatch" style="background:#8FC7BE"></span>Inside ceiling 2/2 · <span class="mono">72½″ × 12¾″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 10A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Inside side wall, Back wall, Inside ceiling strips">
+<defs><pattern id="hatch19" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="620.00" height="184.00" fill="#B8A6DD"/>
+<rect class="piece" x="56.00" y="229.00" width="696.00" height="96.00" fill="#E3C86F"/>
+<rect class="piece" x="56.00" y="326.00" width="580.00" height="102.00" fill="#8FC7BE"/>
+<text class="lab" x="366.0" y="133.0" text-anchor="middle">Inside side wall 2/2</text>
+<text class="dim" x="366.0" y="148.0" text-anchor="middle">77½″ × 23″</text>
+<text class="lab" x="404.0" y="274.0" text-anchor="middle">Back wall 2/2</text>
+<text class="dim" x="404.0" y="289.0" text-anchor="middle">87″ × 12″</text>
+<text class="lab" x="346.0" y="374.0" text-anchor="middle">Inside ceiling 2/2</text>
+<text class="dim" x="346.0" y="389.0" text-anchor="middle">72½″ × 12¾″</text>
+<line class="dimline" x1="636.0" y1="40.0" x2="636.0" y2="44.0"/>
+<text class="dim" x="636.0" y="38.0" text-anchor="middle">72½″</text>
+<line class="dimline" x1="676.0" y1="27.0" x2="676.0" y2="44.0"/>
+<text class="dim" x="676.0" y="25.0" text-anchor="middle">77½″</text>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="228.0" x2="56.0" y2="228.0"/>
+<text class="dim" x="48.0" y="232.0" text-anchor="end">23″</text>
+<line class="dimline" x1="50.0" y1="325.0" x2="56.0" y2="325.0"/>
+<text class="dim" x="48.0" y="329.0" text-anchor="end">35⅛″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 10B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Inside side wall, Back wall, Inside ceiling strips">
+<defs><pattern id="hatch20" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="620.00" height="184.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="620.00" height="184.00" fill="#B8A6DD" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="229.00" width="696.00" height="96.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="229.00" width="696.00" height="96.00" fill="#E3C86F" fill-opacity=".45"/>
+<rect class="under" x="56.00" y="326.00" width="580.00" height="102.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="326.00" width="580.00" height="102.00" fill="#8FC7BE" fill-opacity=".45"/>
+<line class="dimline" x1="636.0" y1="40.0" x2="636.0" y2="44.0"/>
+<text class="dim" x="636.0" y="38.0" text-anchor="middle">72½″</text>
+<line class="dimline" x1="676.0" y1="27.0" x2="676.0" y2="44.0"/>
+<text class="dim" x="676.0" y="25.0" text-anchor="middle">77½″</text>
+<line class="dimline" x1="752.0" y1="40.0" x2="752.0" y2="44.0"/>
+<text class="dim" x="752.0" y="38.0" text-anchor="middle">87″</text>
+<line class="dimline" x1="50.0" y1="228.0" x2="56.0" y2="228.0"/>
+<text class="dim" x="48.0" y="232.0" text-anchor="end">23″</text>
+<line class="dimline" x1="50.0" y1="325.0" x2="56.0" y2="325.0"/>
+<text class="dim" x="48.0" y="329.0" text-anchor="end">35⅛″</text>
+<line class="cut" x1="56.0" y1="228.0" x2="824.0" y2="228.0"/>
+<line class="cut" x1="56.0" y1="325.0" x2="824.0" y2="325.0"/>
+<line class="cut" x1="676.0" y1="44.0" x2="676.0" y2="228.0"/>
+<line class="cut" x1="752.0" y1="229.0" x2="752.0" y2="325.0"/>
+<line class="cut" x1="636.0" y1="326.0" x2="636.0" y2="428.0"/>
+<circle class="cutdot" cx="108.0" cy="228.0" r="9"/>
+<text class="cutnum" x="108.0" y="232.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="78.0" cy="325.0" r="9"/>
+<text class="cutnum" x="78.0" y="329.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="676.0" cy="58.0" r="9"/>
+<text class="cutnum" x="676.0" y="62.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="752.0" cy="243.0" r="9"/>
+<text class="cutnum" x="752.0" y="247.0" text-anchor="middle">4</text>
+<circle class="cutdot" cx="636.0" cy="340.0" r="9"/>
+<text class="cutnum" x="636.0" y="344.0" text-anchor="middle">5</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Rip the full length at 23″.</li><li>Rip the remaining strip at 12″. What is left (≈12¾″) is the Inside ceiling strip: measure it.</li><li>Crosscut the 23″ strip at 77.5″.</li><li>Crosscut the 12″ strip at 87″.</li><li>Crosscut the ≈12¾″ strip at 72.5″.</li></ol>
+</article>
+<article class="sheet" id="sheet11">
+  <div class="sheet-head"><h3>Sheet 11 · Inside ceiling + Front wall A</h3><span class="count">4 cuts</span></div>
+  <div class="pieces"><span><span class="swatch" style="background:#8FC7BE"></span>Inside ceiling 1/2 · <span class="mono">72½″ × 37¾″</span></span><span><span class="swatch" style="background:#E39A94"></span>Front wall A 2/2 · <span class="mono">17″ × 39″</span></span></div>
+  <div class="drawings">
+    <figure><figcaption>Drawing 11A · Layout</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Inside ceiling + Front wall A">
+<defs><pattern id="hatch21" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="580.00" height="302.00" fill="#8FC7BE"/>
+<rect class="piece" x="637.00" y="44.00" width="136.00" height="312.00" fill="#E39A94"/>
+<text class="lab" x="346.0" y="192.0" text-anchor="middle">Inside ceiling 1/2</text>
+<text class="dim" x="346.0" y="207.0" text-anchor="middle">72½″ × 37¾″</text>
+<text class="lab" x="705.0" y="197.0" text-anchor="middle">Front wall A 2/2</text>
+<text class="dim" x="705.0" y="212.0" text-anchor="middle">17″ × 39″</text>
+<line class="dimline" x1="636.0" y1="40.0" x2="636.0" y2="44.0"/>
+<text class="dim" x="636.0" y="38.0" text-anchor="middle">72½″</text>
+<line class="dimline" x1="773.0" y1="40.0" x2="773.0" y2="44.0"/>
+<text class="dim" x="773.0" y="38.0" text-anchor="middle">89⅝″</text>
+<line class="dimline" x1="50.0" y1="346.0" x2="56.0" y2="346.0"/>
+<text class="dim" x="48.0" y="350.0" text-anchor="end">37¾″</text>
+<line class="dimline" x1="50.0" y1="356.0" x2="56.0" y2="356.0"/>
+<text class="dim" x="48.0" y="370.0" text-anchor="end">39″</text>
+</svg></div></figure>
+    <figure><figcaption>Drawing 11B · Cut order</figcaption><div class="svgbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Cut sequence: Inside ceiling + Front wall A">
+<defs><pattern id="hatch22" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="under" x="56.00" y="44.00" width="580.00" height="302.00" fill="#FFFFFF"/>
+<rect class="piece" x="56.00" y="44.00" width="580.00" height="302.00" fill="#8FC7BE" fill-opacity=".45"/>
+<rect class="under" x="637.00" y="44.00" width="136.00" height="312.00" fill="#FFFFFF"/>
+<rect class="piece" x="637.00" y="44.00" width="136.00" height="312.00" fill="#E39A94" fill-opacity=".45"/>
+<line class="dimline" x1="636.0" y1="40.0" x2="636.0" y2="44.0"/>
+<text class="dim" x="636.0" y="38.0" text-anchor="middle">72½″</text>
+<line class="dimline" x1="773.0" y1="40.0" x2="773.0" y2="44.0"/>
+<text class="dim" x="773.0" y="38.0" text-anchor="middle">89⅝″</text>
+<line class="dimline" x1="50.0" y1="346.0" x2="56.0" y2="346.0"/>
+<text class="dim" x="48.0" y="350.0" text-anchor="end">37¾″</text>
+<line class="dimline" x1="50.0" y1="356.0" x2="56.0" y2="356.0"/>
+<text class="dim" x="48.0" y="370.0" text-anchor="end">39″</text>
+<line class="cut" x1="636.0" y1="44.0" x2="636.0" y2="428.0"/>
+<line class="cut" x1="56.0" y1="346.0" x2="636.0" y2="346.0"/>
+<line class="cut" x1="773.0" y1="44.0" x2="773.0" y2="428.0"/>
+<line class="cut" x1="637.0" y1="356.0" x2="773.0" y2="356.0"/>
+<circle class="cutdot" cx="636.0" cy="58.0" r="9"/>
+<text class="cutnum" x="636.0" y="62.0" text-anchor="middle">1</text>
+<circle class="cutdot" cx="78.0" cy="346.0" r="9"/>
+<text class="cutnum" x="78.0" y="350.0" text-anchor="middle">2</text>
+<circle class="cutdot" cx="773.0" cy="58.0" r="9"/>
+<text class="cutnum" x="773.0" y="62.0" text-anchor="middle">3</text>
+<circle class="cutdot" cx="659.0" cy="356.0" r="9"/>
+<text class="cutnum" x="659.0" y="360.0" text-anchor="middle">4</text>
+</svg></div></figure>
+  </div>
+  <ol class="cuts"><li>Crosscut the full sheet at 72.5″.</li><li>Rip the 72.5″ piece to 50.5″ minus the strip measured on sheet 10 (37.75″ if it was 12.75″).</li><li>Crosscut the 23⅜″ offcut at 17″.</li><li>Rip that 17″ piece to 39″.</li></ol>
+</article>
+</section>
+</main>

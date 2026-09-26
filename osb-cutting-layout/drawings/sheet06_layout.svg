@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 844 468" role="img" aria-label="Layout: Inside side wall + Front wall A">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="hatchbg" fill="#EFE3C8"/><line x1="0" y1="0" x2="0" y2="8" class="hatchline"/></pattern></defs>
+<style>
+.sheet{fill:#EFE3C8;stroke:#6B5B45;stroke-width:1.5}
+.waste{fill:url(#hatch)}
+.piece{stroke:#3A3128;stroke-width:1}
+.lab{font:600 12px 'IBM Plex Sans Condensed',Arial,sans-serif;fill:#1F1A14}
+.dim{font:11px 'IBM Plex Mono',monospace;fill:#1F1A14}
+.dimline{stroke:#6B5B45;stroke-width:.8;fill:none}
+.axis{font:11px 'IBM Plex Mono',monospace;fill:#6B5B45}
+.cut{stroke:#C0392B;stroke-width:2.2;stroke-dasharray:7 4}
+.cutdot{fill:#C0392B}
+.cutnum{font:700 11px 'IBM Plex Mono',monospace;fill:#fff}
+.hatchline{stroke:#B9A887;stroke-width:1}
+</style>
+<rect class="sheet" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<rect class="waste" x="56.0" y="44.0" width="768.0" height="384.0"/>
+<text class="axis" x="56.0" y="458.0">0</text>
+<text class="axis" x="824.0" y="458.0" text-anchor="end">96″ (8 ft)</text>
+<text class="axis" x="48.0" y="428.0" text-anchor="end">48″</text>
+<text class="axis" x="48.0" y="54.0" text-anchor="end">0</text>
+<rect class="piece" x="56.00" y="44.00" width="620.00" height="384.00" fill="#B8A6DD"/>
+<rect class="piece" x="677.00" y="44.00" width="136.00" height="384.00" fill="#E39A94"/>
+<text class="lab" x="366.0" y="233.0" text-anchor="middle">Inside side wall 1/2</text>
+<text class="dim" x="366.0" y="248.0" text-anchor="middle">77½″ × 48″</text>
+<text class="lab" x="745.0" y="233.0" text-anchor="middle">Front wall A 1/2</text>
+<text class="dim" x="745.0" y="248.0" text-anchor="middle">17″ × 48″</text>
+<line class="dimline" x1="676.0" y1="40.0" x2="676.0" y2="44.0"/>
+<text class="dim" x="676.0" y="38.0" text-anchor="middle">77½″</text>
+<line class="dimline" x1="813.0" y1="40.0" x2="813.0" y2="44.0"/>
+<text class="dim" x="813.0" y="38.0" text-anchor="middle">94⅝″</text>
+</svg>
