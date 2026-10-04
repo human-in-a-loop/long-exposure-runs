@@ -178,7 +178,7 @@ def test_05_on_disk_form_plan_and_form_v6() -> None:
     assert d["params"]["similarity_threshold"] == 0.85 and d["params"]["bars_per_block"] == 8
     assert all(k in ("4", "5", "6", "7", "8") for k in d["length_distribution"]) and sum(d["length_distribution"].values()) == d["n_eligible"]
     for a, row in d["transition_probs"].items():
-        assert abs(sum(row.values()) - 1.0) < 1e-6, a
+        assert abs(sum(row.values()) - 1.0) < 1e-5, a  # 6-dp rounded probabilities
     assert d["boundary_fill_pool"] and all(0 <= e["snare"] < 1 << 16 and 0 <= e["hat"] < 1 << 16 for e in d["boundary_fill_pool"])
     for s, p in d["per_song"].items():
         assert set(p["form"]) <= set("ABCDEFGHIJKLMNOPQRSTUVWXYZ") and len(p["form"]) == p["n_blocks"] and len(p["block_density"]) == p["n_blocks"]

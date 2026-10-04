@@ -181,7 +181,16 @@ def fixtures_sha256() -> str:
 
 
 def load_models(rules_dir: Path | None, fixtures: bool, form_plan: Path | None = None, per_song_dir: Path | None = None) -> dict:
-    """Real files when present (same loader, path args); fixture fallback per model only when `fixtures` is True."""
+    """Real files from rules_dir; with `fixtures=True` the SYNTHETIC models are used for everything (hermetic, test-only),
+    regardless of what exists on disk — pass fixtures=False (the CLI default) to compose on corpus-trained rules."""
+    if fixtures:
+        fx = build_fixtures()
+        out = {"sources": {k: "fixture" for k in ("chain", "groove", "bass", "melody", "velocity", "comping", "form_plan", "chord_streams")},
+               "input_sha256": {}, "form_plan": None, "chord_streams": fx["chord_streams"]}
+        for k in ("chain", "groove", "bass", "melody", "velocity", "comping"):
+            out[k] = fx.get(k)
+        out["sources"]["form_plan"] = "fixture (fixed AABA, 8 bars/section)"
+        return out
     rd = Path(rules_dir) if rules_dir else WS / "data/v5/rules"
     files = {"chain": rd / "harmony_markov_v5_full.json", "groove": rd / "groove_v5_v2_full.json", "bass": rd / "bass_pitch_v5.json",
              "melody": rd / "melody_vomm_v5.json", "velocity": rd / "velocity_profiles_v5.json", "comping": rd / "comping_v5.json"}

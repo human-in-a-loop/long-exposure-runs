@@ -200,8 +200,8 @@ def main(argv=None) -> int:
     else:
         import functools
         import multiprocessing as mp
-        with mp.get_context("fork").Pool(args.workers) as pool:
-            per_song = dict(zip(shas, pool.map(functools.partial(_one, chords_dir=cd), shas, chunksize=1)))
+        with mp.get_context("fork").Pool(args.workers) as mpool:  # not `pool`: that is the statistics function below
+            per_song = dict(zip(shas, mpool.map(functools.partial(_one, chords_dir=cd), shas, chunksize=1)))
     stats = {STEM: pool(per_song, (STEM,)), "pooled": pool(per_song, (STEM,))}
     stats["by_band"] = {str(b): pool({s: r for s, r in per_song.items() if str(r["band"]) == str(b)}, (STEM,)) for b in sorted({str(r["band"]) for r in per_song.values()})}
     verdict = verdict_of(per_song, stats["pooled"])
