@@ -288,6 +288,8 @@ def main(argv=None) -> int:
     ap.add_argument("--only-backend", choices=["sfz", "sf2", "dawdreamer"])
     ap.add_argument("--prune", action="store_true",
                     help="rewrite INVENTORY.json moving silent/error entries to 'rejected'")
+    ap.add_argument("--prune-from-summary", action="store_true",
+                    help="no rendering: prune INVENTORY.json using _renders/_render_summary.json from earlier runs")
     ap.add_argument("--verify-determinism", metavar="SLUG::INSTRUMENT",
                     help="render this entry twice and compare sha256")
     args = ap.parse_args(argv)
@@ -306,7 +308,13 @@ def main(argv=None) -> int:
         return 1
 
     results = []
+    if args.prune_from_summary:
+        summary = json.load(open(RENDERS / "_render_summary.json", encoding="utf-8"))
+        results = [summary[k] for lib, inst in iter_entries(inv) for k in (f"{lib['slug']}::{inst['name']}",) if k in summary]
+        args.prune = True
     for lib, inst in iter_entries(inv):
+        if args.prune_from_summary:
+            break
         if not args.all and (lib["slug"] != args.slug or (args.instrument and inst["name"] != args.instrument)):
             continue
         if args.only_backend and (inst.get("backend") or lib.get("format")) != args.only_backend:
@@ -319,12 +327,13 @@ def main(argv=None) -> int:
         print(f"[{flag:6}] {lib['slug']:28} {inst['name'][:40]:40} {extra}", flush=True)
 
     summary_path = RENDERS / "_render_summary.json"
-    prev = json.load(open(summary_path)) if summary_path.exists() else {}
-    for r in results:
-        prev[f"{r['slug']}::{r['instrument']}"] = r
-    with open(summary_path, "w", encoding="utf-8") as fh:
-        json.dump(prev, fh, indent=2, sort_keys=True)
-        fh.write("\n")
+    if not args.prune_from_summary:
+        prev = json.load(open(summary_path)) if summary_path.exists() else {}
+        for r in results:
+            prev[f"{r['slug']}::{r['instrument']}"] = r
+        with open(summary_path, "w", encoding="utf-8") as fh:
+            json.dump(prev, fh, indent=2, sort_keys=True)
+            fh.write("\n")
 
     if args.prune:
         bad = {(r["slug"], r["instrument"]): r for r in results if r["status"] != "ok"}
