@@ -28,3 +28,4 @@ venv/
 workspace/models/
 workspace/public/
 workspace/*.log
+workspace/instruments/
