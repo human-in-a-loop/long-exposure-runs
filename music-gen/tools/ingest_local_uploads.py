@@ -62,10 +62,26 @@ def load_manifest() -> list[dict]:
     rows = list(csv.DictReader(MANIFEST.open(), delimiter="\t"))
     pos: dict[str, int] = {}
     for r in rows:
-        pos[r["rating"]] = pos.get(r["rating"], 0) + 1
-        r["position"] = pos[r["rating"]]
+        m = re.match(r"^LOCAL-(\d+)$", r["video_id"])
+        if m:  # band-7 local uploads carry their own position numbers (gaps allowed)
+            r["position"] = int(m.group(1))
+        else:  # playlist bands: position = order within the band in the manifest
+            pos[r["rating"]] = pos.get(r["rating"], 0) + 1
+            r["position"] = pos[r["rating"]]
         r["_tok"] = norm_tokens(r["title"])
     return rows
+
+
+def known_sha_map() -> dict[str, tuple[str, int]]:
+    """sha256 -> (band, position) from the hand-written per-band RECEIPTS.md tables."""
+    out = {}
+    for rec in RATINGS.glob("*/RECEIPTS.md"):
+        band = rec.parent.name
+        for line in rec.open():
+            m = re.match(r"\|\s*(\d{3})\s*\|.*?([0-9a-f]{64})", line)
+            if m:
+                out[m.group(2)] = (band, int(m.group(1)))
+    return out
 
 
 def main(argv=None) -> int:
@@ -76,6 +92,8 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
 
     rows = load_manifest()
+    by_band_pos = {(r["rating"], r["position"]): r for r in rows}
+    sha_known = known_sha_map()
     seen = set()
     if RECEIPTS.exists():
         seen = {json.loads(l)["sha256"] for l in RECEIPTS.open() if l.strip()}
@@ -98,13 +116,16 @@ def main(argv=None) -> int:
             s = max(j, 0.85 * c) + (0.15 if num is not None and r["position"] == num else 0.0)
             scored.append((s, r))
         scored.sort(key=lambda x: -x[0])
+        # exact byte identity with a previously receipted file beats any title heuristic
+        if sha in sha_known and sha_known[sha] in by_band_pos:
+            scored.insert(0, (2.0, by_band_pos[sha_known[sha]]))
         if not scored or scored[0][0] < a.min_score:
             results.append({"file": f.name, "status": "UNMATCHED", "upload_title": title,
                             "best": scored[0][1]["title"] if scored else None,
                             "best_score": round(scored[0][0], 3) if scored else 0})
             continue
         s, r = scored[0]
-        ambiguous = len(scored) > 1 and scored[1][0] > s - 0.1 and scored[1][1]["video_id"] != r["video_id"]
+        ambiguous = s < 2.0 and len(scored) > 1 and scored[1][0] > s - 0.1 and scored[1][1]["video_id"] != r["video_id"]
         meta = probe(f)
         dur_delta = round(meta["duration_s"] - float(r["duration_s"] or 0), 2) if r["duration_s"] else None
         safe = re.sub(r"[^A-Za-z0-9._-]+", "_", r["title"])[:80].strip("_")
@@ -113,7 +134,8 @@ def main(argv=None) -> int:
                "band": int(r["rating"]), "position": r["position"], "video_id": r["video_id"], "title": r["title"],
                "manifest_duration_s": float(r["duration_s"]) if r["duration_s"] else None, "duration_delta_s": dur_delta,
                "upload_number": num, "upload_number_matches_position": num == r["position"] if num is not None else None,
-               "match_score": round(s, 3), "ambiguous": ambiguous, "path": str(dst.relative_to(ROOT)),
+               "match_score": round(s, 3), "ambiguous": ambiguous,
+               "identity": "sha256_matches_prior_receipt" if s >= 2.0 else "title_match", "path": str(dst.relative_to(ROOT)),
                "source": "local_upload", **meta}
         status = "DUPLICATE" if sha in seen else "INGESTED"
         if status == "INGESTED" and not a.dry_run:

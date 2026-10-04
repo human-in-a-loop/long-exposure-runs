@@ -10,6 +10,7 @@ collection supplied directly as local files.
 | 001      | Desire                                         | 276.90 s | 2b0370d9d0162c98dd59c5705c5e7b206fb2ac9e3c36e534b162b662db95daf6   |
 | 002      | Freedom Interlude                              | 199.10 s | c7d491e98767eea5f58cd6ff854ff03729dc180718aa35050df2dd24c940b41a   |
 | 005      | Wizkid — Essence ft. Tems                      | 249.60 s | 467fbeb2e3b019a04035dabe262d95f4fa65ef44a0afc6b7e2f6f6d30771427d   |
+| 006      | Don't Know What's Normal                       | 269.69 s | b5133ee83b0e599f80ce3821e1b2bac2bfbde61f54765d041e52e190823792e8   |
 | 008      | Oba La — Vem Ela                               | 254.40 s | 1d9ac896511ebcd4741ac77f10c880e7cc5fc39f798f189d33f80e391273b34c   |
 | 010      | Samba De Raiz — Conselho                       | 203.00 s | b8a030a4264a7abaacbad1216f1cfa9b15af5f8789f264137f898ed962ce74be   |
 | 013      | I Found My Smile Again (Radio Edit)            | 240.50 s | 7e6b59b873ed8972c9770b8ff73e0072decfcab70f23346f17de42cc2e606a8b   |
@@ -25,7 +26,12 @@ Manifest entries added with `playlist_id=LOCAL_BAND_7`,
 harvested from YouTube). Position numbers preserved from the filenames as
 supplied.
 
-**Coverage: 10 songs uploaded so far (new tier, prior total unknown).**
+**Coverage: 11 songs uploaded so far (new tier, prior total unknown).**
+
+2026-10-04: position 006 "Don't Know What's Normal" added. Band inferred as 7 (it filled the 006 gap and was
+uploaded in the same batch as band-7 #002 and #005; band-6 position 6 is a different song). Re-uploads of #002
+and #005 matched these receipts byte-for-byte. `ratings_manifest.tsv` band-7 rows restored from this table
+(they were missing from the tracked copy).
 
 Note: "Wizkid — Essence ft. Tems" is a different song from the band-4
 "Wizkid — Ginger ft. Burna Boy" already in the manifest — same artist,
