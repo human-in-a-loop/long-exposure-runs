@@ -19,7 +19,7 @@ from __future__ import annotations
 from scripts.v6.gen.common import SLOTS, draw_from, nearest_pitch, state_pcs, u
 
 REGISTER = (28, 50)
-FACTORS = {"contrary": 1.5, "parallel_perfect": 0.3, "same_pc_strong": 0.7, "near_prev": 1.3}
+FACTORS = {"contrary": 1.5, "parallel_perfect": 0.12, "same_pc_strong": 0.7, "near_prev": 1.3}
 CLASSES = ("root", "fifth", "octave", "third", "approach", "repeat")
 
 
@@ -130,7 +130,7 @@ def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_no
                 row = bass_model.get("conditional", {}).get(f"{p % 4}|{int(chg)}") or bass_model["marginal"]
                 base = dict(row["probs"])
                 base["repeat"] = base.pop("other", 0.0)
-                w, factors = {}, {}
+                w, factors, par_flags = {}, {}, {}
                 for cls_ in CLASSES:
                     if cls_ == "approach" and not chg:
                         continue
@@ -138,21 +138,26 @@ def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_no
                     if cand is None:
                         continue
                     f = 1.0
+                    is_par = False
                     if prev is not None and mel_pitch is not None and prev_mel is not None and (cand - prev) * (mel_pitch - prev_mel) < 0:
                         f *= FACTORS["contrary"]
                     if is_parallel_perfect(prev, prev_mel, cand, mel_pitch):
-                        f *= FACTORS["parallel_perfect"]
+                        f *= FACTORS["parallel_perfect"]; is_par = True
                     if nxt_forced is not None and is_parallel_perfect(cand, mel_pitch, nxt_forced, mel_next):  # look-ahead into the forced root
-                        f *= FACTORS["parallel_perfect"]
+                        f *= FACTORS["parallel_perfect"]; is_par = True
                     if keys_v and prev_keys and keys_v != prev_keys and any(is_parallel_perfect(prev, pk, cand, kk) for pk, kk in zip(prev_keys, keys_v)):
-                        f *= FACTORS["parallel_perfect"]
+                        f *= FACTORS["parallel_perfect"]; is_par = True
+                    par_flags[cls_] = is_par
                     if mel_pitch is not None and p % 8 == 0 and cand % 12 == mel_pitch % 12:
                         f *= FACTORS["same_pc_strong"]
                     if prev is not None and abs(cand - prev) <= 7:
                         f *= FACTORS["near_prev"]
                     w[cls_] = float(base.get(cls_, 0.0)) * f
                     factors[cls_] = round(f, 4)
-                cls = draw_from(w, f"{tag}|bass|cls|{b}|{p}") if w else "root"
+                # hard rule: a parallel perfect is never chosen while a non-parallel candidate with weight exists
+                if any(wt > 0 and not par_flags.get(c) for c, wt in w.items()):
+                    w = {c: (0.0 if par_flags.get(c) else wt) for c, wt in w.items()}
+                cls = draw_from(w, f"{tag}|bass|cls|{b}|{p}") if w and sum(w.values()) > 0 else "root"
                 pitch = class_pitch(cls, root_pc, pcs or [root_pc], next_root, prev, f"{tag}|bass|{b}|{p}")
             notes.append({"slot": abs_slot, "pitch": int(pitch), "dur16": int(nxt_slot - p), "cls": cls, "bar": b, "chord": st,
                           "on_change": p in change_slots, "factors": factors,

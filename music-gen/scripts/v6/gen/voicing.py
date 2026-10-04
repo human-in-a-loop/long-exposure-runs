@@ -27,7 +27,7 @@ from scripts.v6.gen.common import SLOTS, draw_from, draw_index, state_pcs, state
 KEYS_LO, KEYS_HI = 52, 79
 N_VOICES = 4
 MAX_GAP, MAX_SPAN = 16, 24
-COST = {"parallel": 8.0, "seventh": 6.0, "leading_tone": 6.0, "crossing": 4.0, "spacing": 2.0, "doubled_third": 1.0, "common_tone": 2.0}
+COST = {"parallel": 16.0, "seventh": 6.0, "leading_tone": 6.0, "crossing": 4.0, "spacing": 2.0, "doubled_third": 1.0, "common_tone": 2.0}
 TEMPLATES = {"whole": [0], "half": [0, 8], "charleston": [0, 6], "eighth_push": [0, 6, 8, 14], "quarters": [0, 4, 8, 12]}
 TEMPLATE_W = {"whole": 0.25, "half": 0.25, "charleston": 0.2, "eighth_push": 0.15, "quarters": 0.15}
 GAP_S = 0.02
