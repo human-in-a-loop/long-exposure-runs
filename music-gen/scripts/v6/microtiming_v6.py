@@ -172,7 +172,11 @@ def beat_grid(env: np.ndarray, bpm: float, onset_times_all: np.ndarray) -> tuple
     hit = float(np.mean([np.min(np.abs(onset_times_all - b)) <= HIT_TOL_S for b in beats])) if onset_times_all.size else 0.0
     iv = np.diff(beats)
     tempo_ratio = float((60.0 / np.median(iv)) / bpm)
+    from librosa.feature.rhythm import tempo as free_tempo
+    free = free_tempo(onset_envelope=env, sr=SR, hop_length=HOP, start_bpm=float(bpm), aggregate=np.median)
+    free_bpm = float(np.atleast_1d(free)[0])
     info = {"n_beats": int(beats.size), "beat_contrast": round(contrast, 4), "beat_hit_frac": round(hit, 4), "tempo_ratio": round(tempo_ratio, 5),
+            "tempo_free_bpm": round(free_bpm, 3), "tempo_free_ratio": round(free_bpm / bpm, 5),
             "interval_cv": round(float(np.std(iv) / np.mean(iv)), 5), "raw_vs_smoothed_rms_ms": round(float(np.sqrt(np.mean((raw - beats) ** 2)) * 1000), 2), "tightness": TIGHTNESS}
     return beats, raw, info
 
@@ -350,8 +354,11 @@ def analyze_arrays(drums: np.ndarray, bass: np.ndarray, bpm: float, sha16: str =
             lag_vals.append(d)
     n_bars = (max([b for k in placed for b, _, _ in placed[k]], default=0) + 1)
     hit, ratio, contrast = ginfo.get("beat_hit_frac") or 0.0, ginfo.get("tempo_ratio") or 0.0, ginfo.get("beat_contrast") or 0.0
-    conf = "high" if hit > 0.85 and abs(ratio - 1) < 0.01 and margin > 0.05 and contrast > 0.1 else ("medium" if hit > 0.6 and abs(ratio - 1) < 0.03 and contrast > 0.0 else "low")
-    ginfo["confidence_rule"] = "high: beat_hit > 0.85 & |tempo_ratio - 1| < 1 % & phase_margin > 0.05 & contrast(beats vs odd 16ths) > 0.1; medium: hit > 0.6 & |ratio - 1| < 3 % & contrast > 0"
+    free_ok = abs((ginfo.get("tempo_free_ratio") or 0.0) - 1.0) < 0.04  # an independent (unforced) tempo estimate agrees with the known bpm
+    conf = "high" if hit > 0.85 and abs(ratio - 1) < 0.01 and margin > 0.05 and contrast > 0.1 and free_ok else ("medium" if hit > 0.6 and abs(ratio - 1) < 0.03 and contrast > 0.0 else "low")
+    ginfo["confidence_rule"] = ("high: beat_hit > 0.85 & |tempo_ratio - 1| < 1 % & phase_margin > 0.05 & contrast(beats vs odd 16ths) > 0.1 & free tempo within 4 %; "
+                               "medium: hit > 0.6 & |ratio - 1| < 3 % & contrast > 0")
+    ginfo["tempo_free_agrees"] = bool(free_ok)
     swing = {k: M.swing_of(streams[k]["ms"], streams[k]["f16"]) for k in M.STREAMS}
     drums_ms = M.merge_cells(M.merge_cells(streams["kick"]["ms"], streams["snare"]["ms"]), streams["hat"]["ms"])
     drums_f = M.merge_cells(M.merge_cells(streams["kick"]["f16"], streams["snare"]["f16"]), streams["hat"]["f16"])

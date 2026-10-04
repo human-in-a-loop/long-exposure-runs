@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import math
 
+from scripts.v6.gen import bassline as BL
 from scripts.v6.gen import drums as DR
 from scripts.v6.gen import melody as MEL
 from scripts.v6.gen import microtiming_model as M
@@ -52,6 +53,7 @@ BREATH = 0.8
 COMP_SUSTAIN = (0.6, 0.35, 0.7)  # lo + span * u ** k
 BASS_DUR_CLIP, STACCATO = (0.5, 0.9), 0.7
 DRUM_STREAM = {DR.KICK: "kick", DR.SNARE: "snare", DR.HAT: "hat", OPEN_HAT: "hat"}
+REPHRASE_TRIES = 6
 SKELETON_ROLES = ("skeleton", "cadence", "suspension", "resolution")
 
 
@@ -100,28 +102,53 @@ def stream_offset(pool: dict, stream: str, slot: int, swing_ms: float, tag: str)
 
 
 # --------------------------------------------------------------------------------------------- variation on repeats ----
-def _rephrase_melody(models: dict, L: dict, lab: str, tonic: int, mode: str, rtag: str) -> list:
+def _violations(mel_notes: list, bass_notes: list) -> int:
+    """Bass-melody parallel perfects (validators' rule, melody note sounding at each bass onset) + unresolved melodic leaps."""
+    mel = sorted(mel_notes, key=lambda n: n["slot"])
+    n_par, prev = 0, None
+    for b in sorted(bass_notes, key=lambda n: n["slot"]):
+        m = BL.sounding(mel, b["slot"])
+        if prev is not None and m is not None and prev[1] is not None and BL.is_parallel_perfect(prev[0], prev[1], b["pitch"], m):
+            n_par += 1
+        prev = (b["pitch"], m)
+    return n_par + MEL.unresolved_leaps([n["pitch"] for n in mel])
+
+
+def _rephrase_melody(models: dict, L: dict, lab: str, tonic: int, mode: str, rtag: str) -> tuple[list, list]:
     """Re-draw the non-skeleton onsets and the non-chord-tone choices of every phrase; skeleton (slots, pitches, suspension
-    decisions) identical to the first occurrence."""
+    decisions) identical to the first occurrence. Reject-and-resample (REPHRASE_TRIES tag suffixes) against the label's
+    (unchanged) bass line: the attempt with the fewest bass-melody parallels + unresolved leaps wins (first on ties)."""
     harm, lp = L["harmony"], L["plan"]
-    notes = []
+    notes, tries = [], []
     for ph, hp, mph in zip(lp["phrases"], harm["phrases"], L["melody"]["phrases"]):
         if not mph.get("skeleton"):
             continue
         b0, Lslots = ph["start_bar"], mph["L"]
         change, cad_slot, skel_pos = mph["change_slots"], mph["cad_slot"], mph["skeleton"]["slots"]
         otag, ntag = f"{L['tag']}|melody|{ph['index']}", f"{rtag}|melody|{ph['index']}"
+        s0, s1 = b0 * SLOTS, (b0 + ph["n_bars"]) * SLOTS
+        bass_in = [n for n in L["bass"]["notes"] if s0 <= n["slot"] < s1]
 
         def chord_at(s: int) -> str:
             return harm["beat_chords"][b0 + s // SLOTS][(s % SLOTS) // 4]
-        rhythm = MEL.phrase_rhythm(models["melody"], Lslots, change, cad_slot, MEL.DENSITY.get(lab, 0.75), ntag)
-        weak = {s for s in rhythm if s % 8 != 0 and s not in change and s < cad_slot and chord_at(s) != "N"}
-        onsets = sorted(set(skel_pos) | weak)
-        raw = MEL.fill_weak(onsets, {"pitches": mph["skeleton"]["pitches"]}, skel_pos, chord_at, set(change), mph["skeleton"]["floor"], tonic, mode, ntag, susp_tag=otag)
-        for n in MEL.finalize_notes(raw, Lslots, chord_at, ph["index"]):
-            n["slot"] += b0 * SLOTS
-            notes.append(n)
-    return notes
+        best = None
+        for t in range(REPHRASE_TRIES):
+            tt = f"{ntag}|try{t}"
+            rhythm = MEL.phrase_rhythm(models["melody"], Lslots, change, cad_slot, MEL.DENSITY.get(lab, 0.75), tt)
+            weak = {s for s in rhythm if s % 8 != 0 and s not in change and s < cad_slot and chord_at(s) != "N"}
+            onsets = sorted(set(skel_pos) | weak)
+            raw = MEL.fill_weak(onsets, {"pitches": mph["skeleton"]["pitches"]}, skel_pos, chord_at, set(change), mph["skeleton"]["floor"], tonic, mode, tt, susp_tag=otag)
+            cand = MEL.finalize_notes(raw, Lslots, chord_at, ph["index"])
+            for n in cand:
+                n["slot"] += s0
+            score = _violations(cand, bass_in)
+            if best is None or score < best[0]:
+                best = (score, cand, t + 1)
+            if score == 0:
+                break
+        notes += best[1]
+        tries.append({"phrase": ph["index"], "tries": best[2], "violations": best[0]})
+    return notes, tries
 
 
 def vary_recurrences(models: dict, plan: dict, labels: dict, tonic: int, mode: str, bpm: float, tag: str, vel: dict) -> tuple[dict, list, dict]:
@@ -144,7 +171,7 @@ def vary_recurrences(models: dict, plan: dict, labels: dict, tonic: int, mode: s
         groove = [dict(g, hat=DR.draw_row(DR.row_for(gm["hat_given_kick_snare"], f"{g['kick']}|{g['snare']}"), f"{rtag}|groove|bar{i}|hat|{g['kick']}|{g['snare']}"))
                   for i, g in enumerate(L["groove_bars"])]
         keys, comp = VO.keys_events(L["harmony"]["beat_chords"], L["voicings_by_slot"], bpm, rtag, models.get("comping"), vel["keys"], [[] for _ in range(L["harmony"]["n_bars"])])
-        mel_notes = _rephrase_melody(models, L, lab, tonic, mode, rtag)
+        mel_notes, mel_tries = _rephrase_melody(models, L, lab, tonic, mode, rtag)
         pool = models["fill_pool"]
         e = pool[int(draw_from({f"{j:03d}": float(x["count"]) for j, x in enumerate(pool)}, f"{tag}|fill|section{idx}|rec={r}"))]
         fb = sec["start_bar"] + nb - 1
@@ -154,7 +181,7 @@ def vary_recurrences(models: dict, plan: dict, labels: dict, tonic: int, mode: s
         by_section[idx] = L2
         info[str(idx)] = {"label": lab, "recurrence": r, "tag": rtag, "varied": True,
                           "n_hat_bars_changed": sum(1 for a, b in zip(L["groove_bars"], groove) if a["hat"] != b["hat"]),
-                          "n_melody_notes": [len(L["melody"]["notes"]), len(mel_notes)], "n_keys_notes": [len(L["keys"]), len(keys)],
+                          "n_melody_notes": [len(L["melody"]["notes"]), len(mel_notes)], "melody_rephrase": mel_tries, "n_keys_notes": [len(L["keys"]), len(keys)],
                           "fill": arr[fb].get("fill"), "comping_templates": [c["template"] for c in comp]}
     return by_section, arr, info
 
