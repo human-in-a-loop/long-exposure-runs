@@ -211,6 +211,25 @@ def main(argv=None) -> int:
     for root in (v5, v6):
         write_json_atomic(root / CHAIN_NAME, mk)
     write_json_atomic(v6 / "loo_cross_entropy_v6.json", dict(loo, schema_version=1, env_pin_sha256=ENV_PIN_SHA256, generator="scripts/v6/rules/harmony_rules_v6.py"))
+    summary = {"schema_version": 1, "generator": "scripts/v6/rules/harmony_rules_v6.py", "milestone": "M-V6-RULES-1/audio-harmony", "env_pin_sha256": ENV_PIN_SHA256,
+               "n_songs_landed": len(landed), "n_songs_used": len(used), "excluded": excluded,
+               "per_song": {s: {"title": recs[s].get("title"), "band": recs[s].get("band"), "bpm": recs[s]["bpm"], "key": f"{recs[s]['key']['tonic_name']} {recs[s]['key']['mode']}",
+                                "tonic": recs[s]["key"]["tonic"], "mode": recs[s]["key"]["mode"], "key_confidence": recs[s]["key"]["confidence"],
+                                "key_corr": recs[s]["key"]["corr"], "modulation_flag": recs[s]["key"]["track"]["modulation_flag"],
+                                "chord_fit_key": f"{recs[s]['key']['chord_fit']['tonic_name']} {recs[s]['key']['chord_fit']['mode']}",
+                                "n_fraction": recs[s]["chords"]["n_fraction"], "change_rate_per_bar": recs[s]["chords"]["change_rate_per_bar"],
+                                "n_beats": recs[s]["chords"]["n_beats_stream"], "n_bars": recs[s]["grid"]["n_bars_from_first_downbeat"],
+                                "mean_sim": recs[s]["chords"]["mean_sim"], "raw_vs_viterbi_disagreement": recs[s]["chords"]["raw_vs_viterbi_disagreement"],
+                                "used_in_chain": s in used, "loo_bits": loo["per_song"].get(s)} for s in landed},
+               "chain": {"n_states": len(mk["states"]), "degeneracy_verdict": mk["degeneracy_verdict"], "max_stationary_state": mk["max_stationary_state"],
+                         "max_stationary_mass": mk["max_stationary_mass"], "qualities_with_count_ge_threshold": mk["qualities_with_count_ge_threshold"],
+                         "segment_counts_by_quality": mk["segment_counts_by_quality"], "top_stationary_states": sorted(mk["stationary_distribution"].items(), key=lambda kv: -kv[1])[:12],
+                         "path": str((v5 / CHAIN_NAME).relative_to(WS)) if str(v5).startswith(str(WS)) else str(v5 / CHAIN_NAME)},
+               "loo_cross_entropy": {k: v for k, v in loo.items() if k != "per_song"}, "functional_summary": mk["functional_summary"],
+               "mode_counts": {m: sum(1 for s in landed if recs[s]["key"]["mode"] == m) for m in ("major", "minor")},
+               "key_histogram": {k: sum(1 for s in landed if f"{recs[s]['key']['tonic_name']} {recs[s]['key']['mode']}" == k)
+                                 for k in sorted({f"{recs[s]['key']['tonic_name']} {recs[s]['key']['mode']}" for s in landed})}}
+    write_json_atomic(WS / "data/v6/rules/harmony_v6_summary.json", summary)
     fs = mk["functional_summary"]
     print(f"corpus chain: {len(mk['states'])} states; max stationary {mk['max_stationary_state']}={mk['max_stationary_mass']}; "
           f"qualities>=8 segs {mk['qualities_with_count_ge_threshold']}; verdict {mk['degeneracy_verdict']}; used {len(used)}/{len(landed)} excluded {sorted(excluded)}")

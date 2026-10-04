@@ -9,7 +9,7 @@ milestone: M-V6-RULES-1/audio-derived-groove-bass-melody
 
 Source: the vocals stem; when it is near-silent (frame RMS < -45 dBFS) for > 70 % of the song the 'other' stem's predominant
 pitch is used instead (recorded per song). Pitch: librosa.pyin fmin 80 / fmax 1000 Hz, frame 2048, hop 256. Notes: voiced
-runs (voiced probability > 0.5), split where consecutive frames jump > 1.5 semitones, runs < 80 ms dropped, pitch = median f0
+runs (pyin's Viterbi voiced flag), split where consecutive frames jump > 1.5 semitones, runs < 80 ms dropped, pitch = median f0
 of the run rounded to MIDI. Onsets -> v5 ticks on the shared microtiming grid (stems_common_v6.grid_tick: beat index * 480 +
 16th * 120; onsets outside the fitted beats are dropped). Key: the sibling's (via bass_pitch_v6.chord_stream_for) else the
 Krumhansl fallback of the _bassroots cache. Tokens / training / sampling are scripts/v5/melody_vomm_v5's own pure helpers
@@ -29,13 +29,14 @@ _WS = Path(__file__).resolve().parent.parent.parent.parent
 if str(_WS) not in sys.path:
     sys.path.insert(0, str(_WS))
 from scripts.v6.rules import stems_common_v6 as SC  # noqa: E402  (pins + guard at import)
-from scripts.v6.rules.bass_pitch_v6 import PITCH_DIR, chord_stream_for, pyin_track  # noqa: E402
+from scripts.v6.rules.bass_pitch_v6 import PITCH_DIR, cache_valid, chord_stream_for, pyin_track  # noqa: E402
 from scripts.v6.v6_data_common import ENV_PIN_SHA256, WS, read_json, sha256_file, write_json_atomic  # noqa: E402
 import numpy as np  # noqa: E402
 from scripts.v5 import melody_vomm_v5 as V5  # noqa: E402  READ-ONLY pure exports
 
 PYIN = {"fmin": 80.0, "fmax": 1000.0, "frame_length": 2048, "hop_length": 256}
-VOICED_MIN, MIN_NOTE_S, JUMP_SEMITONES = 0.5, 0.080, 1.5
+VOICED, MIN_NOTE_S, JUMP_SEMITONES = "pyin voiced_flag (Viterbi voiced state) and finite f0", 0.080, 1.5
+NOTE_PARAMS = dict(PYIN, voiced=VOICED, min_note_s=MIN_NOTE_S, jump_semitones=JUMP_SEMITONES)
 SILENCE_DB, SILENT_FRAC_MAX = -45.0, 0.70
 PHRASE_REST_BEATS = 1.0
 MAX_ORDER = 2
@@ -45,9 +46,9 @@ OUT_V6 = WS / "data/v6/rules/melody_v6.json"
 
 
 # ------------------------------------------------------------------------------------------------- segmentation ----
-def segment_notes(f0: np.ndarray, prob: np.ndarray, t: np.ndarray, min_dur_s: float = MIN_NOTE_S, jump: float = JUMP_SEMITONES, prob_min: float = VOICED_MIN) -> list[dict]:
+def segment_notes(f0: np.ndarray, voiced_in: np.ndarray, t: np.ndarray, min_dur_s: float = MIN_NOTE_S, jump: float = JUMP_SEMITONES) -> list[dict]:
     """[{onset_s, offset_s, midi, n_frames}] from voiced runs split at > `jump` semitone frame-to-frame changes; runs < min_dur_s dropped."""
-    voiced = (prob > prob_min) & np.isfinite(f0) & (f0 > 0)
+    voiced = np.asarray(voiced_in, dtype=bool) & np.isfinite(f0) & (np.nan_to_num(f0) > 0)
     midi = np.where(voiced, 69.0 + 12.0 * np.log2(np.where(voiced, f0, 440.0) / 440.0), np.nan)
     hop = float(t[1] - t[0]) if t.size > 1 else 0.0
     notes, run = [], []
@@ -75,19 +76,20 @@ def silent_fraction(y: np.ndarray, frame_length: int = 2048, hop_length: int = 2
 def melody_notes(sha16: str) -> dict:
     """Cached note list for a song (source stem chosen by the vocals silence rule), with 30 ms post-onset levels (velocity_v6)."""
     p = PITCH_DIR / f"{sha16}_melody.json"
-    if p.exists():
-        return read_json(p)
+    cached = cache_valid(p, NOTE_PARAMS)
+    if cached is not None:
+        return cached
     voc = SC.stem(sha16, "vocals")
     sil = silent_fraction(voc)
     source = "vocals" if sil <= SILENT_FRAC_MAX else "other"
     y = voc if source == "vocals" else SC.stem(sha16, "other")
-    f0, prob, t = pyin_track(y, **PYIN)
-    notes = segment_notes(f0, prob, t)
+    f0, flag, _prob, t = pyin_track(y, **PYIN)
+    notes = segment_notes(f0, flag, t)
     lev = SC.MT.levels_db(y, np.asarray([n["onset_s"] for n in notes])) if notes else np.zeros(0)
     for n, l in zip(notes, lev):
         n["level_db"] = round(float(l), 3)
     out = {"schema_version": 1, "sha16": sha16, "source_stem": source, "vocals_silent_fraction": round(sil, 6), "silent_rule": f"frame RMS < {SILENCE_DB} dBFS on > {SILENT_FRAC_MAX:.0%} of frames -> 'other'",
-           "pyin": dict(PYIN, voiced_prob_min=VOICED_MIN, min_note_s=MIN_NOTE_S, jump_semitones=JUMP_SEMITONES), "voiced_frame_fraction": round(float(np.mean(prob > VOICED_MIN)), 6) if prob.size else 0.0,
+           "pyin": dict(NOTE_PARAMS), "voiced_frame_fraction": round(float(np.mean(flag)), 6) if flag.size else 0.0,
            "n_notes": len(notes), "notes": notes, "env_pin_sha256": ENV_PIN_SHA256}
     write_json_atomic(p, out)
     return out
@@ -224,7 +226,7 @@ def build_outputs(per_song: dict[str, dict]) -> tuple[dict, dict]:
                                                          / max(1, sum(per_song[s]["phrases"]["peak_position"]["n"] for s in songs)), 6)})
     v6 = {"schema_version": 1, "generator": "scripts/v6/rules/melody_v6.py", "milestone": v5["milestone"], "env_pin_sha256": ENV_PIN_SHA256, "n_songs": len(songs), "songs": songs,
           "max_order": MAX_ORDER, "order_stats": stats, "verdict": verdict, "sampling_check": check, "unigram_top": sorted(uni.items(), key=lambda kv: (-kv[1], kv[0]))[:20],
-          "register": v5["register"], "rhythm": v5["rhythm"], "phrases": v5["phrases_v6"], "pyin": dict(PYIN, voiced_prob_min=VOICED_MIN, min_note_s=MIN_NOTE_S, jump_semitones=JUMP_SEMITONES),
+          "register": v5["register"], "rhythm": v5["rhythm"], "phrases": v5["phrases_v6"], "pyin": dict(NOTE_PARAMS),
           "per_song": {s: {k: v for k, v in per_song[s].items() if k not in ("tokens", "ticks")} for s in songs},
           "source_stems": {src: sorted(s for s in songs if per_song[s]["source_stem"] == src) for src in {per_song[s]["source_stem"] for s in songs}}, "v5_file": str(OUT_V5.relative_to(WS))}
     return v5, v6

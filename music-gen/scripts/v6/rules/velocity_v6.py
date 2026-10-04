@@ -183,7 +183,7 @@ def build_profiles(per_song: dict[str, dict], bpms: dict[str, float]) -> tuple[d
           "R1": {"min_spread_db": R1_MIN_SPREAD_DB, "songs_passing_per_stem": r1_pass, "drums_bass_pass_ge_4_of_5": verdict, "route_2_fallback_stems": [s for s in ("drums", "bass") if not verdict[s]],
                  "rule_v6": f"drums + bass spread >= {R1_MIN_SPREAD_DB} dB on >= {int(R1_MIN_FRAC * 100)} % of N={n} songs (ceil = {need})", "n_songs": n, "min_songs_required": need,
                  "drums_bass_pass_ge_80pct": verdict},
-          "R2": r2, "route_2_ladders_if_needed": ROUTE2, "per_song_separation": {s: dict(man["demucs"], stems_sha256={k: v["sha256"] for k, v in man["songs"][s]["stems"].items()}) for s in sorted(per_song)},
+          "R2": r2, "route_2_ladders_if_needed": ROUTE2, "per_song_separation": {s: dict(man["demucs"], stems_sha256={k: v["sha256"] for k, v in man["songs"][s]["stems"].items()}) for s in sorted(per_song) if s in man["songs"]},
           "mapping": f"velocity = {V_LO:.0f} + {V_HI - V_LO:.0f} * (dB - p5) / (p95 - p5) per (song, stream), round, clip [1, 127]; degenerate (p95 - p5 < {DEGENERATE_DB}) -> 80",
           "level_definition": "20*log10(RMS over 30 ms after the onset) on the stream's stem band (microtiming_v6.levels_db)", "generator": "scripts/v6/rules/velocity_v6.py",
           "source": "audio stems (no symbolic transcription)", "wrapper": {"script": "scripts/v6/rules/velocity_v6.py", "songs": sorted(per_song), "n_songs": n, "r1_min_frac": R1_MIN_FRAC}}

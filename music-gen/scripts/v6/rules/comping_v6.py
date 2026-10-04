@@ -169,12 +169,25 @@ def verdict_of(per_song: dict, pooled: dict) -> dict:
             "rule": "COMPING_NON_DEGENERATE iff n_songs_with_ge_16_pooled_bars >= 8 AND pooled_max_slot_mass < 0.5"}
 
 
+def _one(sha: str, chords_dir: Path) -> dict:
+    """One song from disk (independent of every other song: safe to fan out over a fork pool)."""
+    from scripts.v6.microtiming_v6 import load_mono  # READ-ONLY
+    t0 = time.time()
+    r = analyse_song(sha, load_mono(STEMS_DIR / sha / f"{STEM}.wav"), read_json(chords_dir / sha / "chords_v6.json"))
+    r["wall_s"] = round(time.time() - t0, 1)
+    st = r["per_stem"][STEM]
+    print(f"{sha} {str(r['title'])[:26]:26s} band={r['band']} onsets={st['n_onset_groups']} (detected {st['n_detected']}) bars={st['n_bars_with_onsets']}/{st['n_bars_total']} "
+          f"onsets/bar={st['onsets_per_bar']} wall={r['wall_s']}s", flush=True)
+    return r
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="v6 comping-rhythm statistics from the 'other' stem")
     ap.add_argument("--songs", default=None)
     ap.add_argument("--chords-dir", default=str(CHORDS_DIR))
     ap.add_argument("--v5-out", default=str(V5_OUT))
     ap.add_argument("--v6-out", default=str(V6_OUT))
+    ap.add_argument("--workers", type=int, default=1, help="fork pool size (CPU is shared -> keep <= 2)")
     args = ap.parse_args(argv)
     cd = Path(args.chords_dir) if Path(args.chords_dir).is_absolute() else WS / args.chords_dir
     prereg = read_json(PREREG)
@@ -182,16 +195,13 @@ def main(argv=None) -> int:
         raise SystemExit(f"PREREG_MISMATCH: {PREREG} thresholds/enum differ from scripts/v5/comping_v5.py constants")
     man = read_json(STEMS_DIR / "manifest.json")
     shas = [s.strip() for s in args.songs.split(",")] if args.songs else sorted(s for s in man["songs"] if (cd / s / "chords_v6.json").exists())
-    from scripts.v6.microtiming_v6 import load_mono  # READ-ONLY
-    per_song = {}
-    for sha in shas:
-        t0 = time.time()
-        r = analyse_song(sha, load_mono(STEMS_DIR / sha / f"{STEM}.wav"), read_json(cd / sha / "chords_v6.json"))
-        r["wall_s"] = round(time.time() - t0, 1)
-        per_song[sha] = r
-        st = r["per_stem"][STEM]
-        print(f"{sha} {str(r['title'])[:26]:26s} band={r['band']} onsets={st['n_onset_groups']} (detected {st['n_detected']}) bars={st['n_bars_with_onsets']}/{st['n_bars_total']} "
-              f"onsets/bar={st['onsets_per_bar']} wall={r['wall_s']}s", flush=True)
+    if args.workers <= 1 or len(shas) <= 1:
+        per_song = {sha: _one(sha, cd) for sha in shas}
+    else:
+        import functools
+        import multiprocessing as mp
+        with mp.get_context("fork").Pool(args.workers) as pool:
+            per_song = dict(zip(shas, pool.map(functools.partial(_one, chords_dir=cd), shas, chunksize=1)))
     stats = {STEM: pool(per_song, (STEM,)), "pooled": pool(per_song, (STEM,))}
     stats["by_band"] = {str(b): pool({s: r for s, r in per_song.items() if str(r["band"]) == str(b)}, (STEM,)) for b in sorted({str(r["band"]) for r in per_song.values()})}
     verdict = verdict_of(per_song, stats["pooled"])

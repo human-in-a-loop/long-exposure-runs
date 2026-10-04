@@ -16,7 +16,10 @@ P(hat16 | kick8, snare16), P(bass16 | kick8) via groove_v5_v2.table (alpha 0.5 o
 the 3 songs with the lowest SHA-256 of f"groove_fold_v6|{sha16}" (as groove_v5_full_c84 does with its tag); same 64-bar
 SHA-256 sample, statistics, tolerance checks and verdict enum as c84 (the run asserts NOT GROOVE_V2_DEGENERATE). Held-out
 log-likelihood per bar (joint vs an independent-marginals baseline; outcomes outside a table's vocabulary take the alpha floor).
-Side file: per-band and near-tempo (+/-15 % of 100/120/152 bpm) variant models. No PRNG.
+Side file: per-band and near-tempo (+/-15 % of 100/120/152 bpm) variant models as counts-only tables. No PRNG.
+Size: the composer file is dominated by the DENSE smoothed `probs` rows the v5 schema prescribes and scripts/v6/gen/drums.row_for
+reads directly (hat_given_kick_snare: ~2.3 k contexts x ~1.2 k vocabulary outcomes); per-song blocks are ~20 KB. Probabilities
+are written rounded to PROB_DECIMALS decimals (bass_pitch_v5's precision); the variants side file carries no probs at all.
 """
 from __future__ import annotations
 
@@ -41,6 +44,7 @@ OUT_V6 = WS / "data/v6/rules/groove_v6.json"
 OUT_VARIANTS = WS / "data/v6/rules/groove_v6_variants.json"
 PREREG_C84 = WS / "data/v5/rules/groove_prereg_c84.json"
 COND = ("snare_given_kick", "hat_given_kick_snare", "bass_given_kick")
+PROB_DECIMALS = 9
 
 
 # ------------------------------------------------------------------------------------------------------ bitmasks ----
@@ -213,7 +217,7 @@ def build_outputs(songs: dict[str, dict], prereg: Path | None = None) -> tuple[d
           "n_train_songs": len(train), "n_heldout_songs": len(held), "n_train_bars": len(train_bars), "n_heldout_bars": len(held_bars),
           "pre_declared": {"alpha": G.ALPHA, "tol": G.TOL, "singleton_max": G.SINGLETON_MAX, "min_distinct": G.MIN_DISTINCT, "n_sample": G.N_SAMPLE, "enum": list(G.ENUM),
                            "heldout_pooling": "bars of the 3 held-out songs pooled"},
-          "per_song": per_song_v5, "model": model, **ev,
+          "per_song": per_song_v5, "model": round_probs(model), "probs_rounded_decimals": PROB_DECIMALS, **ev,
           "growth_reference": {"c81_n2_groove_v5": "data/v5/rules/groove_v5.json", "c82_n2_groove_v5_v2": "data/v5/rules/groove_v5_v2.json", "v6_full": "data/v6/rules/groove_v6.json"},
           "note": "v6: trained from separated stems (data/v6/stems) on the microtiming_v6 grid by scripts/v6/rules/groove_v6.py; schema of groove_v5_full_c84",
           "generator": "scripts/v6/rules/groove_v6.py", "source": "audio stems (no symbolic transcription)", "heldout_loglik": ll}
@@ -239,12 +243,24 @@ def build_outputs(songs: dict[str, dict], prereg: Path | None = None) -> tuple[d
 
 
 def _variant(sub: list, songs: dict, target=None) -> dict:
+    """Variant model WITHOUT the dense smoothed `probs` rows (counts + vocab + alpha suffice: probs = (count + alpha) / (n + alpha * |vocab|))."""
     bars = [b for s in sub for b in songs[s]["bars"]]
     if not bars:
         return {"songs": sub, "n_songs": len(sub), "n_bars": 0, "model": None, "target_bpm": target}
     m = build_model(bars)
-    return {"songs": sub, "n_songs": len(sub), "n_bars": len(bars), "target_bpm": target, "model": m, "stats": G.stats(bars), "inventory": inventory(bars),
-            "sample_stats": G.stats(G.sample(m, G.N_SAMPLE))}
+    lean = {t: {k: v for k, v in tbl.items() if k != "probs"} for t, tbl in m.items()}
+    return {"songs": sub, "n_songs": len(sub), "n_bars": len(bars), "target_bpm": target, "model": lean, "stats": G.stats(bars), "inventory": inventory(bars),
+            "sample_stats": G.stats(G.sample(m, G.N_SAMPLE)), "model_note": "counts-only tables; rebuild probs with scripts/v5/groove_v5_v2.table semantics"}
+
+
+def round_probs(model: dict, ndigits: int = PROB_DECIMALS) -> dict:
+    """The composer copy of the model with every smoothed probability rounded to `ndigits` decimals (same keys / rows / vocab).
+    Rows keep >= 5 significant digits for the smallest hat probability (alpha / (n + alpha * |vocab|) >= 1e-4); a row's sum
+    deviates from 1 by < |vocab| * 5e-10, which common.draw_row absorbs on the last vocabulary key."""
+    out = {}
+    for t, tbl in model.items():
+        out[t] = dict(tbl, probs={ctx: {o: round(p, ndigits) for o, p in row.items()} for ctx, row in tbl["probs"].items()})
+    return out
 
 
 def main(argv=None) -> int:

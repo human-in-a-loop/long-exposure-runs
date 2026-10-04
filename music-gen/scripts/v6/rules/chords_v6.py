@@ -25,7 +25,9 @@ exactly as microtiming_v6.song_bpm reads it):
             per-beat confidence (sim of the chosen chord, margin over the best chord with another root), chord-change
             positions, harmonic rhythm (chord onsets per bar), the raw-argmax vs Viterbi disagreement fraction.
   key       scripts/v6/rules/key_v6.annotate (global KK key + 8-bar key track) written into the same per-song file.
-Output: data/v6/rules/chords/<sha16>/chords_v6.json (sorted keys, schema_version). No PRNG anywhere; 7-key env pin.
+Output: data/v6/rules/chords/<sha16>/chords_v6.json (sorted keys, schema_version): chords.chord_stream (analysis stream from the
+first downbeat) + a top-level grid-indexed chord_stream view for the sibling rule scripts (bass_pitch_v6.adapt_sibling_chords).
+No PRNG anywhere; 7-key env pin.
 """
 from __future__ import annotations
 
@@ -246,7 +248,19 @@ def analyse_arrays(drums: np.ndarray, harm: np.ndarray, bpm: float, sha16: str =
                       "mean_sim": round(float(np.mean([e["sim"] for e in stream])), 6) if stream else None,
                       "mean_margin_root": round(float(np.mean([e["margin_root"] for e in stream if e["quality"] != "N"])), 6) if any(e["quality"] != "N" for e in stream) else None,
                       "chord_counts": dict(sorted(counts.items())), "harmonic_rhythm": harmonic_rhythm(stream)}}
+    out["chord_stream"] = grid_view(rec)
     return K.annotate(out)
+
+
+def grid_view(rec: dict) -> list:
+    """Sibling-facing view over EVERY grid beat (pickups included): beat = grid beat index, root / quality / state ok|N.
+    scripts/v6/rules/bass_pitch_v6.adapt_sibling_chords reads a top-level list keyed by the grid beat index; the canonical
+    analysis stream (from the first downbeat, beat = grid beat - phase) is chords.chord_stream."""
+    out = []
+    for gi, s in enumerate(rec["path"]):
+        root, q = STATES[int(s)]
+        out.append({"beat": gi, "root": root, "quality": q, "state": "N" if root is None else "ok", "chord": chord_name(root, q), "sim": round(float(rec["sims"][gi, int(s)]), 6)})
+    return out
 
 
 def check_microtiming(out: dict, sha16: str) -> dict | None:
@@ -260,35 +274,53 @@ def check_microtiming(out: dict, sha16: str) -> dict | None:
     return {"matches": all(same.values()), "fields": same, "microtiming_confidence": g.get("confidence")}
 
 
+def analyse_song(sha: str, out_dir: Path | None = None) -> dict:
+    """One song from disk -> data/v6/rules/chords/<sha16>/chords_v6.json (independent of every other song: safe to fan out)."""
+    out_dir = out_dir or OUT_DIR
+    man = read_json(STEMS_DIR / "manifest.json")
+    t0 = time.time()
+    d = STEMS_DIR / sha
+    bpm = MT.song_bpm(sha)
+    drums = MT.load_mono(d / "drums.wav")
+    harm = harmonic_mix(MT.load_mono(d / "other.wav"), MT.load_mono(d / "bass.wav"), MT.load_mono(d / "vocals.wav"))
+    out = analyse_arrays(drums, harm, bpm, sha)
+    ms = man["songs"][sha]
+    out.update({"title": ms.get("title"), "band": ms.get("band"), "inputs_sha256": {k: ms["stems"][k]["sha256"] for k in ("drums", "bass", "other", "vocals")},
+                "wall_s": round(time.time() - t0, 1)})
+    out["grid"]["matches_microtiming"] = check_microtiming(out, sha)
+    write_json_atomic(out_dir / sha / "chords_v6.json", out)
+    c, k = out["chords"], out["key"]
+    print(f"{sha} {str(out['title'])[:26]:26s} bpm={bpm:.1f} beats={out['grid']['n_beats']} phase={out['grid']['phase']} hoff={out['grid']['hypermeter_offset']} "
+          f"mt_match={(out['grid']['matches_microtiming'] or {}).get('matches')} key={k['tonic_name']} {k['mode']} conf={k['confidence']:.3f} "
+          f"N={c['n_fraction']:.3f} chg/bar={c['change_rate_per_bar']:.2f} sim={c['mean_sim']:.3f} raw!=vit={c['raw_vs_viterbi_disagreement']:.3f} wall={out['wall_s']}s", flush=True)
+    return {"sha16": sha, "key": f"{k['tonic_name']} {k['mode']}", "n_fraction": c["n_fraction"], "wall_s": out["wall_s"]}
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="v6 audio chord recognition per song (shared beat grid)")
     ap.add_argument("--songs", default=None, help="comma-separated sha16 subset (default: every song in data/v6/stems/manifest.json)")
     ap.add_argument("--out-dir", default=str(OUT_DIR))
     ap.add_argument("--force", action="store_true", help="recompute songs whose output exists")
+    ap.add_argument("--workers", type=int, default=1, help="fork pool size (songs are independent; CPU is shared -> keep <= 2)")
     args = ap.parse_args(argv)
     man = read_json(STEMS_DIR / "manifest.json")
     shas = [s.strip() for s in args.songs.split(",")] if args.songs else sorted(man["songs"])
     out_dir = Path(args.out_dir) if Path(args.out_dir).is_absolute() else WS / args.out_dir
+    todo = []
     for sha in shas:
-        op = out_dir / sha / "chords_v6.json"
-        if op.exists() and not args.force:
+        if (out_dir / sha / "chords_v6.json").exists() and not args.force:
             print(f"{sha} exists, skipped", flush=True)
-            continue
-        t0 = time.time()
-        d = STEMS_DIR / sha
-        bpm = MT.song_bpm(sha)
-        drums = MT.load_mono(d / "drums.wav")
-        harm = harmonic_mix(MT.load_mono(d / "other.wav"), MT.load_mono(d / "bass.wav"), MT.load_mono(d / "vocals.wav"))
-        out = analyse_arrays(drums, harm, bpm, sha)
-        ms = man["songs"][sha]
-        out.update({"title": ms.get("title"), "band": ms.get("band"), "inputs_sha256": {k: ms["stems"][k]["sha256"] for k in ("drums", "bass", "other", "vocals")},
-                    "wall_s": round(time.time() - t0, 1)})
-        out["grid"]["matches_microtiming"] = check_microtiming(out, sha)
-        write_json_atomic(op, out)
-        c, k = out["chords"], out["key"]
-        print(f"{sha} {str(out['title'])[:26]:26s} bpm={bpm:.1f} beats={out['grid']['n_beats']} phase={out['grid']['phase']} hoff={out['grid']['hypermeter_offset']} "
-              f"mt_match={(out['grid']['matches_microtiming'] or {}).get('matches')} key={k['tonic_name']} {k['mode']} conf={k['confidence']:.3f} "
-              f"N={c['n_fraction']:.3f} chg/bar={c['change_rate_per_bar']:.2f} sim={c['mean_sim']:.3f} raw!=vit={c['raw_vs_viterbi_disagreement']:.3f} wall={out['wall_s']}s", flush=True)
+        else:
+            todo.append(sha)
+    if args.workers <= 1 or len(todo) <= 1:
+        for sha in todo:
+            analyse_song(sha, out_dir)
+    else:
+        import functools
+        import multiprocessing as mp
+        with mp.get_context("fork").Pool(args.workers) as pool:
+            pool.map(functools.partial(analyse_song, out_dir=out_dir), todo, chunksize=1)
+    print(f"done: {len(todo)} analysed, {len(shas) - len(todo)} skipped", flush=True)
     return 0
 
 

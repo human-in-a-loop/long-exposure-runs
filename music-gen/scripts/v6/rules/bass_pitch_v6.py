@@ -7,12 +7,14 @@ milestone: M-V6-RULES-1/audio-derived-groove-bass-melody
   /usr/bin/python3 scripts/v6/rules/bass_pitch_v6.py [--songs sha16,...] [--workers 2] [--out-v5 data/v5/rules/bass_pitch_v5.json]
       [--out-v6 data/v6/rules/bass_pitch_v6.json]
 
-Pitch: librosa.pyin on the bass stem (fmin 30, fmax 500 Hz, frame 2048, hop 256) -> per bass onset of the shared onset cache
-(scripts/v6/rules/stems_common_v6.py = the microtiming grid) the median f0 of the voiced frames (voiced probability > 0.5) in
-the 60 ms after the onset, rounded to MIDI; onsets without a voiced frame are dropped (per-song voiced coverage reported).
-Chords: beat-level chord roots on the SAME grid beat index — the sibling's data/v6/rules/chords/<sha16>/chords_v6.json when
-present (adapter `adapt_sibling_chords`: list under chord_stream|beats|chords, root|root_pc per entry, beat index or a time
-re-mapped onto the grid), else the chroma-template Viterbi fallback cached in data/v6/rules/_bassroots/<sha16>.json
+Pitch: librosa.pyin on the bass stem (fmin 30, fmax 500 Hz, frame 4096, hop 256; 2048 frames leave 30-60 Hz notes mostly
+unvoiced) -> per bass onset of the shared onset cache (scripts/v6/rules/stems_common_v6.py = the microtiming grid) the median
+f0 of the frames pyin's Viterbi path marks voiced in [onset + 20 ms, onset + 120 ms) (the attack transient is skipped),
+rounded to MIDI; onsets without a voiced frame are dropped (per-song voiced coverage reported; the dropped onsets are the
+quiet ones, typically < -35 dB spill). Chords: beat-level chord roots on the SAME grid beat index — the sibling's
+data/v6/rules/chords/<sha16>/chords_v6.json when present (adapter `adapt_sibling_chords`: chords.chord_stream entries with
+`grid_beat`; generic fallbacks: a list under chord_stream|beats|chords|stream with grid_beat | time | beat and root|root_pc),
+else the chroma-template Viterbi fallback cached in data/v6/rules/_bassroots/<sha16>.json
 (DEPENDENCY, swappable: the output records the source per song). Each onset becomes a v5 tick (beat_index * 480 + sub16 * 120)
 and scripts/v5/bass_pitch_v5.analyze_song / build_model / run_sampling_check (READ-ONLY imports) classify root / fifth /
 octave / third / approach (+/-1-2 semitones into the next change's root, only when the next beat's root differs) / other
@@ -33,9 +35,10 @@ from scripts.v6.v6_data_common import ENV_PIN_SHA256, WS, read_json, sha256_file
 import numpy as np  # noqa: E402
 from scripts.v5 import bass_pitch_v5 as V5  # noqa: E402  READ-ONLY pure exports
 
-PYIN = {"fmin": 30.0, "fmax": 500.0, "frame_length": 2048, "hop_length": 256}
-ONSET_WIN_S = 0.060
-VOICED_MIN = 0.5
+PYIN = {"fmin": 30.0, "fmax": 500.0, "frame_length": 4096, "hop_length": 256}
+ONSET_WIN_S = (0.020, 0.120)  # [onset + 20 ms, onset + 120 ms)
+VOICED = "pyin voiced_flag (Viterbi voiced state) and finite f0"
+PITCH_PARAMS = dict(PYIN, onset_window_s=list(ONSET_WIN_S), voiced=VOICED)
 PITCH_DIR = SC.RULES_V6 / "_pitch"
 OUT_V5 = WS / "data/v5/rules/bass_pitch_v5.json"
 OUT_V6 = WS / "data/v6/rules/bass_pitch_v6.json"
@@ -44,39 +47,48 @@ GROOVE_V5 = WS / "data/v5/rules/groove_v5_v2_full.json"
 
 # ---------------------------------------------------------------------------------------------------------- pitch ----
 def pyin_track(y: np.ndarray, fmin: float, fmax: float, frame_length: int = 2048, hop_length: int = 256) -> tuple:
-    """(f0_hz, voiced_prob, frame_times_s) — librosa.pyin, deterministic (Viterbi)."""
+    """(f0_hz, voiced_flag, voiced_prob, frame_times_s) — librosa.pyin, deterministic (Viterbi)."""
     import librosa
-    f0, _flag, prob = librosa.pyin(y, fmin=fmin, fmax=fmax, sr=SC.MT.SR, frame_length=frame_length, hop_length=hop_length, fill_na=np.nan)
+    f0, flag, prob = librosa.pyin(y, fmin=fmin, fmax=fmax, sr=SC.MT.SR, frame_length=frame_length, hop_length=hop_length, fill_na=np.nan)
     t = librosa.frames_to_time(np.arange(f0.size), sr=SC.MT.SR, hop_length=hop_length)
-    return f0, prob, t
+    return f0, np.asarray(flag, dtype=bool), prob, t
 
 
 def hz_to_midi(f: float) -> int:
     return int(round(69.0 + 12.0 * np.log2(float(f) / 440.0)))
 
 
-def pitch_at_onsets(f0: np.ndarray, prob: np.ndarray, t: np.ndarray, onset_times: list, win_s: float = ONSET_WIN_S, prob_min: float = VOICED_MIN) -> list:
-    """Per onset: MIDI of the median voiced f0 in [onset, onset + win_s), or None when no frame is voiced (> prob_min)."""
+def pitch_at_onsets(f0: np.ndarray, voiced: np.ndarray, t: np.ndarray, onset_times: list, win_s: tuple = ONSET_WIN_S) -> list:
+    """Per onset: MIDI of the median f0 over the voiced frames in [onset + win_s[0], onset + win_s[1]), or None when none is voiced."""
     out = []
     for on in onset_times:
-        i0, i1 = int(np.searchsorted(t, on, side="left")), int(np.searchsorted(t, on + win_s, side="left"))
-        seg_f, seg_p = f0[i0:i1], prob[i0:i1]
-        ok = (seg_p > prob_min) & np.isfinite(seg_f)
+        i0, i1 = int(np.searchsorted(t, on + win_s[0], side="left")), int(np.searchsorted(t, on + win_s[1], side="left"))
+        seg_f = f0[i0:i1]
+        ok = np.asarray(voiced[i0:i1], dtype=bool) & np.isfinite(seg_f)
         out.append(hz_to_midi(float(np.median(seg_f[ok]))) if ok.any() else None)
     return out
 
 
+def cache_valid(path: Path, params: dict, n_onsets: int | None = None) -> dict | None:
+    """The cached record when it exists and was produced with `params` (and, if given, over the same onset count), else None."""
+    if not path.exists():
+        return None
+    d = read_json(path)
+    return d if d.get("pyin") == params and (n_onsets is None or d.get("n_onsets") == n_onsets) else None
+
+
 def bass_pitches(sha16: str, onsets: dict) -> dict:
     """Cached per-onset MIDI list for the bass stream of the onset cache (same order as onsets['streams']['bass'])."""
-    p = PITCH_DIR / f"{sha16}_bass.json"
-    if p.exists():
-        return read_json(p)
-    y = SC.stem(sha16, "bass")
-    f0, prob, t = pyin_track(y, **PYIN)
     rows = onsets["streams"]["bass"]
-    midi = pitch_at_onsets(f0, prob, t, [r[2] for r in rows])
-    voiced_frames = float(np.mean(prob > VOICED_MIN)) if prob.size else 0.0
-    out = {"schema_version": 1, "sha16": sha16, "stem": "bass", "pyin": dict(PYIN, onset_window_s=ONSET_WIN_S, voiced_prob_min=VOICED_MIN), "n_onsets": len(rows),
+    p = PITCH_DIR / f"{sha16}_bass.json"
+    cached = cache_valid(p, PITCH_PARAMS, len(rows))
+    if cached is not None:
+        return cached
+    y = SC.stem(sha16, "bass")
+    f0, flag, _prob, t = pyin_track(y, **PYIN)
+    midi = pitch_at_onsets(f0, flag & np.isfinite(f0), t, [r[2] for r in rows])
+    voiced_frames = float(np.mean(flag)) if flag.size else 0.0
+    out = {"schema_version": 1, "sha16": sha16, "stem": "bass", "pyin": dict(PITCH_PARAMS), "n_onsets": len(rows),
            "n_pitched": sum(1 for m in midi if m is not None), "midi": midi, "voiced_frame_fraction": round(voiced_frames, 6), "env_pin_sha256": ENV_PIN_SHA256}
     out["voiced_coverage"] = round(out["n_pitched"] / out["n_onsets"], 6) if rows else None
     write_json_atomic(p, out)
@@ -85,25 +97,42 @@ def bass_pitches(sha16: str, onsets: dict) -> dict:
 
 # --------------------------------------------------------------------------------------------------------- chords ----
 def adapt_sibling_chords(d: dict, grid: dict) -> tuple[list, dict | None, dict]:
-    """Best-effort adapter for the sibling's chords_v6.json -> v5 chord_stream [{beat, root, quality, state}] on the grid beat index."""
-    seq = next((d[k] for k in ("chord_stream", "beats", "chords", "stream") if isinstance(d.get(k), list)), None)
+    """Adapter for the sibling's chords_v6.json -> v5 chord_stream [{beat, root, quality, state}] on the GRID beat index.
+
+    scripts/v6/rules/chords_v6.py writes d['chords']['chord_stream'] whose entries carry `grid_beat` (microtiming grid beat index,
+    the index bass_pitch_v6.onset_ticks uses), `beat` (stream beat = grid beat - phase), `root` (None on 'N') and `quality`.
+    Generic fallbacks: a list under chord_stream|beats|chords|stream; per entry grid_beat, else a time re-mapped onto the grid,
+    else `beat` (+ the file's grid phase when its bar_convention declares the 'grid beat - phase' stream convention)."""
+    seq = None
+    for k in ("chord_stream", "beats", "chords", "stream"):
+        v = d.get(k)
+        if isinstance(v, dict) and isinstance(v.get("chord_stream"), list):
+            seq = v["chord_stream"]
+            break
+        if isinstance(v, list):
+            seq = v
+            break
     if seq is None:
-        raise ValueError("chords_v6.json: no beat-level list under chord_stream|beats|chords|stream")
+        raise ValueError("chords_v6.json: no beat-level list under chords.chord_stream|chord_stream|beats|chords|stream")
     key = d.get("key") if isinstance(d.get("key"), dict) else ({"tonic": d.get("tonic"), "mode": d.get("mode", "major")} if d.get("tonic") is not None else None)
-    stream, notes, by_time = {}, {"entries": len(seq)}, 0
+    conv = str((d.get("grid") or {}).get("bar_convention", ""))
+    phase = int((d.get("grid") or {}).get("phase", 0)) if "grid beat - phase" in conv else 0
+    stream, notes = {}, {"entries": len(seq), "by_grid_beat": 0, "by_time": 0, "by_stream_beat": 0, "stream_beat_phase_added": phase}
     for i, e in enumerate(seq):
         root = e.get("root", e.get("root_pc"))
         tm = next((e[k] for k in ("time", "beat_time", "t", "t_s") if k in e), None)
-        if tm is not None:
+        if "grid_beat" in e:
+            beat, notes["by_grid_beat"] = int(e["grid_beat"]), notes["by_grid_beat"] + 1
+        elif tm is not None:
             g = SC.time_to_grid(float(tm), grid["beat_times"])
             if g is None:
                 continue
-            beat, by_time = g[0], by_time + 1
+            beat, notes["by_time"] = g[0], notes["by_time"] + 1
         else:
-            beat = int(e.get("beat", i))
+            beat, notes["by_stream_beat"] = int(e.get("beat", i)) + phase, notes["by_stream_beat"] + 1
         state = e.get("state") or ("N" if root is None else "ok")
-        stream[beat] = {"beat": beat, "root": None if root is None or state == "N" else int(root) % 12, "quality": e.get("quality"), "state": "N" if root is None else state}
-    notes["mapped_by_time"] = by_time
+        n_state = root is None or state == "N" or e.get("quality") == "N" or e.get("chord") == "N"
+        stream[beat] = {"beat": beat, "root": None if n_state else int(root) % 12, "quality": None if n_state else e.get("quality"), "state": "N" if n_state else state}
     return [stream[b] for b in sorted(stream)], key, notes
 
 
@@ -164,10 +193,12 @@ def build_outputs(per_song: dict[str, dict]) -> tuple[dict, dict]:
                           "root": "pc == root and not octave", "fifth": "(pc - root) % 12 == 7", "third": "(pc - root) % 12 in {3, 4}",
                           "octave": "pc == root and pitch >= lowest root-pc bass note of the chord segment + 12", "other": "remaining onsets", "conditional_key": "<slot>|<chg>",
                           "smoothing": "probs = (count + 0.5) / (n + 0.5 * 6) over class_order", "register": "per song median / p25 (iqr_lo) / p75 (iqr_hi) of pitched bass onsets",
-                          "gm_bass_range": [V5.GM_BASS_LO, V5.GM_BASS_HI], "pitch": f"librosa.pyin {PYIN}; median voiced f0 (prob > {VOICED_MIN}) over {int(ONSET_WIN_S * 1000)} ms after the onset"},
+                          "gm_bass_range": [V5.GM_BASS_LO, V5.GM_BASS_HI],
+                          "pitch": f"librosa.pyin {PYIN}; median f0 of the Viterbi-voiced frames in [onset + {int(ONSET_WIN_S[0] * 1000)} ms, onset + {int(ONSET_WIN_S[1] * 1000)} ms)"},
           **model, "sampling_check": check, "fd1": "recorded, not tuned",
-          "disclosures": ["pitch from separated bass stems (htdemucs) via pyin; onsets without a voiced frame in the 60 ms window are dropped (voiced_coverage per song)",
-                          "chord roots: sibling chords_v6.json when present else chroma-template Viterbi fallback (per-song chord_source)",
+          "disclosures": ["pitch from separated bass stems (htdemucs) via pyin; onsets without a Viterbi-voiced frame in [20 ms, 120 ms) after the onset are dropped "
+                          "(voiced_coverage per song; the dropped onsets are the quiet ones, typically < -35 dB spill detected as bass onsets)",
+                          "chord roots: sibling chords_v6.json (chords.chord_stream[].grid_beat) when present else chroma-template Viterbi fallback (per-song chord_source)",
                           "octave = pc == chord root AND pitch >= lowest root-pc bass note of the chord segment + 12 (v5 definition, measurable here too)",
                           "chord_change_flag is 0 when the next beat is null/'N' or past the end of chord_stream"],
           "generator": "scripts/v6/rules/bass_pitch_v6.py", "source": "audio stems (no symbolic transcription)"}
@@ -180,7 +211,7 @@ def build_outputs(per_song: dict[str, dict]) -> tuple[dict, dict]:
                            "counts": model["per_song"][s]["counts"], "class_fractions": {c: round(v / a["n_used"], 6) if a["n_used"] else None for c, v in model["per_song"][s]["counts"].items()},
                            "chord_source": a["chord_source"]["source"], "key": a["key"], "n_chord_beats": a["n_chord_beats"], "n_chord_N": a["n_chord_N"]} for s, a in per_song.items()},
           "chord_sources": {src: sorted(s for s, a in per_song.items() if a["chord_source"]["source"] == src) for src in {a["chord_source"]["source"] for a in per_song.values()}},
-          "pyin": dict(PYIN, onset_window_s=ONSET_WIN_S, voiced_prob_min=VOICED_MIN), "v5_file": str(OUT_V5.relative_to(WS))}
+          "pyin": dict(PITCH_PARAMS), "v5_file": str(OUT_V5.relative_to(WS))}
     return v5, v6
 
 
