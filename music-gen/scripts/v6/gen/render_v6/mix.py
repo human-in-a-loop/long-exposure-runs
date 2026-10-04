@@ -4,14 +4,17 @@
 created: 2026-10-04
 milestone: M-V6-RENDER-4/realistic-renderer
 
-Per stem (role): high-pass (bass 30 Hz, keys/guitar 80 Hz, pads 120 Hz, drums 25 Hz, melody 100 Hz), gentle compression
-(drums 4:1 fast, bass 3:1, keys/guitar/melody 2:1, pad 1.5:1), RMS gain staging to a per-role level (deterministic gain,
-clipped [0.05, 8]), stereo placement (bass + drums centre — bass mono, kit keeps its own stereo image; keys +20 %, guitar
+Per stem (role): high-pass (bass 30 Hz, keys/guitar 80 Hz, pads 120 Hz, drums 25 Hz, melody 100 Hz), RMS gain staging to a
+per-role level (deterministic gain, clipped [0.05, 8]), THEN gentle compression with the threshold a fixed headroom above
+that level (drums 4:1 fast, bass 3:1, keys/guitar/melody 2:1, pad 1.5:1), stereo placement (bass + drums centre — bass mono, kit keeps its own stereo image; keys +20 %, guitar
 -25 %, pad wide (kept stereo + 1.3 side), melody +/-10 % by a SHA draw, percussion -30 %), a shared reverb bus
 (pedalboard.Reverb; room_size from the band and the ballad flag/tempo; per-role sends; bass dry), bus compression 2:1, a
 mild high-shelf steer of the spectral tilt toward the band's corpus median (|gain| <= 3 dB), loudness normalisation to the
-TARGET (corpus median integrated LUFS clamped to -14 +/- 2) and a true-peak limiter at -1 dBTP (pedalboard.Limiter +
-4x-oversampled true-peak verification; up to 3 normalise/limit passes so the final LUFS is within +/-0.5 of target).
+TARGET (corpus median integrated LUFS clamped to -14 +/- 2) and a true-peak limiter at -1 dBTP. The limiter is this
+module's own numpy look-ahead design (pedalboard.Limiter adds ~5 dB of make-up gain, which made a normalise/limit loop
+diverge): per-sample required gain -> 5 ms running minimum (look-ahead) -> exponential release (80 ms, max-with-decay
+computed by log2(n) vectorised doubling passes) -> 5 ms moving average -> 4x-oversampled true-peak check; up to 3
+normalise/limit passes so the final integrated LUFS is within +/-0.5 of target.
 Reference: measure_reference() reads corpus/ratings/ingest_receipts.jsonl (29 songs; bands 4/5/7), measures integrated
 LUFS (pyloudnorm), crest factor (peak dB - RMS dB) and spectral tilt (10*log10 of energy > 4 kHz over 200 Hz - 2 kHz,
 Hann 4096 frames) per song and per-band medians, and writes scripts/v6/patches/mix_reference_v6.json (small, tracked)
@@ -33,8 +36,10 @@ SR = 44100
 TARGET_LUFS_CLAMP = (-16.0, -12.0)
 TRUE_PEAK_DBTP = -1.0
 HPF_HZ = {"drums": 25.0, "bass": 30.0, "keys": 80.0, "comp_guitar": 80.0, "melody": 100.0, "pad": 120.0, "percussion": 150.0}
-COMP = {"drums": (-14.0, 4.0, 3.0, 80.0), "bass": (-16.0, 3.0, 10.0, 120.0), "keys": (-18.0, 2.0, 15.0, 150.0), "comp_guitar": (-18.0, 2.0, 10.0, 120.0),
-        "melody": (-18.0, 2.0, 10.0, 150.0), "pad": (-20.0, 1.5, 30.0, 300.0), "percussion": (-16.0, 3.0, 5.0, 100.0)}  # thr dB, ratio, attack ms, release ms
+COMP = {"drums": (8.0, 4.0, 3.0, 80.0), "bass": (6.0, 3.0, 10.0, 120.0), "keys": (8.0, 2.0, 15.0, 150.0), "comp_guitar": (8.0, 2.0, 10.0, 120.0),
+        "melody": (8.0, 2.0, 10.0, 150.0), "pad": (6.0, 1.5, 30.0, 300.0), "percussion": (8.0, 3.0, 5.0, 100.0)}  # threshold headroom dB above the stem RMS target, ratio, attack ms, release ms
+BUS_COMP = {"threshold_db": -10.0, "ratio": 2.0, "attack_ms": 10.0, "release_ms": 150.0}
+LIMITER = {"lookahead_ms": 5.0, "release_ms": 80.0}
 STEM_RMS_DB = {"drums": -18.0, "bass": -18.0, "keys": -22.0, "comp_guitar": -24.0, "melody": -22.0, "pad": -26.0, "percussion": -27.0}
 PAN = {"drums": "stereo", "bass": 0.0, "keys": 0.2, "comp_guitar": -0.25, "pad": "wide", "melody": "sha", "percussion": -0.3}
 REVERB_SEND = {"drums": 0.12, "bass": 0.0, "keys": 0.22, "comp_guitar": 0.18, "pad": 0.35, "melody": 0.28, "percussion": 0.15}
@@ -162,45 +167,71 @@ def place(x: np.ndarray, mode, melody_pan: float) -> np.ndarray:
 def process_stem(x: np.ndarray, sr: int, role: str, melody_pan: float = 0.1) -> tuple[np.ndarray, dict]:
     """HPF -> compressor -> RMS gain -> placement. x (n, 2) float32. Returns (stereo, info)."""
     import pedalboard as pb
-    thr, ratio, att, rel = COMP.get(role, COMP["melody"])
-    board = pb.Pedalboard([pb.HighpassFilter(cutoff_frequency_hz=HPF_HZ.get(role, 80.0)), pb.Compressor(threshold_db=thr, ratio=ratio, attack_ms=att, release_ms=rel)])
-    y = board(np.ascontiguousarray(x.T, dtype=np.float32), sr).T.astype(np.float64)
+    head, ratio, att, rel = COMP.get(role, COMP["melody"])
+    target = STEM_RMS_DB.get(role, -22.0)
+    y = pb.Pedalboard([pb.HighpassFilter(cutoff_frequency_hz=HPF_HZ.get(role, 80.0))])(np.ascontiguousarray(x.T, dtype=np.float32), sr).T.astype(np.float64)
     rms = float(np.sqrt((y ** 2).mean())) if y.size else 0.0
-    gain = (10 ** (STEM_RMS_DB.get(role, -22.0) / 20.0)) / rms if rms > 1e-9 else 1.0
+    gain = (10 ** (target / 20.0)) / rms if rms > 1e-9 else 1.0
     gain = float(min(GAIN_CLIP[1], max(GAIN_CLIP[0], gain)))
-    y = place(y * gain, PAN.get(role, 0.0), melody_pan)
+    thr = target + head
+    y = pb.Pedalboard([pb.Compressor(threshold_db=thr, ratio=ratio, attack_ms=att, release_ms=rel)])(np.ascontiguousarray((y * gain).T, dtype=np.float32), sr).T.astype(np.float64)
+    y = place(y, PAN.get(role, 0.0), melody_pan)
     info = {"hpf_hz": HPF_HZ.get(role, 80.0), "compressor": {"threshold_db": thr, "ratio": ratio, "attack_ms": att, "release_ms": rel}, "rms_in_dbfs": round(20 * np.log10(max(rms, 1e-9)), 3),
+            "rms_out_dbfs": round(20 * np.log10(max(float(np.sqrt((y ** 2).mean())), 1e-9)), 3), "peak_out_dbfs": round(20 * np.log10(max(float(np.abs(y).max()), 1e-9)), 3),
             "gain": round(gain, 6), "gain_db": round(20 * np.log10(gain), 3), "target_rms_dbfs": STEM_RMS_DB.get(role, -22.0), "pan": PAN.get(role, 0.0) if PAN.get(role) != "sha" else melody_pan,
             "reverb_send": REVERB_SEND.get(role, 0.2)}
     return y.astype(np.float32), info
 
 
+def peak_limit(x: np.ndarray, sr: int, ceiling_db: float = TRUE_PEAK_DBTP, lookahead_ms: float = 5.0, release_ms: float = 80.0) -> tuple[np.ndarray, dict]:
+    """Deterministic look-ahead peak limiter on (n, 2): gain = min(1, ceiling/|x|) -> running min over +/-L -> exponential
+    release (max-with-decay, log2(n) doubling passes) -> L-point moving average -> x * gain -> true-peak trim."""
+    from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    a = np.asarray(x, dtype=np.float64)
+    ceil = 10 ** (ceiling_db / 20.0) * 0.98  # 0.2 dB of margin for the inter-sample peaks the oversampled check catches
+    L = max(1, int(sr * lookahead_ms / 1000.0))
+    need = np.minimum(1.0, ceil / np.maximum(np.abs(a).max(axis=1), 1e-12))
+    g = minimum_filter1d(need, size=2 * L + 1, mode="nearest")
+    d = 1.0 - g  # gain-reduction depth; release: d[n] = max_k d[n-k] * r**k
+    r = float(np.exp(-1.0 / (release_ms / 1000.0 * sr)))
+    step = 1
+    while step < len(d):
+        shifted = np.empty_like(d)
+        shifted[:step], shifted[step:] = 0.0, d[:-step] * (r ** step)
+        d = np.maximum(d, shifted)
+        step *= 2
+    g = uniform_filter1d(1.0 - d, size=L, mode="nearest")
+    y = a * g[:, None]
+    tp = true_peak_dbtp(y, sr)
+    trim = 10 ** ((ceiling_db - tp) / 20.0) if tp > ceiling_db else 1.0
+    y *= trim
+    return y, {"ceiling_dbtp": ceiling_db, "lookahead_ms": lookahead_ms, "release_ms": release_ms, "max_gain_reduction_db": round(-20 * np.log10(max(float(g.min()), 1e-9)), 3),
+               "fraction_samples_reduced": round(float((g < 0.999).mean()), 6), "true_peak_trim_db": round(20 * np.log10(trim), 3)}
+
+
 def master(mix: np.ndarray, sr: int, target_lufs: float, tilt_target_db: float | None, passes: int = 3) -> tuple[np.ndarray, dict]:
     import pedalboard as pb
-    y = pb.Pedalboard([pb.Compressor(threshold_db=-12.0, ratio=2.0, attack_ms=30.0, release_ms=200.0)])(np.ascontiguousarray(mix.T, dtype=np.float32), sr).T
+    y = pb.Pedalboard([pb.Compressor(**BUS_COMP)])(np.ascontiguousarray(mix.T, dtype=np.float32), sr).T.astype(np.float64)
     tilt_before = spectral_tilt_db(y, sr)
     shelf_db = 0.0
     if tilt_target_db is not None:
         shelf_db = float(min(3.0, max(-3.0, 0.5 * (tilt_target_db - tilt_before))))
-        y = pb.Pedalboard([pb.HighShelfFilter(cutoff_frequency_hz=4000.0, gain_db=shelf_db)])(np.ascontiguousarray(y.T, dtype=np.float32), sr).T
-    history, out = [], y.astype(np.float64)
+        y = pb.Pedalboard([pb.HighShelfFilter(cutoff_frequency_hz=4000.0, gain_db=shelf_db)])(np.ascontiguousarray(y.T, dtype=np.float32), sr).T.astype(np.float64)
+    pre_lufs = lufs(y, sr)
+    history, gain_db, out, linfo = [], target_lufs - pre_lufs, y, {}
     for i in range(passes):
-        cur = lufs(out, sr)
-        g = 10 ** ((target_lufs - cur) / 20.0)
-        lim = pb.Pedalboard([pb.Limiter(threshold_db=TRUE_PEAK_DBTP - 0.3, release_ms=120.0)])
-        out = lim(np.ascontiguousarray((out * g).T, dtype=np.float32), sr).T.astype(np.float64)
-        tp = true_peak_dbtp(out, sr)
-        if tp > TRUE_PEAK_DBTP:
-            out *= 10 ** ((TRUE_PEAK_DBTP - tp) / 20.0)
+        out, linfo = peak_limit(y * (10 ** (gain_db / 20.0)), sr, TRUE_PEAK_DBTP, **LIMITER)
         after = lufs(out, sr)
-        history.append({"pass": i + 1, "lufs_before": round(cur, 3), "gain_db": round(20 * np.log10(g), 3), "true_peak_dbtp": round(true_peak_dbtp(out, sr), 3), "lufs_after": round(after, 3)})
+        history.append({"pass": i + 1, "gain_db": round(gain_db, 3), "lufs_after": round(after, 3), "limiter": linfo})
         if abs(after - target_lufs) <= 0.2:
             break
+        gain_db += (target_lufs - after)
     final = np.clip(out, -1.0, 1.0)
-    info = {"bus_compressor": {"threshold_db": -12.0, "ratio": 2.0, "attack_ms": 30.0, "release_ms": 200.0}, "tilt_before_db": round(tilt_before, 3), "tilt_target_db": tilt_target_db,
-            "tilt_shelf_gain_db": round(shelf_db, 3), "normalise_limit_passes": history, "target_lufs": target_lufs, "lufs_final": round(lufs(final, sr), 3),
+    info = {"bus_compressor": dict(BUS_COMP), "tilt_before_db": round(tilt_before, 3), "tilt_target_db": tilt_target_db, "tilt_shelf_gain_db": round(shelf_db, 3),
+            "lufs_pre_normalise": round(pre_lufs, 3), "normalise_limit_passes": history, "target_lufs": target_lufs, "lufs_final": round(lufs(final, sr), 3),
             "true_peak_dbtp_final": round(true_peak_dbtp(final, sr), 3), "sample_peak_dbfs_final": round(20 * np.log10(max(float(np.abs(final).max()), 1e-9)), 3),
-            "crest_factor_db_final": round(crest_db(final), 3), "spectral_tilt_db_final": round(spectral_tilt_db(final, sr), 3), "clipped_samples": int((np.abs(out) > 1.0).sum())}
+            "crest_factor_db_final": round(crest_db(final), 3), "spectral_tilt_db_final": round(spectral_tilt_db(final, sr), 3), "clipped_samples": int((np.abs(out) > 1.0).sum()),
+            "limiter": linfo}
     return final.astype(np.float32), info
 
 

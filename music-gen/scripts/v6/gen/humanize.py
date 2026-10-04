@@ -80,7 +80,7 @@ def _median(xs: list, default: float) -> float:
 
 
 def select_model(mt: dict | None, bpm: float) -> dict:
-    return M.model_for_bpm(mt, bpm) if mt else M.prior_model()
+    return M.model_for_bpm(mt, bpm) if mt else M.prior_model(bpm)
 
 
 def swing_ms_of(pool: dict, s16_ms: float) -> float:
@@ -217,6 +217,9 @@ def _timing(song: dict, pool: dict, tag: str, s16_ms: float) -> dict:
             k["ritardando"] = True
     for n in mel:
         n["offset_ms"] = max(-clip, min(clip, n["offset_ms"]))
+    for stem in ("drums", "bass", "keys", "melody"):  # the song cannot start before t = 0 (the serializer clamps ticks at 0)
+        for n in song[stem]:
+            n["offset_ms"] = max(n["offset_ms"], -n["slot"] * s16_ms)
     return {"swing_ms": round(swing, 3), "clip_ms": round(clip, 3), "bass_kick_lag_ms": lag, "n_bass_following_kick": sum(1 for n in song["bass"] if n.get("follows_kick"))}
 
 

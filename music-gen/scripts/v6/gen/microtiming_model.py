@@ -63,7 +63,7 @@ def merge_cells(a: list, b: list) -> list:
 def empty_stream() -> dict:
     return {"ms": empty_cells(16), "f16": empty_cells(16), "db": empty_cells(16), "bar_mod4_db": empty_cells(4), "bar_mod8_db": empty_cells(8),
             "beat_class_db": {k: {"n": 0, "s": 0.0, "ss": 0.0} for k in BEAT_CLASSES}, "hist_f16": [0] * 41,
-            "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "level_mean_db": None}
+            "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "n_duplicate": 0, "level_mean_db": None}
 
 
 def hist_index(f16: float) -> int:
@@ -77,8 +77,8 @@ def merge_stream(a: dict, b: dict) -> dict:
            "beat_class_db": {k: {"n": a["beat_class_db"][k]["n"] + b["beat_class_db"][k]["n"], "s": a["beat_class_db"][k]["s"] + b["beat_class_db"][k]["s"],
                                  "ss": a["beat_class_db"][k]["ss"] + b["beat_class_db"][k]["ss"]} for k in BEAT_CLASSES},
            "hist_f16": [x + y for x, y in zip(a["hist_f16"], b["hist_f16"])]}
-    for k in ("n_detected", "n_assigned", "n_rejected", "n_out_of_grid"):
-        out[k] = a[k] + b[k]
+    for k in ("n_detected", "n_assigned", "n_rejected", "n_out_of_grid", "n_duplicate"):
+        out[k] = a.get(k, 0) + b.get(k, 0)
     out["level_mean_db"] = None
     return out
 
@@ -144,7 +144,7 @@ def stream_summary(st: dict, pooled_db_center: bool = True) -> dict:
             "vel_by_bar_mod8_db": [center(cell_mean(c)) for c in st["bar_mod8_db"]],
             "vel_by_beat_class_db": {k: center(cell_mean(st["beat_class_db"][k])) for k in BEAT_CLASSES},
             "hist_f16": list(st["hist_f16"]), "n_detected": st["n_detected"], "n_assigned": st["n_assigned"], "n_rejected": st["n_rejected"],
-            "n_out_of_grid": st["n_out_of_grid"], "reject_rate": round(st["n_rejected"] / st["n_detected"], 4) if st["n_detected"] else None}
+            "n_out_of_grid": st["n_out_of_grid"], "n_duplicate": st.get("n_duplicate", 0), "reject_rate": round(st["n_rejected"] / st["n_detected"], 4) if st["n_detected"] else None}
 
 
 def pool(entries: dict, variant: str, target_bpm=None) -> dict:
@@ -211,26 +211,28 @@ def gaussian_hist(mean_f16: float, std_f16: float, n: int = 1000) -> list:
 
 
 def _prior_stream(mean_ms: float, std_ms: float, swing_ms: float, vel_slot: list, bpm: float = 110.0) -> dict:
+    """hist_f16 = 0.65 N(mean) + 0.35 N(mean + swing): the odd-8th slots carry ~1/3 of the onsets of an 8th-note pattern."""
     s16_ms = 60000.0 / bpm / 4
+    hist = [int(round(0.65 * a + 0.35 * b)) for a, b in zip(gaussian_hist(mean_ms / s16_ms, std_ms / s16_ms), gaussian_hist((mean_ms + swing_ms) / s16_ms, std_ms / s16_ms))]
     return {"slot_mean_ms": [round(mean_ms + (swing_ms if i in ODD_8TH else 0.0), 3) for i in range(16)], "slot_std_ms": [std_ms] * 16,
             "slot_mean_f16": [round((mean_ms + (swing_ms if i in ODD_8TH else 0.0)) / s16_ms, 5) for i in range(16)], "slot_std_f16": [round(std_ms / s16_ms, 5)] * 16,
             "slot_n": [0] * 16, "slot_resid_mean_ms": [mean_ms] * 16, "slot_resid_mean_f16": [round(mean_ms / s16_ms, 5)] * 16,
             "swing": {"offset_ms": swing_ms, "offset_f16": round(swing_ms / s16_ms, 5), "ratio": round((2 + swing_ms / s16_ms) / (2 - swing_ms / s16_ms), 4), "n_odd": 0, "n_even": 0},
             "vel_by_slot_db": vel_slot, "vel_by_bar_mod4_db": [0.3, -0.2, 0.0, 0.6], "vel_by_bar_mod8_db": [0.5, -0.3, 0.0, 0.4, 0.2, -0.3, 0.1, 1.0],
             "vel_by_beat_class_db": {"downbeat": 1.5, "backbeat": 1.0, "beat3": 0.3, "offbeat": -2.5},
-            "hist_f16": gaussian_hist(mean_ms / s16_ms, std_ms / s16_ms), "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "reject_rate": None}
+            "hist_f16": hist, "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "reject_rate": None}
 
 
-def prior_model() -> dict:
-    """Fixture-mode fallback (no corpus stems): modest, straight-8th pop/soul feel; documented as 'prior' in every manifest."""
+def prior_model(bpm: float = 110.0) -> dict:
+    """Fixture-mode fallback (no corpus stems): modest, lightly swung pop/soul feel at `bpm`; documented as 'prior' in every manifest."""
     hat_vel = [2.0, -3.0, -1.0, -3.5, 1.0, -3.0, -1.0, -3.5, 1.5, -3.0, -1.0, -3.5, 1.0, -3.0, -1.0, -3.0]
     kick_vel = [2.0, -2.0, -1.0, -2.0, 0.0, -2.0, -1.0, -2.0, 1.0, -2.0, -1.0, -2.0, 0.0, -2.0, -0.5, -2.0]
     snare_vel = [0.0, -6.0, -4.0, -6.0, 2.0, -6.0, -4.0, -6.0, 0.0, -6.0, -4.0, -6.0, 2.0, -6.0, -3.0, -6.0]
     bass_vel = [1.5, -2.0, -1.0, -2.0, 0.5, -2.0, -0.5, -2.0, 1.0, -2.0, -1.0, -2.0, 0.5, -2.0, -0.5, -2.0]
-    streams = {"kick": _prior_stream(0.0, 6.0, 4.0, kick_vel), "snare": _prior_stream(2.0, 8.0, 5.0, snare_vel),
-               "hat": _prior_stream(-1.0, 7.0, 6.0, hat_vel), "bass": _prior_stream(6.0, 10.0, 4.0, bass_vel)}
+    streams = {"kick": _prior_stream(0.0, 6.0, 4.0, kick_vel, bpm), "snare": _prior_stream(2.0, 8.0, 5.0, snare_vel, bpm),
+               "hat": _prior_stream(-1.0, 7.0, 6.0, hat_vel, bpm), "bass": _prior_stream(6.0, 10.0, 4.0, bass_vel, bpm)}
     dur_hist = [0, 0, 0, 0, 0, 0, 1, 2, 3, 5, 8, 10, 12, 14, 14, 12, 9, 6, 3, 1]
-    return {"variant": "prior", "target_bpm": None, "songs": [], "n_songs": 0, "grid_confidence_tally": {}, "streams": streams,
+    return {"variant": "prior", "target_bpm": round(float(bpm), 3), "songs": [], "n_songs": 0, "grid_confidence_tally": {}, "streams": streams,
             "swing_ratios_drums": {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3, "values": [], "n": 0, "iqr": 0.12},
             "swing_ratios_hat": {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3, "n": 0},
             "bass_kick_lag_ms": {"n": 0, "mean": 6.0, "std": 8.0},

@@ -5,8 +5,8 @@ created: 2026-10-04
 milestone: M-V6-RENDER-4/realistic-renderer
 
 realize_velocities(): the composer emits a handful of discrete velocities per role (keys 80/88, bass 85/100, melody
-85..105). Those are mapped through a per-role curve onto the role's playing range (drums 45..125, bass 55..118, keys
-40..112, ...) — rank-normalised input -> gamma curve -> metric accent (downbeat +8, beats +4, 8ths 0, 16th off-beats -4;
+85..105). Those are mapped through a per-role curve onto the role's playing range (drums 40..118, bass 50..112, keys
+40..108, ...) — deviation from the composer's mean scaled by k in [1, 3] about the range centre -> gamma curve -> metric accent (downbeat +8, beats +4, 8ths 0, 16th off-beats -4;
 hats -10 so the kit breathes) -> per-bar SHA offset (+/-4, slow dynamics) -> per-note SHA jitter (+/-5) -> clamp. If the
 realized range still spans < 60 units the velocities are stretched about their mean so the sfz velocity layers are
 actually crossed. All draws are SHA-256 uniforms on seed-derived tags (common.u) — no PRNG.
@@ -21,7 +21,7 @@ from __future__ import annotations
 from scripts.v6.gen.common import u
 
 MIN_SPAN = 60
-ROLE_RANGE = {"drums": (45, 125), "bass": (55, 118), "keys": (40, 112), "comp_guitar": (45, 112), "melody": (60, 122), "pad": (50, 100), "percussion": (40, 110)}
+ROLE_RANGE = {"drums": (40, 118), "bass": (50, 112), "keys": (40, 108), "comp_guitar": (42, 106), "melody": (55, 114), "pad": (50, 98), "percussion": (40, 104)}
 ROLE_GAMMA = {"drums": 0.9, "bass": 1.0, "keys": 1.1, "comp_guitar": 1.0, "melody": 0.9, "pad": 1.0, "percussion": 1.0}
 METRIC_ACCENT = {0: 8, 4: 4, 8: 4, 12: 4}  # 16th position in bar -> accent; 8ths 0; off-16ths -4
 DRUM_CLASS_ACCENT = {42: -10, 44: -12, 46: -6, 36: 4, 38: 2, 40: 2}  # closed hat, pedal hat, open hat, kick, snares
@@ -45,10 +45,14 @@ def realize_velocities(notes: list, role: str, patch: dict, tag: str, bpm: float
     lo, hi = ROLE_RANGE.get(role, (50, 115))
     g = ROLE_GAMMA.get(role, 1.0)
     vin = [int(n["velocity"]) for n in notes]
-    vmin, vmax = min(vin), max(vin)
+    vmin, vmax, mean_in = min(vin), max(vin), sum(vin) / len(vin)
+    # deviations from the composer's mean are scaled by k (1..3) so a 2-level comping part does not jump between the extremes
+    k = max(1.0, min(3.0, (hi - lo - 24) / max(vmax - vmin, 1)))
+    centre = (lo + hi) / 2.0
     out = []
     for n in notes:
-        t = (n["velocity"] - vmin) / (vmax - vmin) if vmax > vmin else 0.5
+        dev = (n["velocity"] - mean_in) * k
+        t = min(1.0, max(0.0, (centre + dev - lo) / (hi - lo)))
         v = lo + (t ** g) * (hi - lo)
         p = pos16(n["start_s"], bpm)
         v += METRIC_ACCENT.get(p, 0 if p % 2 == 0 else -4)
@@ -57,7 +61,7 @@ def realize_velocities(notes: list, role: str, patch: dict, tag: str, bpm: float
         b = bar_of(n["start_s"], bpm)
         v += (u(f"{tag}|bar_dyn|{b}") - 0.5) * 8.0
         v += (u(f"{tag}|jitter|{n['index']}|{n['pitch']}") - 0.5) * 10.0
-        out.append(dict(n, velocity=int(round(max(1.0, min(127.0, v)))), velocity_in=int(n["velocity"])))
+        out.append(dict(n, velocity=int(round(max(1.0, lo - 8.0, min(127.0, hi + 8.0, v)))), velocity_in=int(n["velocity"])))
     vs = [n["velocity"] for n in out]
     span0 = max(vs) - min(vs)
     stretched = False
@@ -68,7 +72,7 @@ def realize_velocities(notes: list, role: str, patch: dict, tag: str, bpm: float
             n["velocity"] = int(round(max(1.0, min(127.0, mean + (n["velocity"] - mean) * f))))
         vs, stretched = [n["velocity"] for n in out], True
     layers = patch.get("velocity_layers")
-    return out, {"n": len(out), "input_range": [vmin, vmax], "role_range": [lo, hi], "gamma": g, "realized_range": [min(vs), max(vs)], "realized_span": max(vs) - min(vs),
+    return out, {"n": len(out), "input_range": [vmin, vmax], "role_range": [lo, hi], "gamma": g, "deviation_scale_k": round(k, 3), "realized_range": [min(vs), max(vs)], "realized_span": max(vs) - min(vs),
                 "span_before_stretch": span0, "stretched_to_min_span": stretched, "patch_velocity_layers": layers, "mean_velocity": round(sum(vs) / len(vs), 2)}
 
 

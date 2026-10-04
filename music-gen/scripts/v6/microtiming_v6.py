@@ -22,6 +22,7 @@ not-kick-dominated test, hat > 5 kHz, bass = the bass stem. (c) every onset -> n
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 import time
 from pathlib import Path
@@ -44,6 +45,54 @@ NEAR_TEMPO_TARGETS = (100.0, 120.0, 152.0)
 HIT_TOL_S = 0.035
 LEVEL_WIN_S = 0.030
 SMOOTH_W = 4
+_LAT: dict = {}
+
+
+def det_noise(n: int, tag: str) -> np.ndarray:
+    """Deterministic white noise in [-1, 1) from chained SHA-256 digests (no PRNG)."""
+    chunks = []
+    for k in range((n + 7) // 8):
+        d = hashlib.sha256(f"{tag}|{k}".encode()).digest()
+        chunks.append(np.frombuffer(d, dtype=np.uint32).astype(np.float64) / 2 ** 31 - 1.0)
+    return np.concatenate(chunks)[:n]
+
+
+def _hit(kind: str) -> np.ndarray:
+    tt = np.arange(int(0.15 * SR)) / SR
+    env = np.exp(-tt * (20 if kind in ("kick", "bass") else 40))
+    if kind == "kick":
+        sig = np.sin(2 * np.pi * 55 * tt)
+    elif kind == "bass":
+        sig = np.sin(2 * np.pi * 55 * tt)
+        env[: int(0.01 * SR)] *= np.linspace(0, 1, int(0.01 * SR))
+    elif kind == "snare":
+        sig = det_noise(tt.size, "snare") * 0.6
+    else:
+        from scipy.signal import butter, sosfilt
+        sig = sosfilt(butter(4, 6000 / (SR / 2), "highpass", output="sos"), det_noise(tt.size, "hat")) * 0.6
+    return (sig * env).astype(np.float32)
+
+
+def calibrate() -> dict:
+    """Detector latency (ms) per stream pipeline and for the full-band grid envelope, from isolated synthetic hits at known
+    times; subtracted from every onset / beat so streams are comparable (the kick band peaks ~7 ms before the others)."""
+    if _LAT:
+        return _LAT
+    truth = [0.5 + i * 0.6 + (i % 7) * 0.0137 for i in range(20)]
+    y = {k: np.zeros(int(SR * 13), np.float32) for k in ("kick", "snare", "hat", "bass")}
+    for k in y:
+        sig = _hit(k)
+        for t in truth:
+            s0 = int(round(t * SR))
+            y[k][s0: s0 + sig.size] += sig
+    pipes = {"kick": lambda a: band(a, *BANDS["kick"]), "snare": lambda a: band(a, *BANDS["snare"]), "hat": lambda a: band(a, *BANDS["hat"]), "bass": lambda a: a}
+    for k, f in pipes.items():
+        times, _fr, _bt = detect(norm(onset_env(f(y[k]))))
+        _LAT[k] = round(float(np.median([(times[np.argmin(np.abs(times - t))] - t) * 1000.0 for t in truth])), 3) if times.size else 0.0
+    mix = y["kick"] + y["snare"] + y["hat"]
+    times, _fr, _bt = detect(onset_env(mix))
+    _LAT["grid"] = round(float(np.median([(times[np.argmin(np.abs(times - t))] - t) * 1000.0 for t in truth])), 3) if times.size else 0.0
+    return _LAT
 
 
 def band(y: np.ndarray, lo, hi) -> np.ndarray:
@@ -189,6 +238,15 @@ def stream_stats(assigned: list, lev: np.ndarray, phase: int, hoff: int) -> tupl
     st["n_rejected"] = sum(1 for a in assigned if a[4] == "rejected")
     st["n_out_of_grid"] = sum(1 for a in assigned if a[4] == "out_of_grid")
     st["n_assigned"] = len(ok_idx)
+    best: dict = {}  # one onset per (bar, slot): the smallest |dev| (a double peak of one hit is not two hits)
+    for i in ok_idx:
+        bi, sub, dev, _dm, _ = assigned[i]
+        key = ((bi - phase) // 4 - hoff, ((bi - phase) % 4) * 4 + sub)
+        if key not in best or abs(dev) < abs(assigned[best[key]][2]):
+            best[key] = i
+    st["n_duplicate"] = len(ok_idx) - len(best)
+    ok_idx = sorted(best.values())
+    st["n_assigned"] = len(ok_idx)
     mean_db = float(np.mean(lev[ok_idx])) if ok_idx else 0.0
     st["level_mean_db"] = round(mean_db, 3)
     placed = []
@@ -262,12 +320,17 @@ def analyze_arrays(drums: np.ndarray, bass: np.ndarray, bpm: float, sha16: str =
         return be[k][np.clip(frames, 0, be[k].size - 1)]
     keep = {"kick": nf("kick", t["kick"][1]) >= 0.5 * nf("snare", t["kick"][1]),
             "snare": (nf("high", t["snare"][1]) >= 0.15) & (nf("snare", t["snare"][1]) >= 0.6 * nf("kick", t["snare"][1])) & (nf("snare", t["snare"][1]) >= 0.5 * nf("high", t["snare"][1])),
-            "hat": nf("hat", t["hat"][1]) >= 0.7 * nf("snare", t["hat"][1])}
-    times = {k: t[k][0][keep[k]] for k in keep}
+            "hat": nf("hat", t["hat"][1]) >= 0.3 * nf("snare", t["hat"][1])}
+    lat = calibrate()
+    times = {k: t[k][0][keep[k]] - lat[k] / 1000.0 for k in keep}
+    bass_t = bass_t - lat["bass"] / 1000.0
+    bass_attack = bass_attack - lat["bass"] / 1000.0
     ysig = {"kick": band(drums, *BANDS["kick"]), "snare": band(drums, *BANDS["snare"]), "hat": band(drums, *BANDS["hat"])}
     lev = {k: levels_db(ysig[k], times[k]) for k in times}
     all_drum_t = np.sort(np.concatenate([times[k] for k in times])) if any(times[k].size for k in times) else np.zeros(0)
     beats, raw, ginfo = beat_grid(env_all, bpm, all_drum_t)
+    beats = beats - lat["grid"] / 1000.0
+    ginfo["latency_ms"] = dict(lat)
     asg = {k: assign(times[k], beats) for k in times}
     phase, margin, scores = choose_phase(asg["kick"], asg["snare"])
     hoff = hyper_offset(asg["kick"] + asg["snare"] + asg["hat"], phase)
@@ -350,6 +413,7 @@ def main(argv=None) -> int:
     mt = {"schema_version": 1, "generator": "scripts/v6/microtiming_v6.py", "milestone": "M-V6-GEN-3/humanization",
           "params": {"sr": SR, "hop": HOP, "n_fft": N_FFT, "tightness": TIGHTNESS, "bands_hz": {k: list(v) for k, v in BANDS.items()}, "reject_f16": M.REJECT_F16,
                      "hist_edges_f16": M.HIST_EDGES, "level_window_s": LEVEL_WIN_S, "beat_smoothing_halfwidth": SMOOTH_W, "hit_tolerance_s": HIT_TOL_S,
+                     "detector_latency_ms": calibrate(), "dedup": "one onset per stream per (bar, slot): smallest |dev| kept",
                      "near_tempo_frac": M.NEAR_TEMPO_FRAC, "near_tempo_targets": list(NEAR_TEMPO_TARGETS), "velocity_db": "20*log10(RMS over 30 ms after the onset), relative to the stream mean"},
           "inputs_sha256": inputs, "stems_manifest_sha256": sha_file(STEMS_DIR / "manifest.json"), "n_songs": len(per_song), "pooled": pooled, "per_song": per_song}
     out = Path(args.out) if Path(args.out).is_absolute() else WS / args.out
