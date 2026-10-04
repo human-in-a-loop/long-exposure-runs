@@ -13,7 +13,8 @@ exactly as microtiming_v6.song_bpm reads it):
             so beats, downbeat phase and hypermeter offset are identical to data/v6/rules/microtiming_v6.json per_song.grid
             (asserted and recorded as grid.matches_microtiming). Per-bar kick/snare/hat 16th masks are kept for form_v6.
   audio     harmonic mix = other + bass + vocals at -6 dB (drums excluded) -> librosa.effects.harmonic (HPSS) ->
-            librosa.feature.chroma_cqt (hop 512, 36 bins/octave -> 12 chroma) -> beat-synchronous MEDIAN chroma;
+            librosa.feature.chroma_cqt (hop 512, 36 bins/octave -> 12 chroma) -> beat-synchronous MEDIAN chroma
+            (explicit per-beat frame intervals, one row per grid beat);
             beat RMS (dB) of the harmonic mix for the silence rule.
   chords    85 states: 12 roots x the harmony_v5 QUALITIES (maj min 7 min7 maj7 9 sus) as binary L2 templates + an 'N'
             template with flat energy. Per beat: cosine similarity to every template. Viterbi over the 85 states with
@@ -126,11 +127,16 @@ def beat_features(y: np.ndarray, beats: np.ndarray) -> tuple[np.ndarray, np.ndar
     harm = librosa.effects.harmonic(y)
     chroma = librosa.feature.chroma_cqt(y=harm, sr=SR, hop_length=HOP, bins_per_octave=BINS_PER_OCTAVE, n_chroma=12)
     rms = librosa.feature.rms(y=harm, frame_length=2048, hop_length=HOP)[0]
-    frames = librosa.time_to_frames(beats, sr=SR, hop_length=HOP)
-    frames = np.clip(frames, 0, chroma.shape[1] - 1)
-    bc = librosa.util.sync(chroma, frames, aggregate=np.median)[:, 1:]  # column 0 = before the first beat
-    br = librosa.util.sync(rms[None, :], frames, aggregate=np.mean)[0, 1:]
-    return bc.T, 20.0 * np.log10(br + 1e-9)
+    frames = np.clip(librosa.time_to_frames(beats, sr=SR, hop_length=HOP), 0, chroma.shape[1] - 1)
+    n = len(beats)
+    bc, br = np.zeros((n, 12)), np.zeros(n)
+    for i in range(n):  # beat i = frames [frames[i], frames[i+1]) (the last beat runs to the end); never fewer rows than beats
+        a = int(frames[i])
+        b = int(frames[i + 1]) if i + 1 < n else chroma.shape[1]
+        b = max(b, a + 1)
+        bc[i] = np.median(chroma[:, a:b], axis=1)
+        br[i] = float(np.mean(rms[a:b]))
+    return bc, 20.0 * np.log10(br + 1e-9)
 
 
 # ------------------------------------------------------------------------------------------------------- recogniser ----

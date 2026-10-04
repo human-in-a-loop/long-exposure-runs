@@ -150,11 +150,13 @@ def test_03_key_global_track_and_chord_fit() -> None:
     tr = K.key_track(mod, 0, 0)
     assert tr["n_windows"] >= 8 and tr["modulation_flag"] and tr["modulation_spans"][-1]["tonic"] == 7, tr
     assert not K.key_track(chroma, 0, 7)["modulation_flag"]
-    stream = [{"root": r, "quality": q} for r, q in [(0, "maj"), (5, "maj"), (7, "7"), (9, "min")] * 8] + [{"root": None, "quality": "N"}]
+    stream = [{"root": r, "quality": q} for r, q in [(0, "sus"), (5, "maj"), (7, "7"), (9, "min")] * 8] + [{"root": None, "quality": "N"}]
     fit = K.chord_fit_key(stream, 0, "major")
     assert fit["agrees_with_ks"] and fit["fit"] == 1.0 and fit["n_sounding_beats"] == 32
-    fit2 = K.chord_fit_key(stream, 9, "minor")  # relative minor of the detected chords
-    assert fit2["relative_of_ks"] and fit2["tonic"] == 0 and fit2["mode"] == "major"
+    fit2 = K.chord_fit_key(stream, 9, "minor")  # relative minor: C:sus is not in its diatonic set -> the cross-check prefers C major
+    assert fit2["relative_of_ks"] and fit2["tonic"] == 0 and fit2["mode"] == "major" and fit2["ks_key_fit"] == 0.75, fit2
+    tie = K.chord_fit_key([{"root": 0, "quality": "maj"}] * 4, 9, "minor")  # equal fits -> the KS key wins the tie
+    assert tie["agrees_with_ks"] and tie["fit"] == 1.0
     print("test_03 PASS: KK key G major; modulation flagged on a C->G switch; chord-fit cross-check + relative-key flag")
 
 

@@ -82,7 +82,8 @@ def _median(xs: list, default: float) -> float:
 
 
 def select_model(mt: dict | None, bpm: float) -> dict:
-    return M.model_for_bpm(mt, bpm) if mt else M.prior_model(bpm)
+    """The learned near-tempo pool, or the prior built with THIS humanizer's std scale (its histograms then describe what is drawn)."""
+    return M.model_for_bpm(mt, bpm) if mt else M.prior_model(bpm, std_scale=STD_SCALE)
 
 
 def swing_ms_of(pool: dict, s16_ms: float) -> float:

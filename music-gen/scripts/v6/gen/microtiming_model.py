@@ -210,10 +210,18 @@ def gaussian_hist(mean_f16: float, std_f16: float, n: int = 1000) -> list:
     return out
 
 
-def _prior_stream(mean_ms: float, std_ms: float, swing_ms: float, vel_slot: list, bpm: float = 110.0) -> dict:
-    """hist_f16 = 0.65 N(mean) + 0.35 N(mean + swing): the odd-8th slots carry ~1/3 of the onsets of an 8th-note pattern."""
+def swing_ms_from_ratio(ratio: float, s16_ms: float) -> float:
+    """Swing ratio r (odd 8th late) -> odd-8th offset in ms at this tempo: d_f16 = 2 (r - 1) / (r + 1) (= humanize.swing_ms_of)."""
+    return 2.0 * (float(ratio) - 1.0) / (float(ratio) + 1.0) * s16_ms
+
+
+def _prior_stream(mean_ms: float, std_ms: float, swing_ms: float, vel_slot: list, bpm: float = 110.0, std_scale: float = 1.0) -> dict:
+    """hist_f16 = 0.65 N(mean, std_scale x std) + 0.35 N(mean + swing, std_scale x std): the odd-8th slots carry ~1/3 of the onsets of an
+    8th-note pattern. std_scale = the factor the humanizer applies to slot_std_ms (humanize.STD_SCALE), so in prior mode the reference
+    histogram IS the distribution the humanizer draws from (validators.timing_ks holds by construction up to the song's odd/even slot mix)."""
     s16_ms = 60000.0 / bpm / 4
-    hist = [int(round(0.65 * a + 0.35 * b)) for a, b in zip(gaussian_hist(mean_ms / s16_ms, std_ms / s16_ms), gaussian_hist((mean_ms + swing_ms) / s16_ms, std_ms / s16_ms))]
+    sd = max(1e-6, std_ms * std_scale) / s16_ms
+    hist = [int(round(0.65 * a + 0.35 * b)) for a, b in zip(gaussian_hist(mean_ms / s16_ms, sd), gaussian_hist((mean_ms + swing_ms) / s16_ms, sd))]
     return {"slot_mean_ms": [round(mean_ms + (swing_ms if i in ODD_8TH else 0.0), 3) for i in range(16)], "slot_std_ms": [std_ms] * 16,
             "slot_mean_f16": [round((mean_ms + (swing_ms if i in ODD_8TH else 0.0)) / s16_ms, 5) for i in range(16)], "slot_std_f16": [round(std_ms / s16_ms, 5)] * 16,
             "slot_n": [0] * 16, "slot_resid_mean_ms": [mean_ms] * 16, "slot_resid_mean_f16": [round(mean_ms / s16_ms, 5)] * 16,
@@ -223,18 +231,23 @@ def _prior_stream(mean_ms: float, std_ms: float, swing_ms: float, vel_slot: list
             "hist_f16": hist, "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "reject_rate": None}
 
 
-def prior_model(bpm: float = 110.0) -> dict:
-    """Fixture-mode fallback (no corpus stems): modest, lightly swung pop/soul feel at `bpm`; documented as 'prior' in every manifest."""
+PRIOR_SWING_RATIOS = {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3}
+
+
+def prior_model(bpm: float = 110.0, std_scale: float = 1.0) -> dict:
+    """Fixture-mode fallback (no corpus stems): modest, lightly swung pop/soul feel at `bpm`; documented as 'prior' in every manifest.
+    Every stream's swing is the prior's median drums swing ratio (PRIOR_SWING_RATIOS["0.5"]) converted to ms at `bpm` — exactly the
+    offset humanize.swing_ms_of applies — so the per-stream deviation histograms match the generated offsets; std_scale: see _prior_stream."""
+    swing = swing_ms_from_ratio(PRIOR_SWING_RATIOS["0.5"], 60000.0 / bpm / 4)
     hat_vel = [2.0, -3.0, -1.0, -3.5, 1.0, -3.0, -1.0, -3.5, 1.5, -3.0, -1.0, -3.5, 1.0, -3.0, -1.0, -3.0]
     kick_vel = [2.0, -2.0, -1.0, -2.0, 0.0, -2.0, -1.0, -2.0, 1.0, -2.0, -1.0, -2.0, 0.0, -2.0, -0.5, -2.0]
     snare_vel = [0.0, -6.0, -4.0, -6.0, 2.0, -6.0, -4.0, -6.0, 0.0, -6.0, -4.0, -6.0, 2.0, -6.0, -3.0, -6.0]
     bass_vel = [1.5, -2.0, -1.0, -2.0, 0.5, -2.0, -0.5, -2.0, 1.0, -2.0, -1.0, -2.0, 0.5, -2.0, -0.5, -2.0]
-    streams = {"kick": _prior_stream(0.0, 6.0, 4.0, kick_vel, bpm), "snare": _prior_stream(2.0, 8.0, 5.0, snare_vel, bpm),
-               "hat": _prior_stream(-1.0, 7.0, 6.0, hat_vel, bpm), "bass": _prior_stream(6.0, 10.0, 4.0, bass_vel, bpm)}
+    streams = {"kick": _prior_stream(0.0, 6.0, swing, kick_vel, bpm, std_scale), "snare": _prior_stream(2.0, 8.0, swing, snare_vel, bpm, std_scale),
+               "hat": _prior_stream(-1.0, 7.0, swing, hat_vel, bpm, std_scale), "bass": _prior_stream(6.0, 10.0, swing, bass_vel, bpm, std_scale)}
     dur_hist = [0, 0, 0, 0, 0, 0, 1, 2, 3, 5, 8, 10, 12, 14, 14, 12, 9, 6, 3, 1]
     return {"variant": "prior", "target_bpm": round(float(bpm), 3), "songs": [], "n_songs": 0, "grid_confidence_tally": {}, "streams": streams,
-            "swing_ratios_drums": {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3, "values": [], "n": 0, "iqr": 0.12},
-            "swing_ratios_hat": {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3, "n": 0},
+            "swing_ratios_drums": dict(PRIOR_SWING_RATIOS, values=[], n=0, iqr=0.12), "swing_ratios_hat": dict(PRIOR_SWING_RATIOS, n=0),
             "bass_kick_lag_ms": {"n": 0, "mean": 6.0, "std": 8.0},
             "bass_duration": {"hist": dur_hist, "n": sum(dur_hist), "mean_frac": 0.7, "quantiles": {"0.1": 0.5, "0.25": 0.6, "0.5": 0.7, "0.75": 0.78, "0.9": 0.85},
                               "by_class": {"on_beat": {"n": 0, "mean": 0.75}, "syncopated": {"n": 0, "mean": 0.55}}},

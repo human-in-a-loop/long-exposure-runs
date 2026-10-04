@@ -44,7 +44,7 @@ def _skip(msg: str) -> None:
 # ------------------------------------------------------------------------------------------------------- form ----
 SECTION = {"A": {"chroma": (0, 4, 7), "mfcc": 1.0, "kick": 0x0101, "snare": 0x1010, "hat": 0x5555, "root": 0, "levels": (1.0, 0.8, 0.6, 0.0)},
            "B": {"chroma": (6, 10, 1), "mfcc": -1.0, "kick": 0x0901, "snare": 0x1010, "hat": 0xFFFF, "root": 5, "levels": (1.0, 0.9, 0.9, 0.9)},
-           "C": {"chroma": (2, 5, 9), "mfcc": 0.0, "kick": 0x0001, "snare": 0x0000, "hat": 0x1111, "root": 2, "levels": (0.3, 0.7, 0.9, 0.2)}}
+           "C": {"chroma": (2, 5, 9), "mfcc": 0.5, "kick": 0x0001, "snare": 0x0000, "hat": 0x1111, "root": 2, "levels": (0.3, 0.7, 0.9, 0.2)}}
 
 
 def synthetic_record(sha: str, form: str, phase: int = 1, hoff: int = 0, bars_per_section: int = 8) -> tuple:
@@ -107,9 +107,9 @@ def test_02_corpus_model_keys_r1_and_fill_pool() -> None:
     assert set(PLANNER_KEYS) <= set(model)
     assert model["length_distribution"] == {"4": 2, "6": 1, "8": 2}  # round(bars/8) clipped to [4, 8]
     assert model["n_songs_in_transition_corpus"] == 4 and model["labels"] == ["A", "B", "C"]
-    assert abs(sum(model["start_distribution"].values()) - 1.0) < 1e-9
+    assert abs(sum(model["start_distribution"].values()) - 1.0) < 1e-5
     for a, row in model["transition_probs"].items():
-        assert abs(sum(row.values()) - 1.0) < 1e-9, (a, row)
+        assert abs(sum(row.values()) - 1.0) < 1e-5, (a, row)  # 6-dp rounded probabilities
     assert model["R1"]["pass"] and model["R1"]["fallback_template"] is None and set(model["R1"]["focus_songs"]) == set(FOCUS)
     assert model["boundary_fill_pool"] and all({"snare", "hat", "count"} <= set(e) for e in model["boundary_fill_pool"]) and not model["fill_pool_fallback_used"]
     assert 0.0 <= model["intro_density_quantile"] <= 1.0 and len(model["density_tercile_bounds"]) == 2

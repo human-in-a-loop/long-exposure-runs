@@ -180,15 +180,22 @@ def skeleton_candidates(ctx: _Ctx, content: dict, k: int, i: int, exclude_pcs=()
 
 
 def rerealize_phrase(content: dict, k: int, pitches: list, tonic: int, mode: str) -> None:
-    """Rebuild phrase k's notes from the (repaired) skeleton pitches with the original tags (= melody.phrase_melody's surface draws)."""
+    """Rebuild phrase k's notes from the (repaired) skeleton pitches with the original tags (= melody.phrase_melody's surface draws).
+    Non-skeleton notes an EARLIER repair re-picked keep their repaired pitch/role (same onsets: fill_weak only re-draws pitches), so a
+    skeleton repair never undoes a previous NCT repair in the same phrase; if the kept pitch no longer fits, the loop repairs it anew."""
     mph, ph = content["melody"]["phrases"][k], content["plan"]["phrases"][k]
     b0, chord_at = ph["start_bar"], _chord_at(content, ph["start_bar"])
+    kept = {n["slot"]: n for n in content["melody"]["notes"] if n["phrase"] == k and n.get("repaired") and n.get("role") not in SKELETON_ROLES}
     raw = MEL.fill_weak(mph["onsets"], {"pitches": list(pitches)}, mph["skeleton"]["slots"], chord_at, set(mph["change_slots"]), mph["skeleton"]["floor"],
                         tonic, mode, f"{content['tag']}|melody|{ph['index']}")
     notes = MEL.finalize_notes(raw, mph["L"], chord_at, ph["index"])
     for n in notes:
         n["slot"] += b0 * SLOTS
+        old = kept.get(n["slot"])
+        if old is not None and n["role"] not in SKELETON_ROLES:
+            n["pitch"], n["role"], n["repaired"] = old["pitch"], old["role"], old["repaired"]
     content["melody"]["notes"] = sorted([n for n in content["melody"]["notes"] if n["phrase"] != k] + notes, key=lambda n: (n["slot"], n["pitch"]))
+    _refresh_positions(content, k)
     mph["skeleton"]["pitches"] = list(pitches)
     mph["skeleton"]["violations"] = MEL.contour_violations(list(pitches), mph["skeleton"]["slots"], mph["L"])
 

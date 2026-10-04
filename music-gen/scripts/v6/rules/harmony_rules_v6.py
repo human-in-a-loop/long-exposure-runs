@@ -83,7 +83,7 @@ def per_song_record(rec: dict, chords_path: Path) -> dict:
     key = {"tonic": tonic, "tonic_name": rec["key"]["tonic_name"], "mode": rec["key"]["mode"], "corr": rec["key"]["corr"], "confidence": rec["key"]["confidence"],
            "mode_margin": rec["key"]["mode_margin"], "modulation_flag": rec["key"]["track"]["modulation_flag"], "method": rec["key"]["method"]}
     return {"schema_version": 1, "cycle": CYCLE, "sha16": rec["sha16"], "title": rec.get("title"), "bpm_v5": float(rec["bpm"]),
-            "midi_dir": None, "source": {"kind": "audio", "chords_file": str(chords_path.relative_to(WS)), "chords_sha256": sha256_file(chords_path),
+            "midi_dir": None, "source": {"kind": "audio", "chords_file": str(chords_path.relative_to(WS)) if str(chords_path).startswith(str(WS)) else str(chords_path), "chords_sha256": sha256_file(chords_path),
                                          "generator": "scripts/v6/rules/chords_v6.py + key_v6.py + harmony_rules_v6.py", "stems_sha256": rec.get("inputs_sha256")},
             "env_pin_sha256": ENV_PIN_SHA256, "stems": HARMONY_STEMS,
             "per_stem": {s: {"n_notes_midi": None, "note": "audio stem (htdemucs); no symbolic notes"} for s in HARMONY_STEMS},

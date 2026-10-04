@@ -12,7 +12,9 @@ PhrasePlan per label: 2 phrases of 4 bars (1 of 8 for ballads, bpm < BALLAD_BPM)
 P(cadence | position) — section-final phrases biased to authentic, section-internal to half.
 Harmonic rhythm per bar in {1, 2, 4} chords/bar from a distribution learned from the per-song beat-level chord streams when
 available (chord changes per bar), else the prior {1: 0.55, 2: 0.35, 4: 0.10}; the last bar of a phrase is restricted to
-{1, 2} so the cadence chord starts no later than beat 3 (the melody's cadence note is held >= a half note).
+{1, 2} so the cadence chord starts no later than beat 3 (the melody's cadence note is held >= a half note). Phase 5: the LAST bar
+of the label that ends the form is fixed to 1 chord, so the arrangement's held final bar (one sustained sonority = the bar's chord)
+is the final cadence chord by construction and never the pre-cadence dominant (the hold used to truncate a 2-chord final bar).
 Arrangement (v5 F1 conventions): intro = section 0 with keys+melody muted (drums too when "bass_only"), outro = last
 section with melody muted and the final bar held, breakdown = drums muted for 4 bars in the first non-A section of the
 middle half, fills in the last bar of every section (from the form plan's boundary_fill_pool or the fixture pool).
@@ -90,6 +92,7 @@ def plan_phrases(form: dict, tag: str, bpm: float, hr_dist: dict) -> dict:
     nb = form["bars_per_section"]
     phrase_len = nb if ballad else nb // 2
     out = {}
+    final_label = form["labels"][-1]  # its last bar is the song's held final bar: exactly the cadence chord (see module doc)
     for lab in sorted(set(form["labels"])):
         phrases = []
         for k in range(nb // phrase_len):
@@ -99,9 +102,12 @@ def plan_phrases(form: dict, tag: str, bpm: float, hr_dist: dict) -> dict:
         hr = []
         for b in range(nb):
             last = (b % phrase_len) == phrase_len - 1
+            if lab == final_label and b == nb - 1:
+                hr.append(1)
+                continue
             w = {str(k): float(v) for k, v in hr_dist.items() if not (last and int(k) == 4)}
             hr.append(int(draw_from(w, f"{tag}|hr|{lab}|bar{b}")))
-        out[lab] = {"phrases": phrases, "harmonic_rhythm": hr, "phrase_len_bars": phrase_len}
+        out[lab] = {"phrases": phrases, "harmonic_rhythm": hr, "phrase_len_bars": phrase_len, "final_bar_single_chord": lab == final_label}
     return {"ballad": ballad, "label_plans": out, "cadence_table": P_CADENCE, "harmonic_rhythm_distribution": hr_dist}
 
 
