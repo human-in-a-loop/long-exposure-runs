@@ -65,7 +65,7 @@ def _rule_stats(cases: list, r: str, mkey: str, ckey: str) -> dict:
     cs = [c for c in cases if c.get(mkey) is not None]
     viol = [c for c in cs if not c[ckey].get(r, True)]
     vals = [c[mkey][r] for c in cs if isinstance(c[mkey].get(r), (int, float)) and not isinstance(c[mkey].get(r), bool)]
-    counted = validators.CAPS[r]["per"] in ("per_64_bars", "song") and all(isinstance(v, int) for v in vals)
+    counted = validators.ALL_CAPS[r]["per"] in ("per_64_bars", "song") and all(isinstance(v, int) for v in vals)
     return {"n_cases_violating": len(viol), "max_count": max(vals) if vals else None, "total_count": sum(vals) if counted and vals else None,
             "violating_cases": [f"{c['song_id']}|seed={c['seed']}|{'humanize' if c['humanize'] else 'plain'}={c[mkey][r]}" for c in viol]}
 
