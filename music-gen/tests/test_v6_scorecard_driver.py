@@ -338,13 +338,65 @@ def test_musdb_export_layout_decision_and_slug():
     assert mx.slugify("Actions - Devil's Words") == "actions_devil_s_words"
     durs = {"train": [240.0] * 100, "test": [240.0] * 50}
     a, b = mx.estimate_footprint(durs, "A"), mx.estimate_footprint(durs, "B")
-    assert a > b and abs(a - (100 * 5 + 50) * 240 * 176400) / a < 0.01
-    assert abs(b - (100 * 240 * (176400 + 4 * 44100) + 50 * 240 * 176400)) / b < 0.01
+    assert a > b and abs(a - (100 * 4 + 50) * 240 * 176400) / a < 0.01
+    assert abs(b - (100 * 240 * (176400 + 3 * 44100) + 50 * 240 * 176400)) / b < 0.01
     lay, dec = mx.choose_layout(durs, int(9e9))
-    assert lay == "B" and "WARNING" in dec["note"]
+    assert lay == "B" and "WARNING" in dec["note"]  # 9.26 GB at 4 min/song
     assert mx.choose_layout(durs, int(30e9))[0] == "A"
-    assert mx.files_for_split("test") == ["accompaniment"] and "vocals" not in mx.files_for_split("train")
+    assert mx.files_for_split("test") == ["accompaniment"]
+    assert mx.files_for_split("train") == ["accompaniment", "drums", "bass", "other"]  # no mix, no vocals
     assert mx.layout_formats("B")["accompaniment"] == "stereo44k" and mx.layout_formats("B")["drums"] == "mono22k"
+
+
+def _fake_export(song_dir, split, sr=8000, extra=()):
+    from scripts.v6.v6_common import write_json_atomic
+    song_dir.mkdir(parents=True)
+    files = {}
+    for name in mx.files_for_split(split) + list(extra):
+        y = (0.1 * np.sin(np.arange(sr) * 0.01)).astype(np.float32)
+        files[name] = mx.write_wav(song_dir / f"{name}.wav", y, sr)
+    rec = {"schema_version": mx.SCHEMA_VERSION, "song": song_dir.name, "slug": song_dir.name, "split": split,
+           "source": f"workspace/public/musdb18/{split}/{song_dir.name}.stem.mp4", "files": files,
+           "bytes_total": sum(f["bytes"] for f in files.values())}
+    write_json_atomic(song_dir / "song.json", rec)
+    return rec
+
+
+def test_musdb_export_resume_prunes_stale_mix_and_verifies(tmp_path):
+    out = tmp_path / "out"
+    rec = _fake_export(out / "train" / "s1", "train", extra=("mix",))
+    assert (out / "train" / "s1" / "mix.wav").exists()
+    done = mx.already_done(out / "train" / "s1", "train", log=lambda *_: None)
+    assert done is not None and "mix" not in done["files"] and done["pruned"] == ["mix"]
+    assert not (out / "train" / "s1" / "mix.wav").exists()
+    assert done["bytes_total"] == sum(f["bytes"] for n, f in rec["files"].items() if n != "mix")
+    assert json.loads((out / "train" / "s1" / "song.json").read_text())["pruned"] == ["mix"]
+    # missing file -> not done
+    (out / "train" / "s1" / "bass.wav").unlink()
+    assert mx.already_done(out / "train" / "s1", "train", log=lambda *_: None) is None
+    assert mx.verify_song(out / "train" / "s1", done, "train") == ["bass: missing"]
+    # verify_and_delete_sources: refuses on problems, deletes only when everything matches
+    rec2 = _fake_export(out / "test" / "s2", "test")
+    man = {"n_songs": {"test": 1}, "songs": [rec2]}
+    (out / "manifest.json").write_text(json.dumps(man))
+    src = tmp_path / "src" / "test"
+    src.mkdir(parents=True)
+    (src / "s2.stem.mp4").write_bytes(b"x" * 100)
+    (src / "unlisted.stem.mp4").write_bytes(b"y")
+    rec2["source"] = str(src / "s2.stem.mp4")
+    (out / "manifest.json").write_text(json.dumps(man))
+    res = mx.verify_and_delete_sources(out / "manifest.json", tmp_path / "src", out, log=lambda *_: None)
+    assert res["verified"] is False and res["sources_not_in_manifest"] and (src / "s2.stem.mp4").exists()
+    (src / "unlisted.stem.mp4").unlink()
+    # corrupt a byte (same size) -> sha mismatch -> refuse
+    p = out / "test" / "s2" / "accompaniment.wav"
+    b = bytearray(p.read_bytes()); b[-1] ^= 0xFF; p.write_bytes(bytes(b))
+    res = mx.verify_and_delete_sources(out / "manifest.json", tmp_path / "src", out, log=lambda *_: None)
+    assert res["verified"] is False and "sha256 mismatch" in res["problems"]["test/s2"][0] and (src / "s2.stem.mp4").exists()
+    b[-1] ^= 0xFF; p.write_bytes(bytes(b))
+    res = mx.verify_and_delete_sources(out / "manifest.json", tmp_path / "src", out, log=lambda *_: None)
+    assert res["verified"] is True and res["freed_bytes"] == 100 and not (src / "s2.stem.mp4").exists()
+    assert "sources_deleted" in json.loads((out / "manifest.json").read_text())
 
 
 def test_musdb_export_to_format_and_write_wav(tmp_path):

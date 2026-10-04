@@ -11,19 +11,22 @@ stempeg.read_stems(path, stem_id=[0..4], sample_rate=44100) -> (5, T, 2) float64
 Output: data/v6/public/musdb18/<split>/<song_slug>/
     accompaniment.wav   drums+bass+other summed (what our instrumental generator is compared to):
                         ALWAYS stereo 44.1 kHz 16-bit, both splits
-    mix.wav, drums.wav, bass.wav, other.wav   TRAIN split only (the per-instrument timbre reference)
+    drums.wav, bass.wav, other.wav   TRAIN split only (the per-instrument timbre reference)
     song.json           per-song record (checkpoint; makes the export resumable/idempotent)
   data/v6/public/musdb18/manifest.json   aggregate: layout decision, per-song records, footprint
 
-Disk budget: 150 songs x ~4 min x 6 stereo 44.1k wavs is ~25 GB; the box has ~16 GB free. The
-script therefore probes every song's duration first (stempeg.Info, no decode) and estimates the
-footprint of three layouts, picking the first under --budget-gb (default 9):
+Disk budget: 150 songs x ~4 min x 6 stereo 44.1k wavs is ~25 GB; the box had ~16 GB free, and
+dropped to ~6 GB mid-export (a concurrent agent). The script therefore probes every song's duration
+first (stempeg.Info, no decode) and estimates the footprint of two layouts, picking the first under
+--budget-gb (default 9):
     A  everything stereo 44.1 kHz 16-bit
-    B  accompaniment stereo 44.1k; mix + 3 stems mono 22.05 kHz 16-bit  (embedding downmixes and
+    B  accompaniment stereo 44.1k; the 3 stems mono 22.05 kHz 16-bit (embedding downmixes and
        resamples anyway: CLAP 48k mono, MERT 24k mono, so stems lose nothing the scorecard uses)
-    C  as B (B already drops the mix to the stem format; C exists so the manifest records that
-       even the smallest layout exceeded the budget -> the run continues with a warning)
-Vocals are never written (no consumer; the generator is instrumental).
+  If even B exceeds the budget the run continues with a WARNING recorded in the manifest.
+The full mix is NOT written (no consumer: the generator is instrumental, and vocals are never
+written either); its RMS/peak are still measured and recorded, and a mix.wav left by an earlier
+layout is pruned on resume so the footprint stays within budget. Mixes written before 2026-10-04
+19:55 UTC carried a mono 22.05k mix.wav; those were pruned.
 
 Per song the manifest records duration, per-stem RMS dBFS and peak (measured on the full-rate
 stereo decode, so independent of the written format), sha256/sha16/bytes of every written wav,
@@ -31,8 +34,12 @@ and the count of samples clipped by the 16-bit write (accompaniment = mix - voca
 where vocals are out of phase; levels are preserved, clipping is recorded, never rescaled).
 
 Idempotent: a song whose song.json exists and whose listed files exist with matching byte sizes
-is skipped. Deterministic: no PRNG; soxr_hq resampling; sorted-key atomic JSON.
-Discipline: /usr/bin/python3 guard; writes only under data/v6; never touches workspace/public.
+is skipped (extra files not in the current layout are deleted and dropped from the record).
+--verify-and-delete-sources: after an export, re-check every song (files present, sizes AND
+sha256 match the manifest) and only then delete the source .stem.mp4 files (README.md is kept);
+refuses if any song is missing or mismatched. Deterministic: no PRNG; soxr_hq resampling;
+sorted-key atomic JSON. Discipline: /usr/bin/python3 guard; writes only under data/v6; the only
+thing it ever removes outside data/v6 is the source .stem.mp4 set, and only on that explicit flag.
 """
 from __future__ import annotations
 
@@ -88,15 +95,15 @@ def wav_bytes(duration_s: float, fmt: str) -> int:
 
 
 def files_for_split(split: str) -> list[str]:
-    """Which wavs a split gets: train = mix + accompaniment + 3 instrument stems; test = accompaniment."""
-    return ["mix", "accompaniment"] + list(INSTRUMENT_STEMS) if split == "train" else ["accompaniment"]
+    """Which wavs a split gets: train = accompaniment + 3 instrument stems; test = accompaniment."""
+    return ["accompaniment"] + list(INSTRUMENT_STEMS) if split == "train" else ["accompaniment"]
 
 
 def layout_formats(layout: str) -> dict:
-    """Per-file wav format for layouts A/B/C (see module docstring)."""
+    """Per-file wav format for layouts A/B (see module docstring)."""
     if layout == "A":
-        return {name: "stereo44k" for name in ("mix", "accompaniment") + INSTRUMENT_STEMS}
-    fmts = {"accompaniment": "stereo44k", "mix": "mono22k"}
+        return {name: "stereo44k" for name in ("accompaniment",) + INSTRUMENT_STEMS}
+    fmts = {"accompaniment": "stereo44k"}
     fmts.update({s: "mono22k" for s in INSTRUMENT_STEMS})
     return fmts
 
@@ -114,7 +121,7 @@ def choose_layout(durations: dict[str, list[float]], budget_bytes: int) -> tuple
     est = {lay: estimate_footprint(durations, lay) for lay in ("A", "B")}
     chosen = "A" if est["A"] <= budget_bytes else "B"
     note = ("all stereo 44.1k fits the budget" if chosen == "A" else
-            "stereo-44.1k-everything exceeds the budget; mix + stems written mono 22.05k, accompaniment kept stereo 44.1k")
+            "stereo-44.1k-everything exceeds the budget; stems written mono 22.05k, accompaniment kept stereo 44.1k")
     if est[chosen] > budget_bytes:
         note += f"; WARNING smallest layout still exceeds budget by {(est[chosen] - budget_bytes) / 1e9:.2f} GB"
     return chosen, {"estimate_bytes": est, "budget_bytes": int(budget_bytes), "note": note}
@@ -175,8 +182,10 @@ def song_outputs(song_dir: Path, split: str) -> dict[str, Path]:
     return {name: song_dir / f"{name}.wav" for name in files_for_split(split)}
 
 
-def already_done(song_dir: Path, split: str) -> dict | None:
-    """Return the existing song.json if every listed file exists with its recorded size."""
+def already_done(song_dir: Path, split: str, log=print) -> dict | None:
+    """Return the existing song.json if every listed file exists with its recorded size. Files recorded
+    under names that are no longer part of the layout (e.g. an old mix.wav) are deleted and dropped
+    from the record, which is rewritten (footprint control on resume)."""
     side = song_dir / "song.json"
     if not side.exists():
         return None
@@ -184,19 +193,79 @@ def already_done(song_dir: Path, split: str) -> dict | None:
         rec = read_json(side)
     except Exception:
         return None
-    for name in files_for_split(split):
+    wanted = files_for_split(split)
+    for name in wanted:
         f = rec.get("files", {}).get(name)
         p = song_dir / f"{name}.wav"
         if not f or not p.exists() or p.stat().st_size != f.get("bytes"):
             return None
+    extra = [name for name in rec.get("files", {}) if name not in wanted]
+    if extra:
+        for name in extra:
+            p = song_dir / f"{name}.wav"
+            if p.exists():
+                p.unlink()
+            rec["files"].pop(name)
+        rec["bytes_total"] = int(sum(f["bytes"] for f in rec["files"].values()))
+        rec["pruned"] = sorted(set(rec.get("pruned", [])) | set(extra))
+        write_json_atomic(side, rec)
+        log(f"[export] pruned {extra} from {song_dir.name}")
     return rec
+
+
+def verify_song(song_dir: Path, rec: dict, split: str, check_sha: bool = True) -> list[str]:
+    """Problems with a song's exported files versus its record (empty list = verified)."""
+    problems = []
+    for name in files_for_split(split):
+        f = rec.get("files", {}).get(name)
+        p = song_dir / f"{name}.wav"
+        if not f:
+            problems.append(f"{name}: not in record")
+        elif not p.exists():
+            problems.append(f"{name}: missing")
+        elif p.stat().st_size != f.get("bytes"):
+            problems.append(f"{name}: size {p.stat().st_size} != {f.get('bytes')}")
+        elif check_sha and sha256_file(p) != f.get("sha256"):
+            problems.append(f"{name}: sha256 mismatch")
+    return problems
+
+
+def verify_and_delete_sources(manifest_path: Path, source: Path, out_root: Path, log=print) -> dict:
+    """Verify every manifest song (presence, size, sha256) and only then delete the .stem.mp4 sources."""
+    man = read_json(manifest_path)
+    by_source = {}
+    problems = {}
+    for rec in man["songs"]:
+        song_dir = out_root / rec["split"] / rec["slug"]
+        pr = verify_song(song_dir, rec, rec["split"])
+        if pr:
+            problems[f"{rec['split']}/{rec['slug']}"] = pr
+        by_source[rec["source"]] = rec
+    expected = {str(p.relative_to(_WS)) if p.is_relative_to(_WS) else str(p)
+                for sp in man["n_songs"] for p in (source / sp).glob("*.stem.mp4")}
+    missing = sorted(expected - set(by_source))
+    if problems or missing:
+        log(f"[verify] REFUSING to delete sources: {len(problems)} songs with problems, {len(missing)} sources not in manifest")
+        return {"verified": False, "problems": problems, "sources_not_in_manifest": missing, "deleted": []}
+    deleted, freed = [], 0
+    for src in sorted(by_source):
+        p = _WS / src
+        if p.exists():
+            freed += p.stat().st_size
+            p.unlink()
+            deleted.append(src)
+    log(f"[verify] {len(by_source)} songs verified (size + sha256); deleted {len(deleted)} sources, freed {freed / 1e9:.2f} GB")
+    man["sources_deleted"] = {"n": len(deleted), "freed_bytes": int(freed), "when_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                             "verification": "every song: files present, byte sizes and sha256 equal to the record"}
+    write_json_atomic(manifest_path, man)
+    return {"verified": True, "problems": {}, "sources_not_in_manifest": [], "deleted": deleted, "freed_bytes": int(freed)}
 
 
 def export_song(src: Path, split: str, out_root: Path, layout: str, log=print) -> dict:
     title = song_title(src)
     slug = slugify(title)
     song_dir = out_root / split / slug
-    rec = already_done(song_dir, split)
+    rec = already_done(song_dir, split, log)
     if rec is not None:
         rec = dict(rec, skipped=True)
         log(f"[export] skip {split}/{slug} (complete)")
@@ -255,12 +324,19 @@ def main(argv=None) -> int:
                     help="A: all stereo 44.1k; B: stems+mix mono 22.05k, accompaniment stereo 44.1k")
     ap.add_argument("--limit", type=int, default=0, help="first N songs per split (smoke runs)")
     ap.add_argument("--dry-run", action="store_true", help="probe + estimate only, write nothing")
+    ap.add_argument("--verify-and-delete-sources", action="store_true",
+                    help="verify every exported song against manifest.json (sizes + sha256), then delete the .stem.mp4 sources")
     args = ap.parse_args(argv)
 
     def log(msg):
         print(f"{time.strftime('%H:%M:%S')} {msg}", flush=True)
 
     source, out_root = Path(args.source), Path(args.out)
+    if args.verify_and_delete_sources:
+        res = verify_and_delete_sources(out_root / "manifest.json", source, out_root, log)
+        for k, v in sorted(res["problems"].items()):
+            log(f"  {k}: {v}")
+        return 0 if res["verified"] else 1
     splits = [s.strip() for s in args.splits.split(",") if s.strip()]
     sources = list_sources(source, splits, args.limit or None)
     if not any(sources.values()):
