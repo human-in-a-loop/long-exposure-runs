@@ -26,3 +26,5 @@ venv/
 
 # model weights live on disk only (sha256 receipts are tracked instead)
 workspace/models/
+workspace/public/
+workspace/*.log
