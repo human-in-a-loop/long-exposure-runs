@@ -257,13 +257,15 @@ def test_07_composer_loads_real_harmony_form_comping() -> None:
     rd = Path("data/v5/rules")
     if not (CHAIN.exists() and (rd / "form_plan_v5.json").exists() and (rd / "comping_v5.json").exists()):
         return _skip("harmony / form / comping files not built yet")
+    if not all((rd / f).exists() for f in ("groove_v5_v2_full.json", "bass_pitch_v5.json", "melody_vomm_v5.json")):
+        return _skip("sibling-owned groove / bass / melody rule files not built yet (fixture mode is hermetic, so no mixed load)")
     from scripts.v6.gen.fixtures import load_models
-    m = load_models(rd, fixtures=True)
+    m = load_models(rd, fixtures=False)
     for k in ("chain", "comping", "form_plan", "chord_streams"):
         assert m["sources"][k] not in ("fixture", "absent") and not str(m["sources"][k]).startswith("absent"), (k, m["sources"][k])
     assert m["chord_streams"] and all(set(v) == {"chord_stream", "key"} for v in m["chord_streams"].values())
     with tempfile.TemporaryDirectory() as td:
-        r = subprocess.run([PY, "scripts/v6/gen/compose_v6.py", "--donors", ",".join(FOCUS), "--rules-dir", str(rd), "--fixtures", "--no-render", "--bars", "16", "--out", td],
+        r = subprocess.run([PY, "scripts/v6/gen/compose_v6.py", "--donors", ",".join(FOCUS), "--rules-dir", str(rd), "--no-render", "--bars", "16", "--out", td],
                            capture_output=True, text=True, cwd=str(_ROOT))
         assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
         roll = json.loads((Path(td) / "iteration_rollup.json").read_text())

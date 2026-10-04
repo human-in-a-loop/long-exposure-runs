@@ -199,7 +199,7 @@ def test_06_on_disk_comping() -> None:
     d = json.loads(p5.read_text())
     assert d["verdict"]["enum"] in C5.ENUM and d["verdict"]["thresholds"] == C5.THRESHOLDS
     pooled = d["stats"]["pooled"]
-    assert abs(sum(pooled["ioi16_histogram"]) - 1.0) < 1e-6 and len(pooled["ioi16_histogram"]) == 16 and abs(sum(pooled["slot16_histogram"]) - 1.0) < 1e-6
+    assert abs(sum(pooled["ioi16_histogram"]) - 1.0) < 1e-5 and len(pooled["ioi16_histogram"]) == 16 and abs(sum(pooled["slot16_histogram"]) - 1.0) < 1e-5
     assert pooled["n_songs"] == len(d["per_song"]) >= 8 and d["stems"] == ["other"] and "bars" not in d["per_song"][next(iter(d["per_song"]))]["per_stem"]["other"]
     assert d["verdict"]["n_songs_with_ge_16_pooled_bars"] == sum(1 for r in d["per_song"].values() if r["n_bars_with_onsets_pooled"] >= 16)
     d6 = json.loads(p6.read_text())

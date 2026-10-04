@@ -118,12 +118,18 @@ def test_04_real_model_loader_paths_and_fixture_fallback() -> None:
             pass
         m = load_models(rd, fixtures=True)
         assert m["sources"]["chain"] == "fixture" and m["sources"]["form_plan"].startswith("absent") and m["fixtures_sha256"]
-        # a real file present under rules-dir is preferred over the fixture (same loader, path args)
-        from scripts.v6.gen.fixtures import fixture_chain
+        # fixture mode is hermetic: a real file under rules-dir is IGNORED while fixtures=True ...
+        from scripts.v6.gen.fixtures import fixture_chain, fixture_groove, fixture_bass_model, fixture_melody_model
         (rd / "harmony_markov_v5_full.json").write_text(json.dumps(fixture_chain()))
         m2 = load_models(rd, fixtures=True)
-        assert m2["sources"]["chain"].endswith("harmony_markov_v5_full.json") and "chain" in m2["input_sha256"]
-    print("test_04 PASS: loader reads real files when present, fixture fallback only with --fixtures")
+        assert m2["sources"]["chain"] == "fixture"
+        # ... and read when fixtures=False (same loader, path args); the other required models must then exist too
+        (rd / "groove_v5_v2_full.json").write_text(json.dumps(fixture_groove()))
+        (rd / "bass_pitch_v5.json").write_text(json.dumps(fixture_bass_model()))
+        (rd / "melody_vomm_v5.json").write_text(json.dumps(fixture_melody_model()))
+        m3 = load_models(rd, fixtures=False)
+        assert m3["sources"]["chain"].endswith("harmony_markov_v5_full.json") and "chain" in m3["input_sha256"]
+    print("test_04 PASS: fixture mode hermetic; real files read with fixtures=False")
 
 
 def _run_all() -> int:
