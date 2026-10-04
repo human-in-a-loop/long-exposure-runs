@@ -104,6 +104,33 @@ def test_06_analyze_song_classes_on_synthetic_stream() -> None:
     print(f"test_06 PASS: v5 classifier on the grid ticks -> {cls}")
 
 
+def test_06b_chord_stream_for_prefers_sibling_unless_mostly_N(monkeypatch=None) -> None:
+    import tempfile as _tf
+    with _tf.TemporaryDirectory() as td:
+        root = Path(td)
+        saved = (BP.SC.CHORDS_DIR, BP.SC.BASSROOTS_DIR, BP.SC.load_bassroots)
+        BP.SC.CHORDS_DIR, BP.SC.BASSROOTS_DIR = root / "chords", root / "_bassroots"
+        BP.SC.load_bassroots = lambda sha16, onsets=None, compute=True: {"chord_stream": [{"beat": 0, "root": 9, "quality": "min", "state": "ok"}], "key": {"tonic": 9, "mode": "minor"}}
+        try:
+            onsets = {"grid": GRID}
+            stream, _k, src = BP.chord_stream_for("nofile0000000000", onsets)
+            assert src["source"] == "fallback_chroma_viterbi" and "dependency" in src and stream[0]["root"] == 9
+            good = [{"grid_beat": b, "root": 0, "quality": "maj"} for b in range(10)] + [{"grid_beat": 10, "root": None, "quality": "N"}]
+            write_json_atomic(root / "chords" / "sib0000000000000" / "chords_v6.json", {"chords": {"chord_stream": good}, "key": {"tonic": 0, "mode": "major", "track": {}}})
+            stream, key, src = BP.chord_stream_for("sib0000000000000", onsets)
+            assert src["source"] == "chords_v6" and src["adapter"]["by_grid_beat"] == 11 and len(stream) == 11 and key == {"tonic": 0, "mode": "major"}
+            mostly_n = [{"grid_beat": b, "root": None, "quality": "N"} for b in range(8)] + [{"grid_beat": 8, "root": 5, "quality": "maj"}]
+            write_json_atomic(root / "chords" / "sibn000000000000" / "chords_v6.json", {"chords": {"chord_stream": mostly_n}, "key": {"tonic": 5, "mode": "major"}})
+            stream, _k, src = BP.chord_stream_for("sibn000000000000", onsets)
+            assert src["source"] == "fallback_chroma_viterbi" and src["sibling_n_fraction"] > BP.SIBLING_N_MAX and stream[0]["root"] == 9
+            write_json_atomic(root / "chords" / "sibx000000000000" / "chords_v6.json", {"chords": {"chord_counts": {}}})
+            _s, _k, src = BP.chord_stream_for("sibx000000000000", onsets)
+            assert src["source"] == "fallback_chroma_viterbi" and "ValueError" in src["sibling_present_but_unreadable"]
+        finally:
+            BP.SC.CHORDS_DIR, BP.SC.BASSROOTS_DIR, BP.SC.load_bassroots = saved
+    print("test_06b PASS: sibling preferred; > 50 % 'N' or unreadable sibling -> fallback, disclosed in chord_source")
+
+
 def test_07_written_files_schema_and_coverage() -> None:
     if not (V5_FILE.exists() and V6_FILE.exists()):
         print("test_07 SKIP: bass_pitch files not built yet")

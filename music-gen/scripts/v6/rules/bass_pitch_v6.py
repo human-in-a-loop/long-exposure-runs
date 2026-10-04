@@ -14,7 +14,7 @@ rounded to MIDI; onsets without a voiced frame are dropped (per-song voiced cove
 quiet ones, typically < -35 dB spill). Chords: beat-level chord roots on the SAME grid beat index — the sibling's
 data/v6/rules/chords/<sha16>/chords_v6.json when present (adapter `adapt_sibling_chords`: chords.chord_stream entries with
 `grid_beat`; generic fallbacks: a list under chord_stream|beats|chords|stream with grid_beat | time | beat and root|root_pc),
-else the chroma-template Viterbi fallback cached in data/v6/rules/_bassroots/<sha16>.json
+else — or when > 50 % of its beats are 'N' — the chroma-template Viterbi fallback cached in data/v6/rules/_bassroots/<sha16>.json
 (DEPENDENCY, swappable: the output records the source per song). Each onset becomes a v5 tick (beat_index * 480 + sub16 * 120)
 and scripts/v5/bass_pitch_v5.analyze_song / build_model / run_sampling_check (READ-ONLY imports) classify root / fifth /
 octave / third / approach (+/-1-2 semitones into the next change's root, only when the next beat's root differs) / other
@@ -39,6 +39,7 @@ PYIN = {"fmin": 30.0, "fmax": 500.0, "frame_length": 4096, "hop_length": 256}
 ONSET_WIN_S = (0.020, 0.120)  # [onset + 20 ms, onset + 120 ms)
 VOICED = "pyin voiced_flag (Viterbi voiced state) and finite f0"
 PITCH_PARAMS = dict(PYIN, onset_window_s=list(ONSET_WIN_S), voiced=VOICED)
+SIBLING_N_MAX = 0.5  # a sibling chord stream with more 'N' beats than this falls back to the bass+other chroma roots
 PITCH_DIR = SC.RULES_V6 / "_pitch"
 OUT_V5 = WS / "data/v5/rules/bass_pitch_v5.json"
 OUT_V6 = WS / "data/v6/rules/bass_pitch_v6.json"
@@ -115,6 +116,8 @@ def adapt_sibling_chords(d: dict, grid: dict) -> tuple[list, dict | None, dict]:
     if seq is None:
         raise ValueError("chords_v6.json: no beat-level list under chords.chord_stream|chord_stream|beats|chords|stream")
     key = d.get("key") if isinstance(d.get("key"), dict) else ({"tonic": d.get("tonic"), "mode": d.get("mode", "major")} if d.get("tonic") is not None else None)
+    if key is not None:  # the sibling's key block carries a windowed track + profile; keep the summary the rule files need
+        key = {k: key[k] for k in ("tonic", "mode", "tonic_name", "corr", "confidence", "low_confidence") if k in key}
     conv = str((d.get("grid") or {}).get("bar_convention", ""))
     phase = int((d.get("grid") or {}).get("phase", 0)) if "grid beat - phase" in conv else 0
     stream, notes = {}, {"entries": len(seq), "by_grid_beat": 0, "by_time": 0, "by_stream_beat": 0, "stream_beat_phase_added": phase}
@@ -136,19 +139,26 @@ def adapt_sibling_chords(d: dict, grid: dict) -> tuple[list, dict | None, dict]:
     return [stream[b] for b in sorted(stream)], key, notes
 
 
+def _rel(p: Path) -> str:
+    return str(p.relative_to(WS)) if str(p).startswith(str(WS)) else str(p)
+
+
 def chord_stream_for(sha16: str, onsets: dict) -> tuple[list, dict | None, dict]:
     """(chord_stream, key, source) — sibling chords_v6.json first, else the fallback roots (see stems_common_v6.build_bassroots)."""
     sib = SC.CHORDS_DIR / sha16 / "chords_v6.json"
     if sib.exists():
         try:
             stream, key, notes = adapt_sibling_chords(read_json(sib), onsets["grid"])
-            return stream, key, {"source": "chords_v6", "path": str(sib.relative_to(WS)), "sha256": sha256_file(sib), "adapter": notes}
+            n_frac = round(sum(1 for c in stream if c["state"] == "N") / len(stream), 6) if stream else 1.0
+            if n_frac <= SIBLING_N_MAX:
+                return stream, key, {"source": "chords_v6", "path": _rel(sib), "sha256": sha256_file(sib), "adapter": notes, "n_fraction": n_frac}
+            why = {"sibling_n_fraction": n_frac, "rule": f"sibling stream > {SIBLING_N_MAX:.0%} 'N' beats (its harmonic mix is below its silence floor while the bass plays) -> fallback"}
         except Exception as exc:  # noqa: BLE001  the sibling's schema is not final; fall back and disclose
-            fb = SC.load_bassroots(sha16, onsets)
-            return fb["chord_stream"], fb["key"], {"source": "fallback_chroma_viterbi", "path": str((SC.BASSROOTS_DIR / f"{sha16}.json").relative_to(WS)),
-                                                   "sibling_present_but_unreadable": f"{type(exc).__name__}: {exc}"}
+            why = {"sibling_present_but_unreadable": f"{type(exc).__name__}: {exc}"}
+        fb = SC.load_bassroots(sha16, onsets)
+        return fb["chord_stream"], fb["key"], {"source": "fallback_chroma_viterbi", "path": _rel(SC.BASSROOTS_DIR / f"{sha16}.json"), **why}
     fb = SC.load_bassroots(sha16, onsets)
-    return fb["chord_stream"], fb["key"], {"source": "fallback_chroma_viterbi", "path": str((SC.BASSROOTS_DIR / f"{sha16}.json").relative_to(WS)),
+    return fb["chord_stream"], fb["key"], {"source": "fallback_chroma_viterbi", "path": _rel(SC.BASSROOTS_DIR / f"{sha16}.json"),
                                            "dependency": "swap in data/v6/rules/chords/<sha16>/chords_v6.json when the sibling lands"}
 
 
