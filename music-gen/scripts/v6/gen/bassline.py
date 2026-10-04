@@ -4,8 +4,9 @@
 created: 2026-10-04
 milestone: M-V6-GEN-2/theory-grounded-composer
 
-Per bar: onsets = the groove model's bass16 slots (as v5) with an onset FORCED at every chord-change slot (roots must sound
-on every change: the forced onset's class is 'root'). Per onset: candidate classes {root, fifth, octave, third, approach,
+Per bar: onsets = the groove model's bass16 slots (as v5) with an onset FORCED at every chord slot (every change, plus the
+bar-start slot of a repeated chord; roots must sound on every change: the forced onset's class is 'root' and its pitch is
+root_line's, the deterministic root line the voicing DP and the melody skeleton were given). Per onset: candidate classes {root, fifth, octave, third, approach,
 repeat} ('other' of the v5 model = repeat the previous pitch) with base weights = the bass_pitch_v5 conditional row
 "<slot%4>|<chord_change>" (approach only on the last onset before a change: +/-1 or +/-2 semitones into the NEXT root),
 each class realised as a pitch in REGISTER 28..50 nearest the previous bass note, then multiplied by counterpoint factors
@@ -52,6 +53,22 @@ def class_pitch(cls: str, root_pc: int, pcs: list, next_root_pc, prev, tag: str)
     return None
 
 
+def root_line(states: list, tonic: int, anchor: int = 38) -> list:
+    """Deterministic bass root per chord slot (nearest root placement to the previous root in REGISTER; None for 'N').
+    Shared by the voicing DP and the melody skeleton so both can avoid parallel perfects against the bass that WILL sound
+    on every chord change (bassline forces the same pitches there)."""
+    out, prev = [], anchor
+    for st in states:
+        pcs = state_pcs(st, tonic)
+        if not pcs:
+            out.append(None)
+            continue
+        p = nearest_pitch(pcs[0], prev, *REGISTER)
+        out.append(p)
+        prev = p
+    return out
+
+
 def is_parallel_perfect(prev_low, prev_high, low, high) -> bool:
     if None in (prev_low, prev_high, low, high):
         return False
@@ -70,8 +87,10 @@ def sounding(notes: list, slot: int):
     return best
 
 
-def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_notes: list, voicings_by_slot: dict, tonic: int, tag: str, velocity_fn) -> dict:
-    """Bass notes over a label's bars: [{slot, pitch, dur16, cls, bar, factors}]."""
+def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_notes: list, voicings_by_slot: dict, tonic: int, tag: str, velocity_fn,
+               forced_roots: dict | None = None) -> dict:
+    """Bass notes over a label's bars: [{slot, pitch, dur16, cls, bar, factors}]. forced_roots {(bar, beat): pitch} from root_line."""
+    forced_roots = forced_roots or {}
     n_bars = len(beat_chords)
     mel = sorted(melody_notes, key=lambda n: n["slot"])
     notes, prev, prev_mel, prev_keys = [], None, None, None
@@ -80,6 +99,9 @@ def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_no
         chords = beat_chords[b]
         change_slots = [bt * 4 for bt in range(4) if (bt == 0 and (b == 0 or chords[0] != beat_chords[b - 1][3])) or (bt > 0 and chords[bt] != chords[bt - 1])]
         changes_total += len(change_slots)
+        # every chord SLOT (changes AND a repeated chord's bar-start slot) gets a root onset, so the bass sounding at any chord
+        # slot is exactly bassline.root_line's pitch (what the voicing DP and the melody skeleton assumed)
+        change_slots = sorted(set(change_slots) | {bt * 4 for bt in range(4) if (b, bt) in forced_roots})
         onsets = sorted(set(bits(groove_bars[b]["bass"])) | set(change_slots))
         forced_total += len(set(change_slots) - set(bits(groove_bars[b]["bass"])))
         for k, p in enumerate(onsets):
@@ -99,8 +121,11 @@ def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_no
                 if (b, bb) in voicings_by_slot:
                     keys_v = voicings_by_slot[(b, bb)]
                     break
+            nxt_forced = forced_roots.get((b, nxt_slot // 4)) if nxt_slot < SLOTS else (forced_roots.get((b + 1, 0)) if b + 1 < n_bars else None)
+            mel_next = sounding(mel, b * SLOTS + nxt_slot) if nxt_forced is not None else None
             if p in change_slots and (pcs is not None):
-                cls, pitch, factors = "root", class_pitch("root", root_pc, pcs or [root_pc], next_root, prev, f"{tag}|bass|{b}|{p}"), {"forced_root_on_change": 1.0}
+                pitch = forced_roots.get((b, p // 4)) or class_pitch("root", root_pc, pcs or [root_pc], next_root, prev, f"{tag}|bass|{b}|{p}")
+                cls, factors = "root", {"forced_root_on_change": 1.0}
             else:
                 row = bass_model.get("conditional", {}).get(f"{p % 4}|{int(chg)}") or bass_model["marginal"]
                 base = dict(row["probs"])
@@ -116,6 +141,8 @@ def label_bass(bass_model: dict, groove_bars: list, beat_chords: list, melody_no
                     if prev is not None and mel_pitch is not None and prev_mel is not None and (cand - prev) * (mel_pitch - prev_mel) < 0:
                         f *= FACTORS["contrary"]
                     if is_parallel_perfect(prev, prev_mel, cand, mel_pitch):
+                        f *= FACTORS["parallel_perfect"]
+                    if nxt_forced is not None and is_parallel_perfect(cand, mel_pitch, nxt_forced, mel_next):  # look-ahead into the forced root
                         f *= FACTORS["parallel_perfect"]
                     if keys_v and prev_keys and keys_v != prev_keys and any(is_parallel_perfect(prev, pk, cand, kk) for pk, kk in zip(prev_keys, keys_v)):
                         f *= FACTORS["parallel_perfect"]

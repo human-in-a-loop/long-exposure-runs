@@ -113,20 +113,32 @@ def unresolved_leaps(pitches: list) -> int:
     return n
 
 
-def _place(pc: int, prev, floor: int, phase: str, after_leap: int, peak_pitch: int) -> int:
-    """Octave placement inside [floor, floor+12]; every non-peak note stays strictly below the pre-drawn peak pitch."""
-    hi = floor + PHRASE_RANGE if phase == "peak" else peak_pitch - 1
-    cands = [p for p in range(floor, hi + 1) if p % 12 == pc % 12]
-    if not cands:
-        cands = [p for p in range(floor, floor + PHRASE_RANGE + 1) if p % 12 == pc % 12]
-    if phase == "peak":
-        return cands[-1]
+def _cands(pc: int, floor: int, hi: int) -> list:
+    return [p for p in range(floor, hi + 1) if p % 12 == pc % 12]
+
+
+def _allowed_pcs(pcs: list, prev, floor: int, peak_pitch: int, phase: str, after_leap: int) -> dict:
+    """{pc: candidate pitches} for a non-peak skeleton note: below the peak; after a leap only pcs offering a step in the
+    opposite direction; otherwise only pcs reachable without a leap (|delta| <= MAX_LEAP) when any exist."""
+    hi = peak_pitch - 1
+    allowed = {pc: _cands(pc, floor, hi) for pc in pcs}
+    allowed = {pc: c for pc, c in allowed.items() if c} or {pc: _cands(pc, floor, floor + PHRASE_RANGE) for pc in pcs}
+    allowed = {pc: c for pc, c in allowed.items() if c}
+    if prev is None:
+        return allowed
+    if after_leap:
+        steps = {pc: [p for p in c if is_step(p, prev) and (p - prev) * after_leap < 0] for pc, c in allowed.items()}
+        steps = {pc: c for pc, c in steps.items() if c}
+        if steps:
+            return steps
+    near = {pc: [p for p in c if abs(p - prev) <= MAX_LEAP and ((p >= prev - 2) if phase == "up" else (p <= prev + 2))] for pc, c in allowed.items()}
+    near = {pc: c for pc, c in near.items() if c}
+    return near or allowed
+
+
+def _place(cands: list, prev, floor: int, phase: str) -> int:
     if prev is None:
         return min(cands, key=lambda p: (abs(p - (floor + 5)), p))
-    if after_leap:  # a step in the opposite direction when the pc allows it
-        steps = [p for p in cands if is_step(p, prev) and (p - prev) * after_leap < 0]
-        if steps:
-            return steps[0]
     if phase == "up":
         ups = [p for p in cands if p >= prev]
         return ups[0] if ups else cands[-1]
@@ -145,9 +157,23 @@ def _peak_pitch(model: dict, st: str, tonic: int, mode: str, floor: int, tag: st
     return tops[int(draw_from(w, f"{tag}|peakpc"))]
 
 
-def skeleton(model: dict, positions: list, chords: list, cadence: str, tonic: int, mode: str, L: int, tag: str, prev_pitch) -> dict:
-    """positions/chords: parallel lists (slot, state) of the skeleton; the last position is the cadence note."""
+def _no_parallel(allowed: dict, prev, prev_root, root) -> dict:
+    """Drop pcs whose every candidate forms a parallel perfect 5th/8ve with the bass root motion prev_root -> root."""
+    if prev is None or prev_root is None or root is None or prev_root == root:
+        return allowed
+    ia = (prev - prev_root) % 12
+    if ia not in (0, 7):
+        return allowed
+    keep = {pc: [p for p in c if not ((p - root) % 12 == ia and (p - prev) * (root - prev_root) > 0)] for pc, c in allowed.items()}
+    keep = {pc: c for pc, c in keep.items() if c}
+    return keep or allowed
+
+
+def skeleton(model: dict, positions: list, chords: list, cadence: str, tonic: int, mode: str, L: int, tag: str, prev_pitch, roots: list | None = None) -> dict:
+    """positions/chords: parallel lists (slot, state) of the skeleton; the last position is the cadence note; roots = bass root
+    pitch sounding at each position (bassline.root_line) for the parallel-perfect filter."""
     sc = scale_for(mode)
+    roots = roots or [None] * len(positions)
     best = None
     for t in range(REJECT_TRIES):
         tt = f"{tag}|skel|try{t}"
@@ -158,18 +184,21 @@ def skeleton(model: dict, positions: list, chords: list, cadence: str, tonic: in
         pitches, ctx, prev, last_leap = [], (), prev_pitch, 0
         for i, (slot, st) in enumerate(zip(positions, chords)):
             pcs = state_pcs(st, tonic) or [(tonic + x) % 12 for x in sc[::2]]
-            if i == len(positions) - 1:
-                table = CADENCE_DEGREES.get(cadence, CADENCE_DEGREES["none"])
-                w = {pc: table.get(degree_of(pc, tonic, mode), 0.05) for pc in pcs}
-            else:
-                dw = degree_weights(model, ctx)
-                w = {pc: float(dw.get(degree_of(pc, tonic, mode), 0.0)) + 0.05 for pc in pcs}
             phase = "peak" if i == peak_i else ("up" if i < peak_i else "down")
             if phase == "peak":
                 p = peak_pitch
             else:
+                anchor = prev if (prev is not None and floor <= prev <= floor + PHRASE_RANGE) else None
+                allowed = _allowed_pcs(pcs, anchor, floor, peak_pitch, phase, last_leap)
+                allowed = _no_parallel(allowed, anchor, roots[i - 1] if i else None, roots[i])
+                if i == len(positions) - 1:
+                    table = CADENCE_DEGREES.get(cadence, CADENCE_DEGREES["none"])
+                    w = {pc: table.get(degree_of(pc, tonic, mode), 0.05) for pc in allowed}
+                else:
+                    dw = degree_weights(model, ctx)
+                    w = {pc: float(dw.get(degree_of(pc, tonic, mode), 0.0)) + 0.05 for pc in allowed}
                 pc = int(draw_from({f"{k:02d}": v for k, v in w.items()}, f"{tt}|pc|{i}"))
-                p = _place(pc, prev if (prev is not None and floor <= prev <= floor + PHRASE_RANGE) else None, floor, phase, last_leap, peak_pitch)
+                p = _place(allowed[pc], anchor, floor, phase)
             if prev is not None:
                 last_leap = (p - prev) if abs(p - prev) > MAX_LEAP else 0
             nxt = positions[i + 1] if i + 1 < len(positions) else L
@@ -255,8 +284,11 @@ def fill_weak(onsets: list, skel: dict, skel_pos: list, chords_at, change_set: s
     return notes
 
 
-def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase: dict, tonic: int, mode: str, label: str, tag: str, prev_pitch) -> dict:
-    """One phrase. beat_chords = the LABEL's per-bar per-beat chords; phrase = planner entry (start_bar, n_bars, cadence)."""
+def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase: dict, tonic: int, mode: str, label: str, tag: str, prev_pitch,
+                  roots_by_slot: dict | None = None) -> dict:
+    """One phrase. beat_chords = the LABEL's per-bar per-beat chords; phrase = planner entry (start_bar, n_bars, cadence);
+    roots_by_slot {(bar, beat): bass root pitch} from bassline.root_line."""
+    roots_by_slot = roots_by_slot or {}
     model = models["melody"]
     b0, nb = phrase["start_bar"], phrase["n_bars"]
     L = nb * SLOTS
@@ -272,7 +304,15 @@ def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase:
     if not onsets:
         return {"notes": [], "skeleton": None, "onsets": [], "cadence_used": cadence, "L": L, "cad_slot": cad_slot}
     skel_pos = sorted({s for s in onsets if s % 8 == 0 or s in change} | {cad_slot, onsets[0]})
-    sk = skeleton(model, skel_pos, [chord_at(s) for s in skel_pos], cadence, tonic, mode, L, tag, prev_pitch)
+
+    def root_at(s: int):
+        bar, beat = b0 + s // SLOTS, (s % SLOTS) // 4
+        for bb in range(beat, -1, -1):
+            if (bar, bb) in roots_by_slot:
+                return roots_by_slot[(bar, bb)]
+        return None
+
+    sk = skeleton(model, skel_pos, [chord_at(s) for s in skel_pos], cadence, tonic, mode, L, tag, prev_pitch, [root_at(s) for s in skel_pos])
     raw = fill_weak(onsets, sk, skel_pos, chord_at, set(change), sk["floor"], tonic, mode, tag)
     raw.sort()
     notes = []
@@ -290,11 +330,11 @@ def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase:
             "onsets": onsets, "change_slots": change, "cadence_used": cadence, "L": L, "cad_slot": cad_slot}
 
 
-def label_melody(models: dict, label_plan: dict, harmony: dict, tonic: int, mode: str, label: str, tag: str) -> dict:
+def label_melody(models: dict, label_plan: dict, harmony: dict, tonic: int, mode: str, label: str, tag: str, roots_by_slot: dict | None = None) -> dict:
     """All phrases of a label; notes carry slots relative to the section start."""
     notes, phrases, prev = [], [], None
     for ph, hp in zip(label_plan["phrases"], harmony["phrases"]):
-        r = phrase_melody(models, harmony["beat_chords"], ph, hp, tonic, mode, label, f"{tag}|melody|{ph['index']}", prev)
+        r = phrase_melody(models, harmony["beat_chords"], ph, hp, tonic, mode, label, f"{tag}|melody|{ph['index']}", prev, roots_by_slot)
         off = ph["start_bar"] * SLOTS
         for n in r["notes"]:
             n2 = dict(n)
