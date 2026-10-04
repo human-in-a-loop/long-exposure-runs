@@ -127,14 +127,19 @@ def test_01_find_violations_matches_validators_on_hand_made_song() -> None:
             "keys": [], "drums": []}
     viols = R.find_violations(song)
     rules = sorted(v["rule"] for v in viols)
-    val_par = V.parallel_perfect_intervals(song)
+    val_par, val_mel = V.parallel_perfect_intervals(song), V.melody_checks(song)
     assert rules.count("parallel_octave") == val_par["breakdown"]["bass_melody_octaves"] == 1, (rules, val_par)
-    assert rules.count("leap_unresolved") == V.melody_checks(song)["melodic_leaps_unresolved"] == 1, rules
+    assert rules.count("parallel_fifth") == val_par["breakdown"]["bass_melody_fifths"] == 1, (rules, val_par)  # 36->43 under 67->74 (both + 7)
+    assert rules.count("leap_unresolved") == val_mel["melodic_leaps_unresolved"] == 2, rules  # 72->79 then 76 (not a step); 76->67 then 71 (not a step)
+    assert rules.count("strong_beat_nct") == val_mel["melody_strong_beat_non_chord_tones"] == 2, rules  # E over G at slot 24, B over C at slot 40
+    assert rules.count("range") == val_mel["melody_range_violations"] == 0
     assert rules.count("leading_tone_unresolved") == V.leading_tone_unresolved_at_cadence(song)["melody"] == 1, rules
     assert all("slot" in v and "key" in v for v in viols) and viols == sorted(viols, key=lambda v: (v["slot"], v["rule"]))
     par = next(v for v in viols if v["rule"] == "parallel_octave")
     assert [n["slot"] for n in par["bass"]] == [0, 16] and [n["slot"] for n in par["melody"]] == [0, 16]
-    print(f"test_01 PASS: find_violations = validators' counts with locations on a hand-made song ({rules})")
+    lt = next(v for v in viols if v["rule"] == "leading_tone_unresolved")
+    assert lt["before"]["slot"] == 40 and lt["at"]["slot"] == 48 and lt["cadence"] == "authentic" and lt["final_state"] == "7:maj"
+    print(f"test_01 PASS: find_violations = validators' counts per rule with locations on a hand-made song ({rules})")
 
 
 def test_02_parallel_branches_free_bass_then_melody_nct_then_skeleton() -> None:
@@ -152,13 +157,19 @@ def test_02_parallel_branches_free_bass_then_melody_nct_then_skeleton() -> None:
             assert not _par_keys(case) and not rep["forced"], rep
             seen["a_bass_free"] = (seed, lab, slot)
         case = _Case(seed)
-        hit = _inject_parallel(case, want_free_second=False, want_skeleton=False)
-        if hit and "b_melody_nct" not in seen:
-            assert _par_keys(case)
-            rep = case.repair()
-            assert rep["repairs"] and rep["repairs"][0]["branch"] in ("b_melody_nct", "a_bass_free") and not _par_keys(case) and not rep["forced"], rep
-            if rep["repairs"][0]["branch"] == "b_melody_nct":
-                assert rep["repairs"][0]["stem"] == "melody" and rep["repairs"][0]["role"] in ("chord_tone", "neighbour", "passing")
+        hit = _inject_parallel(case, want_free_second=True)
+        if hit and "b_melody_nct" not in seen:  # branch (b) alone: the free-bass branch is skipped, the NCT sounding at an onset is re-picked
+            viols = R.find_violations(case.flat())
+            v = next(x for x in viols if x["rule"] in ("parallel_fifth", "parallel_octave"))
+            ctx = R._Ctx(FX, case.plan, case.labels, None, TONIC, MODE, case.flat, True, None)
+            e = None
+            for m in (v["melody"][1], v["melody"][0]):
+                if m.get("role") not in R.SKELETON_ROLES:
+                    e = R._try_nct(ctx, v, m, len(viols), "b_melody_nct")
+                    break
+            if e is not None:
+                assert e["branch"] == "b_melody_nct" and e["stem"] == "melody" and e["role"] in ("chord_tone", "neighbour", "passing") and e["before"] != e["after"]
+                assert v["key"] not in _par_keys(case) and len(case.violations()) < len(viols)
                 seen["b_melody_nct"] = (seed,) + hit
         case = _Case(seed)
         hit = _inject_parallel(case, want_free_second=False, want_skeleton=True)
@@ -228,9 +239,10 @@ def _inject_leading_tone(case: _Case, want_tonic_in_final: bool, before_skeleton
             if not before or not at or (before[-1].get("role") in R.SKELETON_ROLES) != before_skeleton:
                 continue
             lo, hi = case.window(lab, before[-1])
-            lt = next((p for p in range(hi, lo - 1, -1) if p % 12 == LT), None)
-            if lt is None:
+            lts = [p for p in range(lo, hi + 1) if p % 12 == LT]
+            if not lts:
                 continue
+            lt = min(lts, key=lambda p: (abs(p - before[-1]["pitch"]), p))
             if want_tonic_in_final and at[0]["pitch"] % 12 == TONIC_PC:  # move the cadence note off the tonic (another chord tone in the window)
                 lo2, hi2 = case.window(lab, at[0])
                 alt = next((p for p in range(lo2, hi2 + 1) if p % 12 in final_pcs and p % 12 != TONIC_PC), None)
@@ -255,7 +267,9 @@ def test_04_leading_tone_branches_cadence_to_tonic_then_note_before() -> None:
             assert any(v["rule"] == "leading_tone_unresolved" for v in case.violations()), (seed, want_tonic, before_sk)
             rep = case.repair()
             assert not any(v["rule"] == "leading_tone_unresolved" for v in case.violations()) and not rep["forced"], (seed, rep["forced"], rep["remaining"])
-            e = next(x for x in rep["repairs"] if x["rule"] == "leading_tone_unresolved")
+            e = next((x for x in rep["repairs"] if x["rule"] == "leading_tone_unresolved"), None)
+            if e is None:  # the injected LT also made a leap whose repair removed it first
+                continue
             assert e["branch"].startswith("lt_")
             seen.setdefault(e["branch"], (seed,) + hit)
     assert "lt_cadence_note_to_tonic" in seen and ("lt_before_nct" in seen or "lt_before_skeleton" in seen), seen
