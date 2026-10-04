@@ -220,9 +220,11 @@ def _passing(a: int, b: int, tonic: int, mode: str):
     return mids[len(mids) // 2] if mids else None
 
 
-def fill_weak(onsets: list, skel: dict, skel_pos: list, chords_at, change_set: set, floor: int, tonic: int, mode: str, tag: str) -> list:
-    """Assign pitches/roles to every onset. Returns [(slot, pitch, role)]."""
+def fill_weak(onsets: list, skel: dict, skel_pos: list, chords_at, change_set: set, floor: int, tonic: int, mode: str, tag: str, susp_tag: str | None = None) -> list:
+    """Assign pitches/roles to every onset. Returns [(slot, pitch, role)]. susp_tag (default tag) keys the suspension draws so a
+    recurrence (humanize.py) can re-draw the non-chord-tone choices while the skeleton realisation stays identical."""
     sk = dict(zip(skel_pos, skel["pitches"]))
+    susp_tag = susp_tag or tag
     notes = []
     prev_pitch = None
     for idx, s in enumerate(onsets):
@@ -234,7 +236,7 @@ def fill_weak(onsets: list, skel: dict, skel_pos: list, chords_at, change_set: s
             pcs = state_pcs(chords_at(s), tonic) or []
             if (role == "skeleton" and s % SLOTS == 0 and s in change_set and prev_pitch is not None and 1 <= prev_pitch - p <= 2
                     and prev_pitch % 12 not in pcs and floor <= prev_pitch <= floor + PHRASE_RANGE and (nxt_on is None or nxt_on > s + 4)
-                    and u(f"{tag}|nct|{s}|susp") < P_NCT["suspension"]):
+                    and u(f"{susp_tag}|nct|{s}|susp") < P_NCT["suspension"]):
                 notes.append((s, prev_pitch, "suspension"))
                 notes.append((s + 4, p, "resolution"))
             else:
@@ -284,6 +286,24 @@ def fill_weak(onsets: list, skel: dict, skel_pos: list, chords_at, change_set: s
     return notes
 
 
+def finalize_notes(raw: list, L: int, chord_at, phrase_index: int) -> list:
+    """(slot, pitch, role) -> note dicts with legato durations (cadence held), chord and position (first/peak/last/other)."""
+    raw = sorted(raw)
+    notes = []
+    for i, (s, p, role) in enumerate(raw):
+        if role == "cadence":
+            dur = min(L - s, max(8, L - s - 2))
+        else:
+            nxt = raw[i + 1][0] if i + 1 < len(raw) else L
+            dur = max(1.0, (nxt - s) * LEGATO)
+        notes.append({"slot": int(s), "pitch": int(p), "dur16": round(float(dur), 4), "role": role, "chord": chord_at(s), "phrase": phrase_index})
+    if notes:
+        peak = max(range(len(notes)), key=lambda i: (notes[i]["pitch"], -i))
+        for i, n in enumerate(notes):
+            n["position"] = "first" if i == 0 else ("last" if i == len(notes) - 1 else ("peak" if i == peak else "other"))
+    return notes
+
+
 def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase: dict, tonic: int, mode: str, label: str, tag: str, prev_pitch,
                   roots_by_slot: dict | None = None) -> dict:
     """One phrase. beat_chords = the LABEL's per-bar per-beat chords; phrase = planner entry (start_bar, n_bars, cadence);
@@ -314,18 +334,7 @@ def phrase_melody(models: dict, beat_chords: list, phrase: dict, harmony_phrase:
 
     sk = skeleton(model, skel_pos, [chord_at(s) for s in skel_pos], cadence, tonic, mode, L, tag, prev_pitch, [root_at(s) for s in skel_pos])
     raw = fill_weak(onsets, sk, skel_pos, chord_at, set(change), sk["floor"], tonic, mode, tag)
-    raw.sort()
-    notes = []
-    for i, (s, p, role) in enumerate(raw):
-        if role == "cadence":
-            dur = min(L - s, max(8, L - s - 2))
-        else:
-            nxt = raw[i + 1][0] if i + 1 < len(raw) else L
-            dur = max(1.0, (nxt - s) * LEGATO)
-        notes.append({"slot": int(s), "pitch": int(p), "dur16": round(float(dur), 4), "role": role, "chord": chord_at(s), "phrase": phrase["index"]})
-    peak = max(range(len(notes)), key=lambda i: (notes[i]["pitch"], -i))
-    for i, n in enumerate(notes):
-        n["position"] = "first" if i == 0 else ("last" if i == len(notes) - 1 else ("peak" if i == peak else "other"))
+    notes = finalize_notes(raw, L, chord_at, phrase["index"])
     return {"notes": notes, "skeleton": {"slots": skel_pos, "pitches": sk["pitches"], "floor": sk["floor"], "violations": sk["violations"], "tries": sk["tries"]},
             "onsets": onsets, "change_slots": change, "cadence_used": cadence, "L": L, "cad_slot": cad_slot}
 

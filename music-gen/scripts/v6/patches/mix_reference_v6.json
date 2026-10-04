@@ -1,0 +1,491 @@
+{
+ "n_songs": 29,
+ "overall": {
+  "crest_factor_db_iqr": [
+   12.777,
+   14.754
+  ],
+  "crest_factor_db_median": 13.705,
+  "lufs_integrated_iqr": [
+   -12.551,
+   -9.662
+  ],
+  "lufs_integrated_median": -11.307,
+  "n": 29,
+  "spectral_tilt_db_iqr": [
+   -15.933,
+   -11.767
+  ],
+  "spectral_tilt_db_median": -14.051
+ },
+ "per_band": {
+  "4": {
+   "crest_factor_db_iqr": [
+    13.315,
+    15.685
+   ],
+   "crest_factor_db_median": 13.705,
+   "lufs_integrated_iqr": [
+    -14.155,
+    -9.727
+   ],
+   "lufs_integrated_median": -12.289,
+   "n": 9,
+   "spectral_tilt_db_iqr": [
+    -14.257,
+    -8.173
+   ],
+   "spectral_tilt_db_median": -14.051
+  },
+  "5": {
+   "crest_factor_db_iqr": [
+    13.021,
+    14.822
+   ],
+   "crest_factor_db_median": 13.916,
+   "lufs_integrated_iqr": [
+    -12.476,
+    -9.798
+   ],
+   "lufs_integrated_median": -11.317,
+   "n": 16,
+   "spectral_tilt_db_iqr": [
+    -17.897,
+    -11.921
+   ],
+   "spectral_tilt_db_median": -15.709
+  },
+  "7": {
+   "crest_factor_db_iqr": [
+    11.895,
+    13.22
+   ],
+   "crest_factor_db_median": 12.532,
+   "lufs_integrated_iqr": [
+    -9.712,
+    -9.629
+   ],
+   "lufs_integrated_median": -9.678,
+   "n": 4,
+   "spectral_tilt_db_iqr": [
+    -14.096,
+    -12.523
+   ],
+   "spectral_tilt_db_median": -13.57
+  }
+ },
+ "per_song": [
+  {
+   "band": 4,
+   "crest_factor_db": 13.469,
+   "duration_s": 233.707,
+   "lufs_integrated": -9.727,
+   "path": "corpus/ratings/4/013__jZVdDl_asYY__Mariah_Carey_-_Shake_It_Off_Official_Music_Video.mp3",
+   "peak_dbfs": 1.423,
+   "rms_dbfs": -12.046,
+   "sha16": "1d0f6dbbc9be325c",
+   "spectral_tilt_db": -8.173,
+   "sr": 48000,
+   "title": "Mariah Carey - Shake It Off (Official Music Video)",
+   "wall_s": 1.97
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 13.705,
+   "duration_s": 264.057,
+   "lufs_integrated": -12.551,
+   "path": "corpus/ratings/4/019__-dyPeGDeS3o__J._COLE-_LIGHTS_PLEASE.mp3",
+   "peak_dbfs": 0.538,
+   "rms_dbfs": -13.167,
+   "sha16": "2059d5e60e721e7f",
+   "spectral_tilt_db": -14.051,
+   "sr": 48000,
+   "title": "J. COLE- LIGHTS PLEASE",
+   "wall_s": 2.19
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 14.446,
+   "duration_s": 243.285,
+   "lufs_integrated": -12.289,
+   "path": "corpus/ratings/4/012__XKQNJzquduI__Frank_Ocean_-_Provider.mp3",
+   "peak_dbfs": 1.015,
+   "rms_dbfs": -13.43,
+   "sha16": "42f585b439ef32ee",
+   "spectral_tilt_db": -14.257,
+   "sr": 48000,
+   "title": "Frank Ocean - Provider",
+   "wall_s": 1.56
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 17.953,
+   "duration_s": 230.888,
+   "lufs_integrated": -14.155,
+   "path": "corpus/ratings/4/014__QReOON-c6-4__Lucy_Pearl_-_Dance_Tonight_Official_Video.mp3",
+   "peak_dbfs": 1.554,
+   "rms_dbfs": -16.399,
+   "sha16": "49956e7d3d507769",
+   "spectral_tilt_db": -7.89,
+   "sr": 48000,
+   "title": "Lucy Pearl - Dance Tonight (Official Video)",
+   "wall_s": 1.83
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 12.777,
+   "duration_s": 199.401,
+   "lufs_integrated": -12.23,
+   "path": "corpus/ratings/4/020__eimgRedLkkU__Empire_Of_The_Sun_-_Walking_On_A_Dream_Official_Music_Video.mp3",
+   "peak_dbfs": -2.039,
+   "rms_dbfs": -14.816,
+   "sha16": "5f4b93487b6b516b",
+   "spectral_tilt_db": -7.229,
+   "sr": 48000,
+   "title": "Empire Of The Sun - Walking On A Dream (Official Music Video)",
+   "wall_s": 1.84
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 15.685,
+   "duration_s": 235.706,
+   "lufs_integrated": -22.734,
+   "path": "corpus/ratings/4/007__1gX1EP6mG-E__Old_Crow_Medicine_Show_-_Wagon_Wheel_Official_Music_Video.mp3",
+   "peak_dbfs": -10.239,
+   "rms_dbfs": -25.924,
+   "sha16": "733ab58ee9bf7029",
+   "spectral_tilt_db": -14.177,
+   "sr": 48000,
+   "title": "Old Crow Medicine Show - Wagon Wheel [Official Music Video]",
+   "wall_s": 1.56
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 13.315,
+   "duration_s": 320.68,
+   "lufs_integrated": -9.433,
+   "path": "corpus/ratings/4/004__6oHdAA3AqnE__Ultralight_Beam.mp3",
+   "peak_dbfs": 1.474,
+   "rms_dbfs": -11.841,
+   "sha16": "8878d35ac7b9120e",
+   "spectral_tilt_db": -16.218,
+   "sr": 48000,
+   "title": "Ultralight Beam",
+   "wall_s": 3.77
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 19.418,
+   "duration_s": 324.011,
+   "lufs_integrated": -15.023,
+   "path": "corpus/ratings/4/017__J8UEi3xaWhM__Corn_on_my_Dinner_Plate_-_Swing_Dreams_OFFICIAL_MUSIC_VIDEO.mp3",
+   "peak_dbfs": 0.541,
+   "rms_dbfs": -18.876,
+   "sha16": "89ec8ec7c0be97de",
+   "spectral_tilt_db": -12.292,
+   "sr": 48000,
+   "title": "Corn on my Dinner Plate - Swing Dreams (OFFICIAL MUSIC VIDEO)",
+   "wall_s": 3.03
+  },
+  {
+   "band": 4,
+   "crest_factor_db": 12.667,
+   "duration_s": 170.771,
+   "lufs_integrated": -9.086,
+   "path": "corpus/ratings/4/015__XEcKhamKyW4__Mura_Masa_-_...Girl_Official_Video.mp3",
+   "peak_dbfs": 1.647,
+   "rms_dbfs": -11.02,
+   "sha16": "98af4505ea239661",
+   "spectral_tilt_db": -14.879,
+   "sr": 48000,
+   "title": "Mura Masa - ...Girl (Official Video)",
+   "wall_s": 1.53
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 13.374,
+   "duration_s": 186.073,
+   "lufs_integrated": -9.463,
+   "path": "corpus/ratings/5/021__pLuQ0MGLBXU__Mura_Masa_-_What_If_I_Go_Official_Video.mp3",
+   "peak_dbfs": 1.658,
+   "rms_dbfs": -11.715,
+   "sha16": "252eb21ce7df7328",
+   "spectral_tilt_db": -11.767,
+   "sr": 48000,
+   "title": "Mura Masa - What If I Go? (Official Video)",
+   "wall_s": 1.78
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 17.568,
+   "duration_s": 645.817,
+   "lufs_integrated": -14.136,
+   "path": "corpus/ratings/5/004__1NCWAkzDwxw__Anderson_.Paak_Vans_Sidestripe_Sessions_VANS.mp3",
+   "peak_dbfs": 0.674,
+   "rms_dbfs": -16.894,
+   "sha16": "3fc418b996445d3a",
+   "spectral_tilt_db": -6.245,
+   "sr": 48000,
+   "title": "Anderson .Paak: Vans Sidestripe Sessions | VANS",
+   "wall_s": 7.13
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 14.754,
+   "duration_s": 241.453,
+   "lufs_integrated": -11.643,
+   "path": "corpus/ratings/5/023__QnO6Dxi2qtQ__Tedeschi_Trucks_Band_-_Part_of_Me_acoustic.mp3",
+   "peak_dbfs": -0.321,
+   "rms_dbfs": -15.075,
+   "sha16": "41bdba5c3dad40ac",
+   "spectral_tilt_db": -19.266,
+   "sr": 48000,
+   "title": "Tedeschi Trucks Band - Part of Me (acoustic)",
+   "wall_s": 2.12
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 13.973,
+   "duration_s": 189.51,
+   "lufs_integrated": -10.106,
+   "path": "corpus/ratings/5/010__olwAPZ9L1io__Yesterday.mp3",
+   "peak_dbfs": 1.337,
+   "rms_dbfs": -12.635,
+   "sha16": "46eb16d39cf8bb61",
+   "spectral_tilt_db": -16.072,
+   "sr": 48000,
+   "title": "Yesterday",
+   "wall_s": 1.17
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 13.295,
+   "duration_s": 201.77,
+   "lufs_integrated": -8.878,
+   "path": "corpus/ratings/5/003__xA8MCbepGRE__Jungle_-_I_ve_Been_In_Love_feat._Channel_Tres_Official_Video.mp3",
+   "peak_dbfs": 1.812,
+   "rms_dbfs": -11.482,
+   "sha16": "4cad93ba29712265",
+   "spectral_tilt_db": -12.612,
+   "sr": 48000,
+   "title": "Jungle - I've Been In Love feat. Channel Tres (Official Video)",
+   "wall_s": 2.42
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 14.358,
+   "duration_s": 218.686,
+   "lufs_integrated": -11.307,
+   "path": "corpus/ratings/5/012__gPp2KBV9zXk__Dojo_Cuts_-_Rome.mp3",
+   "peak_dbfs": 0.453,
+   "rms_dbfs": -13.905,
+   "sha16": "51e433ade2a845e1",
+   "spectral_tilt_db": -17.7,
+   "sr": 48000,
+   "title": "Dojo Cuts - Rome",
+   "wall_s": 3.18
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 14.41,
+   "duration_s": 237.389,
+   "lufs_integrated": -18.194,
+   "path": "corpus/ratings/5/025__zTvjPfY2sUs__Lauryn_Hill-Doo_Wop_That_Thing_Explicit_Lyrics.mp3",
+   "peak_dbfs": -5.28,
+   "rms_dbfs": -19.69,
+   "sha16": "664f7c5b283b795d",
+   "spectral_tilt_db": -9.177,
+   "sr": 48000,
+   "title": "Lauryn Hill-Doo Wop (That Thing) (Explicit Lyrics)",
+   "wall_s": 1.62
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 10.906,
+   "duration_s": 305.067,
+   "lufs_integrated": -8.302,
+   "path": "corpus/ratings/5/009__B3NmMKfl3Ic__Hey_Mama.mp3",
+   "peak_dbfs": 1.411,
+   "rms_dbfs": -9.495,
+   "sha16": "7b812225c00d85e8",
+   "spectral_tilt_db": -11.972,
+   "sr": 48000,
+   "title": "Hey Mama",
+   "wall_s": 3.32
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 15.026,
+   "duration_s": 192.965,
+   "lufs_integrated": -12.008,
+   "path": "corpus/ratings/5/015___Jl4H9CfrAo__Lotus_72_D.mp3",
+   "peak_dbfs": 0.315,
+   "rms_dbfs": -14.711,
+   "sha16": "87cabfc2e3a48d0c",
+   "spectral_tilt_db": -20.419,
+   "sr": 48000,
+   "title": "Lotus 72 D",
+   "wall_s": 1.36
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 13.86,
+   "duration_s": 242.795,
+   "lufs_integrated": -11.328,
+   "path": "corpus/ratings/5/006__CNq5jdNfD-c__berhana_-_Janet_Official_Video.mp3",
+   "peak_dbfs": 0.253,
+   "rms_dbfs": -13.608,
+   "sha16": "92513e3e14d03810",
+   "spectral_tilt_db": -15.933,
+   "sr": 48000,
+   "title": "berhana - Janet [Official Video]",
+   "wall_s": 1.58
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 15.7,
+   "duration_s": 391.918,
+   "lufs_integrated": -11.843,
+   "path": "corpus/ratings/5/007__fPkM8F0sjSw__Marvin_Gaye_What_s_Going_On_Live_1972.mp3",
+   "peak_dbfs": 1.269,
+   "rms_dbfs": -14.431,
+   "sha16": "95d0cd20555961d5",
+   "spectral_tilt_db": -18.487,
+   "sr": 48000,
+   "title": "Marvin Gaye   What's Going On Live 1972",
+   "wall_s": 3.86
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 12.628,
+   "duration_s": 342.016,
+   "lufs_integrated": -9.91,
+   "path": "corpus/ratings/5/001__ioA5SVVgGd4__FKJ_Pomo_-_Lucky_Star_Live.mp3",
+   "peak_dbfs": 1.112,
+   "rms_dbfs": -11.516,
+   "sha16": "a358a6eb50581056",
+   "spectral_tilt_db": -14.042,
+   "sr": 48000,
+   "title": "FKJ & Pomo - Lucky Star (Live)",
+   "wall_s": 3.76
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 13.152,
+   "duration_s": 108.617,
+   "lufs_integrated": -10.264,
+   "path": "corpus/ratings/5/016__c7BxiPq_6Ok__Cerca_De_Ti.mp3",
+   "peak_dbfs": 0.159,
+   "rms_dbfs": -12.993,
+   "sha16": "a4e6ab346837dbd4",
+   "spectral_tilt_db": -29.596,
+   "sr": 48000,
+   "title": "Cerca De Ti",
+   "wall_s": 0.69
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 16.21,
+   "duration_s": 463.467,
+   "lufs_integrated": -13.882,
+   "path": "corpus/ratings/5/018__WiUzmWbDIFw__Willow_Weep_For_Me.mp3",
+   "peak_dbfs": 0.183,
+   "rms_dbfs": -16.026,
+   "sha16": "b1da93ac0a467f78",
+   "spectral_tilt_db": -15.874,
+   "sr": 48000,
+   "title": "Willow Weep For Me",
+   "wall_s": 3.52
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 12.395,
+   "duration_s": 122.549,
+   "lufs_integrated": -7.667,
+   "path": "corpus/ratings/5/011__hcwKJOsUUIk__Disco_A.mp3",
+   "peak_dbfs": 2.117,
+   "rms_dbfs": -10.278,
+   "sha16": "cdd2717e52820ff6",
+   "spectral_tilt_db": -10.474,
+   "sr": 48000,
+   "title": "Disco A",
+   "wall_s": 0.69
+  },
+  {
+   "band": 5,
+   "crest_factor_db": 12.344,
+   "duration_s": 248.442,
+   "lufs_integrated": -18.059,
+   "path": "corpus/ratings/5/019__kNwkXGeHE34__Gecko_Turner_-_Toda_Moja_ta_official_music_video.mp3",
+   "peak_dbfs": -7.877,
+   "rms_dbfs": -20.22,
+   "sha16": "dcfdabd9a4331b82",
+   "spectral_tilt_db": -15.543,
+   "sr": 48000,
+   "title": "Gecko Turner - Toda Moja\u00edta (official music video)",
+   "wall_s": 2.66
+  },
+  {
+   "band": 7,
+   "crest_factor_db": 12.246,
+   "duration_s": 249.557,
+   "lufs_integrated": -9.662,
+   "path": "corpus/ratings/7/005__LOCAL-005__Wizkid_-_Essence_ft._Tems.mp3",
+   "peak_dbfs": 1.31,
+   "rms_dbfs": -10.936,
+   "sha16": "467fbeb2e3b019a0",
+   "spectral_tilt_db": -10.246,
+   "sr": 48000,
+   "title": "Wizkid - Essence ft. Tems",
+   "wall_s": 2.18
+  },
+  {
+   "band": 7,
+   "crest_factor_db": 12.817,
+   "duration_s": 240.453,
+   "lufs_integrated": -9.694,
+   "path": "corpus/ratings/7/013__LOCAL-013__I_Found_My_Smile_Again_Radio_Edit.mp3",
+   "peak_dbfs": 1.027,
+   "rms_dbfs": -11.79,
+   "sha16": "7e6b59b873ed8972",
+   "spectral_tilt_db": -14.81,
+   "sr": 48000,
+   "title": "I Found My Smile Again (Radio Edit)",
+   "wall_s": 2.01
+  },
+  {
+   "band": 7,
+   "crest_factor_db": 14.43,
+   "duration_s": 269.653,
+   "lufs_integrated": -9.531,
+   "path": "corpus/ratings/7/006__LOCAL-006__Don_t_Know_What_s_Normal.mp3",
+   "peak_dbfs": 1.906,
+   "rms_dbfs": -12.524,
+   "sha16": "b5133ee83b0e599f",
+   "spectral_tilt_db": -13.858,
+   "sr": 48000,
+   "title": "Don't Know What's Normal",
+   "wall_s": 2.37
+  },
+  {
+   "band": 7,
+   "crest_factor_db": 10.84,
+   "duration_s": 199.03,
+   "lufs_integrated": -9.765,
+   "path": "corpus/ratings/7/002__LOCAL-002__Freedom_Interlude.mp3",
+   "peak_dbfs": -0.349,
+   "rms_dbfs": -11.189,
+   "sha16": "c7d491e98767eea5",
+   "spectral_tilt_db": -13.282,
+   "sr": 48000,
+   "title": "Freedom Interlude",
+   "wall_s": 1.87
+  }
+ ],
+ "schema_version": 1,
+ "source": "corpus/ratings/ingest_receipts.jsonl",
+ "target_lufs": -12.0,
+ "target_lufs_rule": "corpus median integrated LUFS clamped to [-16.0, -12.0]",
+ "tilt_definition": "10*log10(E(>4kHz)/E(200Hz-2kHz)), Hann 4096, time-averaged power spectrum, mono",
+ "true_peak_dbtp": -1.0
+}

@@ -27,8 +27,17 @@ CAPS = {
     "cadences_realized": {"op": "==", "cap": 1.0, "per": "fraction", "doc": "fraction of phrases whose realised cadence equals the planned one"},
     "harmonic_rhythm_realized": {"op": "==", "cap": 1.0, "per": "fraction", "doc": "fraction of bars whose chord-slot count equals the planned harmonic rhythm"},
     "voice_crossing": {"op": "<=", "cap": 2, "per": "per_64_bars", "doc": "keys voice crossings/overlaps between consecutive voicings"},
-    "section_repeat_integrity": {"op": "==", "cap": True, "per": "song", "doc": "every recurrence of a label is note-identical outside arrangement-touched bars"},
+    "section_repeat_integrity": {"op": "==", "cap": True, "per": "song", "doc": "every recurrence of a label is note-identical outside arrangement-touched bars (under --humanize: harmony + bass root line + melody skeleton identical while surface events differ)"},
 }
+# Phase 3 (--humanize) additions: validate_humanized() appends these to the metrics / cap_pass of a humanized song.
+HUMANIZE_CAPS = {
+    "timing_ks_max": {"op": "<=", "cap": 0.25, "per": "song", "doc": "max over streams (kick/snare/hat/bass, n >= 10) of the two-sample KS statistic between the humanized offsets (fraction of a 16th) and the corpus pooled model"},
+    "velocity_std_min": {"op": ">=", "cap": 8.0, "per": "song", "doc": "min over non-empty stems of the velocity standard deviation (dynamics not flat)"},
+    "swing_in_corpus_iqr": {"op": "==", "cap": True, "per": "song", "doc": "humanized drums swing ratio within [Q1 - 0.02, Q3 + 0.02] of the near-tempo corpus songs' swing ratios"},
+    "section_repeat_skeleton_integrity": {"op": "==", "cap": True, "per": "song", "doc": "harmony, bass root line, keys pitch sets per bar and melody skeleton identical across label recurrences (comparable bars only)"},
+    "section_repeat_surface_differs": {"op": "==", "cap": True, "per": "song", "doc": "at least one comparable recurrence pair differs in its surface events (None = nothing comparable, counts as pass)"},
+}
+ALL_CAPS = {**CAPS, **HUMANIZE_CAPS}
 
 
 def _sounding(notes: list, slot: int):
@@ -213,10 +222,14 @@ def section_repeat_integrity(song: dict) -> dict:
 
 
 def _cap_pass(name: str, value, n_bars: int) -> bool:
-    c = CAPS[name]
+    c = ALL_CAPS[name]
     v = value
     if c["per"] == "per_64_bars":
         v = float(value) * 64.0 / max(1, n_bars)
+    if c["op"] == ">=":
+        return v is not None and v >= c["cap"]
+    if c["op"] == "==" and c["cap"] is True and v is None:
+        return True  # not applicable (e.g. no comparable recurrence pair)
     return v <= c["cap"] if c["op"] == "<=" else v == c["cap"]
 
 
@@ -241,11 +254,11 @@ def validate(song: dict) -> dict:
 
 def aggregate(per_song: dict) -> dict:
     """{song_id: validators dict} -> table rows + per-validator pass counts."""
-    names = list(CAPS)
+    names = list(CAPS) + [k for k in HUMANIZE_CAPS if per_song and all(k in v["metrics"] for v in per_song.values())]
     rows = {sid: {k: v["metrics"][k] for k in names} for sid, v in sorted(per_song.items())}
     pass_counts = {k: sum(1 for v in per_song.values() if v["cap_pass"][k]) for k in names}
     return {"schema_version": 1, "n_songs": len(per_song), "validators": names, "rows": rows, "cap_pass_counts": pass_counts,
-            "songs_all_caps_pass": sum(1 for v in per_song.values() if v["all_caps_pass"]), "caps": CAPS}
+            "songs_all_caps_pass": sum(1 for v in per_song.values() if v["all_caps_pass"]), "caps": {k: ALL_CAPS[k] for k in names}}
 
 
 def format_table(agg: dict) -> str:
@@ -257,3 +270,126 @@ def format_table(agg: dict) -> str:
         lines.append(sid[:22].ljust(22) + " ".join((f"{row[n]:.3f}" if isinstance(row[n], float) else str(row[n])).rjust(18) for n in names))
     lines.append("cap_pass".ljust(22) + " ".join(f"{agg['cap_pass_counts'][n]}/{agg['n_songs']}".rjust(18) for n in names))
     return "\n".join(lines)
+
+
+# ----------------------------------------------------------------------------------------------- Phase 3: --humanize ----
+_DRUM_STREAM = {36: "kick", 38: "snare", 42: "hat", 46: "hat"}
+_SKELETON_ROLES = ("skeleton", "cadence", "suspension", "resolution")
+
+
+def humanized_offsets_f16(song: dict) -> dict:
+    """{stream: [offset in fractions of a 16th]} for the streams the corpus model knows (kick, snare, hat, bass)."""
+    s16_ms = 60000.0 / float(song["bpm"]) / 4.0
+    out = {"kick": [], "snare": [], "hat": [], "bass": [float(n.get("offset_ms", 0.0)) / s16_ms for n in song["bass"]]}
+    for h in song["drums"]:
+        out[_DRUM_STREAM.get(h["pitch"], "hat")].append(float(h.get("offset_ms", 0.0)) / s16_ms)
+    return out
+
+
+def timing_ks(song: dict, pool: dict, min_n: int = 10) -> dict:
+    from scripts.v6.gen.microtiming_model import ks_vs_hist
+    per = {}
+    for st, xs in humanized_offsets_f16(song).items():
+        per[st] = ks_vs_hist(xs, pool["streams"][st]["hist_f16"]) if len(xs) >= min_n else {"D": None, "n": len(xs)}
+    ds = [v["D"] for v in per.values() if v["D"] is not None]
+    return {"per_stream": per, "max_D": max(ds) if ds else None}
+
+
+def velocity_std(song: dict) -> dict:
+    out = {}
+    for stem in ("drums", "bass", "keys", "melody"):
+        vs = [float(n["velocity"]) for n in song[stem]]
+        if vs:
+            m = sum(vs) / len(vs)
+            out[stem] = round((max(0.0, sum(v * v for v in vs) / len(vs) - m * m)) ** 0.5, 3)
+    return {"per_stem": out, "min": min(out.values()) if out else None}
+
+
+def humanized_swing(song: dict, pool: dict) -> dict:
+    """Drums swing ratio from the humanized offsets (odd-8th vs even-8th slots) vs the pool's per-song IQR (+/-0.02 slack)."""
+    s16_ms = 60000.0 / float(song["bpm"]) / 4.0
+    odd = [h["offset_ms"] for h in song["drums"] if h["slot"] % 16 in (2, 6, 10, 14) and "offset_ms" in h]
+    even = [h["offset_ms"] for h in song["drums"] if h["slot"] % 16 in (0, 4, 8, 12) and "offset_ms" in h]
+    if len(odd) < 5 or len(even) < 5:
+        return {"ratio": None, "offset_ms": None, "in_iqr": None, "n_odd": len(odd), "n_even": len(even)}
+    d = (sum(odd) / len(odd) - sum(even) / len(even))
+    df = max(-1.5, min(1.5, d / s16_ms))
+    ratio = (2 + df) / (2 - df)
+    q = pool["swing_ratios_drums"]
+    lo, hi = q.get("0.25"), q.get("0.75")
+    ok = None if lo is None or hi is None else (lo - 0.02 <= ratio <= hi + 0.02)
+    return {"ratio": round(ratio, 4), "offset_ms": round(d, 3), "in_iqr": ok, "iqr": [lo, hi], "n_odd": len(odd), "n_even": len(even)}
+
+
+def section_repeat_relaxed(song: dict) -> dict:
+    """Per label recurrence pair and per stem, over the bars where the stem is unmuted in both sections (no hold; no fill for
+    drums): harmony (beat chords), bass root-line (forced roots), keys pitch set per bar and melody skeleton notes must be
+    identical; the full surface (slots, pitches, velocities, offsets, durations) is compared for difference."""
+    nb, arr = song["bars_per_section"], song["arrangement"]
+    by_label: dict = {}
+    for sec in song["sections"]:
+        by_label.setdefault(sec["label"], []).append(sec)
+    stems = {k: sorted(song[k], key=lambda n: (n["slot"], n["pitch"])) for k in ("melody", "bass", "keys", "drums")}
+
+    def notes_in(stem: str, s0: int, rel_bars: set) -> list:
+        return [n for n in stems[stem] if (n["slot"] // SLOTS) - s0 in rel_bars]
+
+    def surface(stem: str, s0: int, rel: set) -> list:
+        return sorted((n["slot"] - s0 * SLOTS, n["pitch"], n.get("velocity"), round(float(n.get("offset_ms", 0.0)), 3), round(float(n.get("dur16", 0)), 4)) for n in notes_in(stem, s0, rel))
+
+    def skeleton(stem: str, s0: int, rel: set):
+        ns = notes_in(stem, s0, rel)
+        if stem == "melody":
+            return sorted((n["slot"] - s0 * SLOTS, n["pitch"]) for n in ns if n.get("role") in _SKELETON_ROLES)
+        if stem == "bass":
+            return sorted((n["slot"] - s0 * SLOTS, n["pitch"]) for n in ns if n.get("cls") in ("root", "root_hold") and n.get("on_change", True))
+        if stem == "keys":
+            return sorted({((n["slot"] // SLOTS) - s0, n["pitch"]) for n in ns})
+        return sorted((n["slot"] - s0 * SLOTS, n["pitch"]) for n in ns if n["pitch"] == 36)  # drums: the kick pattern
+    pairs, mism, differ, comparable, detail = 0, 0, 0, 0, []
+    for lab, group in by_label.items():
+        for other in group[1:]:
+            a, b = group[0]["start_bar"], other["start_bar"]
+            pairs += 1
+            rec = {"label": lab, "sections": [group[0]["index"], other["index"]], "harmony_ok": None, "stems": {}}
+            hb = [k for k in range(nb) if not arr[a + k].get("hold") and not arr[b + k].get("hold")]
+            rec["harmony_ok"] = all(song["beat_chords"][a + k] == song["beat_chords"][b + k] for k in hb)
+            if not rec["harmony_ok"]:
+                mism += 1
+            for stem in ("melody", "bass", "keys", "drums"):
+                rel = {k for k in range(nb) if stem not in arr[a + k]["mute"] and stem not in arr[b + k]["mute"] and not arr[a + k].get("hold") and not arr[b + k].get("hold")
+                       and not (stem == "drums" and (arr[a + k].get("fill") or arr[b + k].get("fill")))}
+                if not rel or (not notes_in(stem, a, rel) and not notes_in(stem, b, rel)):
+                    rec["stems"][stem] = {"comparable": False}
+                    continue
+                comparable += 1
+                sk_ok = skeleton(stem, a, rel) == skeleton(stem, b, rel)
+                sf_diff = surface(stem, a, rel) != surface(stem, b, rel)
+                mism += 0 if sk_ok else 1
+                differ += 1 if sf_diff else 0
+                rec["stems"][stem] = {"comparable": True, "n_bars": len(rel), "skeleton_identical": sk_ok, "surface_differs": sf_diff}
+            detail.append(rec)
+    return {"skeleton_ok": mism == 0, "surface_differs": (differ > 0) if comparable else None, "n_pairs": pairs, "n_comparable_stem_pairs": comparable,
+            "n_skeleton_mismatches": mism, "n_surface_differing": differ, "pairs": detail}
+
+
+def validate_humanized(song: dict, pool: dict) -> dict:
+    """validate() + the HUMANIZE_CAPS metrics; section_repeat_integrity relaxed to skeleton-identical AND surface-differs."""
+    res = validate(song)
+    rep = section_repeat_relaxed(song)
+    ks = timing_ks(song, pool)
+    vs = velocity_std(song)
+    sw = humanized_swing(song, pool)
+    m = res["metrics"]
+    m["section_repeat_integrity"] = bool(rep["skeleton_ok"] and rep["surface_differs"] in (True, None))
+    m["section_repeat_skeleton_integrity"] = bool(rep["skeleton_ok"])
+    m["section_repeat_surface_differs"] = rep["surface_differs"]
+    m["timing_ks_max"] = ks["max_D"] if ks["max_D"] is not None else 0.0
+    m["velocity_std_min"] = vs["min"]
+    m["swing_in_corpus_iqr"] = sw["in_iqr"]
+    res["cap_pass"] = {k: _cap_pass(k, v, song["n_bars"]) for k, v in m.items()}
+    res["all_caps_pass"] = all(res["cap_pass"].values())
+    res["caps"] = dict(ALL_CAPS)
+    res["humanized"] = True
+    res["detail"]["humanize"] = {"section_repeat_relaxed": rep, "timing_ks": ks, "velocity_std": vs, "swing": sw, "model_variant": pool.get("variant"), "model_n_songs": pool.get("n_songs")}
+    return res
