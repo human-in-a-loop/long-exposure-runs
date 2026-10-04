@@ -9,11 +9,15 @@ chord (triads/sus: one pc doubled; 7th chords: the four pcs once; 9 chords: root
 adjacent gaps <= MAX_GAP and total span <= MAX_SPAN. The bass is a separate part (bassline.py), so the keys voicing is the
 3-4 voices above it. DP (Viterbi) over the sequence minimises
   sum |voice movement| (semitones)
-  + 8 per parallel perfect 5th/8ve between any voice pair (both voices move, same direction, same perfect interval class)
-  + 6 per chord 7th not resolving down by step (held as a common tone is allowed; chord unchanged is exempt)
-  + 6 for a leading tone (degree 7, major) at a CADENCE transition not resolving to the tonic
-  + 4 per voice crossing/overlap (a voice moving past a neighbour's previous pitch)
+  + HARD (1e3) per parallel perfect 5th/8ve between any voice pair (both voices move, same direction, same perfect interval
+    class) and per voice against the bass root line
+  + HARD per chord 7th not resolving down by step (held as a common tone is allowed; chord unchanged is exempt)
+  + HARD for a leading tone (degree 7, major) at a CADENCE transition not resolving to the tonic (at an AUTHENTIC cadence the
+    leading tone must move to the tonic pc or be absent: holding it is not accepted either)
+  + HARD per voice crossing/overlap (a voice moving past a neighbour's previous pitch)
   + 2 per adjacent gap > 12 semitones, + 1 for a doubled 3rd, + 2 when a common tone exists but none is kept.
+Phase 5: the four rule costs are HARD = 1e3 (movement costs are tens), so the DP accepts a violation only when no
+violation-free path exists; every slot records `forced` (the rules violated on the chosen path) and `forced_reason`.
 Every rule is also a validator (validators.py re-counts them on the realised output). Comping rhythm per bar: onset
 pattern from comping_v5.json's pooled IOI histogram when present, else a template set (whole / half / Charleston /
 8th pushes / quarters) chosen by SHA; onsets are forced at chord-change slots; sustain to the next onset minus a gap.
@@ -27,7 +31,11 @@ from scripts.v6.gen.common import SLOTS, draw_from, draw_index, state_pcs, state
 KEYS_LO, KEYS_HI = 52, 79
 N_VOICES = 4
 MAX_GAP, MAX_SPAN = 16, 24
-COST = {"parallel": 16.0, "seventh": 6.0, "leading_tone": 6.0, "crossing": 4.0, "spacing": 2.0, "doubled_third": 1.0, "common_tone": 2.0}
+HARD = 1000.0  # effectively hard rules: tens of semitones of movement never buy a violation; see voice_sequence's `forced`
+COST = {"parallel": HARD, "seventh": HARD, "leading_tone": HARD, "crossing": HARD, "spacing": 2.0, "doubled_third": 1.0, "common_tone": 2.0}
+HARD_RULES = ("parallels", "seventh", "leading_tone", "crossing")
+FORCED_REASON = "no violation-free path through this chord: the DP minimum (hard cost 1e3 per violation) still violates the listed rules"
+
 TEMPLATES = {"whole": [0], "half": [0, 8], "charleston": [0, 6], "eighth_push": [0, 6, 8, 14], "quarters": [0, 4, 8, 12]}
 TEMPLATE_W = {"whole": 0.25, "half": 0.25, "charleston": 0.2, "eighth_push": 0.15, "quarters": 0.15}
 GAP_S = 0.02
@@ -109,14 +117,17 @@ def unresolved_sevenths(a: tuple, b: tuple, ct_a: dict, same_chord: bool) -> int
     return n
 
 
-def unresolved_leading_tone(a: tuple, b: tuple, tonic: int, mode: str, cadence: bool) -> int:
+def unresolved_leading_tone(a: tuple, b: tuple, tonic: int, mode: str, cadence) -> int:
+    """cadence: falsy (not a cadence), True, or the cadence type; at "authentic" the leading tone must reach the tonic pc (holding
+    it, e.g. into Imaj7, is not a resolution); at any other cadence holding is accepted (= validators' rule)."""
     if not cadence or str(mode).lower() != "major":
         return 0
-    lt = (tonic + 11) % 12
-    return sum(1 for i, p in enumerate(a) if p % 12 == lt and b[i] != p + 1 and b[i] != p)
+    lt, tonic_pc = (tonic + 11) % 12, tonic % 12
+    strict = cadence == "authentic"
+    return sum(1 for i, p in enumerate(a) if p % 12 == lt and b[i] % 12 != tonic_pc and (strict or b[i] != p))
 
 
-def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode: str, cadence: bool, same_chord: bool, bass_a=None, bass_b=None) -> dict:
+def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode: str, cadence, same_chord: bool, bass_a=None, bass_b=None) -> dict:
     move = sum(abs(x - y) for x, y in zip(a, b))
     common = bool(set(ct_a["pcs"]) & set(ct_b["pcs"])) and not any(x == y for x, y in zip(a, b)) and not same_chord
     return {"movement": float(move), "parallels": parallel_perfects(a, b, bass_a, bass_b) * COST["parallel"],
@@ -126,12 +137,14 @@ def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode
 
 
 def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bass: list | None = None, entry_contexts: list | None = None) -> list:
-    """DP over chord states (None/'N' -> rest). cadence_flags[t] marks the transition t-1 -> t as a cadence arrival; bass[t]
+    """DP over chord states (None/'N' -> rest). cadence_flags[t] marks the transition t-1 -> t as a cadence arrival (True or the
+    cadence type string: "authentic" makes the leading-tone rule strict, see unresolved_leading_tone); bass[t]
     is the bass root pitch that will sound at slot t (bassline.root_line) so parallels against it are costed too.
     entry_contexts = [{'state','voicing','bass'}] of the chords that precede this sequence in the song (the final chord of every
     section that leads into this label): their transition cost into the first voicing is added (second pass over the form,
     so section junctions obey the same rules while every label still repeats literally).
-    Returns per slot {'state','voicing','cost'} with the cost breakdown (unary + transition into this slot)."""
+    Returns per slot {'state','voicing','cost','forced'} with the cost breakdown (unary + transition into this slot); `forced` lists
+    the HARD_RULES the chosen (globally minimal) path still violates entering this slot, `forced_reason` says why."""
     T = len(states)
     bass = bass or [None] * T
     entry_contexts = entry_contexts or []
@@ -155,21 +168,24 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
             same = states[prev_idx] == states[t]
             opt = None
             for pv, (ptot, _pp, _pb) in best[prev_idx].items():
-                tc = transition_cost(pv, v, cts[prev_idx], cts[t], tonic, mode, bool(cadence_flags[t]), same, bass[prev_idx], bass[t])
+                tc = transition_cost(pv, v, cts[prev_idx], cts[t], tonic, mode, cadence_flags[t] or False, same, bass[prev_idx], bass[t])
                 tot = ptot + sum(un.values()) + sum(tc.values())
                 if opt is None or tot < opt[0] or (tot == opt[0] and pv < opt[1]):
                     opt = (tot, pv, dict(un, **tc))
             best[t][v] = opt
         prev_idx = t
     # backtrack from the last non-rest slot along the argmin pointers (pv is None at the chain start)
-    out = [{"state": s, "voicing": None, "cost": None} for s in states]
+    out = [{"state": s, "voicing": None, "cost": None, "forced": []} for s in states]
     t = prev_idx
     cur = min(best[t], key=lambda v: (best[t][v][0], v)) if t is not None and best[t] else None
     while t is not None and t >= 0 and cur is not None:
         tot, pv, br = best[t][cur]
         br = {k: round(float(x), 6) for k, x in sorted(br.items())}
         br["total_step"] = round(sum(br.values()), 6)
-        out[t] = {"state": states[t], "voicing": list(cur), "cost": br}
+        forced = [k for k in HARD_RULES if br.get(k, 0.0) > 0.0]
+        out[t] = {"state": states[t], "voicing": list(cur), "cost": br, "forced": forced}
+        if forced:
+            out[t]["forced_reason"] = FORCED_REASON
         cur = pv
         t -= 1
         while t >= 0 and not best[t]:

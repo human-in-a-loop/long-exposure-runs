@@ -32,10 +32,10 @@ _WS = Path(__file__).resolve().parent.parent.parent.parent
 if str(_WS) not in sys.path:
     sys.path.insert(0, str(_WS))
 from scripts.v6.gen.common import ENV_PIN_SHA256, INSTRUMENT, PINS, SLOTS, STEMS, WS, read_json, sha_file, sha_text, canonical_json, state_pcs, u, write_json_atomic
-from scripts.v6.gen import bassline, drums, harmony, humanize, melody, planner, validators, voicing
+from scripts.v6.gen import bassline, drums, harmony, humanize, melody, planner, repair, validators, voicing
 from scripts.v6.gen.fixtures import FIXTURE_DONORS, load_models
 
-GEN_FILES = ("common", "fixtures", "planner", "harmony", "voicing", "melody", "bassline", "drums", "validators", "render", "compose_v6", "microtiming_model", "humanize")
+GEN_FILES = ("common", "fixtures", "planner", "harmony", "voicing", "melody", "bassline", "drums", "validators", "render", "compose_v6", "microtiming_model", "humanize", "repair")
 MELODY_VEL = {"first": 95, "peak": 105, "last": 90, "other": 85}
 
 
@@ -72,13 +72,14 @@ def compose_labels(models: dict, plan: dict, tonic: int, mode: str, bpm: float, 
         lp = plan["label_plans"][lab]
         ltag = f"{tag}|label={lab}"
         harm = harmony.label_harmony(models["chain"], lp, mode, ltag)
-        cad_idx = set()
-        for ph in harm["phrases"]:  # the transition INTO a phrase's last slot is its cadence arrival
+        cad_idx = {}
+        for ph in harm["phrases"]:  # the transition INTO a phrase's last slot is its cadence arrival (flag = the cadence type; "authentic" is strict)
             last = ph["slots"][-1]
-            cad_idx.add(next(i for i, s in enumerate(harm["slots"]) if s["bar"] == last["bar"] and s["beat"] == last["beat"]))
+            i = next(i for i, s in enumerate(harm["slots"]) if s["bar"] == last["bar"] and s["beat"] == last["beat"])
+            cad_idx[i] = ph["cadence_realized"] if ph["cadence_realized"] != "none" else ph["cadence_planned"]
         states = [s["state"] for s in harm["slots"]]
         roots = bassline.root_line(states, tonic)
-        out[lab] = {"harmony": harm, "states": states, "root_line": roots, "cadence_flags": [i in cad_idx for i in range(len(states))], "tag": ltag, "plan": lp,
+        out[lab] = {"harmony": harm, "states": states, "root_line": roots, "cadence_flags": [cad_idx.get(i, False) for i in range(len(states))], "tag": ltag, "plan": lp,
                     "roots_by_slot": {(s["bar"], s["beat"]): r for s, r in zip(harm["slots"], roots) if r is not None}}
     seq = plan["form"]["labels"]
     for lab in labels:
@@ -121,7 +122,8 @@ def flatten(plan: dict, labels: dict, tonic: int, mode: str, bpm: float, vel: di
         song["harmonic_rhythm_planned"] += list(L["harmony"]["harmonic_rhythm"])
         song["groove_bars"] += L["groove_bars"]
         for s, v in zip(L["harmony"]["slots"], L["voicings"]):
-            song["chord_slots"].append({"bar": s["bar"] + sb, "beat": s["beat"], "state": s["state"], "voicing": v["voicing"], "cost": v["cost"], "section": sec["index"], "label": lab})
+            song["chord_slots"].append({"bar": s["bar"] + sb, "beat": s["beat"], "state": s["state"], "voicing": v["voicing"], "cost": v["cost"], "section": sec["index"], "label": lab,
+                                        "forced": list(v.get("forced") or []), **({"forced_reason": v["forced_reason"]} if v.get("forced") else {})})
         for ph, hp in zip(plan["label_plans"][lab]["phrases"], L["harmony"]["phrases"]):
             song["phrases"].append({"section": sec["index"], "label": lab, "index": ph["index"], "start_bar": sb + ph["start_bar"], "n_bars": ph["n_bars"], "position": ph["position"],
                                     "cadence_planned": hp["cadence_planned"], "cadence_realized": hp["cadence_realized"], "conditioning_ok": hp["conditioning_ok"],
@@ -177,8 +179,9 @@ def to_events(song: dict, stem: str) -> list:
     return ev
 
 
-def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, n_bars: int | None, hz: dict | None = None) -> dict:
-    """hz = {"mt": microtiming_v6.json dict or None (prior), "path", "sha256"} enables Phase-3 humanization."""
+def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, n_bars: int | None, hz: dict | None = None, repair_pass: bool = True) -> dict:
+    """hz = {"mt": microtiming_v6.json dict or None (prior), "path", "sha256"} enables Phase-3 humanization. repair_pass=False skips the
+    Phase-5 counterpoint repair pass (repair.py; the sweep's "before" table)."""
     tag = f"{song_id}|donor={donor}|seed={seed}"
     key = models["chain"].get("per_song", {}).get(donor, {}).get("key")
     if key:
@@ -189,11 +192,15 @@ def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, 
     vel["profiles"] = models.get("velocity")
     plan = planner.build_plan(models, tag, bpm, n_bars)
     labels = compose_labels(models, plan, tonic, mode, bpm, tag, vel)
+    # Phase 5: counterpoint repair on the final bass + melody of every label, judged on the flattened song (junctions, mutes, hold)
+    reps = repair.repair_labels(models, plan, labels, tonic, mode, lambda: flatten(plan, labels, tonic, mode, bpm, vel, tag)) if repair_pass else None
     hz_out = None
     if hz is not None:
         pool = humanize.select_model(hz.get("mt"), bpm)
         by_section, arr, var_info = humanize.vary_recurrences(models, plan, labels, tonic, mode, bpm, tag, vel)
         plan = dict(plan, arrangement=dict(plan["arrangement"], per_bar=arr))
+        if repair_pass:  # pass 2 on the varied recurrences' surface (NCTs / free bass notes only)
+            reps = repair.repair_sections(models, plan, by_section, var_info, tonic, mode, lambda: flatten(plan, labels, tonic, mode, bpm, vel, tag, by_section), reps)
         song = flatten(plan, labels, tonic, mode, bpm, vel, tag, by_section)
         hz_out = humanize.apply(song, pool, f"{tag}|humanize")
         hz_out.update({"schema_version": 1, "seed_str": tag, "model_path": hz.get("path"), "model_sha256": hz.get("sha256"), "variation": var_info,
@@ -209,10 +216,13 @@ def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, 
                 "labels": {lab: {"melody_phrases": L["melody"]["phrases"], "comping_rhythm": L["comping_rhythm"], "groove_bars": L["groove_bars"],
                                  "bass": {"n_changes": L["bass"]["n_changes"], "n_forced_onsets": L["bass"]["n_forced_onsets"]}, "root_line": L["root_line"],
                                  "entry_contexts": L["entry_contexts"],
-                                 "voicing_cost_total": round(sum(v["cost"]["total_step"] for v in L["voicings"] if v["cost"]), 6)} for lab, L in labels.items()},
+                                 "voicing_cost_total": round(sum(v["cost"]["total_step"] for v in L["voicings"] if v["cost"]), 6),
+                                 "voicing_forced_slots": sum(1 for v in L["voicings"] if v.get("forced"))} for lab, L in labels.items()},
                 "velocity_source": vel["source"], "model_sources": models["sources"], "model_sha256": models.get("input_sha256", {}), "fixtures_sha256": models.get("fixtures_sha256")}
     if hz_out is not None:
         plan_out["humanize"] = {"model": hz_out["model"], "variation": var_info, "model_path": hz.get("path"), "model_sha256": hz.get("sha256")}
+    plan_out["repairs"] = reps if reps is not None else {"schema_version": 1, "passes": [], "n_repairs": 0, "by_rule": {}, "repairs": [], "n_forced": 0, "forced": [], "remaining": [], "skipped": True}
+    plan_out["voicing_forced"] = [{"bar": c["bar"], "beat": c["beat"], "state": c["state"], "rules": c["forced"], "reason": c.get("forced_reason")} for c in song["chord_slots"] if c.get("forced")]
     return {"song": song, "plan": plan_out, "validators": val, "tag": tag, "bpm": bpm, "tonic": tonic, "mode": mode, "humanize": hz_out}
 
 
