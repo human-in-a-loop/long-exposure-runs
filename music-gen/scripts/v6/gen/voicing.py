@@ -136,20 +136,28 @@ def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode
             "crossing": crossings(a, b) * COST["crossing"], "common_tone": COST["common_tone"] if common else 0.0}
 
 
-def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bass: list | None = None, entry_contexts: list | None = None) -> list:
+def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bass: list | None = None, entry_contexts: list | None = None,
+                   exit_contexts: list | None = None, first_voicing: tuple | None = None) -> list:
     """DP over chord states (None/'N' -> rest). cadence_flags[t] marks the transition t-1 -> t as a cadence arrival (True or the
     cadence type string: "authentic" makes the leading-tone rule strict, see unresolved_leading_tone); bass[t]
     is the bass root pitch that will sound at slot t (bassline.root_line) so parallels against it are costed too.
     entry_contexts = [{'state','voicing','bass'}] of the chords that precede this sequence in the song (the final chord of every
     section that leads into this label): their transition cost into the first voicing is added (second pass over the form,
-    so section junctions obey the same rules while every label still repeats literally).
+    so section junctions obey the same rules while every label still repeats literally); exit_contexts = the same for the chords that
+    FOLLOW this sequence (the first chord of every section this label leads into): their transition cost out of the last voicing is
+    added to that slot (compose_v6 iterates the junction pass to a fixed point). first_voicing pins the first chord's voicing
+    (voice_sequence_cyclic: a label that follows itself).
     Returns per slot {'state','voicing','cost','forced'} with the cost breakdown (unary + transition into this slot); `forced` lists
     the HARD_RULES the chosen (globally minimal) path still violates entering this slot, `forced_reason` says why."""
     T = len(states)
     bass = bass or [None] * T
-    entry_contexts = entry_contexts or []
+    entry_contexts, exit_contexts = entry_contexts or [], exit_contexts or []
     cands = [candidates(s, tonic) if s and s != "N" else [] for s in states]
     cts = [chord_tones(s, tonic) if s and s != "N" else None for s in states]
+    last_idx = max((t for t in range(T) if cands[t]), default=None)
+    if first_voicing is not None and last_idx is not None:
+        first_idx = min(t for t in range(T) if cands[t])
+        cands[first_idx] = [tuple(first_voicing)] if tuple(first_voicing) in cands[first_idx] else cands[first_idx]
     best = [dict() for _ in range(T)]  # slot -> {voicing: (total, prev_voicing, breakdown)}
     prev_idx = None
     for t in range(T):
@@ -157,8 +165,15 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
             continue
         for v in cands[t]:
             un = unary_cost(v, cts[t])
+            if t == last_idx:
+                for ctx in exit_contexts:  # junction costs into the successor sections' first chords
+                    tc = transition_cost(v, tuple(ctx["voicing"]), cts[t], chord_tones(ctx["state"], tonic), tonic, mode, False, ctx["state"] == states[t], bass[t], ctx.get("bass"))
+                    for k, x in tc.items():
+                        un[k] = un.get(k, 0.0) + x / len(exit_contexts)
             if prev_idx is None or not best[prev_idx]:
-                br = dict(un, movement=0.0, parallels=0.0, seventh=0.0, leading_tone=0.0, crossing=0.0, common_tone=0.0)
+                br = dict(un)
+                for k in ("movement", "parallels", "seventh", "leading_tone", "crossing", "common_tone"):
+                    br.setdefault(k, 0.0)
                 for ctx in entry_contexts:  # junction costs from the predecessor sections' final chords
                     tc = transition_cost(tuple(ctx["voicing"]), v, chord_tones(ctx["state"], tonic), cts[t], tonic, mode, False, ctx["state"] == states[t], ctx.get("bass"), bass[t])
                     for k, x in tc.items():
@@ -171,7 +186,10 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
                 tc = transition_cost(pv, v, cts[prev_idx], cts[t], tonic, mode, cadence_flags[t] or False, same, bass[prev_idx], bass[t])
                 tot = ptot + sum(un.values()) + sum(tc.values())
                 if opt is None or tot < opt[0] or (tot == opt[0] and pv < opt[1]):
-                    opt = (tot, pv, dict(un, **tc))
+                    br = dict(un)
+                    for k, x in tc.items():  # exit-context costs already sit in `un` at the last slot: add, never overwrite
+                        br[k] = br.get(k, 0.0) + x
+                    opt = (tot, pv, br)
             best[t][v] = opt
         prev_idx = t
     # backtrack from the last non-rest slot along the argmin pointers (pv is None at the chain start)
@@ -191,6 +209,50 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
         while t >= 0 and not best[t]:
             t -= 1
     return out
+
+
+def hard_violations(a: tuple, b: tuple, state_a: str, state_b: str, tonic: int, mode: str, bass_a=None, bass_b=None) -> int:
+    tc = transition_cost(tuple(a), tuple(b), chord_tones(state_a, tonic), chord_tones(state_b, tonic), tonic, mode, False, state_a == state_b, bass_a, bass_b)
+    return sum(1 for k in HARD_RULES if tc[k] > 0)
+
+
+def voice_sequence_cyclic(states: list, tonic: int, mode: str, cadence_flags: list, bass: list, entry_contexts: list, exit_contexts: list,
+                          self_adjacent: bool, top_k: int = 4) -> tuple[list, dict]:
+    """voice_sequence for a label that may FOLLOW ITSELF in the form (A A ...): the junction last -> first lies inside one DP, so a
+    stale context oscillates. Lazy exact treatment: run the free DP; if last -> first has a hard violation, re-run with the first
+    voicing pinned and used as its own exit context, for the current first voicing then the top_k alternatives (ranked by entry-context
+    + unary cost), keeping the cheapest run (a hard-free self-junction stops the search). Returns (voicings, info)."""
+    out = voice_sequence(states, tonic, mode, cadence_flags, bass, entry_contexts, exit_contexts)
+    info = {"self_adjacent": self_adjacent, "runs": 1, "pinned_first": None, "self_junction_hard": 0}
+    idx = [t for t, v in enumerate(out) if v["voicing"]]
+    if not self_adjacent or len(idx) < 2:
+        return out, info
+    f, l = idx[0], idx[-1]
+    hv = hard_violations(out[l]["voicing"], out[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f])
+    if hv == 0:
+        return out, info
+    ct_f = chord_tones(states[f], tonic)
+
+    def entry_cost(v: tuple) -> float:
+        c = sum(unary_cost(v, ct_f).values())
+        for ctx in entry_contexts:
+            c += sum(transition_cost(tuple(ctx["voicing"]), v, chord_tones(ctx["state"], tonic), ct_f, tonic, mode, False, ctx["state"] == states[f], ctx.get("bass"), bass[f]).values()) / max(1, len(entry_contexts))
+        return c
+    ranked = sorted(candidates(states[f], tonic), key=lambda v: (entry_cost(v), v))
+    tries = [tuple(out[f]["voicing"])] + [v for v in ranked if v != tuple(out[f]["voicing"])][:top_k]
+    best = None
+    for v0 in tries:
+        self_ctx = {"state": states[f], "voicing": list(v0), "bass": bass[f]}
+        o = voice_sequence(states, tonic, mode, cadence_flags, bass, entry_contexts, exit_contexts + [self_ctx], v0)
+        info["runs"] += 1
+        tot = sum(x["cost"]["total_step"] for x in o if x["cost"])
+        h = hard_violations(o[l]["voicing"], o[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f])
+        if best is None or tot < best[0]:
+            best = (tot, o, v0, h)
+        if h == 0:
+            break
+    info.update({"pinned_first": list(best[2]), "self_junction_hard": best[3]})
+    return best[1], info
 
 
 def comping_onsets(bar_hr: int, change_pos: list, tag: str, comping: dict | None) -> list:

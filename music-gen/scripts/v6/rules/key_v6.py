@@ -12,6 +12,8 @@ Pure functions over the beat-synchronous chroma that scripts/v6/rules/chords_v6.
   key_track(beat_chroma, ...)     8-bar windows (32 beats) hopped by 4 bars from the first downbeat; per-window KK key;
                                   modulation flag when a window with confidence >= TRACK_CONF_MIN disagrees with the
                                   global tonic; the fraction of windows agreeing with the global key is reported.
+  chord_fit_key(stream, ...)      CROSS-CHECK only: the key maximising the fraction of detected chords that are diatonic;
+                                  reported next to the KS key (agreement / relative-key flags) — the KS key stays the key.
   annotate(record)                adds the "key" block to a chords_v6 per-song record (called by chords_v6 when writing).
   main                            re-reads data/v6/rules/chords/<sha16>/chords_v6.json, rebuilds the key table and the
                                   focus-song sanity (I/IV/V presence among the detected chords), writes
@@ -39,6 +41,9 @@ WINDOW_BARS, HOP_BARS = 8, 4
 TRACK_CONF_MIN = 0.05          # a window must separate its tonic from the runner-up tonic by this corr gap to flag a modulation
 LOW_KEY_CONFIDENCE = 0.02      # harmony_rules_v6 excludes a song only below this (pre-declared, see its docstring)
 PRIMARY_DEGREES = {0: "I", 5: "IV", 7: "V"}
+# diatonic (root relative to tonic -> qualities) chord sets of the harmony_v5 vocabulary, used ONLY as a cross-check of the KS key
+DIATONIC = {"major": {0: ("maj", "maj7", "9", "sus"), 2: ("min", "min7"), 4: ("min", "min7"), 5: ("maj", "maj7", "sus"), 7: ("maj", "7", "9", "sus"), 9: ("min", "min7")},
+            "minor": {0: ("min", "min7", "sus"), 3: ("maj", "maj7"), 5: ("min", "min7", "sus"), 7: ("min", "min7", "maj", "7", "9", "sus"), 8: ("maj", "maj7"), 10: ("maj", "7", "9")}}
 
 
 def _corr_table(profile: np.ndarray) -> dict:
@@ -104,6 +109,21 @@ def key_track(beat_chroma: np.ndarray, first_downbeat: int, global_tonic: int, m
             "rule": f"modulation_flag iff any window with confidence >= {TRACK_CONF_MIN} has a tonic != global tonic"}
 
 
+def chord_fit_key(stream: list, ks_tonic: int, ks_mode: str) -> dict:
+    """Key maximising the fraction of sounding beats whose detected chord is diatonic (cross-check; ties -> the KS key, then major, lowest tonic)."""
+    sounding = [(int(e["root"]), e["quality"]) for e in stream if e["quality"] != "N"]
+    scores = {}
+    for mode in ("major", "minor"):
+        for tonic in range(12):
+            fit = sum(1 for r, q in sounding if q in DIATONIC[mode].get((r - tonic) % 12, ())) / len(sounding) if sounding else 0.0
+            scores[(tonic, mode)] = round(fit, 6)
+    best = max(scores, key=lambda k: (scores[k], k == (ks_tonic, ks_mode), k[1] == "major", -k[0]))
+    return {"tonic": best[0], "tonic_name": PC_NAMES[best[0]], "mode": best[1], "fit": scores[best], "ks_key_fit": scores[(ks_tonic, ks_mode)],
+            "agrees_with_ks": best == (ks_tonic, ks_mode), "same_tonic_as_ks": best[0] == ks_tonic,
+            "relative_of_ks": (best[1] != ks_mode) and ((best[0] - ks_tonic) % 12 == (9 if ks_mode == "major" else 3)),
+            "n_sounding_beats": len(sounding), "definition": "fraction of sounding beats whose (root, quality) is diatonic to the key (DIATONIC table)"}
+
+
 def annotate(rec: dict) -> dict:
     """Add rec['key'] from rec['beat_chroma'] (beats with chord 'N' / silence excluded from the global profile when any remain)."""
     C = np.asarray(rec["beat_chroma"], dtype=float)
@@ -115,6 +135,7 @@ def annotate(rec: dict) -> dict:
     mask = sounding if sounding.sum() >= 8 else None
     g = global_key(C, mask)
     g["track"] = key_track(C, rec["grid"]["phase"], g["tonic"], mask)
+    g["chord_fit"] = chord_fit_key(stream, g["tonic"], g["mode"])
     g["low_confidence"] = bool(g["confidence"] < LOW_KEY_CONFIDENCE)
     g["low_confidence_threshold"] = LOW_KEY_CONFIDENCE
     rec["key"] = g
@@ -152,15 +173,19 @@ def main(argv=None) -> int:
                               "corr": k["corr"], "confidence": k["confidence"], "mode_margin": k["mode_margin"], "low_confidence": k["low_confidence"],
                               "runner_up": f"{k['runner_up']['tonic_name']} {k['runner_up']['mode']}", "modulation_flag": k["track"]["modulation_flag"],
                               "track_agreement": k["track"]["fraction_agreeing_with_global"], "n_fraction": rec["chords"]["n_fraction"],
+                              "chord_fit_key": f"{k['chord_fit']['tonic_name']} {k['chord_fit']['mode']}", "chord_fit": k["chord_fit"]["fit"], "ks_key_chord_fit": k["chord_fit"]["ks_key_fit"],
+                              "chord_fit_agrees": k["chord_fit"]["agrees_with_ks"], "chord_fit_is_relative": k["chord_fit"]["relative_of_ks"],
                               "primary_degrees": primary_degree_report(rec)}
         if rec["sha16"] in FOCUS:
             focus[rec["sha16"]] = dict(rows[rec["sha16"]], short=FOCUS[rec["sha16"]]["short"])
         print(f"{rec['sha16']} {str(rec.get('title'))[:28]:28s} key={k['tonic_name']:2s} {k['mode']:5s} corr={k['corr']:.3f} conf={k['confidence']:.3f} "
-              f"mod={k['track']['modulation_flag']} N={rec['chords']['n_fraction']:.3f} IVV={rows[rec['sha16']]['primary_degrees']['fractions']}")
+              f"mod={k['track']['modulation_flag']} N={rec['chords']['n_fraction']:.3f} fit={k['chord_fit']['tonic_name']} {k['chord_fit']['mode']} "
+              f"({k['chord_fit']['fit']:.2f} vs ks {k['chord_fit']['ks_key_fit']:.2f}) IVV={rows[rec['sha16']]['primary_degrees']['fractions']}")
     out = {"schema_version": 1, "generator": "scripts/v6/rules/key_v6.py", "milestone": "M-V6-RULES-1/audio-harmony", "env_pin_sha256": ENV_PIN_SHA256,
            "n_songs": len(rows), "per_song": rows, "focus_sanity": focus,
            "mode_counts": {m: sum(1 for r in rows.values() if r["mode"] == m) for m in ("major", "minor")},
            "n_modulation_flags": sum(1 for r in rows.values() if r["modulation_flag"]), "n_low_confidence": sum(1 for r in rows.values() if r["low_confidence"]),
+           "n_chord_fit_disagrees": sum(1 for r in rows.values() if not r["chord_fit_agrees"]), "n_chord_fit_relative_key": sum(1 for r in rows.values() if r["chord_fit_is_relative"]),
            "params": {"window_bars": WINDOW_BARS, "hop_bars": HOP_BARS, "track_conf_min": TRACK_CONF_MIN, "low_key_confidence": LOW_KEY_CONFIDENCE}}
     write_json_atomic(Path(args.out), out)
     print(f"wrote {args.out} ({len(rows)} songs)")

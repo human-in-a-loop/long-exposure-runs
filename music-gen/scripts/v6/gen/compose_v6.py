@@ -37,6 +37,8 @@ from scripts.v6.gen.fixtures import FIXTURE_DONORS, load_models
 
 GEN_FILES = ("common", "fixtures", "planner", "harmony", "voicing", "melody", "bassline", "drums", "validators", "render", "compose_v6", "microtiming_model", "humanize", "repair")
 MELODY_VEL = {"first": 95, "peak": 105, "last": 90, "other": 85}
+HARMONY_JUNCTION_TRIES = 4  # stage 1: re-sample a label whose first chord leaves a predecessor's 7th unresolvable (seventh_resolvable)
+JUNCTION_ITERS = 6  # voicing pass 2: re-voice every label with its neighbours' boundary chords until no voicing changes
 
 
 def generator_sha256() -> str:
@@ -63,15 +65,38 @@ def velocity_fns(profiles: dict | None) -> dict:
     return {"keys": keys, "bass": bass, "melody": mel, "source": "velocity_profiles_v5.json quantile ladders" if prof else "accent table"}
 
 
+def seventh_resolvable(prev_state: str, next_state: str, tonic: int) -> bool:
+    """False when prev's chord 7th can neither be held nor step down (1-2 semitones) into a tone of next: no voicing can then satisfy
+    validators.unresolved_sevenths across that junction (e.g. C7 -> C, Fmaj7 -> F)."""
+    ct = voicing.chord_tones(prev_state, tonic) if prev_state and prev_state != "N" else {"seventh": None}
+    if ct["seventh"] is None or prev_state == next_state:
+        return True
+    nxt = set(state_pcs(next_state, tonic) or [])
+    return not nxt or any(((ct["seventh"] - d) % 12) in nxt for d in (0, 1, 2))
+
+
 def compose_labels(models: dict, plan: dict, tonic: int, mode: str, bpm: float, tag: str, vel: dict) -> dict:
-    """Stage 1 harmony per label; stage 2 voicings (pass 1 per label, pass 2 with the predecessor sections' final chords as
-    entry contexts); stage 3 melody / groove / bass / keys per label. Tags key on the label so repeats reproduce."""
+    """Stage 1 harmony per label (junction-aware: a label whose first chord makes a predecessor's chord 7th unresolvable is re-sampled
+    under tag suffix |hretry<k>, up to HARMONY_JUNCTION_TRIES rounds); stage 2 voicings (pass 1 per label, pass 2 iterated with the
+    neighbours' boundary chords as entry / exit contexts); stage 3 melody / groove / bass / keys per label. Tags key on the label so
+    repeats reproduce."""
     labels = sorted(set(plan["form"]["labels"]))
+    seq = plan["form"]["labels"]
+    harms = {lab: harmony.label_harmony(models["chain"], plan["label_plans"][lab], mode, f"{tag}|label={lab}") for lab in labels}
+    retries = {lab: 0 for lab in labels}
+    for _round in range(HARMONY_JUNCTION_TRIES):
+        bad = sorted({seq[i] for i in range(1, len(seq)) if not seventh_resolvable(harms[seq[i - 1]]["slots"][-1]["state"], harms[seq[i]]["slots"][0]["state"], tonic)})
+        if not bad:
+            break
+        for lab in bad:
+            retries[lab] += 1
+            harms[lab] = harmony.label_harmony(models["chain"], plan["label_plans"][lab], mode, f"{tag}|label={lab}|hretry{retries[lab]}")
+    unresolvable = [[seq[i - 1], seq[i]] for i in range(1, len(seq)) if not seventh_resolvable(harms[seq[i - 1]]["slots"][-1]["state"], harms[seq[i]]["slots"][0]["state"], tonic)]
     out = {}
     for lab in labels:
         lp = plan["label_plans"][lab]
         ltag = f"{tag}|label={lab}"
-        harm = harmony.label_harmony(models["chain"], lp, mode, ltag)
+        harm = harms[lab]
         cad_idx = {}
         for ph in harm["phrases"]:  # the transition INTO a phrase's last slot is its cadence arrival (flag = the cadence type; "authentic" is strict)
             last = ph["slots"][-1]
@@ -80,22 +105,37 @@ def compose_labels(models: dict, plan: dict, tonic: int, mode: str, bpm: float, 
         states = [s["state"] for s in harm["slots"]]
         roots = bassline.root_line(states, tonic)
         out[lab] = {"harmony": harm, "states": states, "root_line": roots, "cadence_flags": [cad_idx.get(i, False) for i in range(len(states))], "tag": ltag, "plan": lp,
-                    "roots_by_slot": {(s["bar"], s["beat"]): r for s, r in zip(harm["slots"], roots) if r is not None}}
-    seq = plan["form"]["labels"]
+                    "roots_by_slot": {(s["bar"], s["beat"]): r for s, r in zip(harm["slots"], roots) if r is not None},
+                    "harmony_junction": {"retries": retries[lab], "unresolvable_junctions": unresolvable}}
     for lab in labels:
         L = out[lab]
         L["voicings"] = voicing.voice_sequence(L["states"], tonic, mode, L["cadence_flags"], L["root_line"])
-    for lab in labels:  # pass 2: junctions
-        preds = sorted({seq[i - 1] for i in range(1, len(seq)) if seq[i] == lab})
-        ctxs = []
-        for pl in preds:
-            P = out[pl]
-            last = max((i for i, v in enumerate(P["voicings"]) if v["voicing"]), default=None)
-            if last is not None:
-                ctxs.append({"state": P["states"][last], "voicing": P["voicings"][last]["voicing"], "bass": P["root_line"][last]})
-        L = out[lab]
-        L["voicings"] = voicing.voice_sequence(L["states"], tonic, mode, L["cadence_flags"], L["root_line"], ctxs)
-        L["entry_contexts"] = ctxs
+    def boundary(lab: str, first: bool):
+        P = out[lab]
+        idx = [i for i, v in enumerate(P["voicings"]) if v["voicing"]]
+        if not idx:
+            return None
+        i = idx[0] if first else idx[-1]
+        return {"state": P["states"][i], "voicing": list(P["voicings"][i]["voicing"]), "bass": P["root_line"][i]}
+    junction = {"iterations": 0, "converged": False, "max_iterations": JUNCTION_ITERS}
+    for it in range(JUNCTION_ITERS):  # pass 2: junctions, Gauss-Seidel to a fixed point (predecessors' finals in, successors' firsts out)
+        changed = False
+        for lab in labels:
+            preds = sorted({seq[i - 1] for i in range(1, len(seq)) if seq[i] == lab})
+            succs = sorted({seq[i + 1] for i in range(len(seq) - 1) if seq[i] == lab})
+            ctxs = [c for c in (boundary(pl, False) for pl in preds if pl != lab) if c]  # the self-junction is solved inside the DP
+            exits = [c for c in (boundary(sl, True) for sl in succs if sl != lab) if c]
+            L = out[lab]
+            new, cyc = voicing.voice_sequence_cyclic(L["states"], tonic, mode, L["cadence_flags"], L["root_line"], ctxs, exits, lab in preds)
+            if [v["voicing"] for v in new] != [v["voicing"] for v in L["voicings"]]:
+                changed = True
+            L["voicings"], L["entry_contexts"], L["exit_contexts"], L["cyclic"] = new, ctxs, exits, cyc
+        junction["iterations"] = it + 1
+        if not changed:
+            junction["converged"] = True
+            break
+    for lab in labels:
+        out[lab]["junction"] = junction
     for lab in labels:
         L = out[lab]
         harm, lp, ltag = L["harmony"], L["plan"], L["tag"]
@@ -215,7 +255,7 @@ def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, 
                 "phrases": song["phrases"], "chord_slots": song["chord_slots"], "beat_chords": song["beat_chords"],
                 "labels": {lab: {"melody_phrases": L["melody"]["phrases"], "comping_rhythm": L["comping_rhythm"], "groove_bars": L["groove_bars"],
                                  "bass": {"n_changes": L["bass"]["n_changes"], "n_forced_onsets": L["bass"]["n_forced_onsets"]}, "root_line": L["root_line"],
-                                 "entry_contexts": L["entry_contexts"],
+                                 "entry_contexts": L["entry_contexts"], "exit_contexts": L["exit_contexts"], "junction": L["junction"], "cyclic": L["cyclic"],
                                  "voicing_cost_total": round(sum(v["cost"]["total_step"] for v in L["voicings"] if v["cost"]), 6),
                                  "voicing_forced_slots": sum(1 for v in L["voicings"] if v.get("forced"))} for lab, L in labels.items()},
                 "velocity_source": vel["source"], "model_sources": models["sources"], "model_sha256": models.get("input_sha256", {}), "fixtures_sha256": models.get("fixtures_sha256")}
@@ -223,7 +263,25 @@ def compose_song(models: dict, song_id: str, donor: str, seed: int, bpm: float, 
         plan_out["humanize"] = {"model": hz_out["model"], "variation": var_info, "model_path": hz.get("path"), "model_sha256": hz.get("sha256")}
     plan_out["repairs"] = reps if reps is not None else {"schema_version": 1, "passes": [], "n_repairs": 0, "by_rule": {}, "repairs": [], "n_forced": 0, "forced": [], "remaining": [], "skipped": True}
     plan_out["voicing_forced"] = [{"bar": c["bar"], "beat": c["beat"], "state": c["state"], "rules": c["forced"], "reason": c.get("forced_reason")} for c in song["chord_slots"] if c.get("forced")]
+    plan_out["realized_keys_violations"] = realized_keys_violations(song)
+    plan_out["harmony_junction"] = {lab: L["harmony_junction"] for lab, L in labels.items()}
     return {"song": song, "plan": plan_out, "validators": val, "tag": tag, "bpm": bpm, "tonic": tonic, "mode": mode, "humanize": hz_out}
+
+
+def realized_keys_violations(song: dict) -> list:
+    """Hard voicing rules re-counted on the realised consecutive chord slots of the song (the validators' pairs), with locations."""
+    vs = [c for c in song["chord_slots"] if c.get("voicing")]
+    bass = sorted(song["bass"], key=lambda n: n["slot"])
+    cad = {(p["slots"][-1]["bar"], p["slots"][-1]["beat"]): (p["cadence_realized"] if p["cadence_realized"] != "none" else p["cadence_planned"]) for p in song["phrases"] if len(p["slots"]) >= 2}
+    out = []
+    for a, b in zip(vs, vs[1:]):
+        ba, bb = validators._sounding(bass, a["bar"] * SLOTS + a["beat"] * 4), validators._sounding(bass, b["bar"] * SLOTS + b["beat"] * 4)
+        tc = voicing.transition_cost(tuple(a["voicing"]), tuple(b["voicing"]), voicing.chord_tones(a["state"], song["tonic"]), voicing.chord_tones(b["state"], song["tonic"]),
+                                     song["tonic"], song["mode"], cad.get((b["bar"], b["beat"]), False), a["state"] == b["state"], ba, bb)
+        rules = [k for k in voicing.HARD_RULES if tc[k] > 0]
+        if rules:
+            out.append({"from": [a["bar"], a["beat"], a["state"]], "to": [b["bar"], b["beat"], b["state"]], "rules": rules, "sections": [a["section"], b["section"]]})
+    return out
 
 
 def write_song(res: dict, song_dir: Path, render: bool, keep_per_track: bool, renderer: str = "gm", iteration: int = 1) -> dict:

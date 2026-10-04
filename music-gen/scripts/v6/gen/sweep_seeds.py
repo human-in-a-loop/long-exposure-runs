@@ -48,11 +48,13 @@ def run_case(models: dict, seed: int, bpm: float, donor: str, song_id: str, n_ba
     res = compose_song(models, song_id, donor, seed, bpm, n_bars, hz, repair_pass=repair)
     val, plan = res["validators"], res["plan"]
     rep = plan.get("repairs") or {}
-    forced_keys = [{"bar": c["bar"], "beat": c["beat"], "state": c["state"], "rules": c["forced"], "reason": c.get("forced_reason")} for c in plan["chord_slots"] if c.get("forced")]
+    forced_keys = plan.get("voicing_forced", [])
+    realized = plan.get("realized_keys_violations", [])
     return {"song_id": song_id, "donor": donor, "seed": seed, "bpm": bpm, "humanize": humanize, "wall_s": round(time.time() - t0, 3),
             "metrics": val["metrics"], "cap_pass": val["cap_pass"], "all_caps_pass": val["all_caps_pass"], "parallels": val["detail"]["parallels"],
             "leading_tone": val["detail"]["leading_tone"], "n_repairs": rep.get("n_repairs", 0), "repairs_by_rule": rep.get("by_rule", {}),
-            "forced": (rep.get("forced") or []) + [dict(f, rule="keys_voicing:" + "+".join(f["rules"])) for f in forced_keys]}
+            "forced": (rep.get("forced") or []) + [dict(f, rule="keys_voicing:" + "+".join(f["rules"]), realized=any(r["to"][:2] == [f["bar"], f["beat"]] or r["from"][:2] == [f["bar"], f["beat"]] for r in realized)) for f in forced_keys],
+            "realized_keys_violations": realized, "harmony_junction": plan.get("harmony_junction", {})}
 
 
 def summarize(cases: list) -> dict:
@@ -73,7 +75,9 @@ def summarize(cases: list) -> dict:
             rep_rules[k] = rep_rules.get(k, 0) + v
     unforced_fail = [c for c in cases if not c["all_caps_pass"] and not c["forced"]]
     return {"n_cases": len(cases), "n_cases_all_caps_pass": sum(1 for c in cases if c["all_caps_pass"]), "per_rule": per_rule,
-            "n_forced": len(forced), "forced": forced, "n_repairs_total": sum(c["n_repairs"] for c in cases), "repairs_by_rule": rep_rules,
+            "n_forced": len(forced), "forced": forced, "n_forced_realized": sum(1 for f in forced if f.get("realized", True)),
+            "n_realized_keys_violations": sum(len(c["realized_keys_violations"]) for c in cases),
+            "n_harmony_junction_retries": sum(v["retries"] for c in cases for v in c["harmony_junction"].values()), "n_repairs_total": sum(c["n_repairs"] for c in cases), "repairs_by_rule": rep_rules,
             "n_cases_failing_without_forced": len(unforced_fail),
             "cases_failing_without_forced": [f"{c['song_id']}|seed={c['seed']}|{'humanize' if c['humanize'] else 'plain'}" for c in unforced_fail]}
 
@@ -81,7 +85,10 @@ def summarize(cases: list) -> dict:
 def markdown(summary: dict, meta: dict) -> str:
     L = [f"# Seed sweep {meta['stamp']}", "", f"seeds {meta['seeds'][0]}..{meta['seeds'][-1]} x 3 fixtures x modes {meta['modes']} = {summary['n_cases']} cases; "
          f"bars {meta['n_bars']}; repair {'ON' if meta['repair'] else 'OFF'}; all caps pass in {summary['n_cases_all_caps_pass']}/{summary['n_cases']} cases; "
-         f"repairs applied {summary['n_repairs_total']} ({summary['repairs_by_rule']}); forced violations {summary['n_forced']}.", "",
+         f"repairs applied {summary['n_repairs_total']} ({summary['repairs_by_rule']}); forced violations {summary['n_forced']} "
+         f"({summary['n_forced_realized']} realised on the song's chord pairs; {summary['n_realized_keys_violations']} realised keys-rule violations in all); "
+         f"harmony junction re-samples {summary['n_harmony_junction_retries']}.", "",
+         "A forced keys_voicing flag sits on a LABEL slot and so appears at every recurrence; `realized` says whether that recurrence's actual neighbour violates.", "",
          "| rule | cap | cases violating | max count |", "|---|---|---|---|"]
     for r, s in summary["per_rule"].items():
         cap = validators.CAPS[r]
@@ -90,7 +97,8 @@ def markdown(summary: dict, meta: dict) -> str:
     if not summary["forced"]:
         L.append("none")
     for f in summary["forced"]:
-        L.append(f"- {f['song_id']} seed={f['seed']} {'humanize' if f['humanize'] else 'plain'} bar {f.get('bar')} slot {f.get('slot', f.get('beat'))}: {f['rule']} — {f.get('reason')}")
+        L.append(f"- {f['song_id']} seed={f['seed']} {'humanize' if f['humanize'] else 'plain'} bar {f.get('bar')} slot {f.get('slot', f.get('beat'))}: {f['rule']}"
+                 f"{'' if f.get('realized', True) else ' (not realised at this recurrence)'} — {f.get('reason')}")
     L += ["", "## Cases failing a cap without a forced violation", ""]
     L += [f"- {c}" for c in summary["cases_failing_without_forced"]] or ["none"]
     return "\n".join(L) + "\n"
