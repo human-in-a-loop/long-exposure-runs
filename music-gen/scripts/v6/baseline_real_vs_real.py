@@ -14,7 +14,9 @@ band + sha256). Steps, per backbone (clap, mert):
      B=half2; mean / sd / [p2.5, p97.5] per metric = the noise floor;
   b. band-vs-band: 4 vs 5, 4 vs 7, 5 vs 7 (are the user's rating bands separable at all?);
   c. leave-one-band-out: band b vs the rest (a stand-in for "a novel set of real songs");
-  d. corpus vs MUSDB18 if workspace/public/musdb18/ holds decodable audio (absence is recorded).
+  d. corpus vs MUSDB18 if --musdb-dir holds decodable audio (absence is recorded). Phase 1B: the
+     default is the musdb_export.py output (data/v6/public/musdb18) and only the instrumental
+     accompaniment.wav files are used (our generator makes instrumentals), all 150 songs.
 
 Outputs (data/v6/scorecard/baseline_real_vs_real/):
   <config>/<case>/distribution_<backbone>.json   full scorecards (distribution_metrics schema)
@@ -156,6 +158,8 @@ def baseline_backbone(rows, backbone, args, out: Path, log) -> dict:
     # (d) corpus vs MUSDB18 (optional)
     musdb = Path(args.musdb_dir)
     musdb_files = iter_audio_files([musdb]) if musdb.is_dir() else []
+    acc = [f for f in musdb_files if f.name == "accompaniment.wav"]
+    musdb_files = acc or musdb_files  # Phase 1B export layout: compare against accompaniment (no vocals) only
     if musdb_files:
         if args.musdb_max_files:
             musdb_files = musdb_files[: args.musdb_max_files]
@@ -164,6 +168,7 @@ def baseline_backbone(rows, backbone, args, out: Path, log) -> dict:
         msongs = dm.load_songs([emb_dir / backbone / f"{sha16_of(sha256_file(f))}.npz" for f in musdb_files])
         result["corpus_vs_musdb18"] = run_case(songs, msongs, backbone, out / "corpus_vs_musdb18", args.seed, args)
         result["corpus_vs_musdb18"]["musdb_n_files"] = len(msongs)
+        result["corpus_vs_musdb18"]["musdb_file_kind"] = "accompaniment.wav" if acc else "any audio"
     else:
         result["corpus_vs_musdb18"] = {"status": "absent", "looked_in": str(musdb),
                                        "note": "no decodable audio files found (zip-only or missing); skipped"}
@@ -207,8 +212,11 @@ def write_report(summary: dict, path: Path) -> None:
                   f"{_fmt(min(bvb_c2), 3)}..{_fmt(max(bvb_c2), 3)} — bands above the floor: {sep or 'none'}; "
                   f"bands with KID CI excluding 0: {kid_sep or 'none'}.",
                   "", f"MUSDB18: {r['corpus_vs_musdb18'].get('status', 'ran')} "
-                  + (f"kid_song={_fmt(r['corpus_vs_musdb18'].get('kid_song'))} c2st={_fmt(r['corpus_vs_musdb18'].get('c2st_balanced_accuracy'), 3)}"
-                     if "kid_song" in r["corpus_vs_musdb18"] else ""), ""]
+                  + ((lambda m: f"({m.get('musdb_n_files')} {m.get('musdb_file_kind', 'files')}): kid_song={_fmt(m.get('kid_song'))} "
+                              f"CI95=[{_fmt(m.get('kid_song_ci95_lo'))}, {_fmt(m.get('kid_song_ci95_hi'))}] "
+                              f"c2st={_fmt(m.get('c2st_balanced_accuracy'), 3)} coverage={_fmt(m.get('coverage'), 3)} "
+                              f"density={_fmt(m.get('density'), 3)} fad={_fmt(m.get('fad'))} novelty_max_cos={_fmt(m.get('novelty_max_cos'))}"
+                      )(r["corpus_vs_musdb18"]) if "kid_song" in r["corpus_vs_musdb18"] else ""), ""]
     lines += ["## Which metrics are usable at n=29", "",
               "- **Song-level KID with the two-level bootstrap** is the primary gate: its null expectation is 0 by "
               "construction, the CI coverage above says whether the bootstrap is calibrated, and a candidate set whose "
@@ -232,7 +240,8 @@ def main(argv=None) -> int:
     ap.add_argument("--backbones", default="clap,mert")
     ap.add_argument("--emb-dir", default=str(ea.DEFAULT_OUT_DIR))
     ap.add_argument("--out-dir", default=str(DEFAULT_OUT))
-    ap.add_argument("--musdb-dir", default=str(_WS / "workspace" / "public" / "musdb18"))
+    ap.add_argument("--musdb-dir", default=str(_WS / "data" / "v6" / "public" / "musdb18"),
+                    help="musdb_export.py output; only accompaniment.wav files are used when present")
     ap.add_argument("--musdb-max-files", type=int, default=0)
     ap.add_argument("--splits", type=int, default=20)
     ap.add_argument("--seed", type=int, default=0)

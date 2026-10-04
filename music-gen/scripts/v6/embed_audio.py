@@ -22,6 +22,11 @@ Backbones (verified API, transformers 5.18):
 Cache: a file is skipped when its npz+sidecar already exist with matching sha256 and
 identical window/hop/silence settings (use --force to re-embed).
 
+Tags (Phase 1B): --tag <label> stores the label in the sidecar ("tag") and writes under a
+subdirectory, e.g. <out-dir>/clap/stem=drums/<sha16>.npz, so per-instrument stem embeddings never
+mix with full-mix embeddings in the flat <out-dir>/<backbone>/ layout (untagged = unchanged layout;
+old sidecars without "tag" are read as untagged).
+
 Determinism: torch.set_num_threads(4), torch.manual_seed(0), inference_mode, eval(); no PRNG
 in windowing. HF_HUB_OFFLINE=1 is set by default (models are already cached); set
 V6_ALLOW_HF_NETWORK=1 to permit downloads.
@@ -188,6 +193,13 @@ def load_backbone(name: str) -> _Backbone:
 
 
 # ----------------------------------------------------------------------------- driver
+def embeddings_dir(out_dir: Path, backbone_name: str, tag: str | None = None) -> Path:
+    """<out_dir>/<backbone>/ for untagged embeddings, <out_dir>/<backbone>/<tag>/ for tagged ones."""
+    if tag is not None and ("/" in tag or tag in ("", ".", "..")):
+        raise ValueError(f"invalid tag {tag!r}")
+    return Path(out_dir) / backbone_name / tag if tag else Path(out_dir) / backbone_name
+
+
 def _cache_hit(npz_path: Path, side_path: Path, sha256: str, settings: dict) -> bool:
     if not (npz_path.exists() and side_path.exists()):
         return False
@@ -201,12 +213,13 @@ def _cache_hit(npz_path: Path, side_path: Path, sha256: str, settings: dict) -> 
 def embed_files(files: list[Path], backbone_name: str, out_dir: Path, window_s: float = 10.0,
                 hop_s: float = 5.0, silence_dbfs: float = -60.0, max_windows: int | None = None,
                 batch_size: int = 8, force: bool = False, backbone: _Backbone | None = None,
-                log=print) -> list[dict]:
+                log=print, tag: str | None = None) -> list[dict]:
     """Embed `files` with one backbone; returns per-file records (also written as sidecars).
-    `backbone` may be injected (tests use a fake); otherwise loaded lazily on first miss."""
+    `backbone` may be injected (tests use a fake); otherwise loaded lazily on first miss.
+    `tag` (optional) selects the <out_dir>/<backbone>/<tag>/ subdirectory and is stored in the sidecar."""
     settings = {"window_s": window_s, "hop_s": hop_s, "silence_dbfs": silence_dbfs,
                 "max_windows": max_windows}
-    bdir = out_dir / backbone_name
+    bdir = embeddings_dir(out_dir, backbone_name, tag)
     bdir.mkdir(parents=True, exist_ok=True)
     records = []
     for f in files:
@@ -229,7 +242,7 @@ def embed_files(files: list[Path], backbone_name: str, out_dir: Path, window_s: 
         np.savez(tmp, emb=emb, window_start_s=starts)
         os.replace(tmp, npz_path)
         rec = {"schema_version": SCHEMA_VERSION, "backbone": backbone_name, "model": backbone.info(),
-               "path": str(f), "name": f.name, "sha256": sha, "sha16": s16,
+               "path": str(f), "name": f.name, "sha256": sha, "sha16": s16, "tag": tag,
                "duration_s": round(duration_s, 3), "n_windows": int(len(windows)),
                "n_windows_total": int(max(0, (len(x) - int(round(window_s * backbone.sr)))
                                            // int(round(hop_s * backbone.sr)) + 1)),
@@ -254,6 +267,7 @@ def main(argv=None) -> int:
     ap.add_argument("--silence-dbfs", type=float, default=-60.0)
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--force", action="store_true", help="ignore cache")
+    ap.add_argument("--tag", default=None, help="label stored in the sidecar; outputs go to <out-dir>/<backbone>/<tag>/")
     ap.add_argument("--summary-json", default=None, help="optional path for a run summary JSON")
     args = ap.parse_args(argv)
 
@@ -262,12 +276,12 @@ def main(argv=None) -> int:
         print("no audio files found", file=sys.stderr)
         return 1
     out_dir = Path(args.out_dir)
-    summary = {"schema_version": SCHEMA_VERSION, "env": env_record(), "backbones": {},
+    summary = {"schema_version": SCHEMA_VERSION, "env": env_record(), "backbones": {}, "tag": args.tag,
                "inputs": [{"path": str(f), "sha16": sha16_of(sha256_file(f))} for f in files]}
     for name in [b.strip() for b in args.backbones.split(",") if b.strip()]:
         t0 = time.time()
         recs = embed_files(files, name, out_dir, args.window, args.hop, args.silence_dbfs,
-                           args.max_windows, args.batch_size, args.force)
+                           args.max_windows, args.batch_size, args.force, tag=args.tag)
         summary["backbones"][name] = {
             "n_files": len(recs), "n_windows": int(sum(r["n_windows"] for r in recs)),
             "wall_s": round(time.time() - t0, 2),
