@@ -31,7 +31,7 @@ CAPS = {
 }
 # Phase 3 (--humanize) additions: validate_humanized() appends these to the metrics / cap_pass of a humanized song.
 HUMANIZE_CAPS = {
-    "timing_ks_max": {"op": "<=", "cap": 0.25, "per": "song", "doc": "max over streams (kick/snare/hat/bass, n >= 10) of the two-sample KS statistic between the humanized offsets (fraction of a 16th) and the corpus pooled model"},
+    "timing_ks_max": {"op": "<=", "cap": 0.25, "per": "song", "doc": "max over streams (kick/snare/hat/bass, n >= 10) of the two-sample KS statistic between the humanized offsets (fraction of a 16th) and the model's reference histogram for that stream; the reference is SLOT-MIX REWEIGHTED: the model's per-slot offset distributions (slot_hist_f16) mixed with the song's own onset count per 16th slot (microtiming_model.reference_hist), so the song's odd/even-8th slot occupancy cannot shift the statistic; a model without per-slot distributions (the corpus pooled model) is compared against its pooled hist_f16 unchanged"},
     "velocity_std_min": {"op": ">=", "cap": 8.0, "per": "song", "doc": "min over non-empty stems of the velocity standard deviation (dynamics not flat)"},
     "swing_in_corpus_iqr": {"op": "==", "cap": True, "per": "song", "doc": "humanized drums swing ratio within [Q1 - 0.02, Q3 + 0.02] of the near-tempo corpus songs' swing ratios"},
     "section_repeat_skeleton_integrity": {"op": "==", "cap": True, "per": "song", "doc": "harmony, bass root line, keys pitch sets per bar and melody skeleton identical across label recurrences (comparable bars only)"},
@@ -286,11 +286,25 @@ def humanized_offsets_f16(song: dict) -> dict:
     return out
 
 
+def humanized_slot_counts(song: dict) -> dict:
+    """{stream: [onset count per 16th slot (16)]} — the song's own slot occupancy, the weights of the slot-mix reference."""
+    out = {"kick": [0] * 16, "snare": [0] * 16, "hat": [0] * 16, "bass": [0] * 16}
+    for n in song["bass"]:
+        out["bass"][n["slot"] % SLOTS] += 1
+    for h in song["drums"]:
+        out[_DRUM_STREAM.get(h["pitch"], "hat")][h["slot"] % SLOTS] += 1
+    return out
+
+
 def timing_ks(song: dict, pool: dict, min_n: int = 10) -> dict:
-    from scripts.v6.gen.microtiming_model import ks_vs_hist
+    """Per stream: KS between the humanized offsets and microtiming_model.reference_hist (per-slot distributions mixed with the
+    song's slot counts when the model carries them, else the pooled histogram); see HUMANIZE_CAPS["timing_ks_max"]."""
+    from scripts.v6.gen.microtiming_model import ks_vs_hist, reference_hist
     per = {}
+    counts = humanized_slot_counts(song)
     for st, xs in humanized_offsets_f16(song).items():
-        per[st] = ks_vs_hist(xs, pool["streams"][st]["hist_f16"]) if len(xs) >= min_n else {"D": None, "n": len(xs)}
+        ref, kind = reference_hist(pool["streams"][st], counts[st])
+        per[st] = dict(ks_vs_hist(xs, ref) if len(xs) >= min_n else {"D": None, "n": len(xs)}, reference=kind, slot_n=counts[st])
     ds = [v["D"] for v in per.values() if v["D"] is not None]
     return {"per_stream": per, "max_D": max(ds) if ds else None}
 

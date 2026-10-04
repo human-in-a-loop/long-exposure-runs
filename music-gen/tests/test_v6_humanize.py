@@ -78,10 +78,18 @@ def test_02_offsets_clipped_to_35pct_of_a_16th() -> None:
     song = res["song"]
     H.apply(song, _flat_model(1.0, 400.0), "clip-test")
     clip = 0.35 * (60000.0 / 120.0 / 4)
-    offs = [n["offset_ms"] for stem in ("drums", "bass", "keys", "melody") for n in song[stem]]
-    assert offs and max(abs(o) for o in offs) <= clip + 1e-9
-    assert sum(1 for o in offs if abs(abs(o) - clip) < 1e-6) > len(offs) * 0.5, "huge std should pin most offsets at the clip"
-    print(f"test_02 PASS: {len(offs)} offsets, max |offset| {max(abs(o) for o in offs):.3f} ms <= clip {clip:.3f} ms")
+    offs = {stem: [n["offset_ms"] for n in song[stem]] for stem in ("drums", "bass", "keys", "melody")}
+    assert all(offs[stem] and max(abs(o) for o in offs[stem]) <= clip + 1e-9 for stem in offs), "every stem clipped"
+    # drums and bass draw std x z from the model (std 400 ms x STD_SCALE 0.6 = 240 ms vs a 43.75 ms clip): max |offset| must BE the
+    # clip and ~85 % of the draws pin at it (P(|z| < clip / 240) ~ 0.145), independent of the groove's slot occupancy (fixture vs corpus);
+    # keys (+5..12 ms, no std) and melody (N(+2, 6) + ritardando, no model std) stay well inside the clip.
+    at_clip = {stem: sum(1 for o in xs if abs(abs(o) - clip) < 1e-6) / len(xs) for stem, xs in offs.items()}
+    for stem in ("drums", "bass"):
+        assert abs(max(abs(o) for o in offs[stem]) - clip) < 1e-6, stem
+        assert at_clip[stem] > 0.8, (stem, at_clip[stem], "huge std should pin most model-std-driven offsets at the clip")
+    assert all(5.0 <= o <= 12.0 for o in offs["keys"]) and max(abs(o) for o in offs["melody"]) < clip
+    n = sum(len(xs) for xs in offs.values())
+    print(f"test_02 PASS: {n} offsets, every stem <= clip {clip:.3f} ms; drums/bass max == clip, at-clip fractions {at_clip['drums']:.3f} / {at_clip['bass']:.3f}")
 
 
 def test_03_swing_only_on_odd_8ths() -> None:

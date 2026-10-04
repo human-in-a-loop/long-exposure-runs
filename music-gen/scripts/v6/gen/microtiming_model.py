@@ -218,17 +218,20 @@ def swing_ms_from_ratio(ratio: float, s16_ms: float) -> float:
 def _prior_stream(mean_ms: float, std_ms: float, swing_ms: float, vel_slot: list, bpm: float = 110.0, std_scale: float = 1.0) -> dict:
     """hist_f16 = 0.65 N(mean, std_scale x std) + 0.35 N(mean + swing, std_scale x std): the odd-8th slots carry ~1/3 of the onsets of an
     8th-note pattern. std_scale = the factor the humanizer applies to slot_std_ms (humanize.STD_SCALE), so in prior mode the reference
-    histogram IS the distribution the humanizer draws from (validators.timing_ks holds by construction up to the song's odd/even slot mix)."""
+    histogram IS the distribution the humanizer draws from. slot_hist_f16[i] = N(slot mean i, std_scale x std) is the PER-SLOT version:
+    reference_hist() mixes those with the song's own per-slot onset counts, so validators.timing_ks holds by construction whatever the
+    song's odd/even slot mix (the pooled 0.65/0.35 hist_f16 stays for the manifests and as the fallback)."""
     s16_ms = 60000.0 / bpm / 4
     sd = max(1e-6, std_ms * std_scale) / s16_ms
     hist = [int(round(0.65 * a + 0.35 * b)) for a, b in zip(gaussian_hist(mean_ms / s16_ms, sd), gaussian_hist((mean_ms + swing_ms) / s16_ms, sd))]
+    slot_hist = [gaussian_hist((mean_ms + (swing_ms if i in ODD_8TH else 0.0)) / s16_ms, sd) for i in range(16)]
     return {"slot_mean_ms": [round(mean_ms + (swing_ms if i in ODD_8TH else 0.0), 3) for i in range(16)], "slot_std_ms": [std_ms] * 16,
             "slot_mean_f16": [round((mean_ms + (swing_ms if i in ODD_8TH else 0.0)) / s16_ms, 5) for i in range(16)], "slot_std_f16": [round(std_ms / s16_ms, 5)] * 16,
             "slot_n": [0] * 16, "slot_resid_mean_ms": [mean_ms] * 16, "slot_resid_mean_f16": [round(mean_ms / s16_ms, 5)] * 16,
             "swing": {"offset_ms": swing_ms, "offset_f16": round(swing_ms / s16_ms, 5), "ratio": round((2 + swing_ms / s16_ms) / (2 - swing_ms / s16_ms), 4), "n_odd": 0, "n_even": 0},
             "vel_by_slot_db": vel_slot, "vel_by_bar_mod4_db": [0.3, -0.2, 0.0, 0.6], "vel_by_bar_mod8_db": [0.5, -0.3, 0.0, 0.4, 0.2, -0.3, 0.1, 1.0],
             "vel_by_beat_class_db": {"downbeat": 1.5, "backbeat": 1.0, "beat3": 0.3, "offbeat": -2.5},
-            "hist_f16": hist, "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "reject_rate": None}
+            "hist_f16": hist, "slot_hist_f16": slot_hist, "n_detected": 0, "n_assigned": 0, "n_rejected": 0, "n_out_of_grid": 0, "reject_rate": None}
 
 
 PRIOR_SWING_RATIOS = {"0.0": 1.0, "0.25": 1.03, "0.5": 1.08, "0.75": 1.15, "1.0": 1.3}
@@ -262,6 +265,25 @@ def hist_cdf(hist: list) -> list:
         acc += c
         out.append(acc / tot)
     return out
+
+
+def reference_hist(stream: dict, slot_counts: list) -> tuple:
+    """Slot-mix-reweighted reference for validators.timing_ks: (41-bin histogram, kind). When the stream carries PER-SLOT offset
+    distributions (slot_hist_f16[16][41], the prior), the reference is their mixture weighted by the SONG's own onset count per
+    16th slot (slot_counts[16]) — a song whose drum pattern puts a different share of its onsets on the odd 8ths than the pooled
+    histogram assumed is then compared against what its own slots draw from. Without per-slot distributions (the corpus-trained
+    pool() output carries only the pooled hist_f16) or without onsets the pooled histogram is returned unchanged ("pooled")."""
+    sh = stream.get("slot_hist_f16")
+    n_tot = sum(slot_counts) if slot_counts else 0
+    if not sh or len(sh) != 16 or n_tot <= 0:
+        return list(stream["hist_f16"]), "pooled"
+    out = [0.0] * 41
+    for i, n in enumerate(slot_counts):
+        tot = float(sum(sh[i])) if n else 0.0
+        if tot > 0:
+            for b in range(41):
+                out[b] += n * sh[i][b] / tot
+    return (out, "slot_mix") if sum(out) > 0 else (list(stream["hist_f16"]), "pooled")
 
 
 def ks_vs_hist(sample_f16: list, hist: list) -> dict:
