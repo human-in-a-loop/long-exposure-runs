@@ -165,7 +165,7 @@ def beat_grid(env: np.ndarray, bpm: float, onset_times_all: np.ndarray) -> tuple
         return raw, raw, {"n_beats": int(raw.size), "confidence": "low", "beat_contrast": None, "beat_hit_frac": None, "tempo_ratio": None}
     beats = smooth_beats(raw)
     fr = beats * SR / HOP
-    mid = (fr[:-1] + fr[1:]) / 2
+    mid = np.concatenate([fr[:-1] + 0.25 * np.diff(fr), fr[:-1] + 0.75 * np.diff(fr)])  # the odd-16th positions (weakest metrical slots)
     at_beats = float(np.mean(np.interp(fr, np.arange(env.size), env)))
     at_mid = float(np.mean(np.interp(mid, np.arange(env.size), env)))
     contrast = (at_beats - at_mid) / (at_beats + at_mid + 1e-9)
@@ -349,8 +349,9 @@ def analyze_arrays(drums: np.ndarray, bass: np.ndarray, bpm: float, sha16: str =
             M.add_cell(lag, d)
             lag_vals.append(d)
     n_bars = (max([b for k in placed for b, _, _ in placed[k]], default=0) + 1)
-    conf = "high" if (ginfo.get("beat_contrast") or 0) > 0.3 and (ginfo.get("beat_hit_frac") or 0) > 0.6 and abs((ginfo.get("tempo_ratio") or 0) - 1) < 0.02 and margin > 0.1 else \
-        ("medium" if (ginfo.get("beat_contrast") or 0) > 0.15 and (ginfo.get("beat_hit_frac") or 0) > 0.4 and abs((ginfo.get("tempo_ratio") or 0) - 1) < 0.04 else "low")
+    hit, ratio, contrast = ginfo.get("beat_hit_frac") or 0.0, ginfo.get("tempo_ratio") or 0.0, ginfo.get("beat_contrast") or 0.0
+    conf = "high" if hit > 0.85 and abs(ratio - 1) < 0.01 and margin > 0.05 and contrast > 0.1 else ("medium" if hit > 0.6 and abs(ratio - 1) < 0.03 and contrast > 0.0 else "low")
+    ginfo["confidence_rule"] = "high: beat_hit > 0.85 & |tempo_ratio - 1| < 1 % & phase_margin > 0.05 & contrast(beats vs odd 16ths) > 0.1; medium: hit > 0.6 & |ratio - 1| < 3 % & contrast > 0"
     swing = {k: M.swing_of(streams[k]["ms"], streams[k]["f16"]) for k in M.STREAMS}
     drums_ms = M.merge_cells(M.merge_cells(streams["kick"]["ms"], streams["snare"]["ms"]), streams["hat"]["ms"])
     drums_f = M.merge_cells(M.merge_cells(streams["kick"]["f16"], streams["snare"]["f16"]), streams["hat"]["f16"])

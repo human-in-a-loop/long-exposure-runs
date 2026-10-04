@@ -70,7 +70,7 @@ def test_03_band_priors_cover_roles_and_lean() -> None:
     for band in (4, 5, 7):
         for role in select.ENSEMBLE_P:
             w = select.prior_weights(POOL, role, band)
-            assert w and abs(sum(w.values()) - sum(select.BAND_PRIOR[band].get(POOL["patches"][i]["inventory_role"], 0) for i in {POOL["patches"][j]["inventory_role"]: j for j in w}.values())) < 1e-6 or w
+            assert w and all(v > 0 for v in w.values()) and set(w) <= set(POOL["roles"][role])
     def mass(band, role, inv):
         w = select.prior_weights(POOL, role, band)
         t = sum(w.values())

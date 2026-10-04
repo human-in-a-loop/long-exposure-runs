@@ -60,7 +60,7 @@ def test_01_sfz_and_sf2_byte_determinism() -> None:
     print("test_01 PASS: sfz + sf2 renders byte-identical twice; bank-128 kit (ch 9) and bank-0 AVL kit (ch 0) both audible")
 
 
-def test_02_dawdreamer_frozen_cache_contract(monkeypatch=None) -> None:
+def test_02_dawdreamer_frozen_cache_contract() -> None:
     """The frozen path copies a cached render keyed by sha256(midi bytes | patch identity) without touching dawdreamer."""
     with tempfile.TemporaryDirectory() as td:
         mid = Path(td) / "x.mid"
