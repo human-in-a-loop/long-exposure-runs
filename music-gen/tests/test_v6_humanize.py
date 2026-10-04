@@ -29,7 +29,9 @@ from scripts.v6.gen.compose_v6 import compose_song, to_events  # noqa: E402
 from scripts.v6.gen.fixtures import load_models  # noqa: E402
 
 PY = "/usr/bin/python3"
-CLI = ["scripts/v6/gen/compose_v6.py", "--iteration", "1", "--seed", "7", "--fixtures", "--bars", "32", "--bpm", "100,120,152", "--no-render"]
+CLI = ["scripts/v6/gen/compose_v6.py", "--iteration", "1", "--seed", "7", "--fixtures", "--bars", "32", "--bpm", "100,120,152", "--no-render",
+       "--microtiming-model", "/nonexistent/microtiming_v6.json"]  # absent model + --fixtures -> the built-in prior (corpus-independent tests)
+REAL_MODEL = _ROOT / "data/v6/rules/microtiming_v6.json"
 _RUNS: dict = {}
 _MODELS = load_models(None, fixtures=True)
 
@@ -248,6 +250,23 @@ def test_08_validators_contract_unchanged_for_phase2_and_extended_under_humanize
     v5 = subprocess.run(["git", "status", "--porcelain", "--", "scripts/v5"], capture_output=True, text=True, cwd=str(_ROOT)).stdout.strip()
     assert v5 == "", f"scripts/v5 modified: {v5}"
     print("test_08 PASS: Phase-2 validate() keys unchanged, no offsets without --humanize, 16th-grid starts; humanized metrics = ALL_CAPS; scripts/v5 untouched")
+
+
+def test_09_real_corpus_model_when_present() -> None:
+    if not REAL_MODEL.exists():
+        print("test_09 SKIP: data/v6/rules/microtiming_v6.json absent (run scripts/v6/microtiming_v6.py)")
+        return
+    mt = json.loads(REAL_MODEL.read_text())
+    assert mt["n_songs"] >= 20 and set(mt["pooled"]) >= {"all", "near_tempo"} and set(mt["pooled"]["near_tempo"]) == {"100", "120", "152"}
+    for sha, e in mt["per_song"].items():
+        assert e["grid"]["confidence"] in ("high", "medium", "low") and all(k in e["streams"] for k in M.STREAMS), sha
+        assert all(e["streams"][k]["n_detected"] >= e["streams"][k]["n_assigned"] + e["streams"][k]["n_rejected"] for k in M.STREAMS)
+    pool = M.model_for_bpm(mt, 120.0)
+    assert pool["variant"] == "near_tempo" and pool["n_songs"] >= 3 and pool["swing_ratios_drums"]["0.5"] is not None
+    res = compose_song(_MODELS, "gen_v6_song_2", "fixture_b", 7, 120.0, 32, hz={"mt": mt, "path": "data/v6/rules/microtiming_v6.json", "sha256": None})
+    m = res["validators"]["metrics"]
+    assert res["humanize"]["model"]["variant"] == "near_tempo" and m["timing_ks_max"] <= 0.25 and m["velocity_std_min"] >= 8.0 and m["swing_in_corpus_iqr"]
+    print(f"test_09 PASS: real model ({mt['n_songs']} songs); near_tempo@120 = {pool['n_songs']} songs; KS max {m['timing_ks_max']}, vel std min {m['velocity_std_min']}, swing in IQR")
 
 
 def _run_all() -> int:
