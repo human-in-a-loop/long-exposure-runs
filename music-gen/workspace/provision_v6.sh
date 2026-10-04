@@ -23,7 +23,7 @@ apt-get install -y -qq \
 
 echo "== python layer (system /usr/bin/python3) == $(date -u +%H:%M:%S)"
 PIP="/usr/bin/python3 -m pip"
-$PIP install --quiet --upgrade pip
+# (pip upgrade skipped: Debian-managed pip has no RECORD file)
 $PIP install --quiet torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 $PIP install --quiet \
   numpy scipy scikit-learn matplotlib pandas \
