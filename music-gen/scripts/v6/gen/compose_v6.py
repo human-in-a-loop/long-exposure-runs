@@ -65,13 +65,8 @@ def velocity_fns(profiles: dict | None) -> dict:
 
 
 def seventh_resolvable(prev_state: str, next_state: str, tonic: int) -> bool:
-    """False when prev's chord 7th can neither be held nor step down (1-2 semitones) into a tone of next: no voicing can then satisfy
-    validators.unresolved_sevenths across that junction (e.g. C7 -> C, Fmaj7 -> F)."""
-    ct = voicing.chord_tones(prev_state, tonic) if prev_state and prev_state != "N" else {"seventh": None}
-    if ct["seventh"] is None or prev_state == next_state:
-        return True
-    nxt = set(state_pcs(next_state, tonic) or [])
-    return not nxt or any(((ct["seventh"] - d) % 12) in nxt for d in (0, 1, 2))
+    """voicing.seventh_resolvable (the one definition; stage 1 inside a label uses the same test through harmony.resolvable_matrix)."""
+    return voicing.seventh_resolvable(prev_state, next_state, tonic)
 
 
 def compose_labels(models: dict, plan: dict, tonic: int, mode: str, bpm: float, tag: str, vel: dict) -> dict:

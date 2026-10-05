@@ -22,6 +22,12 @@ exactly as microtiming_v6.song_bpm reads it):
             sim / TAU (TAU = 0.05), the N template's sim reduced by N_PENALTY = 0.15 (its cosine is a flatness score that
             sits at ~0.7 on leaky real chroma, so without the penalty Viterbi parks on N); beats whose RMS is below the
             song's 95th percentile - SILENCE_DB are forced to 'N'.
+  parsimony (Phase 5 debias, PRE-REGISTERED in params.parsimony) a richer quality (7 / maj7 / 9 / sus over maj; min7 over
+            min) may only win when EVERY extra chord tone (7th / 9th / 4th bin) carries chroma energy >= PARSIMONY_MARGIN x
+            the mean of its base-triad bins (sus additionally needs the 4th louder than the 3rd); otherwise its similarity
+            is clamped to (best triad of any root at that beat) - PARSIMONY_EPS, so a plain cosine advantage that comes only
+            from spanning more bins of a leaky chroma cannot pick the richer template. Calibrated on rendered ground truth
+            (iteration-03 ab_mix vs plan.beat_chords, 10 songs): see params.parsimony.calibration.
             Output: beat-level chord stream (absolute roots, from the first downbeat so beat % 4 == 0 is a downbeat) with
             per-beat confidence (sim of the chosen chord, margin over the best chord with another root), chord-change
             positions, harmonic rhythm (chord onsets per bar), the raw-argmax vs Viterbi disagreement fraction.
@@ -53,6 +59,13 @@ SR, HOP, BINS_PER_OCTAVE = 22050, 512, 36
 VOCALS_GAIN_DB = -6.0
 SELF_P, TAU, SILENCE_DB = 0.85, 0.05, 40.0
 N_PENALTY = 0.15  # the flat template's cosine is a FLATNESS score (~0.65-0.75 on leaky real chroma); N wins only when flatter than the best chord by this
+PARSIMONY_MARGIN, PARSIMONY_EPS = 0.6, 0.01  # extra tone >= margin x mean(base-triad bins), else sim <= best triad - eps
+BASE_TRIAD = {"7": "maj", "maj7": "maj", "9": "maj", "sus": "maj", "min7": "min"}
+EXTRA_TONES = {q: tuple(sorted(set(QUALITIES[q]) - set(QUALITIES[BASE_TRIAD[q]]))) for q in BASE_TRIAD}
+PARSIMONY_CALIBRATION = {"set": "iteration_03_corpus ab_mix.wav (10 songs, 2112 keys-sounding beats) vs plan.beat_chords, fixed bpm grid",
+                         "ungated": {"exact": 0.411, "root": 0.565, "rich_pred_vs_true": [1583, 1580]},
+                         "margin_0.6_mean_best_triad": {"exact": 0.383, "root": 0.547, "rich_pred_vs_true": [1534, 1580]},
+                         "note": "rendered voicings always sound the 7th, so this set measures only the false-negative cost of the gate"}
 STEMS_DIR = WS / "data/v6/stems"
 OUT_DIR = WS / "data/v6/rules/chords"
 MICROTIMING = WS / "data/v6/rules/microtiming_v6.json"
@@ -77,6 +90,8 @@ def templates() -> np.ndarray:
 
 
 TEMPLATES = templates()
+STATE_INDEX = {rq: i for i, rq in enumerate(STATES)}
+TRIAD_COLS = [STATE_INDEX[(r, q)] for r in range(12) for q in ("maj", "min")]
 
 
 # ----------------------------------------------------------------------------------------------------- shared grid ----
@@ -140,11 +155,34 @@ def beat_features(y: np.ndarray, beats: np.ndarray) -> tuple[np.ndarray, np.ndar
 
 
 # ------------------------------------------------------------------------------------------------------- recogniser ----
-def similarities(beat_chroma: np.ndarray) -> np.ndarray:
+def unit_chroma(beat_chroma: np.ndarray) -> np.ndarray:
     C = np.asarray(beat_chroma, dtype=float)
     n = np.linalg.norm(C, axis=1, keepdims=True)
-    U = np.divide(C, n, out=np.zeros_like(C), where=n > 0)
-    return U @ TEMPLATES.T  # (n_beats, 85)
+    return np.divide(C, n, out=np.zeros_like(C), where=n > 0)
+
+
+def similarities(beat_chroma: np.ndarray) -> np.ndarray:
+    return unit_chroma(beat_chroma) @ TEMPLATES.T  # (n_beats, 85) raw cosine, no prior
+
+
+def parsimony_gate(U: np.ndarray, sims: np.ndarray, margin: float = PARSIMONY_MARGIN, eps: float = PARSIMONY_EPS) -> tuple[np.ndarray, np.ndarray]:
+    """Parsimony prior: a rich state keeps its cosine only when every extra tone >= margin x mean(base-triad bins)
+    (sus: 4th > 3rd too); otherwise it is clamped to min(own sim, best triad of any root - eps). Returns (adjusted sims,
+    gated bool mask (n_beats, 85)). Pure; testable."""
+    adj = sims.copy()
+    gated = np.zeros(sims.shape, dtype=bool)
+    best_triad = sims[:, TRIAD_COLS].max(axis=1)
+    for r in range(12):
+        for q, base in BASE_TRIAD.items():
+            tri_mean = U[:, [(r + iv) % 12 for iv in QUALITIES[base]]].mean(axis=1)
+            extra = U[:, [(r + e) % 12 for e in EXTRA_TONES[q]]].min(axis=1)
+            ok = extra >= margin * tri_mean
+            if q == "sus":
+                ok &= U[:, (r + 5) % 12] > U[:, (r + 4) % 12]
+            i = STATE_INDEX[(r, q)]
+            gated[~ok, i] = True
+            adj[~ok, i] = np.minimum(adj[~ok, i], best_triad[~ok] - eps)
+    return adj, gated
 
 
 def viterbi(log_emit: np.ndarray, self_p: float = SELF_P) -> np.ndarray:
@@ -169,7 +207,9 @@ def viterbi(log_emit: np.ndarray, self_p: float = SELF_P) -> np.ndarray:
 
 def recognise(beat_chroma: np.ndarray, beat_rms_db: np.ndarray | None = None) -> dict:
     """Template sims + Viterbi path + silence rule over ALL grid beats. Returns raw argmax, path, sims, silent mask."""
-    sims = similarities(beat_chroma)
+    U = unit_chroma(beat_chroma)
+    sims_raw = U @ TEMPLATES.T
+    sims, gated = parsimony_gate(U, sims_raw)
     n = sims.shape[0]
     silent = np.zeros(n, dtype=bool)
     if beat_rms_db is not None and n:
@@ -181,7 +221,10 @@ def recognise(beat_chroma: np.ndarray, beat_rms_db: np.ndarray | None = None) ->
     log_emit[silent, N_INDEX] = 0.0
     path = viterbi(log_emit) if n else np.zeros(0, dtype=int)
     raw = np.argmax(log_emit, axis=1) if n else np.zeros(0, dtype=int)  # penalised, un-smoothed argmax
-    return {"sims": sims, "path": path, "raw": raw, "silent": silent}
+    ungated = np.argmax(sims_raw, axis=1) if n else np.zeros(0, dtype=int)  # what plain cosine would pick (no prior)
+    return {"sims": sims, "sims_raw": sims_raw, "path": path, "raw": raw, "silent": silent, "gated": gated, "ungated_argmax": ungated,
+            "parsimony_changed_argmax_fraction": round(float(np.mean(raw != ungated)), 6) if n else None,
+            "gated_state_fraction": round(float(gated.mean()), 6) if n else None}
 
 
 def chord_stream(rec: dict, phase: int, beat_rms_db: np.ndarray) -> list:
@@ -237,6 +280,10 @@ def analyse_arrays(drums: np.ndarray, harm: np.ndarray, bpm: float, sha16: str =
     out = {"schema_version": 1, "generator": "scripts/v6/rules/chords_v6.py", "milestone": "M-V6-RULES-1/audio-harmony", "env_pin_sha256": ENV_PIN_SHA256,
            "sha16": sha16, "bpm": float(bpm),
            "params": {"sr": SR, "hop": HOP, "bins_per_octave": BINS_PER_OCTAVE, "vocals_gain_db": VOCALS_GAIN_DB, "self_p": SELF_P, "tau": TAU, "silence_db_below_p95": SILENCE_DB, "n_penalty": N_PENALTY,
+                      "parsimony": {"margin": PARSIMONY_MARGIN, "eps": PARSIMONY_EPS, "base_triad": BASE_TRIAD, "extra_tones": {q: list(v) for q, v in EXTRA_TONES.items()},
+                                    "sus_requires_4th_over_3rd": True, "reference": "best triad of any root at the beat",
+                                    "rule": "rich state keeps its cosine iff min(extra-tone bins) >= margin x mean(base-triad bins) [sus: and 4th > 3rd]; else sim = min(sim, best_triad - eps)",
+                                    "pre_registered": "margin 0.6 fixed before the corpus re-run (Phase 5 step 2)", "calibration": PARSIMONY_CALIBRATION},
                       "harmonic_mix": "other + bass + vocals*10^(-6/20); drums excluded; librosa.effects.harmonic (HPSS)", "beat_aggregate": "median chroma / mean RMS per beat",
                       "templates": "harmony_v5 QUALITIES binary L2 templates x 12 roots + flat N (85 states)", "qualities": list(QUALITY_ORDER),
                       "viterbi": "self_p on the diagonal, (1-self_p)/84 elsewhere; log-emission = (cosine_sim - n_penalty*[state==N]) / tau; silent beats forced to N"},
@@ -253,9 +300,16 @@ def analyse_arrays(drums: np.ndarray, harm: np.ndarray, bpm: float, sha16: str =
                       "raw_vs_viterbi_disagreement": round(float(np.mean([e["raw_chord"] != e["chord"] for e in stream])), 6) if stream else None,
                       "mean_sim": round(float(np.mean([e["sim"] for e in stream])), 6) if stream else None,
                       "mean_margin_root": round(float(np.mean([e["margin_root"] for e in stream if e["quality"] != "N"])), 6) if any(e["quality"] != "N" for e in stream) else None,
+                      "parsimony": {"changed_argmax_fraction": rec["parsimony_changed_argmax_fraction"], "gated_state_fraction": rec["gated_state_fraction"],
+                                    "ungated_quality_counts": quality_counts([STATES[int(i)][1] for i in rec["ungated_argmax"][phase:]]),
+                                    "quality_counts": quality_counts([e["quality"] for e in stream])},
                       "chord_counts": dict(sorted(counts.items())), "harmonic_rhythm": harmonic_rhythm(stream)}}
     out["chord_stream"] = grid_view(rec)
     return K.annotate(out)
+
+
+def quality_counts(qualities: list) -> dict:
+    return {q: qualities.count(q) for q in sorted(set(qualities))}
 
 
 def grid_view(rec: dict) -> list:

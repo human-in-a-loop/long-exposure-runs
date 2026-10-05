@@ -5,13 +5,17 @@ created: 2026-10-04
 milestone: M-V6-GEN-2/theory-grounded-composer
 
 Candidates per chord: every strictly ascending 4-note set in KEYS_LO..KEYS_HI (MIDI 52..79) whose pitch classes cover the
-chord (triads/sus: one pc doubled; 7th chords: the four pcs once; 9 chords: root, 3rd, 7th, 9th — the 5th is dropped),
+chord (triads/sus: one pc doubled; 7th chords: the four pcs once; 9 chords: root, 3rd, 7th, 9th — the 5th is dropped — OR the
+rootless 3rd, 5th, 7th, 9th since the bass carries the root, so a preceding 7th that is the 9 chord's 5th can be retained),
 adjacent gaps <= MAX_GAP and total span <= MAX_SPAN. The bass is a separate part (bassline.py), so the keys voicing is the
 3-4 voices above it. DP (Viterbi) over the sequence minimises
   sum |voice movement| (semitones)
   + HARD (1e3) per parallel perfect 5th/8ve between any voice pair (both voices move, same direction, same perfect interval
     class) and per voice against the bass root line
-  + HARD per chord 7th not resolving down by step (held as a common tone is allowed; chord unchanged is exempt)
+  + HARD per chord 7th neither RETAINED (its pitch still sounds in the next voicing: a common tone, hence a chord tone of the
+    next chord) nor moving DOWN BY STEP (1-2 semitones) at a chord change (chord unchanged is exempt) — the Phase 5 definition,
+    shared verbatim with validators.CAPS["unresolved_sevenths"] and with harmony.resolvable_matrix (stage 1 never samples a
+    chord change whose 7th has no retention / step-down target: seventh_resolvable)
   + HARD for a leading tone (degree 7, major) at a CADENCE transition not resolving to the tonic (at an AUTHENTIC cadence the
     leading tone must move to the tonic pc or be absent: holding it is not accepted either)
   + HARD per voice crossing/overlap (a voice moving past a neighbour's previous pitch)
@@ -51,24 +55,25 @@ def chord_tones(state: str, tonic: int) -> dict:
     third = pcs[1] if q in ("maj", "min", "7", "min7", "maj7") else (pcs[2] if q == "9" else None)
     seventh = pcs[3] if q in ("7", "min7", "maj7") else (pcs[4] if q == "9" else None)
     req = [root, pcs[2], pcs[4], pcs[1]] if q == "9" else list(pcs)  # 9 chord: root, 3rd, 7th, 9th (5th dropped)
-    return {"pcs": req, "third": third, "seventh": seventh, "root": root}
+    alt = [[pcs[2], pcs[3], pcs[4], pcs[1]]] if q == "9" else []  # 9 chord, rootless: 3rd, 5th, 7th, 9th (the bass has the root)
+    return {"pcs": req, "alt_pcs": alt, "third": third, "seventh": seventh, "root": root}
 
 
 def candidates(state: str, tonic: int) -> list:
     ct = chord_tones(state, tonic)
-    req = ct["pcs"]
-    if not req:
+    if not ct["pcs"]:
         return []
-    pool = [p for p in range(KEYS_LO, KEYS_HI + 1) if p % 12 in set(req)]
-    out = []
-    for combo in combinations(pool, N_VOICES):
-        got = {p % 12 for p in combo}
-        if got != set(req) or combo[-1] - combo[0] > MAX_SPAN:
-            continue
-        if any(combo[i + 1] - combo[i] > MAX_GAP for i in range(N_VOICES - 1)):
-            continue
-        out.append(tuple(combo))
-    return out
+    out = set()
+    for req in [ct["pcs"]] + ct["alt_pcs"]:
+        pool = [p for p in range(KEYS_LO, KEYS_HI + 1) if p % 12 in set(req)]
+        for combo in combinations(pool, N_VOICES):
+            got = {p % 12 for p in combo}
+            if got != set(req) or combo[-1] - combo[0] > MAX_SPAN:
+                continue
+            if any(combo[i + 1] - combo[i] > MAX_GAP for i in range(N_VOICES - 1)):
+                continue
+            out.add(tuple(combo))
+    return sorted(out)
 
 
 def unary_cost(v: tuple, ct: dict) -> dict:
@@ -106,15 +111,32 @@ def crossings(a: tuple, b: tuple) -> int:
 
 
 def unresolved_sevenths(a: tuple, b: tuple, ct_a: dict, same_chord: bool) -> int:
+    """THE seventh-resolution definition (DP cost, validator and stage-1 harmony mask all call this): at a chord change, a keys
+    voice on the chord 7th of `a` is resolved when (i) RETAINED — its pitch still sounds in the next voicing `b` (same voice or
+    another; a common tone, hence a chord tone of the next chord) — or (ii) it moves DOWN BY STEP (1-2 semitones). Otherwise it
+    is unresolved. Chord unchanged (`same_chord`) is exempt."""
     if ct_a["seventh"] is None or same_chord:
         return 0
     n = 0
     for i, p in enumerate(a):
         if p % 12 == ct_a["seventh"]:
             d = b[i] - p
-            if not (d == 0 or -2 <= d <= -1):
+            if not (p in b or -2 <= d <= -1):
                 n += 1
     return n
+
+
+def seventh_resolvable(prev_state: str, next_state: str, tonic: int = 0) -> bool:
+    """False when prev's chord 7th can neither be retained nor step down (1-2 semitones) into a tone of next, so NO voicing pair
+    can satisfy unresolved_sevenths across that change (e.g. Imaj7 -> Vsus, C7 -> C). States are tonic-relative, so the default
+    tonic 0 gives the same answer for every key (harmony.resolvable_matrix masks these transitions out of stage 1)."""
+    if not prev_state or prev_state == "N" or prev_state == next_state:
+        return True
+    ct = chord_tones(prev_state, tonic)
+    if ct["seventh"] is None:
+        return True
+    nxt = set(state_pcs(next_state, tonic) or [])
+    return not nxt or any(((ct["seventh"] - d) % 12) in nxt for d in (0, 1, 2))
 
 
 def unresolved_leading_tone(a: tuple, b: tuple, tonic: int, mode: str, cadence) -> int:

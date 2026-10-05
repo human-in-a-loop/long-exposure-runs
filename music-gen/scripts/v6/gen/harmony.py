@@ -5,7 +5,10 @@ created: 2026-10-04
 milestone: M-V6-GEN-2/theory-grounded-composer
 
 Chord slots: harmonic rhythm hr in {1, 2, 4} per bar -> slots at beats [0] / [0, 2] / [0, 1, 2, 3]. Per phrase of T slots:
-  transition matrices per slot: P_t = the segment-level (change-only, zero-diagonal) matrix, except at the first slot of a
+  transition matrices per slot: P_t = the segment-level (change-only, zero-diagonal) matrix with the Phase 5 SEVENTH MASK
+  (resolvable_matrix: a change whose chord 7th can neither be retained nor step down into a tone of the next chord —
+  voicing.seventh_resolvable — gets probability 0 and the row is renormalised, so the voicing DP is never forced into an
+  unresolved 7th by the harmony itself; the number of zeroed transitions is recorded), except at the first slot of a
   bar whose hr == 1 where repeats across bars are allowed with the data's hold probability
   (P_t(s|s) = p_self(beat-level) ** 4, rest of the mass on the change row);
   backward messages: beta_{T-1}(s) = 1[s in FINAL], beta_{T-2}(s) = 1[s in PENULT] * sum_s' P_{T-1}(s'|s) beta_{T-1}(s'),
@@ -19,6 +22,7 @@ The realized cadence (classified from the last two chords) is recorded next to t
 from __future__ import annotations
 
 from scripts.v6.gen.common import draw_from, hold_prob, seg_matrix, state_root, state_quality
+from scripts.v6.gen.voicing import seventh_resolvable
 
 _SETS_MAJOR = {"I": (0, ("maj", "maj7", "sus", "9")), "V": (7, ("maj", "7", "9", "sus")), "IV": (5, ("maj", "maj7", "sus")), "vi": (9, ("min", "min7"))}
 _SETS_MINOR = {"I": (0, ("min", "min7")), "V": (7, ("maj", "7", "9", "min", "min7")), "IV": (5, ("min", "min7", "maj")), "vi": (8, ("maj", "maj7"))}
@@ -80,6 +84,26 @@ def slot_matrix(chain: dict, P_seg: dict, repeat_allowed: bool) -> dict:
     return P
 
 
+def resolvable_matrix(P_seg: dict) -> tuple[dict, dict]:
+    """Zero every change s -> t that voicing.seventh_resolvable rejects, renormalise the row (a row that would empty is kept as is
+    and listed). Returns (matrix, {"n_zeroed": k, "mass_removed_mean": m, "rows_kept_unmasked": [...]})."""
+    out, zeroed, removed, kept = {}, 0, [], []
+    for s, row in P_seg.items():
+        bad = {t for t, p in row.items() if p > 0.0 and t != s and not seventh_resolvable(s, t)}
+        if not bad:
+            out[s] = dict(row)
+            continue
+        mass = sum(row[t] for t in bad)
+        if mass >= 1.0 - 1e-12:
+            out[s] = dict(row)
+            kept.append(s)
+            continue
+        zeroed += len(bad)
+        removed.append(mass)
+        out[s] = {t: (0.0 if t in bad else p / (1.0 - mass)) for t, p in row.items()}
+    return out, {"n_zeroed": zeroed, "mass_removed_mean": round(sum(removed) / len(removed), 6) if removed else 0.0, "rows_kept_unmasked": kept}
+
+
 def backward_messages(mats: list, states: list, penult: set, final: set) -> list:
     """beta[t][s] for t = 0..T-1 given per-slot matrices mats[t] (mats[0] unused). 'N' masked out of the last two slots."""
     T = len(mats)
@@ -98,7 +122,7 @@ def backward_messages(mats: list, states: list, penult: set, final: set) -> list
 def sample_phrase_chords(chain: dict, slots: list, cadence: str, mode: str, tag: str, prev_state: str | None = None) -> dict:
     """slots = [(bar, beat, repeat_allowed)]; returns the chord per slot, the backward messages' reachability and the realized cadence."""
     states = chain["states"]
-    P_seg = seg_matrix(chain)
+    P_seg, mask_info = resolvable_matrix(seg_matrix(chain))
     mats = [slot_matrix(chain, P_seg, rep) for (_b, _bt, rep) in slots]
     penult, final = cadence_targets(cadence, states, mode)
     beta = backward_messages(mats, states, penult, final)
@@ -118,7 +142,8 @@ def sample_phrase_chords(chain: dict, slots: list, cadence: str, mode: str, tag:
     realized = classify_cadence(seq[-2] if len(seq) > 1 else prev_state, seq[-1], states, mode)
     return {"chords": seq, "slots": [{"bar": b, "beat": bt, "state": s, "repeat_allowed": rep} for (b, bt, rep), s in zip(slots, seq)],
             "cadence_planned": cadence, "cadence_realized": realized, "cadence_ok": realized == cadence, "conditioning_ok": ok,
-            "targets": {"penultimate": sorted(penult), "final": sorted(final)}, "beta0_mass": round(sum(w0.values()), 9)}
+            "targets": {"penultimate": sorted(penult), "final": sorted(final)}, "beta0_mass": round(sum(w0.values()), 9),
+            "seventh_mask": {k: v for k, v in mask_info.items() if k != "rows_kept_unmasked"} | {"n_rows_kept_unmasked": len(mask_info["rows_kept_unmasked"])}}
 
 
 def beat_chords(slot_records: list, n_bars: int, start_bar: int = 0) -> list:

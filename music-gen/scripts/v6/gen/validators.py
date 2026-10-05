@@ -18,7 +18,7 @@ from scripts.v6.gen.voicing import chord_tones, crossings, parallel_perfects, un
 CAPS = {
     "parallel_fifths": {"op": "<=", "cap": 1, "per": "per_64_bars", "doc": "parallel perfect 5ths between keys voices, bass-keys and bass-melody pairs"},
     "parallel_octaves": {"op": "<=", "cap": 1, "per": "per_64_bars", "doc": "parallel octaves/unisons, same pairs"},
-    "unresolved_sevenths": {"op": "<=", "cap": 2, "per": "song", "doc": "chord 7th in a keys voice not held or resolved down by step at a chord change"},
+    "unresolved_sevenths": {"op": "<=", "cap": 2, "per": "song", "doc": "at a chord change, a keys voice on the chord 7th that is neither RETAINED (its pitch still sounds in the next voicing: a common tone, hence a chord tone of the next chord) nor moved DOWN BY STEP (1-2 semitones); voicing.unresolved_sevenths is the single definition used by the DP cost, this validator and the stage-1 harmony mask (harmony.resolvable_matrix / voicing.seventh_resolvable)"},
     "leading_tone_unresolved_at_cadence": {"op": "<=", "cap": 1, "per": "song", "doc": "degree 7 (major) in keys or melody at a phrase's final transition not moving to the tonic"},
     "melodic_leaps_unresolved": {"op": "<=", "cap": 2, "per": "per_64_bars", "doc": "melody leap > 5 semitones not followed by a step in the opposite direction"},
     "melody_range_violations": {"op": "==", "cap": 0, "per": "song", "doc": "phrases whose melody range exceeds 12 semitones"},

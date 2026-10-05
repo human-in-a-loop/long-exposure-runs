@@ -128,3 +128,25 @@ def _run_all() -> int:
 
 if __name__ == "__main__":
     sys.exit(_run_all())
+
+
+def test_06_seventh_mask_zeroes_only_unresolvable_changes_and_keeps_rows_stochastic() -> None:
+    """Phase 5: resolvable_matrix removes exactly the changes voicing.seventh_resolvable rejects and renormalises."""
+    from scripts.v6.gen.common import seg_matrix
+    from scripts.v6.gen.voicing import seventh_resolvable
+    P = seg_matrix(FX["chain"])
+    M, info = H.resolvable_matrix(P)
+    assert set(M) == set(P) and info["n_zeroed"] >= 0
+    for s, row in M.items():
+        assert abs(sum(row.values()) - 1.0) < 1e-9, s
+        for t, p in row.items():
+            if not seventh_resolvable(s, t) and s not in info["rows_kept_unmasked"]:
+                assert p == 0.0, (s, t)
+            elif P[s][t] == 0.0:
+                assert p == 0.0
+    r = H.sample_phrase_chords(FX["chain"], H.phrase_slots([2, 2, 2, 2], 0), "authentic", "major", "test|mask")
+    assert "seventh_mask" in r and r["conditioning_ok"]
+    for a, b in zip(r["chords"], r["chords"][1:]):
+        assert seventh_resolvable(a, b), (a, b)
+    print(f"test_06 PASS: seventh mask zeroed {info['n_zeroed']} transitions, rows stochastic, sampled changes all resolvable")
+

@@ -32,10 +32,13 @@ def test_01_candidates_cover_the_chord_in_register() -> None:
     for st in ("0:maj", "2:min", "7:7", "0:maj7", "7:9", "5:sus"):
         cands = VO.candidates(st, 0)
         assert cands, st
-        req = set(VO.chord_tones(st, 0)["pcs"])
+        ct = VO.chord_tones(st, 0)
+        allowed = [set(ct["pcs"])] + [set(a) for a in ct["alt_pcs"]]
         for v in cands:
-            assert len(v) == 4 and all(VO.KEYS_LO <= p <= VO.KEYS_HI for p in v) and {p % 12 for p in v} == req and list(v) == sorted(v)
+            assert len(v) == 4 and all(VO.KEYS_LO <= p <= VO.KEYS_HI for p in v) and {p % 12 for p in v} in allowed and list(v) == sorted(v)
     assert VO.chord_tones("7:9", 0)["pcs"] == [7, 11, 5, 9], "9 chord drops the 5th: root, 3rd, 7th, 9th"
+    assert VO.chord_tones("7:9", 0)["alt_pcs"] == [[11, 2, 5, 9]], "Phase 5: rootless 3-5-7-9 alternative (bass carries the root)"
+    assert any({p % 12 for p in v} == {11, 2, 5, 9} for v in VO.candidates("7:9", 0))
     assert VO.candidates("N", 0) == []
     print("test_01 PASS: candidates cover the chord tones, 4 strictly ascending voices in 52..79")
 
@@ -72,6 +75,14 @@ def test_03_validators_detect_hand_made_parallels_sevenths_crossings() -> None:
     assert V.unresolved_sevenths(song7) == 1, V.unresolved_sevenths(song7)
     song7ok = _song_with_voicings(["7:7", "0:maj"], [(55, 59, 62, 65), (55, 60, 64, 64 + 0)])
     assert V.unresolved_sevenths(song7ok) == 0
+    # Phase 5 semantics: a 7th RETAINED as a common tone is resolved (Em7's D held into G9, rootless 3-5-7-9 voicing)
+    song7held = _song_with_voicings(["4:min7", "7:9"], [(52, 55, 59, 62), (53, 57, 59, 62)])
+    assert V.unresolved_sevenths(song7held) == 0, V.unresolved_sevenths(song7held)
+    # ... even when the retained pitch sits in another voice; a 7th jumping away is unresolved
+    song7other = _song_with_voicings(["4:min7", "7:9"], [(52, 55, 59, 62), (57, 59, 62, 65)])
+    assert V.unresolved_sevenths(song7other) == 0
+    assert VO.seventh_resolvable("0:maj7", "7:sus") is False and VO.seventh_resolvable("0:maj7", "7:7") is True and VO.seventh_resolvable("4:min7", "7:9") is True
+    assert VO.seventh_resolvable("7:7", "0:maj") is True and VO.seventh_resolvable("0:7", "0:maj") is False and VO.seventh_resolvable("N", "0:maj") is True
     # crossing: top voice drops below the previous alto
     songx = _song_with_voicings(["0:maj", "5:maj"], [(60, 64, 67, 72), (53, 57, 60, 65)])
     assert V.voice_crossing(songx) >= 1

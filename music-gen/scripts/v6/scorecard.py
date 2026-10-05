@@ -5,7 +5,7 @@ apply the Phase-1A gates, write scorecard.json + SCORECARD.md.
 created: 2026-10-04
 milestone: M-V6-SCORECARD-1B
 
-    scorecard.py --candidates <dir|files...> --reference corpus|musdb|<dir> --name <run_name>
+    scorecard.py --candidates <dir|files...> --reference corpus|corpus_accomp|musdb|<dir> --name <run_name>
                  [--backbones clap,mert] [--stems] [--gates data/v6/scorecard/gates_v6.json]
     scorecard.py --derive-gates          # (re)write gates_v6.json from the real-vs-real baseline
 
@@ -15,7 +15,9 @@ Pipeline per run:
      "mix" candidates; with --stems the drums/bass/other ones are scored against the MUSDB18 train
      stems with CLAP ("timbre by instrument"), otherwise they are listed as ignored.
   2. embed candidates (embed_audio.embed_files, sha-cached under data/v6/embeddings/).
-  3. resolve the reference: `corpus` = the 29 rated songs (ingest receipts), `musdb` = MUSDB18
+  3. resolve the reference: `corpus` = the 29 rated songs (ingest receipts), `corpus_accomp` = their
+     vocal-free accompaniment (drums+bass+other, corpus_accompaniment_v6.py; the FAIR reference for an
+     instrumental generator, with its own gates under gates_v6.json["references"]["corpus_accomp"]), `musdb` = MUSDB18
      accompaniment wavs from data/v6/public/musdb18/manifest.json (--musdb-split all|train|test),
      or any directory/file list of audio. Reference songs whose sha16 is also a candidate are
      EXCLUDED (so a half-corpus can be scored against the other half) and the exclusion recorded.
@@ -76,6 +78,7 @@ DEFAULT_BASELINE_SUMMARY = SCORECARD_DIR / "baseline_real_vs_real" / "summary.js
 DEFAULT_DESCRIPTOR_CACHE = _WS / "data" / "v6" / "descriptors"
 DEFAULT_RECEIPTS = _WS / "corpus" / "ratings" / "ingest_receipts.jsonl"
 DEFAULT_MUSDB_MANIFEST = _WS / "data" / "v6" / "public" / "musdb18" / "manifest.json"
+DEFAULT_ACCOMP_MANIFEST = _WS / "data" / "v6" / "public" / "corpus_accomp" / "manifest.json"
 STEM_KINDS = ("drums", "bass", "other")
 STEM_LIKE = STEM_KINDS + ("vocals",)
 NOVELTY_MAX_COS = {"clap": 0.985, "mert": 0.995}  # operator-chosen, above the real-vs-real ceiling
@@ -158,6 +161,16 @@ def load_gates(path: Path) -> dict:
     if gates.get("schema_version") != GATES_SCHEMA_VERSION:
         raise ValueError(f"gates schema {gates.get('schema_version')!r} != {GATES_SCHEMA_VERSION}")
     return gates
+
+
+def gates_for_reference(gates: dict, reference: str) -> tuple[dict, str]:
+    """Per-backbone gate blocks for `reference`: gates["references"][<name>]["backbones"] when that
+    reference has its own split-half floor (corpus_accomp), else the top-level full-mix corpus floor.
+    Returns (backbones_dict, key_used)."""
+    ref = (gates.get("references") or {}).get(reference)
+    if ref and ref.get("backbones"):
+        return ref["backbones"], f"references.{reference}"
+    return gates["backbones"], "backbones"
 
 
 def apply_gates(flat: dict, gates_bb: dict, novelty_flagged: int = 0) -> dict:
@@ -289,10 +302,18 @@ def resolve_musdb(manifest_path: Path, split: str = "all", stem: str = "accompan
     return items
 
 
+def resolve_corpus_accomp(manifest_path: Path) -> list[RefItem]:
+    from scripts.v6.corpus_accompaniment_v6 import reference_items
+    return [RefItem(path=it["path"], sha16=it["sha16"], label=it["label"]) for it in reference_items(manifest_path)]
+
+
 def resolve_reference(spec: str, args) -> tuple[list[RefItem], dict]:
     if spec == "corpus":
         items = resolve_corpus(Path(args.receipts), tuple(int(b) for b in args.bands.split(",")))
         info = {"spec": spec, "receipts": str(args.receipts), "bands": args.bands}
+    elif spec == "corpus_accomp":
+        items = resolve_corpus_accomp(Path(args.accomp_manifest))
+        info = {"spec": spec, "manifest": str(args.accomp_manifest), "stems": "drums+bass+other (no vocals)"}
     elif spec == "musdb":
         items = resolve_musdb(Path(args.musdb_manifest), args.musdb_split)
         info = {"spec": spec, "manifest": str(args.musdb_manifest), "split": args.musdb_split, "stem": "accompaniment"}
@@ -471,7 +492,7 @@ def render_markdown(sc: dict) -> str:
          f"Candidates: {sc['candidates']['n_files']} mix files ({sc['candidates']['n_songs_scored']} with windows); "
          f"reference `{sc['reference']['info']['spec']}`: {sc['reference']['n_files']} files"
          + (f", {len(sc['reference']['excluded_overlap'])} excluded as candidate overlap" if sc["reference"]["excluded_overlap"] else "")
-         + f". Gates: `{sc['gates']['path']}` (sha16 {sc['gates']['sha16']}). Seed {sc['params']['seed']}, k={sc['params']['k']}, bootstrap {sc['params']['bootstrap']}.", ""]
+         + f". Gates: `{sc['gates']['path']}` (sha16 {sc['gates']['sha16']}, key `{sc['gates'].get('key', 'backbones')}`). Seed {sc['params']['seed']}, k={sc['params']['k']}, bootstrap {sc['params']['bootstrap']}.", ""]
     for bb, block in sc["backbones"].items():
         L += [f"## {bb} (d={block['dim']}; candidates {block['n_songs_a']} songs / {block['n_windows_a']} windows; "
               f"reference {block['n_songs_b']} songs / {block['n_windows_b']} windows) — **{block['verdict']}**", ""]
@@ -552,10 +573,11 @@ def run(args, log=print) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     gates_path = Path(args.gates)
     gates = load_gates(gates_path)
+    gates_bbs, gates_key = gates_for_reference(gates, args.reference)
     backbones = [b.strip() for b in args.backbones.split(",") if b.strip()]
     for bb in backbones:
-        if bb not in gates["backbones"]:
-            raise KeyError(f"gates file has no backbone {bb!r}")
+        if bb not in gates_bbs:
+            raise KeyError(f"gates file has no backbone {bb!r} under {gates_key}")
 
     disc = discover_candidates(args.candidates)
     cand_paths = disc["mix"]
@@ -574,7 +596,8 @@ def run(args, log=print) -> dict:
     sc = {"schema_version": SCHEMA_VERSION, "name": args.name, "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
           "params": {"seed": args.seed, "k": args.k, "bootstrap": args.bootstrap, "subsets": args.subsets,
                      "backbones": backbones, "stems": bool(args.stems)},
-          "gates": {"path": str(gates_path), "sha16": sha16_of(sha256_file(gates_path)), "schema_version": gates["schema_version"]},
+          "gates": {"path": str(gates_path), "sha16": sha16_of(sha256_file(gates_path)), "schema_version": gates["schema_version"],
+                    "key": gates_key},
           "candidates": {"inputs": [str(p) for p in args.candidates], "n_files": len(cand_paths),
                          "files": [dict(c) for c in cand_items], "ignored": disc["ignored"], "dropped": {}},
           "reference": {"info": ref_info, "n_files_total": len(ref_items_all), "n_files": len(ref_items),
@@ -589,7 +612,7 @@ def run(args, log=print) -> dict:
         if not cands or not refs:
             raise ValueError(f"[{bb}] empty candidate ({len(cands)}) or reference ({len(refs)}) set after embedding")
         n_scored = len(cands)
-        block, _ = score_backbone(cands, refs, bb, gates["backbones"][bb], out_dir, args)
+        block, _ = score_backbone(cands, refs, bb, gates_bbs[bb], out_dir, args)
         block["dropped_reference"] = dropped_r
         sc["backbones"][bb] = block
         log(f"[{bb}] {block['verdict']} " + " ".join(f"{m}={_f(r['value'])}:{r['verdict']}" for m, r in block["metrics"].items()))
@@ -641,7 +664,7 @@ def run(args, log=print) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--candidates", nargs="+", help="audio files and/or directories (dirs recurse)")
-    ap.add_argument("--reference", help="corpus | musdb | <dir or comma-separated files>")
+    ap.add_argument("--reference", help="corpus | corpus_accomp | musdb | <dir or comma-separated files>")
     ap.add_argument("--name", help="run name -> data/v6/scorecard/runs/<name>/")
     ap.add_argument("--backbones", default="clap,mert")
     ap.add_argument("--stems", action="store_true", help="score drums/bass/other stems vs MUSDB18 train stems (CLAP)")
@@ -655,6 +678,7 @@ def main(argv=None) -> int:
     ap.add_argument("--receipts", default=str(DEFAULT_RECEIPTS))
     ap.add_argument("--bands", default="4,5,7")
     ap.add_argument("--musdb-manifest", default=str(DEFAULT_MUSDB_MANIFEST))
+    ap.add_argument("--accomp-manifest", default=str(DEFAULT_ACCOMP_MANIFEST))
     ap.add_argument("--musdb-split", default="all", choices=["all", "train", "test"])
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--subsets", type=int, default=50)
