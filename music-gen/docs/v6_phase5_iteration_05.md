@@ -74,7 +74,54 @@ Mix descriptors in the fair (22.05 kHz mono) domain now sit ON the reference: LU
 
 ### 5.1 Scorecards (thresholds in parentheses; `*_fmt` = fair mode, the primary gate)
 
-PENDING_SCORE_TABLE
+Runs: `data/v6/scorecard/runs/iteration_0{4,5}_corpus_vs_corpus_accomp_fmt` (primary), `..._vs_corpus_accomp`, `..._vs_corpus`; archived under
+`docs/scorecards/`. Bold = gate metrics. Every gate FLAGs in every run of both iterations; novelty PASSes everywhere (no copying).
+
+| reference / backbone / metric | iteration 04 | iteration 05 | change | threshold | verdict 05 |
+|---|---|---|---|---|---|
+| vs corpus_accomp FMT / clap / **kid_song** | 0.0007987 | 0.001208 | +51 % | 9.75e-05 | FLAG |
+| vs corpus_accomp FMT / clap / **c2st** | 0.9256 | 0.9527 | +3 % | 0.61 | FLAG |
+| vs corpus_accomp FMT / clap / **coverage** | 0.2212 | 0.1578 | -29 % | > 0.492 | FLAG |
+| vs corpus_accomp FMT / clap / density | 2.455 | 1.381 | -44 % | - | INFO |
+| vs corpus_accomp FMT / clap / fad | 0.2715 | 0.3369 | +24 % | - | INFO |
+| vs corpus_accomp FMT / clap / kNN-real | 0.006553 | 0.004276 | -35 % | - | INFO |
+| vs corpus_accomp FMT / clap / novelty_max_cos | 0.951 | 0.9485 | -0 % | 0.985 | PASS |
+| vs corpus_accomp FMT / mert / **kid_song** | 0.005829 | 0.005381 | -8 % | 0.000717 | FLAG |
+| vs corpus_accomp FMT / mert / **c2st** | 0.9259 | 0.9266 | +0 % | 0.57 | FLAG |
+| vs corpus_accomp FMT / mert / **coverage** | 0.3136 | 0.3156 | +1 % | > 0.603 | FLAG |
+| vs corpus_accomp FMT / mert / density | 1.457 | 1.143 | -22 % | - | INFO |
+| vs corpus_accomp FMT / mert / fad | 9.404 | 9.03 | -4 % | - | INFO |
+| vs corpus_accomp FMT / mert / kNN-real | 0.007767 | 0.01948 | +151 % | - | INFO |
+| vs corpus_accomp FMT / mert / novelty_max_cos | 0.9819 | 0.9811 | -0 % | 0.995 | PASS |
+| vs corpus_accomp (unmatched) / clap / **kid_song** | 0.001361 | 0.001872 | +38 % | 9.75e-05 | FLAG |
+| vs corpus_accomp (unmatched) / clap / **c2st** | 0.9835 | 0.99 | +1 % | 0.61 | FLAG |
+| vs corpus_accomp (unmatched) / clap / **coverage** | 0.08477 | 0.04273 | -50 % | > 0.492 | FLAG |
+| vs corpus_accomp (unmatched) / clap / density | 0.1604 | 0.0715 | -55 % | - | INFO |
+| vs corpus_accomp (unmatched) / clap / fad | 0.3759 | 0.4521 | +20 % | - | INFO |
+| vs corpus_accomp (unmatched) / clap / kNN-real | 0.001699 | 0.003563 | +110 % | - | INFO |
+| vs corpus_accomp (unmatched) / clap / novelty_max_cos | 0.9333 | 0.9304 | -0 % | 0.985 | PASS |
+| vs corpus_accomp (unmatched) / mert / **kid_song** | 0.006435 | 0.005736 | -11 % | 0.000717 | FLAG |
+| vs corpus_accomp (unmatched) / mert / **c2st** | 0.9313 | 0.9312 | -0 % | 0.57 | FLAG |
+| vs corpus_accomp (unmatched) / mert / **coverage** | 0.2853 | 0.2901 | +2 % | > 0.603 | FLAG |
+| vs corpus_accomp (unmatched) / mert / density | 1.258 | 1.017 | -19 % | - | INFO |
+| vs corpus_accomp (unmatched) / mert / fad | 9.664 | 9.204 | -5 % | - | INFO |
+| vs corpus_accomp (unmatched) / mert / kNN-real | 0.006553 | 0.01686 | +157 % | - | INFO |
+| vs corpus_accomp (unmatched) / mert / novelty_max_cos | 0.9812 | 0.981 | -0 % | 0.995 | PASS |
+| vs corpus (unmatched) / clap / **kid_song** | 0.001662 | 0.002178 | +31 % | 0.000199 | FLAG |
+| vs corpus (unmatched) / clap / **c2st** | 0.9306 | 0.9528 | +2 % | 0.67 | FLAG |
+| vs corpus (unmatched) / clap / **coverage** | 0.1741 | 0.1378 | -21 % | > 0.467 | FLAG |
+| vs corpus (unmatched) / clap / density | 4.168 | 3.384 | -19 % | - | INFO |
+| vs corpus (unmatched) / clap / fad | 0.4767 | 0.5547 | +16 % | - | INFO |
+| vs corpus (unmatched) / clap / kNN-real | 0.002913 | 0.0019 | -35 % | - | INFO |
+| vs corpus (unmatched) / clap / novelty_max_cos | 0.9373 | 0.9411 | +0 % | 0.985 | PASS |
+| vs corpus (unmatched) / mert / **kid_song** | 0.005126 | 0.005055 | -1 % | 0.000851 | FLAG |
+| vs corpus (unmatched) / mert / **c2st** | 0.9746 | 0.9769 | +0 % | 0.55 | FLAG |
+| vs corpus (unmatched) / mert / **coverage** | 0.1371 | 0.1193 | -13 % | > 0.555 | FLAG |
+| vs corpus (unmatched) / mert / density | 0.382 | 0.2081 | -46 % | - | INFO |
+| vs corpus (unmatched) / mert / fad | 7.666 | 7.459 | -3 % | - | INFO |
+| vs corpus (unmatched) / mert / kNN-real | 0.01019 | 0.02043 | +100 % | - | INFO |
+| vs corpus (unmatched) / mert / novelty_max_cos | 0.9821 | 0.9816 | -0 % | 0.995 | PASS |
+
 
 ### 5.2 Diagnostics re-run on iteration 05
 
