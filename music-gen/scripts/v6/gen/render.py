@@ -12,7 +12,6 @@ bass/drums, -22 dBFS for keys/melody; gain clipped to [0.05, 4]; 16-bit stereo P
 """
 from __future__ import annotations
 
-import struct
 import wave
 from pathlib import Path
 
@@ -41,7 +40,11 @@ def write_wav_int16(path: Path, data: np.ndarray, sr: int) -> None:
         a = np.stack([a, a], axis=-1)
     a = np.clip(a, -1.0, 1.0)
     ai = np.round(a * 32767.0).astype(np.int16)
-    raw = struct.pack("<" + "h" * ai.size, *ai.reshape(-1).tolist())
+    # Phase 5: little-endian int16 bytes straight from numpy. The previous struct.pack("<" + "h" * n, *samples) built a unique
+    # ~14-million-char format string per file and the struct module CACHES every distinct compiled format (up to 100), so each
+    # rendered mix retained ~27 MB x 4 objects per song for the life of the process (0.5 GB/song; the 13 GB OOM of iteration 03).
+    # Byte-identical output (tests/test_v6_render_memory.py proves it against the struct form).
+    raw = ai.astype("<i2", copy=False).tobytes()
     with wave.open(str(path), "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
