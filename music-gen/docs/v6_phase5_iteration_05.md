@@ -21,7 +21,7 @@ verbatim to `scorecard_descriptors.py` (scorecard.py 709 -> 667 lines). Tests: `
 | 3 | per-stem: **drums** | kid 0.00148 vs 2.0e-04; c2st 0.98; +4.5 dB > 4 kHz, harmonic/percussive +5.6 dB, RMS +2.9 dB | 7.3x |
 | 4 | **homogeneity** (set level) | candidate song-mean spread 0.093 vs 0.215 (clap), 0.019 vs 0.038 (mert); 5th-percentile candidate pair cosine above the median real pair; LUFS sd 0.55 vs 3.4 LU, 24/29 bop kits, 12/29 one piano | spread ratio **0.43 / 0.50** (rule: < 0.60 confirms) |
 | 5 | **tonal balance / dynamics** (what the classifier hears) | LDA score AUC 1.000; top descriptors: > 4 kHz share +5.95 dB (d 0.98), zcr +50 % (d 1.03), rolloff +945 Hz, centroid +391 Hz, within-window dynamic range -7.9 dB (d -0.62), crest -1 dB; the iteration-04 tilt steer sat 4-6 dB short of the band target (shelf saturated at -2.5 dB) | d 0.6-1.0 |
-| 6 | mix chain as such (oracle: real stems through our chain) | PENDING_ORACLE_SUMMARY | PENDING_ORACLE_EFFECT |
+| 6 | mix chain as such (oracle: real stems through our chain) | real stems re-mixed through `mix.mix_song` vs corpus_accomp, split protocol: kid 0.57x the CLAP floor p97.5 / 0.30x MERT; c2st 0.642 (gate 0.61, marginal) / 0.497; coverage 0.65 vs 0.72 / 0.79 vs 0.78 -> **PASS on both backbones**: the chain is not the gap | within the floor |
 
 Format matching alone removed 41 % of the CLAP kid (0.001361 -> 0.000799) and 9 % of the MERT kid (0.006435 -> 0.005829);
 both backbones stay FLAG on every gate at ~8x their floor.

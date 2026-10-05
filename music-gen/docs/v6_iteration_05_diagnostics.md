@@ -119,8 +119,38 @@ the split protocol oracle(half A) vs real(half B) on the same 10 deterministic s
 verdict: the chain is a gap (FLAG) when the oracle's mean kid_song exceeds the real-vs-real p97.5 over these splits AND its
 mean c2st exceeds the corpus_accomp gate (0.61 clap / 0.57 mert).
 
-PENDING_ORACLE_TABLE
+| backbone | oracle kid (mean of 10 splits) | real-vs-real kid mean | real p97.5 | kid ratio | oracle c2st | real c2st | c2st gate | oracle coverage | real coverage | oracle kNN-real | real kNN-real | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| clap | 0.000128 | 2.57e-05 | 0.000223 | 0.57 | 0.642 | 0.535 | 0.61 | 0.652 | 0.720 | 0.317 | 0.456 | **PASS** |
+| mert | 0.000446 | 5.58e-05 | 0.00151 | 0.30 | 0.497 | 0.462 | 0.57 | 0.788 | 0.783 | 0.438 | 0.514 | **PASS** |
+
+The chain PASSES on both backbones: real stems through our mix chain stay inside the real-vs-real noise floor on kid_song (0.57x
+the CLAP p97.5, 0.30x the MERT p97.5) and coverage (0.65 vs 0.72 clap, 0.79 vs 0.78 mert); the only mark against it is the CLAP
+c2st of 0.642, marginally above the 0.61 gate (the floor's mean on these splits is 0.535), i.e. a kNN classifier can tell the
+re-mixed real stems from the originals slightly better than chance — the gain staging to fixed per-role RMS targets, the limiter
+and the -12 LUFS target leave a small CLAP-visible trace, but nothing of the size of the 8x gap. The mix chain is not where the
+distance lives; the generated MUSIC (what is in the stems) is.
+
+Oracle masters: LUFS -12.1 (target -12), tilt shelf -0.5..-3 dB, per-role gains recorded in `oracle_mixes.json` (scratch).
 
 ## 5. Ranked gaps
 
-PENDING_RANKING
+Effect sizes are each gap's own pre-registered statistic; they are not on one scale, so the order below weighs size against how
+cleanly the gap is attributable to the generator (bleed caveat for the per-stem rows, format confound removed by `_fmt`).
+
+| rank | gap | effect size | attributable to | actionable knob |
+|---|---|---|---|---|
+| 1 | **other** group (keys + comp + melody + pad) far from the real "other" stem: too sparse (onset rate 2.6 vs 4.1 Hz), too sustained (H/P +4.8 dB), no low-mid body (-5 dB < 250 Hz), too loud (+4.8 dB) | kid 39x floor; c2st 0.994; coverage 0.03; descriptor d 0.8-1.3 | composer / derived parts (arrangement density, register), partly the renderer (patches) | comping density, more layers, register |
+| 2 | **homogeneity**: generated songs are twice as alike as real songs | spread ratio 0.43 (clap) / 0.50 (mert) vs the 0.60 rule; descriptor sd 3-6x smaller | renderer draws (one kit family, one target loudness, one room) + composer (one comping style) | per-song texture draws |
+| 3 | **tonal balance / dynamics**: +6 dB above 4 kHz, zcr +50 %, within-window dynamic range -7.9 dB | LDA AUC 1.000; d 0.6-1.0; tilt steer 4-6 dB short of target | renderer (tilt steer saturated; bright patches) + arrangement (no quiet moments) | tilt steer strength / cap, per-song loudness |
+| 4 | **bass** group | kid 12.9x; c2st 1.000 | partly Demucs bleed (clean stem vs separated stem); the real bass also carries upper harmonics / string noise ours lacks | bass patch pool / amp-style harmonics (not acted on) |
+| 5 | **drums** group: too tonal, too bright, too loud | kid 7.3x; H/P +5.6 dB; > 4 kHz +4.5 dB | one-shot kits in silence vs room / bleed; bop kits on 24/29 songs | kit family draw (acted on), kit processing (not acted on) |
+| 6 | mix chain itself | oracle PASS (kid 0.57x / 0.30x the floor; clap c2st 0.642 vs gate 0.61 marginal) | - | none needed |
+
+Acted on in iteration 05 (section 5 pre-registration, written before the iteration-05 render): Change 1 = homogeneity (rank 2;
+kit family drawn first, per-song loudness target from the band's corpus LUFS list, per-song room / return); Change 2 = tonal
+balance + "other" density (ranks 3 and 1: tilt steer at full strength with a 6 dB cap; comping guitar on 70 % of songs with 70 %
+of the keys onset groups, percussion on 40 %). Expectations recorded with each change: distinct kits >= 10 and jazz share <= 50 %,
+candidate LUFS sd >= 1.2 LU, CLAP spread ratio >= 0.55; master tilt within 2 dB of the band target, > 4 kHz gap shrinking toward
++2 dB, "other" onset rate toward >= 3.2 Hz. Not acted on: bass realism (confounded), drum-kit processing, register / layer count
+of the "other" group beyond the comping density (next iteration).
