@@ -117,7 +117,11 @@ def expression_ccs(notes: list, role: str, patch: dict, bpm: float, plan: dict |
             if role == "pad":
                 _ramp(ccs, 1, t0, t1 - 0.02, 0, 40, step * 2)
                 info["cc1_sweeps"] += 1
-    if role == "keys" and inv in PEDAL_INVENTORY:
+    # CC64 only for sf2 backends: sfizz_render does not terminate when the Salamander V3 pedal regions are driven by CC64
+    # (verified 2026-10-05: identical MIDI without CC64 renders in 16 s; with CC64 it ran past 30 min). sfz pianos get their
+    # sustain from note durations instead (comping notes already last to the next onset).
+    info["cc64_suppressed_for_backend"] = patch.get("backend") if (role == "keys" and inv in PEDAL_INVENTORY and patch.get("backend") != "sf2") else None
+    if role == "keys" and inv in PEDAL_INVENTORY and patch.get("backend") == "sf2":
         ts = [t for t in _chord_times(plan, notes, bpm) if t < song_len_s] + [song_len_s]
         ends = {}
         for n in notes:

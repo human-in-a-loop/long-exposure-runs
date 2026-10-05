@@ -63,8 +63,11 @@ def test_01_velocity_curve_widens_range_without_clipping() -> None:
 def test_02_cc_expression_per_role() -> None:
     plan = json.loads((SONG / "plan.json").read_text()) if SONG.exists() else None
     notes = _keys_notes()
-    ccs, info = expression.expression_ccs(notes, "keys", {"inventory_role": "piano"}, BPM, plan, 76.8)
+    ccs, info = expression.expression_ccs(notes, "keys", {"inventory_role": "piano", "backend": "sf2"}, BPM, plan, 76.8)
     assert info["cc64_pedal_downs"] > 10 and all(c == 64 for _, c, _ in ccs)
+    # sfz pianos get NO pedal (sfizz_render non-termination with CC64 on Salamander V3, 2026-10-05); sustain comes from durations
+    ccs_s, info_s = expression.expression_ccs(notes, "keys", {"inventory_role": "piano", "backend": "sfz"}, BPM, plan, 76.8)
+    assert info_s["cc64_pedal_downs"] == 0 and not any(c == 64 for _, c, _ in ccs_s) and info_s["cc64_suppressed_for_backend"] == "sfz"
     downs = [t for t, c, v in ccs if v == 127]
     ups = [t for t, c, v in ccs if v == 0]
     assert len(downs) == len(ups) and all(u > d for d, u in zip(downs, ups))

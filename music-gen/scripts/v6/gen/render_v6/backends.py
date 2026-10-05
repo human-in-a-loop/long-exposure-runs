@@ -50,13 +50,61 @@ def midi_channel_for(patch: dict, role: str = "") -> int:
     return 9 if (patch.get("backend") == "sf2" and int(patch.get("bank") or 0) == 128) else 0
 
 
+def _midi_length_s(midi_path: Path) -> float:
+    import mido
+    return float(mido.MidiFile(str(midi_path)).length)
+
+
+def _strip_cc(midi_path: Path, out_path: Path, controls: set) -> None:
+    import mido
+    f = mido.MidiFile(str(midi_path))
+    g = mido.MidiFile(ticks_per_beat=f.ticks_per_beat, type=f.type)
+    for tr in f.tracks:
+        nt, acc = mido.MidiTrack(), 0
+        for m in tr:
+            acc += m.time
+            if m.type == "control_change" and m.control in controls:
+                continue
+            nt.append(m.copy(time=acc)); acc = 0
+        g.tracks.append(nt)
+    g.save(str(out_path))
+
+
+def _run_guarded(cmd: list, out_wav: Path, max_bytes: int, max_wall_s: float) -> tuple:
+    """Run a renderer, killing it if the output file outgrows the MIDI-implied size or the wall budget (runaway guard)."""
+    env = dict(os.environ, LC_ALL="C", OMP_NUM_THREADS="1")
+    t0 = time.time()
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
+    while True:
+        try:
+            out, err = proc.communicate(timeout=0.5)
+            return proc.returncode, out, err, False
+        except subprocess.TimeoutExpired:
+            size = out_wav.stat().st_size if out_wav.exists() else 0
+            if size > max_bytes or (time.time() - t0) > max_wall_s:
+                proc.kill(); proc.communicate()
+                return -9, "", f"runaway: size={size} max_bytes={max_bytes} wall={time.time() - t0:.0f}s max_wall={max_wall_s:.0f}s", True
+
+
 def render_sfz(sfz: str, midi_path: Path, out_wav: Path, sample_rate: int) -> list:
     if shutil.which("sfizz_render") is None:
         raise RuntimeError("sfizz_render not on PATH")
+    length = _midi_length_s(midi_path)
+    max_bytes = int((length + 60.0) * sample_rate * 2 * 4 * 1.5)  # float32 stereo worst case + 60 s tail, 1.5x slack
+    max_wall = max(300.0, 8.0 * length)
     cmd = ["sfizz_render", "--sfz", str(sfz), "--midi", str(midi_path), "--wav", str(out_wav), "--samplerate", str(sample_rate)]
-    r = _run(cmd)
-    if r.returncode != 0 or not out_wav.exists():
-        raise RuntimeError(f"sfizz_render rc={r.returncode}: {(r.stderr or r.stdout)[-600:]}")
+    rc, so, se, runaway = _run_guarded(cmd, out_wav, max_bytes, max_wall)
+    if runaway:
+        # retry once with the sustain pedal stripped (known sfizz/Salamander non-termination with CC64)
+        stripped = midi_path.with_name(midi_path.stem + ".nocc64.mid")
+        _strip_cc(midi_path, stripped, {64})
+        out_wav.unlink(missing_ok=True)
+        cmd = ["sfizz_render", "--sfz", str(sfz), "--midi", str(stripped), "--wav", str(out_wav), "--samplerate", str(sample_rate)]
+        rc, so, se, runaway = _run_guarded(cmd, out_wav, max_bytes, max_wall)
+        cmd = cmd + ["#retry_without_cc64"]
+    if rc != 0 or runaway or not out_wav.exists():
+        out_wav.unlink(missing_ok=True)
+        raise RuntimeError(f"sfizz_render rc={rc} runaway={runaway}: {(se or so)[-600:]}")
     return cmd
 
 

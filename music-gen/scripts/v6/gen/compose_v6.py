@@ -40,7 +40,6 @@ MELODY_VEL = {"first": 95, "peak": 105, "last": 90, "other": 85}
 HARMONY_JUNCTION_TRIES = 4  # stage 1: re-sample a label whose first chord leaves a predecessor's 7th unresolvable (seventh_resolvable)
 JUNCTION_ITERS = 6  # voicing pass 2: re-voice every label with its neighbours' boundary chords until no voicing changes
 
-
 def generator_sha256() -> str:
     return sha_text("".join(sha_file(Path(__file__).with_name(f"{n}.py")) for n in GEN_FILES))
 
@@ -374,6 +373,7 @@ def main(argv=None) -> int:
     ap.add_argument("--bpm", default=None, help="comma-separated BPM per donor (overrides donor tempo)")
     ap.add_argument("--out", default=None, help="default data/v6/gen/iteration_NN")
     ap.add_argument("--no-render", action="store_true")
+    ap.add_argument("--skip-existing", action="store_true", help="resume: skip donors whose song dir already has ab_mix.manifest.json + validators.json")
     ap.add_argument("--keep-per-track", action="store_true")
     ap.add_argument("--prove-replay", action="store_true", help="compose + render a second time into a tempdir; assert byte identity of JSON, MIDI and WAV")
     ap.add_argument("--renderer", choices=["gm", "v6", "both"], default="gm", help="gm: Phase-2 FluidR3 shims (default, outputs unchanged); v6: realistic renderer (render_v6); both: v6 + ab_mix_gm.wav for A/B")
@@ -406,6 +406,11 @@ def main(argv=None) -> int:
     for i, donor in enumerate(donors):
         song_id = f"gen_v6_song_{i + 1}"
         bpm, bpm_src = donor_bpm(donor, i, bpms, corpus)
+        _sd = out / f"{song_id}_donor_{donor}"
+        if args.skip_existing and (_sd / "ab_mix.manifest.json").exists() and (_sd / "validators.json").exists() and (args.no_render or (_sd / "ab_mix.wav").exists()):
+            _val = per_song_val[song_id] = read_json(_sd / "validators.json"); _rp = _sd / "ab_mix.replay_proof.json"
+            rollup["songs"].append({"song_id": song_id, "donor": donor, "dir": str(_sd), "tempo_bpm": bpm, "resumed_from_disk": True, "validators_all_caps_pass": _val.get("all_caps_pass"),
+                                    "ab_mix_sha256": read_json(_sd / "ab_mix.manifest.json").get("ab_mix_sha256"), "replay_proof": read_json(_rp).get("verdict") if _rp.exists() else None}); print(f"{song_id} donor={donor} SKIP (existing output reused)"); continue
         t0 = time.time()
         res = compose_song(models, song_id, donor, args.seed, bpm, args.bars, hz)
         t_comp = round(time.time() - t0, 3)
