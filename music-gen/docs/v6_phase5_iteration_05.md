@@ -53,7 +53,54 @@ Tests: `tests/test_v6_iteration05_changes.py` (5).
 
 ## 5. Iteration 05 (seed 4, 29 donors, humanize, renderer v6, replay proofs)
 
-PENDING_ITERATION_05
+`data/v6/gen/iteration_05_corpus`: 29/29 songs composed and rendered (compose ~2 s, render 26-69 s, median 42 s), replay
+proofs 29/29 HOLD (`ab_mix.replay_proof.json`), validators 29/29 on EVERY cap (`validators_table.json`; iteration 04 was 25/29,
+the four section_repeat_integrity failures are gone with the realised-skeleton fix). All manifests carry the iteration-05 fields
+(`patch_plan.json` kit family draw, `mix_manifest.json[song_variation]`, `render_manifest.json[iteration_05]`).
+
+Pre-registered expectations of the two changes, measured on the 29 manifests:
+
+| expectation (written before the render) | iteration 04 | iteration 05 | met |
+|---|---|---|---|
+| distinct drum kits >= 10 / 29, jazz (bop / brush) share <= 50 % | 6 kits, 24/29 jazz | 10 kits (AVL Black Pearl 13, GM Room 4, GM Power 3, ...), families neutral 15 / rock 8 / jazz 6 | yes |
+| candidate LUFS sd >= 1.2 LU (per-song targets) | -12.34 ± 0.35 (44.1 kHz stereo) | -13.26 ± 1.50, targets -16.0 .. -12.0 | yes |
+| master tilt within 2 dB of the band target | 3.2 dB short on average, shelf saturated at -2.5 dB | residual +0.55 ± 0.70 dB (shelf -3.1 dB mean, 2 songs at the -6 dB cap) | yes |
+| CLAP song-mean spread ratio >= 0.55 (homogeneity rule 0.60) | 0.434 | **0.405** (mert 0.479, was 0.498) | **no — slightly worse** |
+| > 4 kHz share gap shrinking toward +2 dB | +5.95 dB | **+1.5 dB** (centroid gap +391 -> -43 Hz, rolloff +945 -> +12 Hz) | yes |
+| "other" group onset rate toward >= 3.2 Hz | 2.59 Hz | 2.72 Hz (real 4.13) | **no** |
+
+Mix descriptors in the fair (22.05 kHz mono) domain now sit ON the reference: LUFS -16.96 ± 1.48 vs -17.2 ± 3.4 (gap 0.24 LU, was
+1.0), crest 14.83 ± 1.46 vs 14.97 ± 2.24 (gap -0.14 dB, was -1.0), centroid 1699 ± 222 vs 1674 ± 444 Hz (gap +25 Hz, was +424).
+
+### 5.1 Scorecards (thresholds in parentheses; `*_fmt` = fair mode, the primary gate)
+
+PENDING_SCORE_TABLE
+
+### 5.2 Diagnostics re-run on iteration 05
+
+Discriminant descriptors (fair mode): the LDA score still separates the sets perfectly (AUC 1.000 on both backbones) but every
+descriptor that explained it in iteration 04 has collapsed: top |rho| 0.27 (was 0.45); > 4 kHz share rho 0.08 (was 0.45, gap +1.5 dB
+vs +6.0), centroid rho 0.04 (gap -43 Hz vs +391), rolloff gap +12 Hz (vs +945), zcr d 0.25 (vs 1.03). What is left: within-window
+dynamic range -6.75 dB (rho -0.27, d -0.51), mid-band share +1.8 dB (d 0.57), spectral flatness lower (d -0.52). In words: the
+spectral-balance correlates were real and were removed, and the classifier is just as sure as before — the remaining distance is
+not in low-level spectral balance.
+
+Per-stem descriptors (candidate groups vs real Demucs stems): "other" is unchanged in the properties that matter (onset rate 2.72 vs
+4.13 Hz, harmonic/percussive +5.4 dB, low share -4.8 dB) and brighter than before in its > 4 kHz share (+6.7 dB; the added
+comping guitar strums are bright); drums went from too bright to too DARK (centroid 2081 vs 3159 Hz, zcr 0.078 vs 0.186, > 4 kHz
+-1.3 dB) under the full-strength shelf while staying too tonal (H/P +6.3 dB) — the global tilt shelf fixed the mix-level number by
+pushing the drums past the target instead of darkening the "other" layer that carried the excess. Bass unchanged (confounded).
+
+PENDING_STEMS_IT05
+
+Spread: CLAP 0.405 / MERT 0.479 (CONFIRMED on both; 0.434 / 0.498 in iteration 04): kit families, loudness targets and rooms now
+vary per song, yet the songs' CLAP means are marginally MORE alike — the between-song variance ratio fell 0.95 -> 0.86. The
+diversity that a music embedding sees is not the diversity these draws add.
+
+### 5.3 Ablations (one change reverted at a time, 29 songs each, CLAP fair mode vs corpus_accomp)
+
+PENDING_ABLATIONS
+
 
 ## 6. What moved, what got worse
 
