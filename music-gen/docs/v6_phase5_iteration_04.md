@@ -123,6 +123,34 @@ growth song 2 -> 3 = 0 MB (< 150 MB cap) + the byte-identity test. Iteration 04 
 (14 songs reused). Not the culprit: CLAP (no libtorch mapped in the process: all donor timbre vectors were disk-cache
 hits), module-level memos (none in the gen modules), pedalboard objects.
 
-## 7. Scorecards
+## 7. Iteration 04 (seed 3, rebuilt chain `9ba6229c6d48…`, humanize, renderer v6, replay proofs 29/29 HOLD, 14 songs
+resumed after the OOM restart)
 
-(filled in below once the embeddings and the render land)
+Validators (`data/v6/gen/iteration_04_corpus/validators_table.json` vs iteration 03):
+
+| validator | iteration 03 pass | iteration 04 pass |
+|---|---|---|
+| parallel_fifths | 29/29 | 29/29 |
+| parallel_octaves | 28/29 | 29/29 |
+| unresolved_sevenths | 9/29 (median 3 per song) | 29/29 (median 0; no song > 0) |
+| leading_tone_unresolved_at_cadence | 29/29 | 29/29 |
+| melodic_leaps_unresolved | 29/29 | 29/29 |
+| melody_range_violations | 29/29 | 29/29 |
+| melody_strong_beat_non_chord_tones | 29/29 | 29/29 |
+| bass_root_missing_on_change | 29/29 | 29/29 |
+| cadences_realized | 29/29 | 29/29 |
+| harmonic_rhythm_realized | 29/29 | 29/29 |
+| voice_crossing | 29/29 | 29/29 |
+| section_repeat_integrity (+ skeleton twin) | 27/29 | 25/29 (songs 1, 3, 4, 17) |
+| timing_ks_max / velocity_std_min / swing_in_corpus_iqr / surface_differs | 29/29 | 29/29 |
+| songs with every cap passing | 8/29 | 25/29 |
+
+Worse: `section_repeat_integrity` 27 -> 25. Diagnosis on song 1: the label-pass repair `c_melody_skeleton` (parallel
+fifth, label B, 78 -> 74) is applied to the label content but the humanized recurrence (section 6) still carries 78, so
+`vary_recurrences` does not inherit a skeleton repair; iteration 03's two failures (songs 5, 18) mismatch with no
+skeleton repair at all. Both mechanisms live in the untouched repair/humanize path and are seed-dependent, not a Phase 5
+regression; left for the next iteration.
+
+## 8. Scorecards
+
+(filled in below once the embeddings land)
