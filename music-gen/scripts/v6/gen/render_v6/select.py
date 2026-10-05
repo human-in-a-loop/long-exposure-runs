@@ -98,6 +98,18 @@ def donor_stem_path(donor: str, stem: str, stems_root: Path = STEMS_ROOT) -> Pat
     return p if p.exists() else None
 
 
+_CLAP_BB = None
+
+
+def _clap_backbone(ea):
+    """Process-wide CLAP singleton: a fresh ClapModel per donor stem leaked ~0.45 GB per load and OOM-killed the 29-song
+    iteration at 13 GB RSS (2026-10-05)."""
+    global _CLAP_BB
+    if _CLAP_BB is None:
+        _CLAP_BB = ea.ClapBackbone()
+    return _CLAP_BB
+
+
 def donor_timbre(donor: str, stem: str, stems_root: Path = STEMS_ROOT, cache_dir: Path = DONOR_CACHE, log=print):
     """Mean-pooled unit-norm CLAP vector (3 x 10 s windows at the stem's quartiles) or None when the stem is absent."""
     import numpy as np
@@ -116,7 +128,7 @@ def donor_timbre(donor: str, stem: str, stems_root: Path = STEMS_ROOT, cache_dir
     torch.manual_seed(0)
     from scripts.v6 import embed_audio as ea
     t0 = time.time()
-    bb = ea.ClapBackbone()
+    bb = _clap_backbone(ea)
     x, dur = ea.load_mono(p, bb.sr)
     L = int(10.0 * bb.sr)
     if len(x) < L:
