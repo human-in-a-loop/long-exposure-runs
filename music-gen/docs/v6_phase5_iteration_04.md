@@ -153,4 +153,40 @@ regression; left for the next iteration.
 
 ## 8. Scorecards
 
-(filled in below once the embeddings land)
+### 8.1 `corpus_accomp` noise floor (split-half, 20 splits, 29 songs, 1451 windows per backbone)
+
+| metric | clap mean | clap [p2.5, p97.5] | mert mean | mert [p2.5, p97.5] |
+|---|---|---|---|---|
+| kid_song | 4.2e-06 | [-7.6e-05, 9.75e-05] | -1.0e-04 | [-8.6e-04, 7.17e-04] |
+| c2st_balanced_accuracy | 0.480 | [0.390, 0.606] | 0.466 | [0.372, 0.563] |
+| coverage | 0.727 | [0.493, 0.830] | 0.757 | [0.603, 0.889] |
+| density | 2.86 | [1.62, 3.98] | 2.56 | [1.28, 4.43] |
+| fad | 0.133 | [0.113, 0.165] | 7.78 | [7.28, 8.45] |
+| novelty_max_cos | 0.963 | [0.9611, 0.9638] | 0.9807 | [0.9803, 0.9809] |
+
+Gates stored under `gates_v6.json["references"]["corpus_accomp"]`: kid_song p97.5 9.75e-05 (clap) / 7.17e-04 (mert);
+c2st > 0.61 / 0.57; coverage < 0.4925 / 0.6029; novelty run threshold 0.9638 / 0.9809. KID bootstrap CI covered 0 in
+100 % of splits on both backbones. The accompaniment floor is TIGHTER than the full-mix floor (kid p97.5 1.99e-04 / 8.51e-04;
+c2st 0.67 / 0.55) — the vocal-free halves are more alike than the vocal halves.
+
+### 8.2 Iteration 03 rescored against `corpus_accomp` (side by side with the full-mix run)
+
+| metric | clap vs corpus | clap vs corpus_accomp | mert vs corpus | mert vs corpus_accomp |
+|---|---|---|---|---|
+| kid_song | 0.001856 FLAG (thr 1.99e-4) | 0.001585 FLAG (thr 9.75e-5) | 0.004465 FLAG (thr 8.5e-4) | 0.006308 FLAG (thr 7.2e-4) |
+| c2st_balanced_accuracy | 0.938 FLAG (0.67) | 0.988 FLAG (0.61) | 0.971 FLAG (0.55) | 0.943 FLAG (0.57) |
+| coverage | 0.162 FLAG (0.467) | 0.062 FLAG (0.493) | 0.158 FLAG (0.555) | 0.263 FLAG (0.603) |
+| density | 3.40 | 0.143 | 0.333 | 1.248 |
+| fad | 0.506 | 0.413 | 7.01 | 9.27 |
+| knn_real_fraction | 0.0019 | 0.0029 | 0.0109 | 0.0061 |
+| novelty_max_cos | 0.942 PASS | 0.927 PASS | 0.983 PASS | 0.982 PASS |
+
+Removing the vocals does NOT close the gap: iteration 03 is still FLAG on every gate of both backbones against its own
+instrumental reference (CLAP kid 16x the floor, MERT kid 9x; coverage 0.06 / 0.26). The generated windows still cluster
+among themselves (kNN-real ~0). Caveat on the fair reference itself: the Demucs stems are 22.05 kHz MONO, so the
+accompaniment reference is band-limited to 11 kHz (spectral centroid 1674 Hz vs the candidates' 2563 Hz and the full
+mixes' 2421 Hz), ~5 LU quieter (-17.2 LUFS) and has no stereo image; a band-limited-candidate control is in 8.4.
+
+### 8.3 Iteration 04 vs both references, and 03 vs 04
+
+(filled in below once the iteration-04 embeddings land)
