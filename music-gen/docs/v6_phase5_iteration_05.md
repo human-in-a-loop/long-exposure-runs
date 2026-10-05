@@ -138,7 +138,13 @@ comping guitar strums are bright); drums went from too bright to too DARK (centr
 -1.3 dB) under the full-strength shelf while staying too tonal (H/P +6.3 dB) — the global tilt shelf fixed the mix-level number by
 pushing the drums past the target instead of darkening the "other" layer that carried the excess. Bass unchanged (confounded).
 
-PENDING_STEMS_IT05
+| group (CLAP vs real Demucs stems) | kid 04 | kid 05 | floor p97.5 | ratio 04 | ratio 05 | c2st 04 -> 05 | coverage 04 -> 05 | kNN-real 04 -> 05 |
+|---|---|---|---|---|---|---|---|---|
+| other | 0.00202 | 0.00205 | 5.16e-05 | 39.1x | **39.8x** | 0.994 -> 0.988 | 0.027 -> 0.022 | 0.000 -> 0.006 |
+| bass | 0.0019 | 0.00199 | 0.000147 | 12.9x | **13.5x** | 1.000 -> 0.999 | 0.003 -> 0.000 | 0.000 -> 0.001 |
+| drums | 0.00148 | 0.00221 | 0.000202 | 7.3x | **10.9x** | 0.980 -> 0.978 | 0.049 -> 0.023 | 0.019 -> 0.031 |
+
+Per-stem CLAP, iteration 04 vs 05 (same real-stem floors): "other" and bass unchanged within noise, **drums worse** (7.3x -> 10.9x): the drawn kit families put GM sf2 kits (Room / Power / Jazz / Brush / Standard) on 11 of 29 songs where iteration 04 had sampled AVL kits on 25, and the full-strength shelf pushed the kit past the target into too-dark territory.
 
 Spread: CLAP 0.405 / MERT 0.479 (CONFIRMED on both; 0.434 / 0.498 in iteration 04): kit families, loudness targets and rooms now
 vary per song, yet the songs' CLAP means are marginally MORE alike — the between-song variance ratio fell 0.95 -> 0.86. The
