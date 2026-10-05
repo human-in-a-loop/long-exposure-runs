@@ -88,7 +88,27 @@ pad) were format-matched to the corpus Demucs stems (22.05 kHz mono) and scored 
 <kind>.wav` of all 29 songs. Pre-registered ranking rule: gap ratio = kid_song(candidate group vs real group) / p97.5 of the
 real group's own split-half kid_song (10 deterministic splits); the largest ratio is the group farthest from real.
 
-PENDING_STEMS_TABLE
+| group (cand vs real, CLAP) | kid_song | real floor p97.5 | gap ratio | c2st | floor c2st | coverage | floor cov | kNN-real | floor kNN | windows cand / real |
+|---|---|---|---|---|---|---|---|---|---|---|
+| other | 0.00202 | 5.16e-05 | **39.1x** | 0.994 | 0.462 | 0.027 | 0.766 | 0.000 | 0.585 | 758 / 1446 |
+| bass | 0.0019 | 0.000147 | **12.9x** | 1.000 | 0.457 | 0.003 | 0.807 | 0.000 | 0.531 | 824 / 1174 |
+| drums | 0.00148 | 0.000202 | **7.3x** | 0.980 | 0.520 | 0.049 | 0.691 | 0.019 | 0.481 | 823 / 1310 |
+
+All three groups are an order of magnitude outside their own floor; **other** is the farthest (39x; c2st 0.994, coverage 0.03),
+then **bass** (12.9x; c2st 1.000, coverage 0.003), then **drums** (7.3x). Per-stem descriptor gaps (8 windows per file, candidates
+down-mixed to 22.05 kHz mono; Cohen's d in parentheses), which say WHAT differs inside each group:
+
+| group | largest candidate-vs-real descriptor gaps |
+|---|---|
+| other | onset rate 2.6 vs 4.1 Hz (-1.34): rhythmically far sparser; harmonic/percussive ratio +4.8 dB (+1.25): too sustained; bandwidth 1196 vs 1646 Hz (-1.08); low (< 250 Hz) share -5.0 dB (-0.98): no low-mid body; RMS +4.8 dB (+0.83); > 4 kHz share +4.3 dB (+0.52) |
+| bass | mid share -14.0 vs -25.1 dB (+1.64) and low share -0.38 vs -0.07 dB (-0.81): the real Demucs bass is 98 % below 250 Hz with a faint broadband tail (bleed) -> centroid 985 vs our 382 Hz, bandwidth 1393 vs 605 Hz; dynamic range 89 vs 47 dB (+0.98): digital silence between our notes, bleed in theirs |
+| drums | > 4 kHz share +4.5 dB (+0.95) and mid +3.7 dB (+0.94); harmonic/percussive ratio +5.6 dB (+0.90): our kit is more tonal, theirs more noise-like; RMS +2.9 dB; onset rate 3.3 vs 3.9 Hz (-0.48); dynamic range 61 vs 46 dB (+0.35): one-shots in silence vs room / bleed |
+
+Caveat that the ranking must carry: the reference stems are Demucs separations and contain bleed and room from the whole mix,
+while our groups are clean sums of rendered stems. The cleanest groups (bass, then drums) are penalised for not carrying bleed —
+part of the bass gap (its floor is also the tightest) is a separation artefact, not music. The "other" gap is the least affected by
+this (the real "other" stem is itself a mixture of several instruments) and is also the one whose descriptors name arrangement
+properties (onset density, sustain, low-mid body) rather than isolation.
 
 ## 4. Mix-chain oracle (2d) — `diag_stems_v6.py oracle`
 
