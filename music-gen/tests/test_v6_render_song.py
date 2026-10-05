@@ -46,7 +46,7 @@ def test_01_compose_renderer_both_end_to_end_under_90s() -> None:
         assert pp["stems_found"] == {} and all(s["method"].startswith("band_prior") for s in pp["selection"].values())
         mm = json.loads((sd / "mix_manifest.json").read_text())
         ref = mix.load_reference()
-        assert abs(mm["master"]["lufs_final"] - ref["target_lufs"]) <= 0.5 and mm["master"]["true_peak_dbtp_final"] <= -0.95 and mm["master"]["clipped_samples"] == 0
+        assert abs(mm["master"]["lufs_final"] - ref["target_lufs"]) <= 0.5 and mm["master"]["true_peak_dbtp_final"] <= mix.TRUE_PEAK_DBTP + 0.05 and mm["master"]["clipped_samples"] == 0
         x, sr = sf.read(str(sd / "ab_mix.wav"), dtype="float32", always_2d=True)
         g, _ = sf.read(str(sd / "ab_mix_gm.wav"), dtype="float32", always_2d=True)
         assert sr == 44100 and x.shape[1] == 2 and abs(x.shape[0] / sr - 16 * 4 * 60.0 / 112.0) < 6.0 and float(abs(x).max()) < 1.0
