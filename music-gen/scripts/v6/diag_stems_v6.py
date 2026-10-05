@@ -173,7 +173,7 @@ def oracle_mix_one(stems_root: Path, donor: str, band: int, bpm: float, out_wav:
 
 
 def oracle(stems_root: Path, accomp_manifest: Path, out: Path, diag_out: Path, backbones: list, emb_dir: Path, fmt_cache: Path, gates_path: Path, splits: int, seed: int, k: int,
-           log=_log) -> dict:
+           log=_log, mix_only: bool = False) -> dict:
     from scripts.v6.gen.compose_v6 import donor_bpm
     acc = read_json(accomp_manifest)
     out.mkdir(parents=True, exist_ok=True)
@@ -189,6 +189,8 @@ def oracle(stems_root: Path, accomp_manifest: Path, out: Path, diag_out: Path, b
         log(f"[oracle] mixed {donor} band={s.get('band')} bpm={bpm:.1f} LUFS={mixes['songs'][donor]['master']['lufs_final']} {time.time() - t0:.0f}s")
         write_json_atomic(mix_man_path, mixes)
     donors = sorted(acc["songs"])
+    if mix_only:
+        return mixes
     ref_items = [{"path": str(_WS / acc["songs"][d]["path"]) if not Path(acc["songs"][d]["path"]).is_absolute() else acc["songs"][d]["path"], "sha16": acc["songs"][d]["sha16"], "label": d} for d in donors]
     fmt = scf.reference_format(ref_items)
     ora_items, fmt_block = scf.match_items([{"path": mixes["songs"][d]["path"], "sha16": sha16_of(mixes["songs"][d]["sha256"]), "label": d} for d in donors], fmt, fmt_cache, log)
@@ -252,6 +254,7 @@ def main(argv=None) -> int:
     o.add_argument("--diag-out", default=str(dc.DIAG_DIR / "iteration_05" / "oracle"))
     o.add_argument("--accomp-manifest", default=str(DEFAULT_ACCOMP_MANIFEST))
     o.add_argument("--gates", default=str(DEFAULT_GATES))
+    o.add_argument("--mix-only", action="store_true", help="only (re)build the oracle mixes (no embedding / scoring)")
     for p in (s, o):
         p.add_argument("--stems-root", default=str(DEFAULT_STEMS_ROOT))
         p.add_argument("--backbones", default="clap")
@@ -269,7 +272,7 @@ def main(argv=None) -> int:
     if a.cmd == "score-stems":
         score_stems(Path(a.stems_dir), Path(a.stems_root), bbs, Path(a.emb_dir), Path(a.format_cache), Path(a.out), a.splits, a.seed, a.k)
         return 0
-    oracle(Path(a.stems_root), Path(a.accomp_manifest), Path(a.out), Path(a.diag_out), bbs, Path(a.emb_dir), Path(a.format_cache), Path(a.gates), a.splits, a.seed, a.k)
+    oracle(Path(a.stems_root), Path(a.accomp_manifest), Path(a.out), Path(a.diag_out), bbs, Path(a.emb_dir), Path(a.format_cache), Path(a.gates), a.splits, a.seed, a.k, mix_only=a.mix_only)
     return 0
 
 
