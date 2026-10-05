@@ -70,7 +70,9 @@ def test_03_band_priors_cover_roles_and_lean() -> None:
     for band in (4, 5, 7):
         for role in select.ENSEMBLE_P:
             w = select.prior_weights(POOL, role, band)
-            assert w and all(v > 0 for v in w.values()) and set(w) <= set(POOL["roles"][role])
+            assert w and all(v > 0 for v in w.values()) and set(w) <= set(select.role_candidates(POOL, role, band))
+            if role != "melody":
+                assert set(w) <= set(POOL["roles"][role])
     def mass(band, role, inv):
         w = select.prior_weights(POOL, role, band)
         t = sum(w.values())
@@ -113,3 +115,46 @@ if __name__ == "__main__":
     test_02_temperature_zero_prefers_most_similar()
     test_03_band_priors_cover_roles_and_lean()
     test_04_donor_stem_path_uses_clap_and_finds_the_source_patch()
+
+
+def test_06_phase5_library_priors_gm_downweight_melody_pool_keys_sampled() -> None:
+    """Phase 5: GM banks x0.3 wherever an sfz option exists; melody pool = default families (+ acoustic guitars from comp_guitar),
+    no calliope/square/fifths leads, leads only for the synth-leaning band 4; keys prefer sampled pianos x2; CLAP path applies
+    the prior as cosine + T ln(prior) and records it per candidate."""
+    P = POOL["patches"]
+    for role in ("bass", "keys", "comp_guitar", "melody", "drums", "pad"):
+        ids = select.role_candidates(POOL, role, 5)
+        gm = [i for i in ids if P[i]["library"] in select.GM_BANKS]
+        assert gm and any(P[i]["backend"] == "sfz" for i in ids), role
+        for i in gm:
+            assert select.library_prior(POOL, role, i, ids) == select.GM_BANK_FACTOR * (select.KEYS_SAMPLED_FACTOR if (role == "keys" and select.KEYS_PREFERRED.search(P[i]["library"])) else 1.0), (role, i)
+        assert select.library_prior(POOL, role, gm[0], gm) == 1.0, "no sfz option in the candidate set -> no GM down-weight"
+    # keys: sampled pianos / e-pianos carry x2
+    kids = select.role_candidates(POOL, "keys", 5)
+    sal = [i for i in kids if "salamander" in P[i]["library"]]
+    assert sal and select.library_prior(POOL, "keys", sal[0], kids) == select.KEYS_SAMPLED_FACTOR
+    w = select.prior_weights(POOL, "keys", 5)
+    assert sum(w[i] for i in kids if P[i]["library"] in select.GM_BANKS) < sum(w[i] for i in kids if P[i]["library"] not in select.GM_BANKS)
+    # melody pool
+    for band in (5, 7):
+        fam = {P[i]["inventory_role"] for i in select.role_candidates(POOL, "melody", band)}
+        assert "lead" not in fam and "acoustic_guitar" in fam and fam <= set(select.MELODY_FAMILIES_DEFAULT), (band, fam)
+        assert not any(select.SYNTH_BRASS.search(P[i]["name"]) for i in select.role_candidates(POOL, "melody", band))
+        assert "lead" not in select.melody_families(band)
+    m4 = select.role_candidates(POOL, "melody", 4)
+    assert "lead" in {P[i]["inventory_role"] for i in m4} and "lead" in select.melody_families(4) and select.synth_leaning(4)
+    assert not any(select.LEAD_EXCLUDE.search(P[i]["name"]) or select.LEAD_EXCLUDE.search(P[i]["library"]) for i in m4)
+    # CLAP path: the prior enters the score and is recorded; a GM patch needs a cosine edge > T ln(1/0.3) to beat an sfz patch
+    import numpy as np
+    sfz = next(i for i in kids if P[i]["backend"] == "sfz" and P[i].get("timbre") is not None)
+    vec = np.asarray(P[sfz]["timbre"], dtype=np.float64)
+    sel = select.select_patch(POOL, "keys", "t|phase5", 5, temperature=0.05, donor_vec=vec)
+    assert sel["patch_id"] == sfz and all("library_prior" in c and "cosine" in c for c in sel["candidates"]) and "score_rule" in sel
+    gm_cands = [c for c in sel["candidates"] if P[c["id"]]["library"] in select.GM_BANKS]
+    for c in gm_cands:
+        assert c["library_prior"] == select.GM_BANK_FACTOR and c["score"] < c["cosine"]
+    pp = select.plan_patches("gen_v6_song_1", "fixture_a", 4, 0, POOL, band=5, log=lambda *x: None)
+    assert pp["schema_version"] == 2 and pp["priors"]["gm_bank_factor"] == 0.3 and pp["ensemble"]["melody_families"] == list(select.MELODY_FAMILIES_DEFAULT)
+    assert all("library_prior" in sel for sel in pp["selection"].values())
+    print("test_06 PASS: GM x0.3 with sfz present, keys sampled x2, melody default families (no synth leads outside band 4), priors recorded")
+

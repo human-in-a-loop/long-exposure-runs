@@ -110,7 +110,8 @@ def compose_labels(models: dict, plan: dict, tonic: int, mode: str, bpm: float, 
         if not idx:
             return None
         i = idx[0] if first else idx[-1]
-        return {"state": P["states"][i], "voicing": list(P["voicings"][i]["voicing"]), "bass": P["root_line"][i]}
+        rest = (i > 0) if first else (i < len(P["states"]) - 1)  # 'N' slots at this label's edge: a 7th across the junction is released into a rest
+        return {"state": P["states"][i], "voicing": list(P["voicings"][i]["voicing"]), "bass": P["root_line"][i], "rest_between": rest}
     junction = {"iterations": 0, "converged": False, "max_iterations": JUNCTION_ITERS}
     for it in range(JUNCTION_ITERS):  # pass 2: junctions, Gauss-Seidel to a fixed point (predecessors' finals in, successors' firsts out)
         changed = False

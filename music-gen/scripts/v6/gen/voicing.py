@@ -110,12 +110,13 @@ def crossings(a: tuple, b: tuple) -> int:
     return n
 
 
-def unresolved_sevenths(a: tuple, b: tuple, ct_a: dict, same_chord: bool) -> int:
+def unresolved_sevenths(a: tuple, b: tuple, ct_a: dict, same_chord: bool, rest_between: bool = False) -> int:
     """THE seventh-resolution definition (DP cost, validator and stage-1 harmony mask all call this): at a chord change, a keys
     voice on the chord 7th of `a` is resolved when (i) RETAINED — its pitch still sounds in the next voicing `b` (same voice or
     another; a common tone, hence a chord tone of the next chord) — or (ii) it moves DOWN BY STEP (1-2 semitones). Otherwise it
-    is unresolved. Chord unchanged (`same_chord`) is exempt."""
-    if ct_a["seventh"] is None or same_chord:
+    is unresolved. Chord unchanged (`same_chord`) is exempt, and so is a 7th released into a REST (`rest_between`: an 'N' slot
+    between the two voiced chords — the keys stop sounding, the next chord is a fresh entry)."""
+    if ct_a["seventh"] is None or same_chord or rest_between:
         return 0
     n = 0
     for i, p in enumerate(a):
@@ -149,11 +150,12 @@ def unresolved_leading_tone(a: tuple, b: tuple, tonic: int, mode: str, cadence) 
     return sum(1 for i, p in enumerate(a) if p % 12 == lt and b[i] % 12 != tonic_pc and (strict or b[i] != p))
 
 
-def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode: str, cadence, same_chord: bool, bass_a=None, bass_b=None) -> dict:
+def transition_cost(a: tuple, b: tuple, ct_a: dict, ct_b: dict, tonic: int, mode: str, cadence, same_chord: bool, bass_a=None, bass_b=None,
+                    rest_between: bool = False) -> dict:
     move = sum(abs(x - y) for x, y in zip(a, b))
     common = bool(set(ct_a["pcs"]) & set(ct_b["pcs"])) and not any(x == y for x, y in zip(a, b)) and not same_chord
     return {"movement": float(move), "parallels": parallel_perfects(a, b, bass_a, bass_b) * COST["parallel"],
-            "seventh": unresolved_sevenths(a, b, ct_a, same_chord) * COST["seventh"],
+            "seventh": unresolved_sevenths(a, b, ct_a, same_chord, rest_between) * COST["seventh"],
             "leading_tone": unresolved_leading_tone(a, b, tonic, mode, cadence) * COST["leading_tone"],
             "crossing": crossings(a, b) * COST["crossing"], "common_tone": COST["common_tone"] if common else 0.0}
 
@@ -185,11 +187,13 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
     for t in range(T):
         if not cands[t]:
             continue
+        rest_prev = prev_idx is not None and any(not cands[k] for k in range(prev_idx + 1, t))  # an 'N' slot between the two chords
         for v in cands[t]:
             un = unary_cost(v, cts[t])
             if t == last_idx:
                 for ctx in exit_contexts:  # junction costs into the successor sections' first chords
-                    tc = transition_cost(v, tuple(ctx["voicing"]), cts[t], chord_tones(ctx["state"], tonic), tonic, mode, False, ctx["state"] == states[t], bass[t], ctx.get("bass"))
+                    tc = transition_cost(v, tuple(ctx["voicing"]), cts[t], chord_tones(ctx["state"], tonic), tonic, mode, False, ctx["state"] == states[t], bass[t], ctx.get("bass"),
+                                         rest_between=bool(ctx.get("rest_between")) or last_idx < T - 1)
                     for k, x in tc.items():
                         un[k] = un.get(k, 0.0) + x / len(exit_contexts)
             if prev_idx is None or not best[prev_idx]:
@@ -197,7 +201,8 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
                 for k in ("movement", "parallels", "seventh", "leading_tone", "crossing", "common_tone"):
                     br.setdefault(k, 0.0)
                 for ctx in entry_contexts:  # junction costs from the predecessor sections' final chords
-                    tc = transition_cost(tuple(ctx["voicing"]), v, chord_tones(ctx["state"], tonic), cts[t], tonic, mode, False, ctx["state"] == states[t], ctx.get("bass"), bass[t])
+                    tc = transition_cost(tuple(ctx["voicing"]), v, chord_tones(ctx["state"], tonic), cts[t], tonic, mode, False, ctx["state"] == states[t], ctx.get("bass"), bass[t],
+                                         rest_between=bool(ctx.get("rest_between")) or t > 0)
                     for k, x in tc.items():
                         br[k] = br.get(k, 0.0) + x / len(entry_contexts)
                 best[t][v] = (sum(br.values()), None, br)
@@ -205,7 +210,7 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
             same = states[prev_idx] == states[t]
             opt = None
             for pv, (ptot, _pp, _pb) in best[prev_idx].items():
-                tc = transition_cost(pv, v, cts[prev_idx], cts[t], tonic, mode, cadence_flags[t] or False, same, bass[prev_idx], bass[t])
+                tc = transition_cost(pv, v, cts[prev_idx], cts[t], tonic, mode, cadence_flags[t] or False, same, bass[prev_idx], bass[t], rest_between=rest_prev)
                 tot = ptot + sum(un.values()) + sum(tc.values())
                 if opt is None or tot < opt[0] or (tot == opt[0] and pv < opt[1]):
                     br = dict(un)
@@ -233,13 +238,13 @@ def voice_sequence(states: list, tonic: int, mode: str, cadence_flags: list, bas
     return out
 
 
-def hard_violations(a: tuple, b: tuple, state_a: str, state_b: str, tonic: int, mode: str, bass_a=None, bass_b=None) -> int:
-    tc = transition_cost(tuple(a), tuple(b), chord_tones(state_a, tonic), chord_tones(state_b, tonic), tonic, mode, False, state_a == state_b, bass_a, bass_b)
+def hard_violations(a: tuple, b: tuple, state_a: str, state_b: str, tonic: int, mode: str, bass_a=None, bass_b=None, rest_between: bool = False) -> int:
+    tc = transition_cost(tuple(a), tuple(b), chord_tones(state_a, tonic), chord_tones(state_b, tonic), tonic, mode, False, state_a == state_b, bass_a, bass_b, rest_between)
     return sum(1 for k in HARD_RULES if tc[k] > 0)
 
 
 def voice_sequence_cyclic(states: list, tonic: int, mode: str, cadence_flags: list, bass: list, entry_contexts: list, exit_contexts: list,
-                          self_adjacent: bool, top_k: int = 4) -> tuple[list, dict]:
+                          self_adjacent: bool, top_k: int = 8) -> tuple[list, dict]:
     """voice_sequence for a label that may FOLLOW ITSELF in the form (A A ...): the junction last -> first lies inside one DP, so a
     stale context oscillates. Lazy exact treatment: run the free DP; if last -> first has a hard violation, re-run with the first
     voicing pinned and used as its own exit context, for the current first voicing then the top_k alternatives (ranked by entry-context
@@ -250,7 +255,8 @@ def voice_sequence_cyclic(states: list, tonic: int, mode: str, cadence_flags: li
     if not self_adjacent or len(idx) < 2:
         return out, info
     f, l = idx[0], idx[-1]
-    hv = hard_violations(out[l]["voicing"], out[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f])
+    rest = f > 0 or l < len(states) - 1  # 'N' slots at the label's edges: the self-junction 7th is released into a rest
+    hv = hard_violations(out[l]["voicing"], out[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f], rest)
     if hv == 0:
         return out, info
     ct_f = chord_tones(states[f], tonic)
@@ -264,11 +270,11 @@ def voice_sequence_cyclic(states: list, tonic: int, mode: str, cadence_flags: li
     tries = [tuple(out[f]["voicing"])] + [v for v in ranked if v != tuple(out[f]["voicing"])][:top_k]
     best = None
     for v0 in tries:
-        self_ctx = {"state": states[f], "voicing": list(v0), "bass": bass[f]}
+        self_ctx = {"state": states[f], "voicing": list(v0), "bass": bass[f], "rest_between": rest}
         o = voice_sequence(states, tonic, mode, cadence_flags, bass, entry_contexts, exit_contexts + [self_ctx], v0)
         info["runs"] += 1
         tot = sum(x["cost"]["total_step"] for x in o if x["cost"])
-        h = hard_violations(o[l]["voicing"], o[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f])
+        h = hard_violations(o[l]["voicing"], o[f]["voicing"], states[l], states[f], tonic, mode, bass[l], bass[f], rest)
         if best is None or tot < best[0]:
             best = (tot, o, v0, h)
         if h == 0:

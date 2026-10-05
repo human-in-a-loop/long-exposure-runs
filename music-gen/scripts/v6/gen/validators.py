@@ -18,7 +18,7 @@ from scripts.v6.gen.voicing import chord_tones, crossings, parallel_perfects, un
 CAPS = {
     "parallel_fifths": {"op": "<=", "cap": 1, "per": "per_64_bars", "doc": "parallel perfect 5ths between keys voices, bass-keys and bass-melody pairs"},
     "parallel_octaves": {"op": "<=", "cap": 1, "per": "per_64_bars", "doc": "parallel octaves/unisons, same pairs"},
-    "unresolved_sevenths": {"op": "<=", "cap": 2, "per": "song", "doc": "at a chord change, a keys voice on the chord 7th that is neither RETAINED (its pitch still sounds in the next voicing: a common tone, hence a chord tone of the next chord) nor moved DOWN BY STEP (1-2 semitones); voicing.unresolved_sevenths is the single definition used by the DP cost, this validator and the stage-1 harmony mask (harmony.resolvable_matrix / voicing.seventh_resolvable)"},
+    "unresolved_sevenths": {"op": "<=", "cap": 2, "per": "song", "doc": "at a chord change, a keys voice on the chord 7th that is neither RETAINED (its pitch still sounds in the next voicing: a common tone, hence a chord tone of the next chord) nor moved DOWN BY STEP (1-2 semitones); a 7th released into a rest (an N slot between the chords) is exempt; voicing.unresolved_sevenths is the single definition used by the DP cost, this validator and the stage-1 harmony mask (harmony.resolvable_matrix / voicing.seventh_resolvable)"},
     "leading_tone_unresolved_at_cadence": {"op": "<=", "cap": 1, "per": "song", "doc": "degree 7 (major) in keys or melody at a phrase's final transition not moving to the tonic"},
     "melodic_leaps_unresolved": {"op": "<=", "cap": 2, "per": "per_64_bars", "doc": "melody leap > 5 semitones not followed by a step in the opposite direction"},
     "melody_range_violations": {"op": "==", "cap": 0, "per": "song", "doc": "phrases whose melody range exceeds 12 semitones"},
@@ -94,8 +94,17 @@ def parallel_perfect_intervals(song: dict) -> dict:
 
 
 def unresolved_sevenths(song: dict) -> int:
-    vs = _voiced_slots(song)
-    return sum(_unres7(tuple(a["voicing"]), tuple(b["voicing"]), chord_tones(a["state"], song["tonic"]), a["state"] == b["state"]) for a, b in zip(vs, vs[1:]))
+    """voicing.unresolved_sevenths over consecutive voiced chord slots; an unvoiced ('N') slot between two voiced ones is a rest
+    (the 7th was released into silence: exempt, exactly as the DP costs it)."""
+    n, prev, rest = 0, None, False
+    for c in song["chord_slots"]:
+        if not c.get("voicing"):
+            rest = prev is not None
+            continue
+        if prev is not None:
+            n += _unres7(tuple(prev["voicing"]), tuple(c["voicing"]), chord_tones(prev["state"], song["tonic"]), prev["state"] == c["state"], rest)
+        prev, rest = c, False
+    return n
 
 
 def voice_crossing(song: dict) -> int:

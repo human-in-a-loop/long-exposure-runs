@@ -6,11 +6,16 @@ milestone: M-V6-RENDER-4/realistic-renderer
 
 Per stem (role): high-pass (bass 30 Hz, keys/guitar 80 Hz, pads 120 Hz, drums 25 Hz, melody 100 Hz), RMS gain staging to a
 per-role level (deterministic gain, clipped [0.05, 8]), THEN gentle compression with the threshold a fixed headroom above
-that level (drums 4:1 fast, bass 3:1, keys/guitar/melody 2:1, pad 1.5:1), stereo placement (bass + drums centre — bass mono, kit keeps its own stereo image; keys +20 %, guitar
--25 %, pad wide (kept stereo + 1.3 side), melody +/-10 % by a SHA draw, percussion -30 %), a shared reverb bus
-(pedalboard.Reverb; room_size from the band and the ballad flag/tempo; per-role sends; bass dry), bus compression 2:1, a
+that level (drums 4:1 fast, bass 3:1, keys/guitar/melody 2:1, pad 1.5:1), stereo placement (bass + drums centre — bass mono, kit keeps its own stereo image; keys +20 % with
+their sampled stereo image kept (side x1.25; a mono keys stem gets a 9 ms Haas spread), comping -25 % with an 11 ms L/R
+(Haas) delay, pad wide (kept stereo + 1.6 side), melody +/-10 % by a SHA draw, percussion -30 %), a shared reverb bus
+(pedalboard.Reverb; room_size from the band and the ballad flag/tempo; per-role sends; bass dry) whose stereo return carries
+six deterministic early-reflection taps with DIFFERENT left/right delays (decorrelation), bus compression 1.5:1 from -6 dB, a
 mild high-shelf steer of the spectral tilt toward the band's corpus median (|gain| <= 3 dB), loudness normalisation to the
-TARGET (corpus median integrated LUFS clamped to -14 +/- 2) and a true-peak limiter at -1 dBTP. The limiter is this
+TARGET (corpus median integrated LUFS clamped to -14 +/- 2) and a true-peak limiter at -0.5 dBTP. Phase 5 (iteration 04)
+re-targeted the placement / bus / ceiling against the iteration-03 scorecard descriptors: candidates were nearly mono (L/R
+correlation 0.973 vs 0.80 in the corpus, width -18.7 vs -12.9 dB), 1.5 dB more compressed (crest 12.6 vs 14.1 dB) and
+peaked 2 dB lower (-2.0 vs -0.03 dBFS). The limiter is this
 module's own numpy look-ahead design (pedalboard.Limiter adds ~5 dB of make-up gain, which made a normalise/limit loop
 diverge): per-sample required gain -> 5 ms running minimum (look-ahead) -> exponential release (80 ms, max-with-decay
 computed by log2(n) vectorised doubling passes) -> 5 ms moving average -> 4x-oversampled true-peak check; up to 3
@@ -34,14 +39,18 @@ MIX_REFERENCE = WS / "scripts" / "v6" / "patches" / "mix_reference_v6.json"
 RECEIPTS = WS / "corpus" / "ratings" / "ingest_receipts.jsonl"
 SR = 44100
 TARGET_LUFS_CLAMP = (-16.0, -12.0)
-TRUE_PEAK_DBTP = -1.0
+TRUE_PEAK_DBTP = -0.5  # Phase 5: was -1.0 (corpus peaks sit at -0.03 dBFS; candidates at -2.0)
 HPF_HZ = {"drums": 25.0, "bass": 30.0, "keys": 80.0, "comp_guitar": 80.0, "melody": 100.0, "pad": 120.0, "percussion": 150.0}
 COMP = {"drums": (8.0, 4.0, 3.0, 80.0), "bass": (6.0, 3.0, 10.0, 120.0), "keys": (8.0, 2.0, 15.0, 150.0), "comp_guitar": (8.0, 2.0, 10.0, 120.0),
         "melody": (8.0, 2.0, 10.0, 150.0), "pad": (6.0, 1.5, 30.0, 300.0), "percussion": (8.0, 3.0, 5.0, 100.0)}  # threshold headroom dB above the stem RMS target, ratio, attack ms, release ms
-BUS_COMP = {"threshold_db": -10.0, "ratio": 2.0, "attack_ms": 10.0, "release_ms": 150.0}
+BUS_COMP = {"threshold_db": -6.0, "ratio": 1.5, "attack_ms": 10.0, "release_ms": 150.0}  # Phase 5: eased from -10 dB / 2:1 (crest +~1.5 dB wanted)
 LIMITER = {"lookahead_ms": 5.0, "release_ms": 80.0}
 STEM_RMS_DB = {"drums": -18.0, "bass": -18.0, "keys": -22.0, "comp_guitar": -24.0, "melody": -22.0, "pad": -26.0, "percussion": -27.0}
-PAN = {"drums": "stereo", "bass": 0.0, "keys": 0.2, "comp_guitar": -0.25, "pad": "wide", "melody": "sha", "percussion": -0.3}
+PAN = {"drums": "stereo", "bass": 0.0, "keys": ("stereo_pan", 0.2, 1.25), "comp_guitar": ("haas", -0.25, 11.0), "pad": "wide", "melody": "sha", "percussion": -0.3}
+WIDE_SIDE = 1.6  # Phase 5: was 1.3
+HAAS_MONO_KEYS_MS, HAAS_GAIN_DB = 9.0, -6.0  # a mono keys stem gets a quiet delayed copy on the far channel
+EARLY_REFLECTIONS_MS = {"L": (7.1, 13.3, 23.9), "R": (9.7, 17.9, 29.3)}  # reverb return: distinct L/R taps -> decorrelated early field
+EARLY_REFLECTION_DB, REVERB_RETURN_DB = -12.0, -9.0  # Phase 5: return was -10 dB, no early reflections
 REVERB_SEND = {"drums": 0.12, "bass": 0.0, "keys": 0.22, "comp_guitar": 0.18, "pad": 0.35, "melody": 0.28, "percussion": 0.15}
 ROOM_BY_BAND = {4: 0.45, 5: 0.38, 6: 0.42, 7: 0.55}
 GAIN_CLIP = (0.05, 8.0)
@@ -153,15 +162,49 @@ def pan_lr(x: np.ndarray, pan: float) -> np.ndarray:
     return np.stack([x * np.cos(th), x * np.sin(th)], axis=1)
 
 
-def place(x: np.ndarray, mode, melody_pan: float) -> np.ndarray:
-    """x (n, 2) -> (n, 2) placed stereo signal."""
+def _delay(x: np.ndarray, sr: int, ms: float) -> np.ndarray:
+    d = int(round(sr * ms / 1000.0))
+    return np.concatenate([np.zeros(d), x[: len(x) - d]]) if 0 < d < len(x) else x.copy()
+
+
+def place(x: np.ndarray, mode, melody_pan: float, sr: int = SR) -> np.ndarray:
+    """x (n, 2) -> (n, 2) placed stereo signal. Modes: "stereo" (kept), "wide" (side x WIDE_SIDE), ("stereo_pan", pan, width): the
+    stem's own mid/side kept (side x width; a mono stem gets a HAAS_MONO_KEYS_MS delayed copy at HAAS_GAIN_DB on the far channel)
+    and the mid panned constant-power; ("haas", pan, ms): constant-power pan of the mono sum with the far channel delayed by ms
+    (precedence-effect width); a float / "sha": constant-power pan of the mono sum."""
     if mode == "stereo":
         return x
     if mode == "wide":
-        mid, side = (x[:, 0] + x[:, 1]) * 0.5, (x[:, 0] - x[:, 1]) * 0.5 * 1.3
+        mid, side = (x[:, 0] + x[:, 1]) * 0.5, (x[:, 0] - x[:, 1]) * 0.5 * WIDE_SIDE
         return np.stack([mid + side, mid - side], axis=1)
+    if isinstance(mode, (tuple, list)):
+        kind, pan, param = mode
+        th = (float(pan) + 1.0) * np.pi / 4.0
+        mid = (x[:, 0] + x[:, 1]) * 0.5
+        if kind == "stereo_pan":
+            side = (x[:, 0] - x[:, 1]) * 0.5
+            e_mid, e_side = float((mid ** 2).sum()), float((side ** 2).sum())
+            if e_mid > 0.0 and e_side < 1e-3 * e_mid:  # effectively mono: Haas spread
+                side = _delay(mid, sr, HAAS_MONO_KEYS_MS) * (10 ** (HAAS_GAIN_DB / 20.0)) * 0.5
+            side = side * float(param)
+            return np.stack([mid * np.cos(th) + side, mid * np.sin(th) - side], axis=1)
+        if kind == "haas":
+            far = _delay(mid, sr, float(param))
+            L, R = (mid, far) if pan <= 0.0 else (far, mid)
+            return np.stack([L * np.cos(th), R * np.sin(th)], axis=1)
+        raise ValueError(mode)
     pan = melody_pan if mode == "sha" else float(mode)
     return pan_lr(x.mean(axis=1), pan)
+
+
+def early_reflections(send: np.ndarray, sr: int) -> np.ndarray:
+    """Six deterministic taps of the mono send with different L/R delays (EARLY_REFLECTIONS_MS) at EARLY_REFLECTION_DB: a decorrelated
+    early field that widens the return without touching the direct sound."""
+    m = send.mean(axis=1)
+    g = 10 ** (EARLY_REFLECTION_DB / 20.0)
+    L = sum(_delay(m, sr, ms) for ms in EARLY_REFLECTIONS_MS["L"]) * g / len(EARLY_REFLECTIONS_MS["L"])
+    R = sum(_delay(m, sr, ms) for ms in EARLY_REFLECTIONS_MS["R"]) * g / len(EARLY_REFLECTIONS_MS["R"])
+    return np.stack([L, R], axis=1)
 
 
 def process_stem(x: np.ndarray, sr: int, role: str, melody_pan: float = 0.1) -> tuple[np.ndarray, dict]:
@@ -175,10 +218,13 @@ def process_stem(x: np.ndarray, sr: int, role: str, melody_pan: float = 0.1) -> 
     gain = float(min(GAIN_CLIP[1], max(GAIN_CLIP[0], gain)))
     thr = target + head
     y = pb.Pedalboard([pb.Compressor(threshold_db=thr, ratio=ratio, attack_ms=att, release_ms=rel)])(np.ascontiguousarray((y * gain).T, dtype=np.float32), sr).T.astype(np.float64)
-    y = place(y, PAN.get(role, 0.0), melody_pan)
+    mode = PAN.get(role, 0.0)
+    y = place(y, mode, melody_pan, sr)
+    pan = melody_pan if mode == "sha" else (mode[1] if isinstance(mode, (tuple, list)) else mode)
     info = {"hpf_hz": HPF_HZ.get(role, 80.0), "compressor": {"threshold_db": thr, "ratio": ratio, "attack_ms": att, "release_ms": rel}, "rms_in_dbfs": round(20 * np.log10(max(rms, 1e-9)), 3),
             "rms_out_dbfs": round(20 * np.log10(max(float(np.sqrt((y ** 2).mean())), 1e-9)), 3), "peak_out_dbfs": round(20 * np.log10(max(float(np.abs(y).max()), 1e-9)), 3),
-            "gain": round(gain, 6), "gain_db": round(20 * np.log10(gain), 3), "target_rms_dbfs": STEM_RMS_DB.get(role, -22.0), "pan": PAN.get(role, 0.0) if PAN.get(role) != "sha" else melody_pan,
+            "gain": round(gain, 6), "gain_db": round(20 * np.log10(gain), 3), "target_rms_dbfs": STEM_RMS_DB.get(role, -22.0), "pan": pan,
+            "placement": {"mode": mode[0], "pan": mode[1], "param": mode[2]} if isinstance(mode, (tuple, list)) else {"mode": mode if isinstance(mode, str) else "pan", "pan": pan},
             "reverb_send": REVERB_SEND.get(role, 0.2)}
     return y.astype(np.float32), info
 
@@ -251,11 +297,14 @@ def mix_song(stems: dict, sr: int, band: int, ballad: bool, bpm: float, melody_p
         per_stem[role] = info
     rs = room_size(band, ballad, bpm)
     rev = pb.Pedalboard([pb.Reverb(room_size=rs, damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)])
-    ret = rev(np.ascontiguousarray(send.T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (-10.0 / 20.0))
+    ret = rev(np.ascontiguousarray(send.T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (REVERB_RETURN_DB / 20.0)) + early_reflections(send, sr)
     pre = bus + ret
     out, mi = master(pre.astype(np.float32), sr, target, tilt_target)
     man = {"schema_version": 1, "sample_rate": sr, "band": int(band), "ballad": bool(ballad), "bpm": bpm, "per_stem": per_stem,
-           "reverb": {"room_size": rs, "damping": 0.5, "return_db": -10.0, "sends": {r: REVERB_SEND.get(r, 0.2) for r in sorted(stems)}},
+           "reverb": {"room_size": rs, "damping": 0.5, "return_db": REVERB_RETURN_DB, "early_reflections_ms": EARLY_REFLECTIONS_MS, "early_reflection_db": EARLY_REFLECTION_DB,
+                      "sends": {r: REVERB_SEND.get(r, 0.2) for r in sorted(stems)}},
+           "phase5_targets": {"true_peak_dbtp": TRUE_PEAK_DBTP, "bus_comp": dict(BUS_COMP), "wide_side": WIDE_SIDE, "keys_width": PAN["keys"][2], "comp_haas_ms": PAN["comp_guitar"][2],
+                              "iteration_03_gap": "lr_corr 0.973 vs 0.80, width -18.7 vs -12.9 dB, crest 12.6 vs 14.1 dB, peak -2.0 vs -0.03 dBFS"},
            "pre_master": {"peak_dbfs": round(20 * np.log10(max(float(np.abs(pre).max()), 1e-9)), 3), "lufs": round(lufs(pre, sr), 3)},
            "reference": {"source": reference.get("source"), "n_songs": reference.get("n_songs"), "overall": reference.get("overall"), "band_used": band_ref,
                          "target_lufs_rule": reference.get("target_lufs_rule"), "true_peak_dbtp": TRUE_PEAK_DBTP},

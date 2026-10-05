@@ -15,7 +15,15 @@ only):
   * stems absent: a per-band prior over inventory roles (band 7 acoustic-leaning, band 4 synth-leaning, band 5 mixed) times
     a library-quality factor (multi-velocity sfz > single-layer sfz > GM sf2), normalised per inventory role so the four GM
     banks do not out-vote the sampled libraries; same SHA draw. Drum kits use a jazz/neutral/rock family prior per band.
-Everything (choice, similarities, probabilities, the uniform draw) is recorded in patch_plan.json by plan_patches().
+Phase 5 (iteration 04) realism priors, applied on BOTH paths and recorded per candidate in patch_plan.json ("priors" block +
+`library_prior` on every candidate): (a) the four GM sf2 banks (GM_BANKS) weigh GM_BANK_FACTOR = 0.3 in every role unless the
+role's candidate set has no sfz option; on the CLAP path the prior enters the softmax as score = cosine + temperature * ln(prior),
+so a GM patch must be clearly MORE similar to win; (b) the melody family pool is MELODY_FAMILIES_DEFAULT (electric_piano, piano,
+electric_guitar, acoustic_guitar — borrowed from the comp_guitar pool — and real brass sections); synth leads and synth brass
+join only for a synth-leaning band (BAND_PRIOR lead weight >= SYNTH_LEANING_LEAD_W, i.e. band 4), and calliope / square / fifths
+GM-style leads (LEAD_EXCLUDE) never do; (c) keys: sampled pianos / e-pianos (KEYS_PREFERRED: Salamander, Upright KW, FM Piano)
+weigh KEYS_SAMPLED_FACTOR = 2.0.
+Everything (choice, similarities, probabilities, priors, the uniform draw) is recorded in patch_plan.json by plan_patches().
 """
 from __future__ import annotations
 
@@ -35,7 +43,14 @@ RECEIPTS = WS / "corpus" / "ratings" / "ingest_receipts.jsonl"
 ROLE_STEM = {"bass": "bass", "keys": "other", "comp_guitar": "other", "pad": "other", "melody": "other", "drums": "drums", "percussion": "drums"}
 TOP_K, DEFAULT_TEMPERATURE, DEFAULT_BAND = 5, 0.05, 5
 ENSEMBLE_P = {"bass": 1.0, "drums": 1.0, "keys": 1.0, "melody": 1.0, "comp_guitar": 0.5, "pad": 0.35, "percussion": 0.25}
-MELODY_FAMILIES = ("lead", "electric_piano", "electric_guitar", "piano", "brass")
+MELODY_FAMILIES = ("lead", "electric_piano", "electric_guitar", "piano", "brass")  # inventory families the pool's melody role knows
+MELODY_FAMILIES_DEFAULT = ("electric_piano", "piano", "electric_guitar", "acoustic_guitar", "brass")  # Phase 5 default melody pool
+SYNTH_LEANING_LEAD_W = 0.5  # a band whose BAND_PRIOR["lead"] >= this is synth-leaning: "lead" joins the melody families
+GM_BANKS = ("fluidr3_gm", "freepats_gm", "generaluser_gs", "musescore_general")
+GM_BANK_FACTOR, KEYS_SAMPLED_FACTOR = 0.3, 2.0
+KEYS_PREFERRED = re.compile(r"salamander|upright_piano_kw|fm_piano", re.I)  # sampled pianos / e-pianos (library ids)
+LEAD_EXCLUDE = re.compile(r"calliope|square|fifths", re.I)  # GM-style leads never used for a melody
+SYNTH_BRASS = re.compile(r"synth[ _]?brass", re.I)
 BAND_PRIOR = {  # inventory role -> weight; rows are re-normalised per pool role at draw time
     7: {"electric_bass": 0.55, "acoustic_bass": 0.35, "synth_bass": 0.10, "piano": 0.45, "electric_piano": 0.40, "organ": 0.15, "acoustic_guitar": 0.55, "electric_guitar": 0.45,
         "lead": 0.10, "brass": 0.20, "pad": 0.30, "strings_pad": 0.70, "drums": 1.0, "percussion": 1.0},
@@ -73,16 +88,56 @@ def band_for(band: int) -> int:
     return int(band) if int(band) in BAND_PRIOR else min(BAND_PRIOR, key=lambda b: abs(b - int(band)))
 
 
+def synth_leaning(band: int) -> bool:
+    return BAND_PRIOR[band_for(band)]["lead"] >= SYNTH_LEANING_LEAD_W
+
+
+def melody_families(band: int) -> tuple:
+    return MELODY_FAMILIES_DEFAULT + (("lead",) if synth_leaning(band) else ())
+
+
+def role_candidates(pool: dict, role: str, band: int, inventory_roles=None) -> list:
+    """Patch ids eligible for `role`: the pool's role list, for melody extended with the comp_guitar pool's acoustic guitars and
+    filtered by the Phase 5 family rules (LEAD_EXCLUDE always; synth leads / synth brass only for a synth-leaning band)."""
+    ids = list(pool["roles"][role])
+    if role == "melody":
+        ids += [i for i in pool["roles"].get("comp_guitar", []) if pool["patches"][i]["inventory_role"] == "acoustic_guitar" and i not in ids]
+        keep = []
+        for i in ids:
+            p = pool["patches"][i]
+            if p["inventory_role"] == "lead" and (LEAD_EXCLUDE.search(p["name"]) or LEAD_EXCLUDE.search(p["library"]) or not synth_leaning(band)):
+                continue
+            if p["inventory_role"] == "brass" and SYNTH_BRASS.search(p["name"]) and not synth_leaning(band):
+                continue
+            keep.append(i)
+        ids = keep
+    if inventory_roles is not None:
+        ids = [i for i in ids if pool["patches"][i]["inventory_role"] in inventory_roles]
+    return sorted(ids)
+
+
+def library_prior(pool: dict, role: str, patch_id: str, candidate_ids: list) -> float:
+    """Phase 5 library prior for one candidate: GM_BANK_FACTOR for a GM sf2 bank when the candidate set has an sfz option,
+    KEYS_SAMPLED_FACTOR for a sampled piano / e-piano in the keys role, else 1.0."""
+    p = pool["patches"][patch_id]
+    w = 1.0
+    if p["library"] in GM_BANKS and any(pool["patches"][i]["backend"] == "sfz" for i in candidate_ids):
+        w *= GM_BANK_FACTOR
+    if role == "keys" and KEYS_PREFERRED.search(p["library"]):
+        w *= KEYS_SAMPLED_FACTOR
+    return w
+
+
 def prior_weights(pool: dict, role: str, band: int, inventory_roles=None) -> dict:
     """{patch_id: weight} for the stems-absent path (per-inventory-role mass x quality, normalised within inventory role)."""
     bp = BAND_PRIOR[band_for(band)]
-    ids = [i for i in pool["roles"][role] if inventory_roles is None or pool["patches"][i]["inventory_role"] in inventory_roles]
+    ids = role_candidates(pool, role, band, inventory_roles)
     groups = {}
     for i in ids:
         groups.setdefault(pool["patches"][i]["inventory_role"], []).append(i)
     w = {}
     for inv_role, members in groups.items():
-        q = {i: quality_factor(pool["patches"][i]) for i in members}
+        q = {i: quality_factor(pool["patches"][i]) * library_prior(pool, role, i, ids) for i in members}
         if role == "drums":
             kf = KIT_FAMILY_PRIOR[band_for(band)]
             q = {i: q[i] * kf[kit_family(pool["patches"][i])] for i in members}
@@ -148,17 +203,26 @@ def donor_timbre(donor: str, stem: str, stems_root: Path = STEMS_ROOT, cache_dir
     return mean
 
 
-def similarities(vec, pool: dict, role: str, inventory_roles=None) -> list:
-    """[(patch_id, cosine)] descending over the role's deterministic patches that have a timbre vector."""
+def similarities(vec, pool: dict, role: str, inventory_roles=None, band: int = DEFAULT_BAND) -> list:
+    """[(patch_id, cosine)] descending over the role's eligible patches (role_candidates) that have a timbre vector."""
     import numpy as np
     out = []
-    for i in pool["roles"][role]:
+    for i in role_candidates(pool, role, band, inventory_roles):
         p = pool["patches"][i]
-        if p.get("timbre") is None or (inventory_roles is not None and p["inventory_role"] not in inventory_roles):
+        if p.get("timbre") is None:
             continue
         t = np.asarray(p["timbre"], dtype=np.float64)
         out.append((i, float(np.dot(vec, t) / max(np.linalg.norm(t) * np.linalg.norm(vec), 1e-12))))
     return sorted(out, key=lambda x: (-x[1], x[0]))
+
+
+def apply_library_prior(sims: list, pool: dict, role: str, temperature: float) -> tuple[list, dict]:
+    """score = cosine + temperature * ln(library_prior): the prior multiplies the softmax mass (temperature 0: it still orders
+    ties and lets a 0.3-prior GM patch win only when its cosine is higher by > T*ln(1/0.3)). Returns (scored, {id: prior})."""
+    ids = [i for i, _ in sims]
+    pri = {i: library_prior(pool, role, i, ids) for i in ids}
+    t = max(temperature, 1e-9)
+    return sorted([(i, s + t * math.log(pri[i])) for i, s in sims], key=lambda x: (-x[1], x[0])), pri
 
 
 # ------------------------------------------------------------------------------------------------------------ draw ----
@@ -186,11 +250,17 @@ def softmax_pick(cands: list, temperature: float, tag: str) -> tuple[str, list, 
 
 def select_patch(pool: dict, role: str, tag: str, band: int, temperature: float = DEFAULT_TEMPERATURE, donor_vec=None, inventory_roles=None) -> dict:
     if donor_vec is not None:
-        sims = similarities(donor_vec, pool, role, inventory_roles)[:TOP_K]
+        raw = similarities(donor_vec, pool, role, inventory_roles, band)
+        scored, pri = apply_library_prior(raw, pool, role, temperature)
+        sims = scored[:TOP_K]
         if sims:
             chosen, cands, x = softmax_pick(sims, temperature, f"{tag}|patch")
+            cos = dict(raw)
+            for c in cands:
+                c["cosine"], c["library_prior"] = round(cos[c["id"]], 6), pri[c["id"]]
             return {"patch_id": chosen, "method": "clap_similarity_softmax_top5", "temperature": temperature, "candidates": cands, "draw_u": round(x, 9),
-                    "similarity": next(c["score"] for c in cands if c["id"] == chosen)}
+                    "similarity": round(cos[chosen], 6), "score": next(c["score"] for c in cands if c["id"] == chosen), "library_prior": pri[chosen],
+                    "score_rule": "cosine + temperature * ln(library_prior); top-5 by score; softmax(score / temperature)"}
     w = prior_weights(pool, role, band, inventory_roles)
     if not w:
         raise ValueError(f"no pool patches for role {role!r} / {inventory_roles}")
@@ -200,8 +270,10 @@ def select_patch(pool: dict, role: str, tag: str, band: int, temperature: float 
         if x < acc:
             chosen = i
             break
-    cands = [{"id": i, "prior_weight": round(w[i] / tot, 6)} for i in sorted(w, key=lambda k: (-w[k], k))[:8]]
-    return {"patch_id": chosen, "method": f"band_prior(band={band_for(band)})", "candidates": cands, "draw_u": round(x, 9), "prior_weight": round(w[chosen] / tot, 6)}
+    ids = sorted(w)
+    cands = [{"id": i, "prior_weight": round(w[i] / tot, 6), "library_prior": library_prior(pool, role, i, ids)} for i in sorted(w, key=lambda k: (-w[k], k))[:8]]
+    return {"patch_id": chosen, "method": f"band_prior(band={band_for(band)})", "candidates": cands, "draw_u": round(x, 9), "prior_weight": round(w[chosen] / tot, 6),
+            "library_prior": library_prior(pool, role, chosen, ids)}
 
 
 # ---------------------------------------------------------------------------------------------------- plan / band ----
@@ -220,15 +292,17 @@ def ensemble_plan(tag: str, band: int) -> dict:
         roles[role] = bool(x < ENSEMBLE_P[role])
         draws[role] = round(x, 6)
     bp = BAND_PRIOR[band_for(band)]
-    fam_w = {f: bp[f] for f in MELODY_FAMILIES}
+    fams = melody_families(band)
+    fam_w = {f: bp[f] for f in fams}
     x = u(f"{tag}|ensemble|melody_family")
-    acc, fam = 0.0, MELODY_FAMILIES[-1]
+    acc, fam = 0.0, fams[-1]
     for f in sorted(fam_w):
         acc += fam_w[f] / sum(fam_w.values())
         if x < acc:
             fam = f
             break
     return {"roles": roles, "probabilities": dict(ENSEMBLE_P), "draws": draws, "melody_family": fam, "melody_family_weights": fam_w,
+            "melody_families": list(fams), "synth_leaning": synth_leaning(band),
             "melody_pan": 0.1 if u(f"{tag}|ensemble|melody_pan") < 0.5 else -0.1}
 
 
@@ -255,6 +329,11 @@ def plan_patches(song_id: str, donor: str, iteration: int, seed: int, pool: dict
         sel.update({"stem_used": ROLE_STEM[role] if ROLE_STEM[role] in vecs else None, "patch": {k: p.get(k) for k in ("id", "name", "library", "inventory_role", "backend", "path", "bank", "program",
                                                                                                                        "velocity_layers", "note_range", "license", "deterministic")}})
         selection[role] = sel
-    return {"schema_version": 1, "song_id": song_id, "donor": donor, "iteration": iteration, "seed": seed, "band": band, "band_source": band_src, "tag": tag, "temperature": temperature,
-            "stems_root": str(stems_root), "stems_found": stems_found, "ensemble": ens, "selection": selection,
+    priors = {"gm_banks": list(GM_BANKS), "gm_bank_factor": GM_BANK_FACTOR, "gm_factor_applies": "when the role's candidate set has an sfz option",
+              "keys_sampled_factor": KEYS_SAMPLED_FACTOR, "keys_preferred": KEYS_PREFERRED.pattern, "melody_families_default": list(MELODY_FAMILIES_DEFAULT),
+              "synth_leaning_lead_w": SYNTH_LEANING_LEAD_W, "lead_exclude": LEAD_EXCLUDE.pattern, "synth_brass_excluded_unless_synth_leaning": SYNTH_BRASS.pattern,
+              "clap_path": "score = cosine + temperature * ln(library_prior), top-5 by score, softmax(score / temperature)",
+              "band_prior": BAND_PRIOR[band_for(band)], "kit_family_prior": KIT_FAMILY_PRIOR[band_for(band)]}
+    return {"schema_version": 2, "song_id": song_id, "donor": donor, "iteration": iteration, "seed": seed, "band": band, "band_source": band_src, "tag": tag, "temperature": temperature,
+            "stems_root": str(stems_root), "stems_found": stems_found, "ensemble": ens, "selection": selection, "priors": priors,
             "pool": {"path": pool.get("_path"), "sha256": pool.get("_sha256"), "counts": pool.get("counts")}, "sampling": "SHA-256 inverse-CDF (no PRNG)"}
