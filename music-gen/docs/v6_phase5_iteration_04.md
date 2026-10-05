@@ -187,6 +187,62 @@ among themselves (kNN-real ~0). Caveat on the fair reference itself: the Demucs 
 accompaniment reference is band-limited to 11 kHz (spectral centroid 1674 Hz vs the candidates' 2563 Hz and the full
 mixes' 2421 Hz), ~5 LU quieter (-17.2 LUFS) and has no stereo image; a band-limited-candidate control is in 8.4.
 
-### 8.3 Iteration 04 vs both references, and 03 vs 04
+### 8.3 Iteration 03 vs 04, both references, both backbones
 
-(filled in below once the iteration-04 embeddings land)
+Runs: `data/v6/scorecard/runs/iteration_0{3,4}_corpus_vs_corpus{,_accomp}/`. Thresholds in parentheses; every gate
+metric FLAGs in all four runs on both backbones, novelty PASSes everywhere (no copying).
+
+| backbone / metric | it03 vs corpus | it04 vs corpus | it03 vs corpus_accomp | it04 vs corpus_accomp |
+|---|---|---|---|---|
+| clap kid_song (thr 1.99e-4 / 9.75e-5) | 0.001856 | 0.001662 (-10 %) | 0.001585 | 0.001361 (-14 %) |
+| clap c2st (0.67 / 0.61) | 0.938 | 0.931 | 0.988 | 0.984 |
+| clap coverage (> 0.467 / 0.493) | 0.162 | 0.174 | 0.062 | 0.085 |
+| clap density | 3.40 | 4.17 | 0.143 | 0.160 |
+| clap fad | 0.506 | 0.477 | 0.413 | 0.376 |
+| clap knn_real_fraction | 0.0019 | 0.0029 | 0.0029 | 0.0017 |
+| clap novelty_max_cos | 0.942 | 0.937 | 0.927 | 0.933 |
+| mert kid_song (thr 8.5e-4 / 7.2e-4) | 0.004465 | 0.005126 (+15 %) | 0.006308 | 0.006435 (+2 %) |
+| mert c2st (0.55 / 0.57) | 0.971 | 0.975 | 0.943 | 0.931 |
+| mert coverage (> 0.555 / 0.603) | 0.158 | 0.137 | 0.263 | 0.285 |
+| mert density | 0.333 | 0.382 | 1.248 | 1.258 |
+| mert fad | 7.01 | 7.67 | 9.27 | 9.66 |
+| mert knn_real_fraction | 0.0109 | 0.0102 | 0.0061 | 0.0066 |
+| mert novelty_max_cos | 0.983 | 0.982 | 0.982 | 0.981 |
+
+Mix descriptors, candidates (mean ± sd) vs the full-mix corpus (mean ± sd):
+
+| descriptor | iteration 03 | iteration 04 | corpus |
+|---|---|---|---|
+| lufs_integrated | -12.21 ± 0.20 | -12.34 ± 0.35 | -11.82 ± 3.35 |
+| crest_factor_db | 12.57 ± 0.69 | 13.15 ± 0.81 | 14.06 ± 1.96 |
+| spectral_centroid_hz | 2563 ± 377 | 2656 ± 257 | 2421 ± 617 |
+| stereo_width_db | -18.67 ± 1.2 | -8.36 ± 2.8 | -12.94 ± 12 |
+| lr_correlation | 0.973 ± 0.007 | 0.713 ± 0.148 | 0.802 ± 0.168 |
+| peak_dbfs | -1.99 ± 0.52 | -1.60 ± 0.89 | -0.03 ± 2.89 |
+
+The mix-level changes did what they were asked at the descriptor level — width -18.7 -> -8.4 dB and L/R correlation
+0.973 -> 0.713 now bracket the corpus (-12.9 dB / 0.80; iteration 04 is slightly WIDER than the corpus mean, so a
+smaller `WIDE_SIDE` / keys width is the next tweak), crest +0.6 dB of the 1.5 dB wanted (the limiter still works hard:
+LUFS target -12 at -0.5 dBTP), peak +0.4 dB. Centroid moved the wrong way (+93 Hz, candidates already brighter than the
+corpus). Embedding-wise iteration 04 is a small CLAP improvement (kid -10 % / -14 %, fad -6 % / -9 %, coverage up on both
+references) and a small MERT regression (kid +15 % / +2 %, fad +9 % / +4 %, coverage -13 % vs corpus); every number
+remains an order of magnitude above its floor and the verdicts are unchanged. Realistic patches, debiased harmony,
+resolved sevenths and a wider mix did not move the distribution gates by more than ~15 %: the remaining distance is not
+in these knobs.
+
+### 8.4 Control: band-limiting the candidates like the reference
+
+`corpus_accomp` is 22.05 kHz mono (Demucs). Scoring 22.05 kHz MONO copies of the iteration-04 mixes (CLAP only, run
+`iteration_04_bandlimited22k_mono_vs_corpus_accomp_clap`): kid_song 0.001361 -> 0.000799 (-41 %), c2st 0.984 -> 0.926,
+coverage 0.085 -> 0.221, density 0.16 -> 2.46, fad 0.376 -> 0.272, kNN-real 0.0017 -> 0.0066; still FLAG on all three
+gates (kid 8x the floor). So roughly 40 % of the CLAP distance to the accompaniment reference is the reference's own
+band-limit / mono-ness, not the music; the remaining ~0.0008 is. A fair-and-equal comparison should either band-limit
+and mono the candidates (as here) or re-separate the corpus at 44.1 kHz stereo; the per-reference gates mechanism makes
+either a one-line change. MERT was not run on the band-limited copies (29 x ~2 min under the shared CPU).
+
+### 8.5 Memory / runtime
+
+Compose+render per song 31–70 s (render) + ~1 s compose at 4 shared cores; process RSS flat at ~0.4 GB between songs
+after the `write_wav_int16` fix (section 6), 1.9 GB mid-song transient. MERT embedding of 29 x ~3.5 min of audio took
+2.7 h for the accompaniments and ~1 h for the iteration-04 mixes under full CPU contention with the render; the paused
+MUSDB MERT job (pid 584) was resumed after the last embedding.
