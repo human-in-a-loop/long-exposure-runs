@@ -55,6 +55,10 @@ EARLY_REFLECTION_DB, REVERB_RETURN_DB = -12.0, -9.0  # Phase 5: return was -10 d
 REVERB_SEND = {"drums": 0.12, "bass": 0.0, "keys": 0.22, "comp_guitar": 0.18, "pad": 0.35, "melody": 0.28, "percussion": 0.15}
 ROOM_BY_BAND = {4: 0.45, 5: 0.38, 6: 0.42, 7: 0.55}
 GAIN_CLIP = (0.05, 8.0)
+# Iteration 05 — pre-registered changes (docs/v6_iteration_05_diagnostics.md section 5):
+TILT_STEER = {"strength": 1.0, "cap_db": 6.0}  # was 0.5 x the difference, |gain| <= 3 dB: iteration 04 masters sat 4-6 dB brighter than the band target (shelf saturated at -2.5 dB)
+SONG_VARIATION = {"lufs": "per-song target = SHA inverse-CDF over the band's per-song corpus LUFS values (mix_reference per_song), clamped to TARGET_LUFS_CLAMP",
+                  "room_jitter": 0.08, "return_jitter_db": 2.0}  # per-song room size +/- jitter and reverb return +/- dB (SHA draws on the song tag)
 
 
 # ------------------------------------------------------------------------------------------------------- measures ----
@@ -155,6 +159,35 @@ def load_reference(path: Path = MIX_REFERENCE) -> dict:
 def room_size(band: int, ballad: bool, bpm: float) -> float:
     r = ROOM_BY_BAND.get(int(band), 0.42) + (0.15 if (ballad or bpm < 90.0) else 0.0) - (0.10 if bpm > 130.0 else 0.0)
     return float(min(0.75, max(0.25, r)))
+
+
+def _u(tag: str) -> float:
+    from scripts.v6.gen.common import u
+    return u(tag)
+
+
+def song_target_lufs(reference: dict, band: int, tag: str) -> tuple[float, dict]:
+    """Iteration 05: one loudness target PER SONG, drawn (SHA inverse-CDF, sorted values) from the band's per-song corpus LUFS list
+    (fallback: all songs), clamped to TARGET_LUFS_CLAMP. Iteration 04 songs all sat at the one target (sd 0.55 LU vs 3.4 in the corpus)."""
+    rows = [r for r in reference.get("per_song", []) if int(r.get("band", -1)) == int(band)] or list(reference.get("per_song", []))
+    vals = sorted(float(r["lufs_integrated"]) for r in rows if r.get("lufs_integrated") is not None)
+    fixed = float(reference.get("target_lufs", -14.0))
+    if not vals:
+        return fixed, {"rule": "fixed (no per-song reference)", "target_lufs": fixed}
+    x = _u(f"{tag}|mix|target_lufs")
+    raw = vals[min(len(vals) - 1, int(x * len(vals)))]
+    t = clamp_target(raw)
+    return t, {"rule": SONG_VARIATION["lufs"], "draw_u": round(x, 9), "raw_lufs": raw, "target_lufs": t, "pool": {"band": int(band), "n": len(vals), "min": vals[0], "max": vals[-1]},
+               "clamp": list(TARGET_LUFS_CLAMP), "fixed_target_lufs": fixed}
+
+
+def song_room(band: int, ballad: bool, bpm: float, tag: str) -> tuple[float, float, dict]:
+    """Iteration 05: per-song room size (+/- room_jitter) and reverb return (+/- return_jitter_db) around the band / tempo rule."""
+    base = room_size(band, ballad, bpm)
+    ur, ug = _u(f"{tag}|mix|room"), _u(f"{tag}|mix|return")
+    rs = float(min(0.75, max(0.25, base + SONG_VARIATION["room_jitter"] * (2.0 * ur - 1.0))))
+    ret = REVERB_RETURN_DB + SONG_VARIATION["return_jitter_db"] * (2.0 * ug - 1.0)
+    return rs, ret, {"base_room_size": base, "room_size": rs, "return_db": round(ret, 3), "draw_u": [round(ur, 9), round(ug, 9)], "jitter": [SONG_VARIATION["room_jitter"], SONG_VARIATION["return_jitter_db"]]}
 
 
 def pan_lr(x: np.ndarray, pan: float) -> np.ndarray:
@@ -276,7 +309,8 @@ def master(mix: np.ndarray, sr: int, target_lufs: float, tilt_target_db: float |
     tilt_before = spectral_tilt_db(y, sr)
     shelf_db = 0.0
     if tilt_target_db is not None:
-        shelf_db = float(min(3.0, max(-3.0, 0.5 * (tilt_target_db - tilt_before))))
+        cap = TILT_STEER["cap_db"]
+        shelf_db = float(min(cap, max(-cap, TILT_STEER["strength"] * (tilt_target_db - tilt_before))))
         y = pb.Pedalboard([pb.HighShelfFilter(cutoff_frequency_hz=4000.0, gain_db=shelf_db)])(np.ascontiguousarray(y.T, dtype=np.float32), sr).T.astype(np.float64)
     pre_lufs = lufs(y, sr)
     history, gain_db, out, linfo, gcurve = [], target_lufs - pre_lufs, y, {}, None
@@ -295,7 +329,7 @@ def master(mix: np.ndarray, sr: int, target_lufs: float, tilt_target_db: float |
             gx = np.zeros_like(y)
             gx[: groups[name].shape[0]] = groups[name]
             groups[name] = np.clip(_bus_shelf(gx, sr, shelf_db if tilt_target_db is not None else 0.0) * lin * gcurve[:, None], -1.0, 1.0).astype(np.float32)
-    info = {"bus_compressor": dict(BUS_COMP), "tilt_before_db": round(tilt_before, 3), "tilt_target_db": tilt_target_db, "tilt_shelf_gain_db": round(shelf_db, 3),
+    info = {"bus_compressor": dict(BUS_COMP), "tilt_before_db": round(tilt_before, 3), "tilt_target_db": tilt_target_db, "tilt_shelf_gain_db": round(shelf_db, 3), "tilt_steer": dict(TILT_STEER),
             "lufs_pre_normalise": round(pre_lufs, 3), "normalise_limit_passes": history, "target_lufs": target_lufs, "lufs_final": round(lufs(final, sr), 3),
             "true_peak_dbtp_final": round(true_peak_dbtp(final, sr), 3), "sample_peak_dbfs_final": round(20 * np.log10(max(float(np.abs(final).max()), 1e-9)), 3),
             "crest_factor_db_final": round(crest_db(final), 3), "spectral_tilt_db_final": round(spectral_tilt_db(final, sr), 3), "clipped_samples": int((np.abs(out) > 1.0).sum()),
@@ -304,16 +338,23 @@ def master(mix: np.ndarray, sr: int, target_lufs: float, tilt_target_db: float |
 
 
 def mix_song(stems: dict, sr: int, band: int, ballad: bool, bpm: float, melody_pan: float, reference: dict | None = None, length_s: float | None = None,
-             groups: dict | None = None) -> tuple[np.ndarray, dict]:
+             groups: dict | None = None, tag: str | None = None) -> tuple[np.ndarray, dict]:
     """stems: {role: (n, 2) float32 at sr}. Returns (master (n, 2) float32, mix_manifest dict). `groups` (optional, a dict to fill;
     iteration 05 `--keep-stems`): on return holds {STEM_GROUP name: mastered (n, 2) float32} — each group = its roles' processed stems
     + its own share of the reverb return (the reverb is linear: reverb(sum of sends) = sum of reverb(send) up to float rounding),
-    through master(groups=...). The master output is byte-identical with or without `groups`."""
+    through master(groups=...). The master output is byte-identical with or without `groups`. `tag` (iteration 05; render_song passes the
+    patch-plan tag): per-song loudness target (song_target_lufs) and room / return draw (song_room); without a tag the fixed corpus
+    target and the band room apply (unchanged pre-iteration-05 behaviour)."""
     import pedalboard as pb
     reference = reference or load_reference()
     band_ref = reference.get("per_band", {}).get(str(int(band))) or reference.get("overall", {})
     target = float(reference.get("target_lufs", -14.0))
     tilt_target = band_ref.get("spectral_tilt_db_median")
+    variation = None
+    if tag is not None:
+        target, vl = song_target_lufs(reference, band, tag)
+        rs_song, ret_db, vr = song_room(band, ballad, bpm, tag)
+        variation = {"tag": tag, "loudness": vl, "room": vr}
     n = max([s.shape[0] for s in stems.values()] + [int(round((length_s or 0.0) * sr))])
     bus, send, per_stem = np.zeros((n, 2), np.float64), np.zeros((n, 2), np.float64), {}
     gbus = {g: np.zeros((n, 2), np.float64) for g in sorted(set(STEM_GROUP.get(r, "other") for r in stems))} if groups is not None else {}
@@ -326,18 +367,19 @@ def mix_song(stems: dict, sr: int, band: int, ballad: bool, bpm: float, melody_p
         if groups is not None:
             gbus[STEM_GROUP.get(role, "other")][: y.shape[0]] += y
             gsend[STEM_GROUP.get(role, "other")][: y.shape[0]] += y * REVERB_SEND.get(role, 0.2)
-    rs = room_size(band, ballad, bpm)
+    rs, return_db = (rs_song, ret_db) if variation else (room_size(band, ballad, bpm), REVERB_RETURN_DB)
     rev = pb.Pedalboard([pb.Reverb(room_size=rs, damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)])
-    ret = rev(np.ascontiguousarray(send.T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (REVERB_RETURN_DB / 20.0)) + early_reflections(send, sr)
+    ret = rev(np.ascontiguousarray(send.T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (return_db / 20.0)) + early_reflections(send, sr)
     pre = bus + ret
     if groups is not None:
         for g in gbus:
             rev_g = pb.Pedalboard([pb.Reverb(room_size=rs, damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)])
-            groups[g] = gbus[g] + rev_g(np.ascontiguousarray(gsend[g].T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (REVERB_RETURN_DB / 20.0)) + early_reflections(gsend[g], sr)
+            groups[g] = gbus[g] + rev_g(np.ascontiguousarray(gsend[g].T, dtype=np.float32), sr).T.astype(np.float64) * (10 ** (return_db / 20.0)) + early_reflections(gsend[g], sr)
     out, mi = master(pre.astype(np.float32), sr, target, tilt_target, groups=groups)
     man = {"schema_version": 1, "sample_rate": sr, "band": int(band), "ballad": bool(ballad), "bpm": bpm, "per_stem": per_stem,
-           "reverb": {"room_size": rs, "damping": 0.5, "return_db": REVERB_RETURN_DB, "early_reflections_ms": EARLY_REFLECTIONS_MS, "early_reflection_db": EARLY_REFLECTION_DB,
+           "reverb": {"room_size": rs, "damping": 0.5, "return_db": round(return_db, 3), "early_reflections_ms": EARLY_REFLECTIONS_MS, "early_reflection_db": EARLY_REFLECTION_DB,
                       "sends": {r: REVERB_SEND.get(r, 0.2) for r in sorted(stems)}},
+           "song_variation": variation, "iteration_05": {"tilt_steer": dict(TILT_STEER), "song_variation_rules": dict(SONG_VARIATION), "applied_song_variation": variation is not None},
            "phase5_targets": {"true_peak_dbtp": TRUE_PEAK_DBTP, "bus_comp": dict(BUS_COMP), "wide_side": WIDE_SIDE, "keys_width": PAN["keys"][2], "comp_haas_ms": PAN["comp_guitar"][2],
                               "iteration_03_gap": "lr_corr 0.973 vs 0.80, width -18.7 vs -12.9 dB, crest 12.6 vs 14.1 dB, peak -2.0 vs -0.03 dBFS"},
            "pre_master": {"peak_dbfs": round(20 * np.log10(max(float(np.abs(pre).max()), 1e-9)), 3), "lufs": round(lufs(pre, sr), 3)},

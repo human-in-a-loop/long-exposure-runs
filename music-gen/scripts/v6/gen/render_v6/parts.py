@@ -22,7 +22,7 @@ from __future__ import annotations
 from scripts.v6.gen.common import u
 
 PAD_RANGE, GUITAR_RANGE = (55, 79), (52, 79)
-COMP_KEEP_P = 0.55
+COMP_KEEP_P = 0.7  # iteration 05: was 0.55 (denser comping guitar: the real "other" stem is rhythmically denser and more percussive than ours)
 PAD_VELOCITY = 72
 PERC_SLOTS = (2, 6, 10, 14)
 

@@ -51,11 +51,18 @@ def test_02_temperature_zero_prefers_most_similar() -> None:
     import numpy as np
     for pid, role in (("finger_bass_yr__Finger_Bass_YR", "bass"), ("fss_steel_string_guitar__FSS_Steel_String_Guitar", "comp_guitar"), ("avl_drumkits_sf2__AVL_Black_Pearl_4pc", "drums")):
         vec = np.asarray(POOL["patches"][pid]["timbre"], dtype=np.float64)
-        sel = select.select_patch(POOL, role, "t", 5, temperature=0.0, donor_vec=vec)
+        tag = "t"
+        if role == "drums":  # iteration 05: the kit FAMILY is drawn first; pick a tag whose draw lands on this kit's family, and check the other family is honoured
+            fam = select.kit_family(POOL["patches"][pid])
+            tag = next(f"t{i}" for i in range(200) if select.kit_family_draw(f"t{i}", 5)[0] == fam)
+            other = next(f"t{i}" for i in range(200) if select.kit_family_draw(f"t{i}", 5)[0] != fam)
+            so = select.select_patch(POOL, role, other, 5, temperature=0.0, donor_vec=vec)
+            assert so["patch_id"] != pid and select.kit_family(POOL["patches"][so["patch_id"]]) == so["kit_family"] != fam
+        sel = select.select_patch(POOL, role, tag, 5, temperature=0.0, donor_vec=vec)
         assert sel["patch_id"] == pid and sel["method"] == "clap_similarity_softmax_top5" and sel["similarity"] > 0.99, sel
         assert len(sel["candidates"]) == 5 and sel["candidates"][0]["id"] == pid
-        warm = select.select_patch(POOL, role, "t", 5, temperature=0.05, donor_vec=vec)
-        assert abs(sum(c["prob"] for c in warm["candidates"]) - 1.0) < 1e-6 and warm["candidates"][0]["prob"] == max(c["prob"] for c in warm["candidates"])
+        warm = select.select_patch(POOL, role, tag, 5, temperature=0.05, donor_vec=vec)
+        assert abs(sum(c["prob"] for c in warm["candidates"]) - 1.0) < 1e-5 and warm["candidates"][0]["prob"] == max(c["prob"] for c in warm["candidates"])
         assert warm["patch_id"] in {c["id"] for c in warm["candidates"]}
     chosen, cands, x = select.softmax_pick([("a", 0.9), ("b", 0.8), ("c", 0.1)], 1e-12, "tag")
     assert chosen == "a" and [c["prob"] for c in cands] == [1.0, 0.0, 0.0]

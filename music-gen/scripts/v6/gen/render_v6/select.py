@@ -42,7 +42,7 @@ DONOR_CACHE = WS / "data" / "v6" / "render_v6" / "donor_timbre"
 RECEIPTS = WS / "corpus" / "ratings" / "ingest_receipts.jsonl"
 ROLE_STEM = {"bass": "bass", "keys": "other", "comp_guitar": "other", "pad": "other", "melody": "other", "drums": "drums", "percussion": "drums"}
 TOP_K, DEFAULT_TEMPERATURE, DEFAULT_BAND = 5, 0.05, 5
-ENSEMBLE_P = {"bass": 1.0, "drums": 1.0, "keys": 1.0, "melody": 1.0, "comp_guitar": 0.5, "pad": 0.35, "percussion": 0.25}
+ENSEMBLE_P = {"bass": 1.0, "drums": 1.0, "keys": 1.0, "melody": 1.0, "comp_guitar": 0.7, "pad": 0.35, "percussion": 0.4}  # iteration 05: comp_guitar 0.5 -> 0.7, percussion 0.25 -> 0.4 ("other" stem onset rate 2.6 vs 4.1 Hz; see docs/v6_iteration_05_diagnostics.md)
 MELODY_FAMILIES = ("lead", "electric_piano", "electric_guitar", "piano", "brass")  # inventory families the pool's melody role knows
 MELODY_FAMILIES_DEFAULT = ("electric_piano", "piano", "electric_guitar", "acoustic_guitar", "brass")  # Phase 5 default melody pool
 SYNTH_LEANING_LEAD_W = 0.5  # a band whose BAND_PRIOR["lead"] >= this is synth-leaning: "lead" joins the melody families
@@ -60,6 +60,9 @@ BAND_PRIOR = {  # inventory role -> weight; rows are re-normalised per pool role
         "lead": 0.60, "brass": 0.15, "pad": 0.70, "strings_pad": 0.30, "drums": 1.0, "percussion": 1.0},
 }
 KIT_FAMILY_PRIOR = {7: {"jazz": 0.5, "neutral": 0.4, "rock": 0.1}, 5: {"jazz": 0.25, "neutral": 0.5, "rock": 0.25}, 4: {"jazz": 0.1, "neutral": 0.45, "rock": 0.45}}
+KIT_FAMILY_FIRST = True  # iteration 05 (homogeneity gap): the drum kit FAMILY is SHA-drawn from KIT_FAMILY_PRIOR per song BEFORE the CLAP ranking,
+# which then only ranks kits of that family (iteration 04: 24/29 songs got one of three bop/brush kits because the donor-drums similarity
+# favoured them on every song; the prior entered only as T ln(prior) and could not overturn it).
 
 
 # ------------------------------------------------------------------------------------------------------------ pool ----
@@ -203,11 +206,29 @@ def donor_timbre(donor: str, stem: str, stems_root: Path = STEMS_ROOT, cache_dir
     return mean
 
 
-def similarities(vec, pool: dict, role: str, inventory_roles=None, band: int = DEFAULT_BAND) -> list:
-    """[(patch_id, cosine)] descending over the role's eligible patches (role_candidates) that have a timbre vector."""
+def kit_family_draw(tag: str, band: int) -> tuple[str, float]:
+    """SHA inverse-CDF over KIT_FAMILY_PRIOR[band] in sorted-key order -> (family, uniform)."""
+    kf = KIT_FAMILY_PRIOR[band_for(band)]
+    x = u(f"{tag}|kit_family")
+    acc, fam = 0.0, sorted(kf)[-1]
+    for f in sorted(kf):
+        acc += kf[f] / sum(kf.values())
+        if x < acc:
+            fam = f
+            break
+    return fam, x
+
+
+def similarities(vec, pool: dict, role: str, inventory_roles=None, band: int = DEFAULT_BAND, kit_fam: str | None = None) -> list:
+    """[(patch_id, cosine)] descending over the role's eligible patches (role_candidates) that have a timbre vector; `kit_fam`
+    (drums) keeps only kits of that family when at least one such kit has a timbre vector."""
     import numpy as np
+    ids = role_candidates(pool, role, band, inventory_roles)
+    if kit_fam is not None:
+        fam_ids = [i for i in ids if kit_family(pool["patches"][i]) == kit_fam and pool["patches"][i].get("timbre") is not None]
+        ids = fam_ids or ids
     out = []
-    for i in role_candidates(pool, role, band, inventory_roles):
+    for i in ids:
         p = pool["patches"][i]
         if p.get("timbre") is None:
             continue
@@ -249,8 +270,12 @@ def softmax_pick(cands: list, temperature: float, tag: str) -> tuple[str, list, 
 
 
 def select_patch(pool: dict, role: str, tag: str, band: int, temperature: float = DEFAULT_TEMPERATURE, donor_vec=None, inventory_roles=None) -> dict:
+    fam_info = {}
+    if role == "drums" and KIT_FAMILY_FIRST:
+        fam, fx = kit_family_draw(tag, band)
+        fam_info = {"kit_family": fam, "kit_family_draw_u": round(fx, 9), "kit_family_prior": KIT_FAMILY_PRIOR[band_for(band)], "kit_family_rule": "SHA inverse-CDF on KIT_FAMILY_PRIOR before ranking (iteration 05)"}
     if donor_vec is not None:
-        raw = similarities(donor_vec, pool, role, inventory_roles, band)
+        raw = similarities(donor_vec, pool, role, inventory_roles, band, fam_info.get("kit_family"))
         scored, pri = apply_library_prior(raw, pool, role, temperature)
         sims = scored[:TOP_K]
         if sims:
@@ -258,10 +283,13 @@ def select_patch(pool: dict, role: str, tag: str, band: int, temperature: float 
             cos = dict(raw)
             for c in cands:
                 c["cosine"], c["library_prior"] = round(cos[c["id"]], 6), pri[c["id"]]
-            return {"patch_id": chosen, "method": "clap_similarity_softmax_top5", "temperature": temperature, "candidates": cands, "draw_u": round(x, 9),
-                    "similarity": round(cos[chosen], 6), "score": next(c["score"] for c in cands if c["id"] == chosen), "library_prior": pri[chosen],
-                    "score_rule": "cosine + temperature * ln(library_prior); top-5 by score; softmax(score / temperature)"}
+            return dict({"patch_id": chosen, "method": "clap_similarity_softmax_top5", "temperature": temperature, "candidates": cands, "draw_u": round(x, 9),
+                         "similarity": round(cos[chosen], 6), "score": next(c["score"] for c in cands if c["id"] == chosen), "library_prior": pri[chosen],
+                         "score_rule": "cosine + temperature * ln(library_prior); top-5 by score; softmax(score / temperature)"}, **fam_info)
     w = prior_weights(pool, role, band, inventory_roles)
+    if fam_info:  # stems-absent path: the drawn family's kits carry the mass (fallback: every kit) so both paths obey the same draw
+        wf = {i: v for i, v in w.items() if kit_family(pool["patches"][i]) == fam_info["kit_family"]}
+        w = wf or w
     if not w:
         raise ValueError(f"no pool patches for role {role!r} / {inventory_roles}")
     x, tot, acc, chosen = u(f"{tag}|patch"), sum(w.values()), 0.0, sorted(w)[-1]  # the prior IS the mass: sorted-key inverse CDF on it
@@ -272,8 +300,8 @@ def select_patch(pool: dict, role: str, tag: str, band: int, temperature: float 
             break
     ids = sorted(w)
     cands = [{"id": i, "prior_weight": round(w[i] / tot, 6), "library_prior": library_prior(pool, role, i, ids)} for i in sorted(w, key=lambda k: (-w[k], k))[:8]]
-    return {"patch_id": chosen, "method": f"band_prior(band={band_for(band)})", "candidates": cands, "draw_u": round(x, 9), "prior_weight": round(w[chosen] / tot, 6),
-            "library_prior": library_prior(pool, role, chosen, ids)}
+    return dict({"patch_id": chosen, "method": f"band_prior(band={band_for(band)})", "candidates": cands, "draw_u": round(x, 9), "prior_weight": round(w[chosen] / tot, 6),
+                 "library_prior": library_prior(pool, role, chosen, ids)}, **fam_info)
 
 
 # ---------------------------------------------------------------------------------------------------- plan / band ----
@@ -333,7 +361,7 @@ def plan_patches(song_id: str, donor: str, iteration: int, seed: int, pool: dict
               "keys_sampled_factor": KEYS_SAMPLED_FACTOR, "keys_preferred": KEYS_PREFERRED.pattern, "melody_families_default": list(MELODY_FAMILIES_DEFAULT),
               "synth_leaning_lead_w": SYNTH_LEANING_LEAD_W, "lead_exclude": LEAD_EXCLUDE.pattern, "synth_brass_excluded_unless_synth_leaning": SYNTH_BRASS.pattern,
               "clap_path": "score = cosine + temperature * ln(library_prior), top-5 by score, softmax(score / temperature)",
-              "band_prior": BAND_PRIOR[band_for(band)], "kit_family_prior": KIT_FAMILY_PRIOR[band_for(band)]}
+              "band_prior": BAND_PRIOR[band_for(band)], "kit_family_prior": KIT_FAMILY_PRIOR[band_for(band)], "kit_family_first": KIT_FAMILY_FIRST}
     return {"schema_version": 2, "song_id": song_id, "donor": donor, "iteration": iteration, "seed": seed, "band": band, "band_source": band_src, "tag": tag, "temperature": temperature,
             "stems_root": str(stems_root), "stems_found": stems_found, "ensemble": ens, "selection": selection, "priors": priors,
             "pool": {"path": pool.get("_path"), "sha256": pool.get("_sha256"), "counts": pool.get("counts")}, "sampling": "SHA-256 inverse-CDF (no PRNG)"}

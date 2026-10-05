@@ -101,7 +101,7 @@ def render_song(song_dir: Path, donor: str, iteration: int = 1, seed: int = 0, o
         log(f"[render_v6] {song_id} {role:12} {patch['id'][:48]:48} notes={len(notes2)} vel={xinfo['velocity']['realized_range']} cc={xinfo['cc']['n_cc']} {per_role[role]['wall_s']}s")
     t_mix = time.time()
     groups = {} if keep_stems else None
-    master, mman = mix.mix_song(stems, SR, pp["band"], bool(plan.get("ballad")), bpm, pp["ensemble"]["melody_pan"], length_s=song_len_s + 1.5, groups=groups)
+    master, mman = mix.mix_song(stems, SR, pp["band"], bool(plan.get("ballad")), bpm, pp["ensemble"]["melody_pan"], length_s=song_len_s + 1.5, groups=groups, tag=tag)
     mix_path = out / mix_name
     write_wav_int16(mix_path, master, SR)
     mman.update({"song_id": song_id, "donor": donor, "ab_mix": mix_path.name, "ab_mix_sha256": sha_file(mix_path), "wall_s": round(time.time() - t_mix, 3)})
@@ -124,7 +124,9 @@ def render_song(song_dir: Path, donor: str, iteration: int = 1, seed: int = 0, o
     man = {"schema_version": 1, "renderer": "render_v6", "song_id": song_id, "donor": donor, "iteration": iteration, "seed": seed, "band": pp["band"], "tempo_bpm": bpm, "n_bars": n_bars,
            "song_len_s": round(song_len_s, 4), "sample_rate": SR, "roles": per_role, "ensemble": pp["ensemble"]["roles"], "melody_family": pp["ensemble"]["melody_family"],
            "ab_mix": mix_path.name, "ab_mix_sha256": mman["ab_mix_sha256"], "ab_mix_duration_s": mman["duration_s"], "mix_master": mman["master"], "per_track_deleted_after_mix": deleted,
-           "stems_kept": kept_stems, "pool_sha256": pool.get("_sha256"), "deterministic_backends_only": all(per_role[r].get("backend") in ("sfz", "sf2") for r in per_role if "backend" in per_role[r]),
+           "stems_kept": kept_stems, "iteration_05": {"comp_keep_p": parts.COMP_KEEP_P, "ensemble_p": dict(select.ENSEMBLE_P), "kit_family_first": select.KIT_FAMILY_FIRST,
+                                                     "tilt_steer": dict(mix.TILT_STEER), "song_variation": dict(mix.SONG_VARIATION)},
+           "pool_sha256": pool.get("_sha256"), "deterministic_backends_only": all(per_role[r].get("backend") in ("sfz", "sf2") for r in per_role if "backend" in per_role[r]),
            "env_pin_sha256": ENV_PIN_SHA256, "wall_s": round(time.time() - t_all, 3)}
     write_json_atomic(out / "render_manifest.json", man)
     return man

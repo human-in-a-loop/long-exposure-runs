@@ -48,7 +48,10 @@ def test_01_compose_renderer_both_end_to_end_under_90s() -> None:
         assert pp["stems_found"] == {} and all(s["method"].startswith("band_prior") for s in pp["selection"].values())
         mm = json.loads((sd / "mix_manifest.json").read_text())
         ref = mix.load_reference()
-        assert abs(mm["master"]["lufs_final"] - ref["target_lufs"]) <= 0.5 and mm["master"]["true_peak_dbtp_final"] <= mix.TRUE_PEAK_DBTP + 0.05 and mm["master"]["clipped_samples"] == 0
+        # iteration 05: the song's own target (per-song draw from the band's corpus LUFS list, clamped) is what the master hits
+        assert abs(mm["master"]["lufs_final"] - mm["master"]["target_lufs"]) <= 0.5 and mm["master"]["true_peak_dbtp_final"] <= mix.TRUE_PEAK_DBTP + 0.05 and mm["master"]["clipped_samples"] == 0
+        assert mix.TARGET_LUFS_CLAMP[0] - 1e-9 <= mm["master"]["target_lufs"] <= mix.TARGET_LUFS_CLAMP[1] + 1e-9 and mm["song_variation"]["loudness"]["target_lufs"] == mm["master"]["target_lufs"]
+        assert mm["song_variation"]["tag"] == pp["tag"] and mm["iteration_05"]["applied_song_variation"] and mm["master"]["tilt_steer"] == mix.TILT_STEER
         x, sr = sf.read(str(sd / "ab_mix.wav"), dtype="float32", always_2d=True)
         g, _ = sf.read(str(sd / "ab_mix_gm.wav"), dtype="float32", always_2d=True)
         assert sr == 44100 and x.shape[1] == 2 and abs(x.shape[0] / sr - 16 * 4 * 60.0 / 112.0) < 6.0 and float(abs(x).max()) < 1.0

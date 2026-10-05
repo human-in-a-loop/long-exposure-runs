@@ -179,21 +179,28 @@ def oracle(stems_root: Path, accomp_manifest: Path, out: Path, diag_out: Path, b
     out.mkdir(parents=True, exist_ok=True)
     mix_man_path = out / "oracle_mixes.json"
     mixes = read_json(mix_man_path) if mix_man_path.exists() else {"schema_version": dc.SCHEMA_VERSION, "songs": {}}
+    donors = sorted(acc["songs"])
+    ref_items = [{"path": str(_WS / acc["songs"][d]["path"]) if not Path(acc["songs"][d]["path"]).is_absolute() else acc["songs"][d]["path"], "sha16": acc["songs"][d]["sha16"], "label": d} for d in donors]
+    fmt = scf.reference_format(ref_items)
     for donor, s in sorted(acc["songs"].items()):
         wav = out / f"{donor}.wav"
-        if donor in mixes["songs"] and wav.exists() and sha256_file(wav) == mixes["songs"][donor]["sha256"]:
-            continue
+        done = donor in mixes["songs"]
+        if done and ((wav.exists() and sha256_file(wav) == mixes["songs"][donor]["sha256"]) or scf.cached_item(sha16_of(mixes["songs"][donor]["sha256"]), fmt, fmt_cache, donor)):
+            continue  # mixed before (the 44.1 kHz scratch wav may already have been deleted once its format-matched copy existed)
         bpm, src = donor_bpm(donor, 0, [], _WS / "data" / "v5" / "corpus")
         t0 = time.time()
         mixes["songs"][donor] = dict(oracle_mix_one(stems_root, donor, int(s.get("band") or 5), bpm, wav), bpm_source=src, wall_s=round(time.time() - t0, 1))
         log(f"[oracle] mixed {donor} band={s.get('band')} bpm={bpm:.1f} LUFS={mixes['songs'][donor]['master']['lufs_final']} {time.time() - t0:.0f}s")
         write_json_atomic(mix_man_path, mixes)
-    donors = sorted(acc["songs"])
+    ora_items = []
+    for d in donors:  # format-matched copies (scratch wav present -> match / cache; absent -> the cache entry made before it was deleted)
+        src16 = sha16_of(mixes["songs"][d]["sha256"])
+        it = scf.match_item({"path": mixes["songs"][d]["path"], "sha16": src16, "label": d}, fmt, fmt_cache, log) if Path(mixes["songs"][d]["path"]).exists() else scf.cached_item(src16, fmt, fmt_cache, d)
+        if it is None:
+            raise FileNotFoundError(f"oracle mix for {d}: neither the scratch wav nor its format-matched cache copy exists")
+        ora_items.append(it)
     if mix_only:
         return mixes
-    ref_items = [{"path": str(_WS / acc["songs"][d]["path"]) if not Path(acc["songs"][d]["path"]).is_absolute() else acc["songs"][d]["path"], "sha16": acc["songs"][d]["sha16"], "label": d} for d in donors]
-    fmt = scf.reference_format(ref_items)
-    ora_items, fmt_block = scf.match_items([{"path": mixes["songs"][d]["path"], "sha16": sha16_of(mixes["songs"][d]["sha256"]), "label": d} for d in donors], fmt, fmt_cache, log)
     gates = sc.load_gates(gates_path)
     gbb, gkey = sc.gates_for_reference(gates, "corpus_accomp")
     rep = {"schema_version": dc.SCHEMA_VERSION, "n_songs": len(donors), "splits": splits, "seed": seed, "k": k, "format": fmt, "gates_key": gkey, "mixes": str(mix_man_path),
@@ -254,7 +261,7 @@ def main(argv=None) -> int:
     o.add_argument("--diag-out", default=str(dc.DIAG_DIR / "iteration_05" / "oracle"))
     o.add_argument("--accomp-manifest", default=str(DEFAULT_ACCOMP_MANIFEST))
     o.add_argument("--gates", default=str(DEFAULT_GATES))
-    o.add_argument("--mix-only", action="store_true", help="only (re)build the oracle mixes (no embedding / scoring)")
+    o.add_argument("--mix-only", action="store_true", help="only (re)build the oracle mixes and their format-matched copies (no embedding / scoring)")
     for p in (s, o):
         p.add_argument("--stems-root", default=str(DEFAULT_STEMS_ROOT))
         p.add_argument("--backbones", default="clap")

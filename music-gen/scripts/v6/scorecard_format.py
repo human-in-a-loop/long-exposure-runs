@@ -118,6 +118,20 @@ def match_items(items: list, fmt: dict, cache_dir: Path, log=print) -> tuple[lis
     return matched, block
 
 
+def cached_item(source_sha16: str, fmt: dict, cache_dir: Path, label: str) -> dict | None:
+    """The cache entry for a source file that may no longer exist (scratch audio deleted after embedding), or None."""
+    out = cache_path(cache_dir, source_sha16, fmt)
+    side = out.with_suffix(".json")
+    if not (out.exists() and side.exists()):
+        return None
+    s = read_json(side)
+    target = {"sample_rate": fmt["sample_rate"], "channels": fmt["channels"]}
+    if s.get("schema_version") != SCHEMA_VERSION or s.get("target_format") != target:
+        return None
+    return {"label": label, "path": str(out), "sha16": sha16_of(s["output_sha256"]), "source_path": s.get("source_path"), "source_sha16": source_sha16,
+            "source_format": s.get("source_format"), "target_format": target, "transformed": True, "cache_hit": True}
+
+
 def run_name(name: str, matched: bool) -> str:
     """`<name>_fmt` in fair mode (idempotent), the name itself otherwise."""
     if not matched or name.endswith(RUN_SUFFIX):
