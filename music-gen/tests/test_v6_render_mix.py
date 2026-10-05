@@ -85,6 +85,31 @@ def test_02_peak_limiter_holds_ceiling() -> None:
     print(f"test_02 PASS: limiter ceiling held (GR {info['max_gain_reduction_db']} dB), transparent below ceiling, deterministic")
 
 
+def test_04_group_stems_sum_to_the_master_and_leave_it_byte_identical() -> None:
+    """Iteration 05 --keep-stems: mix_song(groups={}) fills drums / bass / other (mix.STEM_GROUP), each mastered with the master's own
+    gain + limiter curve; the master output is byte-identical to the plain call and the groups' sum tracks the master closely."""
+    ref = mix.load_reference()
+    stems = _stems()
+    out, man = mix.mix_song(stems, SR, 5, False, 110.0, 0.1, ref, length_s=12.0)
+    groups = {}
+    out2, man2 = mix.mix_song(stems, SR, 5, False, 110.0, 0.1, ref, length_s=12.0, groups=groups)
+    assert hashlib.sha256(out.tobytes()).hexdigest() == hashlib.sha256(out2.tobytes()).hexdigest()
+    assert json.dumps(man, sort_keys=True) == json.dumps(man2, sort_keys=True)
+    assert sorted(groups) == ["bass", "drums", "other"] and all(g.shape == out.shape and g.dtype == np.float32 for g in groups.values())
+    assert {mix.STEM_GROUP[r] for r in stems} == set(groups) and mix.STEM_GROUP["percussion"] == "drums" and mix.STEM_GROUP["pad"] == "other"
+    total = sum(groups.values())
+    err = float(np.sqrt(np.mean((total - out) ** 2))) / max(float(np.sqrt(np.mean(out ** 2))), 1e-9)
+    assert err < 0.35, f"group sum deviates from the master by {err:.3f} relative RMS (bus compressor acts per group)"
+    assert all(float(np.abs(g).max()) <= 1.0 for g in groups.values())
+    # a group only carries its own roles: bass is centred (L == R), drums keep the kit's L/R imbalance of the test stem
+    assert np.allclose(groups["bass"][:, 0], groups["bass"][:, 1], atol=1e-6)
+    assert not np.allclose(groups["drums"][:, 0], groups["drums"][:, 1], atol=1e-3)
+    groups_b = {}
+    mix.mix_song(stems, SR, 5, False, 110.0, 0.1, ref, length_s=12.0, groups=groups_b)
+    assert all(np.array_equal(groups[g], groups_b[g]) for g in groups)
+    print(f"test_04 PASS: 3 group stems, sum-vs-master relative RMS error {err:.3f}, master byte-identical, deterministic")
+
+
 def test_03_reference_file_and_measures() -> None:
     assert mix.MIX_REFERENCE.exists(), "run scripts/v6/gen/render_v6/mix.py to measure the corpus"
     ref = json.loads(mix.MIX_REFERENCE.read_text())

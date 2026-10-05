@@ -18,7 +18,9 @@ or microtiming_model.prior_model() in fixture mode. Per note:
 (iii) VARIATION ON REPEATS (vary_recurrences, before flatten): for every recurrence r >= 1 of a label, harmony, keys
       voicings, the bass line and the melody skeleton (incl. suspension decisions) stay identical; re-drawn with the tag suffix
       "|rec=r": melody non-skeleton onsets + non-chord-tone choices, comping rhythm, hat row of every bar, the section fill,
-      and (through the tags) every dynamics/microtiming draw. Open hat (GM 46) on slot 14 with p = 0.3 per bar.
+      and (through the tags) every dynamics/microtiming draw. Open hat (GM 46) on slot 14 with p = 0.3 per bar. The melody's
+      REALISED skeleton notes (incl. suspension / resolution pairs) are copied from the post-repair label content
+      (realised_skeleton; iteration 05 fix of the section_repeat_integrity failures).
  (iv) ARTICULATION: melody 0.85..0.95 of the IOI (0.8 before the phrase's last note; cadence hold kept); keys sustain
       0.6..0.95 of the IOI (prior 0.6 + 0.35 u^0.7); bass from the learned duration-proxy histogram (inverse CDF, clipped
       0.5..0.9 of the IOI, x 0.7 on syncopated slots); drums unchanged (one-shots).
@@ -115,10 +117,20 @@ def _violations(mel_notes: list, bass_notes: list) -> int:
     return n_par + MEL.unresolved_leaps([n["pitch"] for n in mel])
 
 
+def realised_skeleton(L: dict, phrase_index: int, s0: int) -> list:
+    """The label's REALISED skeleton of one phrase, phrase-relative: [(slot, pitch, role)] over SKELETON_ROLES (skeleton /
+    cadence / suspension / resolution) as the post-repair label content carries them. This, not a re-decision, is what every
+    recurrence inherits: fill_weak's suspension test looks at the PRECEDING pitch, which is a re-drawn non-skeleton note in a
+    recurrence, so re-deciding flipped suspension <-> plain skeleton note between occurrences (iteration 04 songs 1/3/4/17)."""
+    return sorted((n["slot"] - s0, n["pitch"], n["role"]) for n in L["melody"]["notes"] if n["phrase"] == phrase_index and n.get("role") in SKELETON_ROLES)
+
+
 def _rephrase_melody(models: dict, L: dict, lab: str, tonic: int, mode: str, rtag: str) -> tuple[list, list]:
-    """Re-draw the non-skeleton onsets and the non-chord-tone choices of every phrase; skeleton (slots, pitches, suspension
-    decisions) identical to the first occurrence. Reject-and-resample (REPHRASE_TRIES tag suffixes) against the label's
-    (unchanged) bass line: the attempt with the fewest bass-melody parallels + unresolved leaps wins (first on ties)."""
+    """Re-draw the non-skeleton onsets and the non-chord-tone choices of every phrase; the realised skeleton (slots, pitches,
+    suspension + resolution notes) is copied verbatim from the label content (realised_skeleton), so a label-pass repair and
+    the label's suspension decisions are inherited. Weak onsets inside a suspension's (s, s+4] are dropped (the resolution
+    sits at s+4). Reject-and-resample (REPHRASE_TRIES tag suffixes) against the label's (unchanged) bass line: the attempt
+    with the fewest bass-melody parallels + unresolved leaps wins (first on ties)."""
     harm, lp = L["harmony"], L["plan"]
     notes, tries = [], []
     for ph, hp, mph in zip(lp["phrases"], harm["phrases"], L["melody"]["phrases"]):
@@ -129,6 +141,9 @@ def _rephrase_melody(models: dict, L: dict, lab: str, tonic: int, mode: str, rta
         otag, ntag = f"{L['tag']}|melody|{ph['index']}", f"{rtag}|melody|{ph['index']}"
         s0, s1 = b0 * SLOTS, (b0 + ph["n_bars"]) * SLOTS
         bass_in = [n for n in L["bass"]["notes"] if s0 <= n["slot"] < s1]
+        realised = realised_skeleton(L, ph["index"], s0)
+        real_slots = {s for s, _, _ in realised}
+        susp = [s for s, _, r in realised if r == "suspension"]
 
         def chord_at(s: int) -> str:
             return harm["beat_chords"][b0 + s // SLOTS][(s % SLOTS) // 4]
@@ -136,9 +151,11 @@ def _rephrase_melody(models: dict, L: dict, lab: str, tonic: int, mode: str, rta
         for t in range(REPHRASE_TRIES):
             tt = f"{ntag}|try{t}"
             rhythm = MEL.phrase_rhythm(models["melody"], Lslots, change, cad_slot, MEL.DENSITY.get(lab, 0.75), tt)
-            weak = {s for s in rhythm if s % 8 != 0 and s not in change and s < cad_slot and chord_at(s) != "N"}
+            weak = {s for s in rhythm if s % 8 != 0 and s not in change and s < cad_slot and chord_at(s) != "N"
+                    and s not in real_slots and not any(ss < s <= ss + 4 for ss in susp)}
             onsets = sorted(set(skel_pos) | weak)
             raw = MEL.fill_weak(onsets, {"pitches": mph["skeleton"]["pitches"]}, skel_pos, chord_at, set(change), mph["skeleton"]["floor"], tonic, mode, tt, susp_tag=otag)
+            raw = [(s, p, r) for s, p, r in raw if r not in SKELETON_ROLES and s not in real_slots] + realised
             cand = MEL.finalize_notes(raw, Lslots, chord_at, ph["index"])
             for n in cand:
                 n["slot"] += s0

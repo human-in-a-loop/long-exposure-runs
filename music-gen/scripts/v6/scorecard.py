@@ -36,6 +36,10 @@ Pipeline per run:
      mix-level mismatches (loudness, width) often explain embedding distance.
   6. data/v6/scorecard/runs/<name>/{scorecard.json, SCORECARD.md, distribution_<bb>.json,
      stems_<kind>_clap.json}.
+  --match-reference-format (iteration 05, the FAIR mode): candidates are resampled / down-mixed to the reference's modal
+     sample rate and channel count before embedding (scorecard_format.py; transformed copies cached by source sha16, the
+     transformed file's own sha keys the embedding cache), the run name gets a `_fmt` suffix and scorecard.json carries
+     `candidate_format`. Descriptors are then computed on the transformed candidates (width undefined for a mono target).
 
 Determinism: metric seeds explicit (--seed), no PRNG elsewhere; sorted-key atomic JSON.
 Discipline: /usr/bin/python3 guard; writes only under data/v6; never writes audio.
@@ -70,7 +74,6 @@ from scripts.v6.v6_common import (  # noqa: E402
 
 SCHEMA_VERSION = "v6.scorecard.1"
 GATES_SCHEMA_VERSION = "v6.gates.1"
-DESCRIPTORS_SCHEMA_VERSION = "v6.descriptors.1"
 SCORECARD_DIR = _WS / "data" / "v6" / "scorecard"
 DEFAULT_GATES = SCORECARD_DIR / "gates_v6.json"
 DEFAULT_RUNS_DIR = SCORECARD_DIR / "runs"
@@ -346,73 +349,10 @@ def embed_and_load(paths: list[Path], backbone: str, emb_dir: Path, log, tag: st
 
 
 # ============================================================================= descriptors
-def audio_descriptors(path: Path) -> dict:
-    """Integrated LUFS (pyloudnorm), crest factor, spectral centroid mean, stereo width, peak/RMS."""
-    import soundfile as sf
-    x, sr = sf.read(str(path), dtype="float32", always_2d=True)
-    n, ch = x.shape
-    dur = n / sr
-    mono = x.mean(axis=1)
-    peak = float(np.abs(x).max()) if n else 0.0
-    rms = float(np.sqrt(np.mean(np.square(x, dtype=np.float64)))) if n else 0.0
-    rec = {"schema_version": DESCRIPTORS_SCHEMA_VERSION, "duration_s": round(dur, 3), "sr": int(sr), "channels": int(ch),
-           "peak_dbfs": 20 * math.log10(max(peak, 1e-12)), "rms_dbfs": 20 * math.log10(max(rms, 1e-12)),
-           "crest_factor_db": 20 * math.log10(max(peak, 1e-12) / max(rms, 1e-12))}
-    try:
-        import pyloudnorm as pyln
-        rec["lufs_integrated"] = float(pyln.Meter(sr).integrated_loudness(x if ch > 1 else mono)) if dur >= 0.5 else None
-    except Exception as exc:  # pragma: no cover
-        rec["lufs_integrated"], rec["lufs_error"] = None, f"{type(exc).__name__}: {exc}"
-    if rec.get("lufs_integrated") is not None and not math.isfinite(rec["lufs_integrated"]):
-        rec["lufs_integrated"] = None  # digital silence -> -inf
-    import librosa
-    c = librosa.feature.spectral_centroid(y=mono, sr=sr, n_fft=2048, hop_length=512)[0] if n >= 2048 else np.zeros(0)
-    rec["spectral_centroid_hz"] = float(c.mean()) if c.size else None
-    if ch >= 2:
-        L, R = x[:, 0].astype(np.float64), x[:, 1].astype(np.float64)
-        mid, side = 0.5 * (L + R), 0.5 * (L - R)
-        e_mid, e_side = float(np.dot(mid, mid)), float(np.dot(side, side))
-        rec["stereo_width_db"] = 10 * math.log10(max(e_side, 1e-20) / max(e_mid, 1e-20)) if e_mid > 0 else None
-        den = math.sqrt(float(np.dot(L, L)) * float(np.dot(R, R)))
-        rec["lr_correlation"] = float(np.dot(L, R) / den) if den > 0 else None
-    else:
-        rec["stereo_width_db"], rec["lr_correlation"] = None, None  # mono: width undefined
-    return rec
-
-
-DESCRIPTOR_KEYS = ("lufs_integrated", "crest_factor_db", "spectral_centroid_hz", "stereo_width_db",
-                   "lr_correlation", "peak_dbfs", "rms_dbfs")
-
-
-def descriptors_for(items: list[RefItem], cache_dir: Path, log) -> list[dict]:
-    out = []
-    for it in items:
-        cpath = cache_dir / f"{it['sha16']}.json"
-        rec = None
-        if cpath.exists():
-            try:
-                rec = read_json(cpath)
-                if rec.get("schema_version") != DESCRIPTORS_SCHEMA_VERSION:
-                    rec = None
-            except Exception:
-                rec = None
-        if rec is None:
-            t0 = time.time()
-            rec = audio_descriptors(Path(it["path"]))
-            rec.update({"sha16": it["sha16"], "path": it["path"], "wall_s": round(time.time() - t0, 2)})
-            write_json_atomic(cpath, rec)
-            log(f"[desc] {it['sha16']} {it['label']} lufs={rec.get('lufs_integrated')} wall={rec['wall_s']}s")
-        out.append(dict(rec, label=it["label"]))
-    return out
-
-
-def summarise_descriptors(recs: list[dict]) -> dict:
-    out = {"n": len(recs)}
-    for k in DESCRIPTOR_KEYS:
-        v = np.asarray([r[k] for r in recs if r.get(k) is not None and math.isfinite(r[k])], dtype=np.float64)
-        out[k] = ({"n": int(len(v)), "mean": float(v.mean()), "sd": float(v.std(ddof=1)) if len(v) > 1 else 0.0,
-                   "min": float(v.min()), "max": float(v.max())} if len(v) else {"n": 0})
-    return out
+# (moved to scorecard_descriptors.py in iteration 05; re-exported so callers and tests keep `scorecard.audio_descriptors` etc.)
+from scripts.v6.scorecard_descriptors import (  # noqa: E402,F401
+    DESCRIPTOR_KEYS, DESCRIPTORS_SCHEMA_VERSION, audio_descriptors, descriptors_for, summarise_descriptors)
+from scripts.v6 import scorecard_format as scf  # noqa: E402
 
 
 # ============================================================================= scoring
@@ -451,6 +391,10 @@ def score_backbone(cands: list[dm.Song], ref: list[dm.Song], backbone: str, gate
 
 
 # ============================================================================= rendering
+def scf_cache_default() -> Path:
+    return SCORECARD_DIR / "format_cache"
+
+
 def _f(x, nd=4):
     if x is None or (isinstance(x, float) and not math.isfinite(x)):
         return "-"
@@ -492,7 +436,9 @@ def render_markdown(sc: dict) -> str:
          f"Candidates: {sc['candidates']['n_files']} mix files ({sc['candidates']['n_songs_scored']} with windows); "
          f"reference `{sc['reference']['info']['spec']}`: {sc['reference']['n_files']} files"
          + (f", {len(sc['reference']['excluded_overlap'])} excluded as candidate overlap" if sc["reference"]["excluded_overlap"] else "")
-         + f". Gates: `{sc['gates']['path']}` (sha16 {sc['gates']['sha16']}, key `{sc['gates'].get('key', 'backbones')}`). Seed {sc['params']['seed']}, k={sc['params']['k']}, bootstrap {sc['params']['bootstrap']}.", ""]
+         + f". Gates: `{sc['gates']['path']}` (sha16 {sc['gates']['sha16']}, key `{sc['gates'].get('key', 'backbones')}`). Seed {sc['params']['seed']}, k={sc['params']['k']}, bootstrap {sc['params']['bootstrap']}."
+         + (f" Candidates FORMAT-MATCHED to the reference: {sc['candidate_format']['reference_format']['sample_rate']} Hz / {sc['candidate_format']['reference_format']['channels']} ch "
+            f"({sc['candidate_format']['n_transformed']} transformed, {sc['candidate_format']['n_passthrough']} already matched)." if (sc.get("candidate_format") or {}).get("matched") else ""), ""]
     for bb, block in sc["backbones"].items():
         L += [f"## {bb} (d={block['dim']}; candidates {block['n_songs_a']} songs / {block['n_windows_a']} windows; "
               f"reference {block['n_songs_b']} songs / {block['n_windows_b']} windows) — **{block['verdict']}**", ""]
@@ -569,6 +515,7 @@ def overall_verdict(backbones: dict, stems: dict | None) -> dict:
 def run(args, log=print) -> dict:
     t0 = time.time()
     emb_dir = Path(args.emb_dir)
+    args.name = scf.run_name(args.name, bool(getattr(args, "match_reference_format", False)))
     out_dir = Path(args.runs_dir) / args.name
     out_dir.mkdir(parents=True, exist_ok=True)
     gates_path = Path(args.gates)
@@ -588,6 +535,14 @@ def run(args, log=print) -> dict:
     log(f"candidates: {len(cand_paths)} mix files" + (f", stems {{{', '.join(f'{k}:{len(v)}' for k, v in disc['stems'].items())}}}" if args.stems else ""))
 
     ref_items_all, ref_info = resolve_reference(args.reference, args)
+    match_fmt = bool(getattr(args, "match_reference_format", False))
+    fmt_block = {"matched": False}
+    if match_fmt:  # fair mode: candidates take the reference's format before embedding (scorecard_format.py)
+        fmt = scf.reference_format(ref_items_all)
+        cand_items, fmt_block = scf.match_items(cand_items, fmt, Path(getattr(args, "format_cache", scf_cache_default())), log)
+        cand_paths = [Path(c["path"]) for c in cand_items]
+        cand_shas |= {c["sha16"] for c in cand_items}
+        log(f"format-matched {fmt_block['n_transformed']} candidates to {fmt['sample_rate']} Hz / {fmt['channels']} ch ({fmt_block['n_passthrough']} already matched)")
     ref_items, excluded = exclude_overlap(ref_items_all, cand_shas)
     if not ref_items:
         raise ValueError("reference set is empty after excluding candidate overlap")
@@ -600,6 +555,7 @@ def run(args, log=print) -> dict:
                     "key": gates_key},
           "candidates": {"inputs": [str(p) for p in args.candidates], "n_files": len(cand_paths),
                          "files": [dict(c) for c in cand_items], "ignored": disc["ignored"], "dropped": {}},
+          "candidate_format": fmt_block,
           "reference": {"info": ref_info, "n_files_total": len(ref_items_all), "n_files": len(ref_items),
                         "excluded_overlap": excluded, "files": [dict(r) for r in ref_items]},
           "backbones": {}, "stems": None, "descriptors": None}
@@ -675,6 +631,8 @@ def main(argv=None) -> int:
     ap.add_argument("--runs-dir", default=str(DEFAULT_RUNS_DIR))
     ap.add_argument("--descriptor-cache", default=str(DEFAULT_DESCRIPTOR_CACHE))
     ap.add_argument("--no-descriptors", action="store_true")
+    ap.add_argument("--match-reference-format", action="store_true", help="fair mode: resample/down-mix candidates to the reference's format before embedding (run name + '_fmt')")
+    ap.add_argument("--format-cache", default=str(SCORECARD_DIR / "format_cache"), help="where the transformed candidate copies live (keyed by source sha16)")
     ap.add_argument("--receipts", default=str(DEFAULT_RECEIPTS))
     ap.add_argument("--bands", default="4,5,7")
     ap.add_argument("--musdb-manifest", default=str(DEFAULT_MUSDB_MANIFEST))

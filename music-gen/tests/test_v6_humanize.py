@@ -277,6 +277,51 @@ def test_09_real_corpus_model_when_present() -> None:
     print(f"test_09 PASS: real model ({mt['n_songs']} songs); near_tempo@120 = {pool['n_songs']} songs; KS max {m['timing_ks_max']}, vel std min {m['velocity_std_min']}, swing in IQR")
 
 
+def test_10_recurrences_inherit_the_realised_skeleton_incl_suspensions() -> None:
+    """Iteration 05 regression: fill_weak's suspension test reads the PRECEDING pitch, a re-drawn non-skeleton note in a
+    recurrence, so re-deciding it flipped suspension <-> plain skeleton note and failed section_repeat_integrity on iteration-04
+    songs 1/3/4/17 (seed 3). Recurrences now copy the label's realised skeleton (humanize.realised_skeleton)."""
+    # (a) pure helper on a hand-made label: phrase-relative, skeleton roles only, sorted
+    L = {"melody": {"notes": [{"slot": 40, "pitch": 72, "role": "suspension", "phrase": 1}, {"slot": 44, "pitch": 70, "role": "resolution", "phrase": 1},
+                              {"slot": 42, "pitch": 69, "role": "passing", "phrase": 1}, {"slot": 32, "pitch": 74, "role": "skeleton", "phrase": 1},
+                              {"slot": 60, "pitch": 67, "role": "cadence", "phrase": 1}, {"slot": 0, "pitch": 60, "role": "skeleton", "phrase": 0}]}}
+    assert H.realised_skeleton(L, 1, 32) == [(0, 74, "skeleton"), (8, 72, "suspension"), (12, 70, "resolution"), (28, 67, "cadence")]
+    # (b) fixture songs, 12 seeds x 3 donors, humanized: every recurrence pair's melody skeleton identical, surface differs
+    pairs = 0
+    for seed in range(12):
+        for donor in ("fixture_a", "fixture_b", "fixture_c"):
+            res = compose_song(_MODELS, "gen_v6_song_1", donor, seed, 120.0, 64, hz={"mt": None})
+            rep = res["validators"]["detail"]["humanize"]["section_repeat_relaxed"]
+            assert rep["skeleton_ok"] and rep["surface_differs"] in (True, None), (seed, donor, rep["n_skeleton_mismatches"])
+            pairs += rep["n_pairs"]
+    assert pairs > 0
+    # (c) the four iteration-04 failures (seed 3, donor tempi) with the real rules + microtiming model when present
+    rules = _ROOT / "data/v5/rules"
+    if not (REAL_MODEL.exists() and (rules / "harmony_markov_v5_full.json").exists()):
+        print(f"test_10 PASS (fixtures only, {pairs} pairs); real-corpus part SKIPPED (rules or microtiming model absent)")
+        return
+    models = load_models(rules, False, None, None)
+    mt = json.loads(REAL_MODEL.read_text())
+    cases = [("gen_v6_song_1", "252eb21ce7df7328", 100.100429), ("gen_v6_song_3", "cdd2717e52820ff6", 120.272335),
+             ("gen_v6_song_4", "c7d491e98767eea5", 92.526473), ("gen_v6_song_17", "b1da93ac0a467f78", 105.512584)]
+    for song_id, donor, bpm in cases:
+        res = compose_song(models, song_id, donor, 3, bpm, None, hz={"mt": mt, "path": "data/v6/rules/microtiming_v6.json", "sha256": None})
+        m = res["validators"]["metrics"]
+        rep = res["validators"]["detail"]["humanize"]["section_repeat_relaxed"]
+        assert m["section_repeat_integrity"] and m["section_repeat_skeleton_integrity"] and m["section_repeat_surface_differs"], (song_id, rep["pairs"])
+        if song_id == "gen_v6_song_1":  # the label-pass skeleton repair (B, 78 -> 74) is carried by the recurrence
+            skel = [r for r in res["plan"]["repairs"]["repairs"] if r["branch"] == "c_melody_skeleton"]
+            assert skel and skel[0]["before"] == 78 and skel[0]["after"] == 74, skel
+            song, nb = res["song"], res["song"]["bars_per_section"]
+            secs = [sec for sec in song["sections"] if sec["label"] == "B"]
+            assert len(secs) >= 2
+            for sec in secs:
+                s0 = sec["start_bar"] * 16
+                pitches = {n["pitch"] for n in song["melody"] if s0 <= n["slot"] < s0 + nb * 16 and n.get("role") in H.SKELETON_ROLES}
+                assert 78 not in pitches, (sec["index"], sorted(pitches))
+    print(f"test_10 PASS: {pairs} fixture recurrence pairs skeleton-identical; iteration-04 songs 1/3/4/17 (seed 3) now pass section_repeat_integrity")
+
+
 def _run_all() -> int:
     fails = 0
     for name, fn in sorted((k, v) for k, v in globals().items() if k.startswith("test_") and callable(v)):

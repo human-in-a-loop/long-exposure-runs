@@ -5,7 +5,7 @@ created: 2026-10-04
 milestone: M-V6-RENDER-4/realistic-renderer
 
     /usr/bin/python3 scripts/v6/gen/render_v6/render_song.py --song-dir <dir with generated_json/ + plan.json> --donor <sha16>
-        [--out <dir>] [--iteration 1] [--seed 0] [--band 5] [--temperature 0.05] [--keep-per-track] [--prove-replay] [--pool PATH]
+        [--out <dir>] [--iteration 1] [--seed 0] [--band 5] [--temperature 0.05] [--keep-per-track] [--keep-stems] [--prove-replay] [--pool PATH]
 
 Pipeline (all deterministic for sfz/sf2 patches): plan_patches (ensemble + patch per role, patch_plan.json) -> composer
 events (generated_json/<stem>.json, humanized_json/<stem>.json preferred when present) paired into notes -> derived parts
@@ -56,8 +56,9 @@ def _read_stem(path: Path):
 
 
 def render_song(song_dir: Path, donor: str, iteration: int = 1, seed: int = 0, out_dir: Path | None = None, band: int | None = None, temperature: float = select.DEFAULT_TEMPERATURE,
-                keep_per_track: bool = False, pool: dict | None = None, stems_root: Path = select.STEMS_ROOT, log=print, mix_name: str = "ab_mix.wav") -> dict:
-    """Returns the render manifest (also written as <out>/render_manifest.json)."""
+                keep_per_track: bool = False, pool: dict | None = None, stems_root: Path = select.STEMS_ROOT, log=print, mix_name: str = "ab_mix.wav", keep_stems: bool = False) -> dict:
+    """Returns the render manifest (also written as <out>/render_manifest.json). keep_stems (iteration 05 diagnostics): also write
+    the mastered Demucs-style groups <out>/stems/{drums,bass,other}.wav (mix.STEM_GROUP; 16-bit stereo at SR) — the mix is unchanged."""
     from scripts.v6.gen.render import write_wav_int16
     t_all = time.time()
     song_dir = Path(song_dir)
@@ -99,10 +100,19 @@ def render_song(song_dir: Path, donor: str, iteration: int = 1, seed: int = 0, o
                           "expression": xinfo, "render": rinfo, "stem_wav_sha256": rinfo["wav_sha256"], "stem_duration_s": round(stems[role].shape[0] / SR, 4), "wall_s": round(time.time() - t0, 3)}
         log(f"[render_v6] {song_id} {role:12} {patch['id'][:48]:48} notes={len(notes2)} vel={xinfo['velocity']['realized_range']} cc={xinfo['cc']['n_cc']} {per_role[role]['wall_s']}s")
     t_mix = time.time()
-    master, mman = mix.mix_song(stems, SR, pp["band"], bool(plan.get("ballad")), bpm, pp["ensemble"]["melody_pan"], length_s=song_len_s + 1.5)
+    groups = {} if keep_stems else None
+    master, mman = mix.mix_song(stems, SR, pp["band"], bool(plan.get("ballad")), bpm, pp["ensemble"]["melody_pan"], length_s=song_len_s + 1.5, groups=groups)
     mix_path = out / mix_name
     write_wav_int16(mix_path, master, SR)
     mman.update({"song_id": song_id, "donor": donor, "ab_mix": mix_path.name, "ab_mix_sha256": sha_file(mix_path), "wall_s": round(time.time() - t_mix, 3)})
+    kept_stems = {}
+    if keep_stems:
+        (out / "stems").mkdir(parents=True, exist_ok=True)
+        for g in sorted(groups):
+            gp = out / "stems" / f"{g}.wav"
+            write_wav_int16(gp, groups[g], SR)
+            kept_stems[g] = {"path": str(gp.relative_to(out)), "sha256": sha_file(gp), "roles": sorted(r for r in stems if mix.STEM_GROUP.get(r, "other") == g)}
+        mman["stems_kept"] = kept_stems
     write_json_atomic(out / "mix_manifest.json", mman)
     deleted = []
     if not keep_per_track:
@@ -114,7 +124,7 @@ def render_song(song_dir: Path, donor: str, iteration: int = 1, seed: int = 0, o
     man = {"schema_version": 1, "renderer": "render_v6", "song_id": song_id, "donor": donor, "iteration": iteration, "seed": seed, "band": pp["band"], "tempo_bpm": bpm, "n_bars": n_bars,
            "song_len_s": round(song_len_s, 4), "sample_rate": SR, "roles": per_role, "ensemble": pp["ensemble"]["roles"], "melody_family": pp["ensemble"]["melody_family"],
            "ab_mix": mix_path.name, "ab_mix_sha256": mman["ab_mix_sha256"], "ab_mix_duration_s": mman["duration_s"], "mix_master": mman["master"], "per_track_deleted_after_mix": deleted,
-           "pool_sha256": pool.get("_sha256"), "deterministic_backends_only": all(per_role[r].get("backend") in ("sfz", "sf2") for r in per_role if "backend" in per_role[r]),
+           "stems_kept": kept_stems, "pool_sha256": pool.get("_sha256"), "deterministic_backends_only": all(per_role[r].get("backend") in ("sfz", "sf2") for r in per_role if "backend" in per_role[r]),
            "env_pin_sha256": ENV_PIN_SHA256, "wall_s": round(time.time() - t_all, 3)}
     write_json_atomic(out / "render_manifest.json", man)
     return man
@@ -145,6 +155,7 @@ def main(argv=None) -> int:
     ap.add_argument("--pool", default=str(select.POOL_PATH))
     ap.add_argument("--stems-root", default=str(select.STEMS_ROOT))
     ap.add_argument("--keep-per-track", action="store_true")
+    ap.add_argument("--keep-stems", action="store_true", help="also write the mastered drums / bass / other groups to <out>/stems/ (diagnostics)")
     ap.add_argument("--prove-replay", action="store_true")
     args = ap.parse_args(argv)
     sd = Path(args.song_dir)
@@ -153,7 +164,7 @@ def main(argv=None) -> int:
     out = (out if out.is_absolute() else WS / out) if out else None
     pool = select.load_pool(Path(args.pool))
     kw = dict(iteration=args.iteration, seed=args.seed, band=args.band, temperature=args.temperature, pool=pool, stems_root=Path(args.stems_root))
-    man = render_song(sd, args.donor, out_dir=out, keep_per_track=args.keep_per_track, **kw)
+    man = render_song(sd, args.donor, out_dir=out, keep_per_track=args.keep_per_track, keep_stems=args.keep_stems, **kw)
     print(f"{man['song_id']} donor={args.donor} band={man['band']} roles={sorted(man['roles'])} mix={man['ab_mix_sha256'][:12]} LUFS={man['mix_master']['lufs_final']} "
           f"TP={man['mix_master']['true_peak_dbtp_final']} wall={man['wall_s']}s")
     if args.prove_replay:

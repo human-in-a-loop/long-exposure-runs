@@ -16,6 +16,8 @@ import tempfile
 import time
 from pathlib import Path
 
+import numpy as np
+
 _ROOT = Path(__file__).resolve().parent.parent
 os.chdir(_ROOT)
 sys.path.insert(0, str(_ROOT))
@@ -81,7 +83,19 @@ def test_02_render_song_replay_proof_and_gm_default_unchanged() -> None:
         m2 = render_song.render_song(sd, "fixture_b", iteration=1, seed=3, out_dir=Path(td) / "keep", band=7, pool=pool, keep_per_track=True, log=lambda *a: None)
         kept = sorted(p.name for p in (Path(td) / "keep" / "per_track").glob("*.wav"))
         assert kept == sorted(f"{r}.wav" for r in m2["roles"] if m2["roles"][r].get("n_notes") != 0) and m2["ab_mix_sha256"] == m1["ab_mix_sha256"]
-        print(f"test_02 PASS: gm default manifest unchanged; v6 replay proof holds ({m1['wall_s']}s); --keep-per-track keeps {kept}")
+        # --keep-stems (iteration 05): the Demucs-style groups land in stems/, the mix stays byte-identical, manifests record them
+        m3 = render_song.render_song(sd, "fixture_b", iteration=1, seed=3, out_dir=Path(td) / "grp", band=7, pool=pool, keep_stems=True, log=lambda *a: None)
+        assert m3["ab_mix_sha256"] == m1["ab_mix_sha256"] and m1["stems_kept"] == {}
+        grp = sorted(p.name for p in (Path(td) / "grp" / "stems").glob("*.wav"))
+        assert grp == sorted(f"{g}.wav" for g in m3["stems_kept"]) and {"drums", "bass"} <= set(m3["stems_kept"]) and "other" in m3["stems_kept"]
+        import soundfile as sf
+        gx, gsr = sf.read(str(Path(td) / "grp" / "stems" / "drums.wav"), dtype="float32", always_2d=True)
+        mx, _ = sf.read(str(Path(td) / "grp" / "ab_mix.wav"), dtype="float32", always_2d=True)
+        assert gsr == 44100 and gx.shape == mx.shape and float(np.abs(gx).max()) > 0.01
+        assert set(sum((v["roles"] for v in m3["stems_kept"].values()), [])) == {r for r in m3["roles"] if m3["roles"][r].get("n_notes") != 0}
+        mm = json.loads((Path(td) / "grp" / "mix_manifest.json").read_text())
+        assert mm["stems_kept"] == m3["stems_kept"] and all(hashlib.sha256((Path(td) / "grp" / v["path"]).read_bytes()).hexdigest() == v["sha256"] for v in mm["stems_kept"].values())
+        print(f"test_02 PASS: gm default manifest unchanged; v6 replay proof holds ({m1['wall_s']}s); --keep-per-track keeps {kept}; --keep-stems writes {grp}")
 
 
 if __name__ == "__main__":
